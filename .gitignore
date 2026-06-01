@@ -1,2 +1,17 @@
 .superpowers/
 
+# .NET build output
+bin/
+obj/
+artifacts/
+TestResults/
+
+# Visual Studio local state
+.vs/
+*.user
+*.suo
+
+# Local databases
+*.db
+*.db-shm
+*.db-wal
