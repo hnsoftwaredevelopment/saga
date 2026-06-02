@@ -50,6 +50,8 @@ public sealed class ImportServiceFixture : IAsyncDisposable
 
     public MetadataAdapterResolver MetadataAdapterResolver { get; }
 
+    public SqliteImportExceptionClassifier ExceptionClassifier { get; } = new();
+
     public static async Task<ImportServiceFixture> CreateAsync()
     {
         var temporaryDirectory = new TemporaryDirectory();
@@ -85,7 +87,8 @@ public sealed class ImportServiceFixture : IAsyncDisposable
             ImportRepository,
             FileStore,
             FileHasher,
-            MetadataAdapterResolver);
+            MetadataAdapterResolver,
+            ExceptionClassifier);
 
     public string WriteSourceFile(string relativePath, string content) =>
         WriteBytesFile(relativePath, System.Text.Encoding.UTF8.GetBytes(content));

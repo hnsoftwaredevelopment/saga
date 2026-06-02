@@ -10,13 +10,17 @@ public sealed class ImportService(
     IImportRepository importRepository,
     ILibraryFileStore fileStore,
     IFileHasher hasher,
-    IMetadataAdapterResolver metadataAdapterResolver)
+    IMetadataAdapterResolver metadataAdapterResolver,
+    IImportExceptionClassifier exceptionClassifier)
 {
+    private const string InvalidSourceDisplayName = "(invalid source)";
+
     private readonly IBookRepository bookRepository = bookRepository;
     private readonly IImportRepository importRepository = importRepository;
     private readonly ILibraryFileStore fileStore = fileStore;
     private readonly IFileHasher hasher = hasher;
     private readonly IMetadataAdapterResolver metadataAdapterResolver = metadataAdapterResolver;
+    private readonly IImportExceptionClassifier exceptionClassifier = exceptionClassifier;
 
     public async Task<ImportBatchResult> ImportAsync(
         IReadOnlyList<string> sourcePaths,
@@ -28,19 +32,24 @@ public sealed class ImportService(
         var runId = await importRepository.StartRunAsync(startedUtc, cancellationToken);
         var results = new List<ImportItemResult>(sourcePaths.Count);
 
-        foreach (var sourcePath in sourcePaths)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var item = await ImportSingleAsync(runId, sourcePath, cancellationToken);
-            results.Add(item);
-        }
-
         try
         {
-            await importRepository.CompleteRunAsync(runId, DateTimeOffset.UtcNow, cancellationToken);
+            for (var sequence = 0; sequence < sourcePaths.Count; sequence++)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var item = await ImportSingleAsync(runId, sequence, sourcePaths[sequence], cancellationToken);
+                results.Add(item);
+            }
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        finally
         {
+            try
+            {
+                await importRepository.CompleteRunAsync(runId, DateTimeOffset.UtcNow, CancellationToken.None);
+            }
+            catch when (cancellationToken.IsCancellationRequested)
+            {
+            }
         }
 
         return new ImportBatchResult(runId, results);
@@ -48,156 +57,201 @@ public sealed class ImportService(
 
     private async Task<ImportItemResult> ImportSingleAsync(
         Guid runId,
-        string sourcePath,
+        int sequence,
+        string? sourcePath,
         CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(sourcePath);
-        var sourceDisplayName = GetSourceDisplayName(sourcePath);
-        if (!TryResolveFormat(sourceDisplayName, out var format))
-        {
-            var unsupported = new ImportItemResult(sourcePath, ImportOutcome.Failed, "Unsupported ebook format.");
-            await TryRecordItemAsync(runId, sourceDisplayName, unsupported, cancellationToken);
-            return unsupported;
-        }
+        var sourceDisplayName = GetSafeSourceDisplayName(sourcePath);
+        ImportItemResult? result = null;
 
-        string sha256;
-        try
+        if (sourceDisplayName == InvalidSourceDisplayName)
         {
-            sha256 = await hasher.ComputeSha256Async(sourcePath, cancellationToken);
+            result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.InvalidSourcePath);
         }
-        catch (Exception exception) when (exception is not OperationCanceledException)
+        else if (!TryResolveFormat(sourceDisplayName, out var format))
         {
-            var unreadable = new ImportItemResult(sourcePath, ImportOutcome.Failed, "Source file is not readable.");
-            await TryRecordItemAsync(runId, sourceDisplayName, unreadable, cancellationToken);
-            return unreadable;
+            result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.UnsupportedFormat);
         }
+        else
+        {
+            var bookId = Guid.NewGuid();
+            var copied = false;
+            var bookPersisted = false;
+            var shouldCleanup = false;
 
-        if (await bookRepository.HasHashAsync(sha256, cancellationToken))
-        {
-            var duplicate = new ImportItemResult(
-                sourcePath,
-                ImportOutcome.ExactDuplicate,
-                "Skipped exact duplicate file.");
-            await TryRecordItemAsync(runId, sourceDisplayName, duplicate, cancellationToken);
-            return duplicate;
-        }
-
-        MetadataReadResult metadata;
-        try
-        {
-            metadata = await metadataAdapterResolver.Resolve(format).ReadAsync(sourcePath, format, cancellationToken);
-        }
-        catch (Exception exception) when (exception is not OperationCanceledException)
-        {
-            var failed = new ImportItemResult(
-                sourcePath,
-                ImportOutcome.Failed,
-                $"Failed to read metadata: {exception.Message}");
-            await TryRecordItemAsync(runId, sourceDisplayName, failed, cancellationToken);
-            return failed;
-        }
-
-        if (await bookRepository.HasNormalizedTitleAndAuthorAsync(
-                metadata.Metadata.Title,
-                metadata.Metadata.Authors,
-                cancellationToken))
-        {
-            var duplicate = new ImportItemResult(
-                sourcePath,
-                ImportOutcome.PossibleDuplicate,
-                "Skipped possible duplicate by normalized title and author.");
-            await TryRecordItemAsync(runId, sourceDisplayName, duplicate, cancellationToken);
-            return duplicate;
-        }
-
-        var bookId = Guid.NewGuid();
-        var bookPersisted = false;
-        var copied = false;
-        var completedSuccessfully = false;
-        try
-        {
-            var copy = await fileStore.CopyIntoLibraryAsync(bookId, sourcePath, metadata.Metadata.CoverBytes, cancellationToken);
-            copied = true;
-
-            var now = DateTimeOffset.UtcNow;
-            var book = new Book(
-                bookId,
-                metadata.Metadata,
-                ReadingStatus.Unread,
-                copy.RelativeCoverPath,
-                now,
-                now);
-            var file = new BookFile(
-                Guid.NewGuid(),
-                bookId,
-                format,
-                copy.RelativeBookPath,
-                sha256,
-                new FileInfo(sourcePath).Length,
-                MetadataWriteBackStatus.NotAttempted,
-                null);
-
-            await bookRepository.AddAsync(book, file, cancellationToken);
-            bookPersisted = true;
-
-            var message = metadata.Warning is null
-                ? "Imported."
-                : $"Imported with warning: {metadata.Warning}";
-            var added = new ImportItemResult(sourcePath, ImportOutcome.Added, message, bookId);
-            await TryRecordItemAsync(runId, sourceDisplayName, added, cancellationToken);
-            completedSuccessfully = true;
-            return added;
-        }
-        catch (Exception exception) when (exception is not OperationCanceledException)
-        {
-            var failed = new ImportItemResult(
-                sourcePath,
-                ImportOutcome.Failed,
-                $"Failed to import '{sourceDisplayName}': {exception.Message}");
-            await TryRecordItemAsync(runId, sourceDisplayName, failed, cancellationToken);
-            return failed;
-        }
-        finally
-        {
-            if (!completedSuccessfully && (copied || bookPersisted))
+            try
             {
-                await CleanupImportedBookAsync(bookId, bookPersisted);
+                string sha256;
+                try
+                {
+                    sha256 = await hasher.ComputeSha256Async(sourcePath!, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch
+                {
+                    result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
+                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                }
+
+                if (await bookRepository.HasHashAsync(sha256, cancellationToken))
+                {
+                    result = CreateSuccessResult(
+                        sourcePath,
+                        ImportOutcome.ExactDuplicate,
+                        SafeImportMessages.ExactDuplicate);
+                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                }
+
+                MetadataReadResult metadata;
+                try
+                {
+                    metadata = await metadataAdapterResolver.Resolve(format).ReadAsync(sourcePath!, format, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch
+                {
+                    result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.MetadataReadFailed);
+                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                }
+
+                if (await bookRepository.HasNormalizedTitleAndAuthorAsync(
+                        metadata.Metadata.Title,
+                        metadata.Metadata.Authors,
+                        cancellationToken))
+                {
+                    result = CreateSuccessResult(
+                        sourcePath,
+                        ImportOutcome.PossibleDuplicate,
+                        SafeImportMessages.PossibleDuplicate);
+                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                }
+
+                var copy = await fileStore.CopyIntoLibraryAsync(
+                    bookId,
+                    sourcePath!,
+                    metadata.Metadata.CoverBytes,
+                    cancellationToken);
+                copied = true;
+
+                var now = DateTimeOffset.UtcNow;
+                var book = new Book(
+                    bookId,
+                    metadata.Metadata,
+                    ReadingStatus.Unread,
+                    copy.RelativeCoverPath,
+                    now,
+                    now);
+                var file = new BookFile(
+                    Guid.NewGuid(),
+                    bookId,
+                    format,
+                    copy.RelativeBookPath,
+                    sha256,
+                    new FileInfo(sourcePath!).Length,
+                    MetadataWriteBackStatus.NotAttempted,
+                    null);
+
+                try
+                {
+                    await bookRepository.AddAsync(book, file, cancellationToken);
+                    bookPersisted = true;
+                    result = CreateAddedResult(
+                        sourcePath,
+                        metadata.Warning,
+                        bookId);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception exception) when (exceptionClassifier.IsDuplicateKeyViolation(exception))
+                {
+                    result = CreateSuccessResult(
+                        sourcePath,
+                        ImportOutcome.PossibleDuplicate,
+                        SafeImportMessages.PossibleDuplicate);
+                    shouldCleanup = true;
+                }
+                catch
+                {
+                    result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.ImportFailed);
+                    shouldCleanup = true;
+                }
+            }
+            finally
+            {
+                if (shouldCleanup || (!bookPersisted && copied))
+                {
+                    var cleanupIncomplete = await CleanupImportedBookAsync(bookId);
+                    if (cleanupIncomplete && result is not null && result.Outcome == ImportOutcome.Failed)
+                    {
+                        result = result with { Message = AppendCleanupIncomplete(result.Message) };
+                    }
+                }
             }
         }
+
+        return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result!, cancellationToken);
     }
 
-    private async Task TryRecordItemAsync(
+    private async Task<ImportItemResult> RecordAndReturnAsync(
         Guid runId,
+        int sequence,
         string sourceDisplayName,
-        ImportItemResult item,
+        ImportItemResult result,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            await importRepository.RecordItemAsync(
-                runId,
-                sourceDisplayName,
-                item.Outcome,
-                item.Message,
-                item.BookId,
-                cancellationToken);
-        }
-        catch (Exception exception) when (exception is not OperationCanceledException)
-        {
-        }
+        await importRepository.RecordItemAsync(
+            runId,
+            sequence,
+            sourceDisplayName,
+            result.Outcome,
+            result.Message,
+            result.BookId,
+            CancellationToken.None);
+        return result;
     }
 
-    private async Task CleanupImportedBookAsync(Guid bookId, bool bookPersisted)
+    private static ImportItemResult CreateFailedResult(
+        string? sourcePath,
+        string sourceDisplayName,
+        string message) =>
+        new(IsBlank(sourcePath) ? sourceDisplayName : sourcePath!, ImportOutcome.Failed, message);
+
+    private static ImportItemResult CreateSuccessResult(
+        string? sourcePath,
+        ImportOutcome outcome,
+        string message) =>
+        new(IsBlank(sourcePath) ? InvalidSourceDisplayName : sourcePath!, outcome, message);
+
+    private static ImportItemResult CreateAddedResult(
+        string? sourcePath,
+        string? warning,
+        Guid bookId)
     {
+        var message = warning is null
+            ? SafeImportMessages.Added
+            : $"{SafeImportMessages.Added}; {SafeImportMessages.MetadataWarning}";
+        return new(IsBlank(sourcePath) ? InvalidSourceDisplayName : sourcePath!, ImportOutcome.Added, message, bookId);
+    }
+
+    private async Task<bool> CleanupImportedBookAsync(Guid bookId)
+    {
+        var cleanupIncomplete = false;
+
         try
         {
-            if (bookPersisted)
-            {
-                await bookRepository.DeleteAsync(bookId, CancellationToken.None);
-            }
+            await bookRepository.DeleteAsync(bookId, CancellationToken.None);
         }
         catch
         {
+            cleanupIncomplete = true;
         }
 
         try
@@ -206,20 +260,49 @@ public sealed class ImportService(
         }
         catch
         {
+            cleanupIncomplete = true;
         }
+
+        return cleanupIncomplete;
     }
 
     private static bool TryResolveFormat(string sourceDisplayName, out EbookFormat format) =>
         EbookFormatExtensions.TryFromFilename(sourceDisplayName, out format);
 
-    private static string GetSourceDisplayName(string sourcePath)
+    private static string GetSafeSourceDisplayName(string? sourcePath)
     {
-        var sourceDisplayName = Path.GetFileName(sourcePath);
-        if (string.IsNullOrWhiteSpace(sourceDisplayName))
+        if (string.IsNullOrWhiteSpace(sourcePath))
         {
-            throw new ArgumentException("The source path must include a file name.", nameof(sourcePath));
+            return InvalidSourceDisplayName;
         }
 
-        return sourceDisplayName;
+        try
+        {
+            var fileName = Path.GetFileName(sourcePath);
+            return string.IsNullOrWhiteSpace(fileName) ? InvalidSourceDisplayName : fileName;
+        }
+        catch
+        {
+            return InvalidSourceDisplayName;
+        }
+    }
+
+    private static string AppendCleanupIncomplete(string message) =>
+        $"{message}; {SafeImportMessages.CleanupIncomplete}";
+
+    private static bool IsBlank(string? value) => string.IsNullOrWhiteSpace(value);
+
+    private static class SafeImportMessages
+    {
+        public const string Added = "added";
+        public const string CleanupIncomplete = "cleanup incomplete";
+        public const string ExactDuplicate = "exact duplicate skipped";
+        public const string ImportFailed = "import failed";
+        public const string InvalidSourcePath = "invalid source path";
+        public const string MetadataReadFailed = "metadata read failed";
+        public const string MetadataWarning = "metadata warning";
+        public const string PossibleDuplicate = "possible duplicate";
+        public const string SourceUnreadable = "source unreadable";
+        public const string UnsupportedFormat = "unsupported format";
     }
 }

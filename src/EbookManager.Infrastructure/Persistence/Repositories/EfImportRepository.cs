@@ -28,6 +28,7 @@ public sealed class EfImportRepository(
 
     public async Task RecordItemAsync(
         Guid runId,
+        int sequence,
         string sourceDisplayName,
         ImportOutcome outcome,
         string message,
@@ -39,6 +40,7 @@ public sealed class EfImportRepository(
         {
             Id = Guid.NewGuid(),
             ImportRunId = runId,
+            Sequence = sequence,
             SourcePath = sourceDisplayName,
             Outcome = outcome,
             Message = message,
@@ -69,7 +71,7 @@ public sealed class EfImportRepository(
         }
 
         var items = run.Items
-            .OrderBy(x => x.SourcePath, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(x => x.Sequence)
             .ThenBy(x => x.Id)
             .Select(x => new ImportItemResult(x.SourcePath, x.Outcome, x.Message, x.BookId))
             .ToList()

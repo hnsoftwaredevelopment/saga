@@ -7,6 +7,7 @@ public sealed class ImportItemEntity
     public Guid Id { get; set; }
     public Guid ImportRunId { get; set; }
     public ImportRunEntity ImportRun { get; set; } = null!;
+    public int Sequence { get; set; }
     public string SourcePath { get; set; } = string.Empty;
     public ImportOutcome Outcome { get; set; }
     public string Message { get; set; } = string.Empty;

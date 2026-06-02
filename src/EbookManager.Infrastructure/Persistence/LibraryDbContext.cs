@@ -30,7 +30,9 @@ public sealed class LibraryDbContext(DbContextOptions<LibraryDbContext> options)
             book.HasKey(x => x.Id);
             book.Property(x => x.Title).IsRequired();
             book.Property(x => x.NormalizedTitle).IsRequired();
+            book.Property(x => x.DuplicateKey).IsRequired();
             book.HasIndex(x => x.NormalizedTitle);
+            book.HasIndex(x => x.DuplicateKey).IsUnique();
             book.Property(x => x.PublicationDate).HasConversion(nullableDateOnlyConverter);
             book.Property(x => x.ReadingStatus).HasConversion<string>();
         });
@@ -108,9 +110,11 @@ public sealed class LibraryDbContext(DbContextOptions<LibraryDbContext> options)
         {
             importItem.ToTable("ImportItems");
             importItem.HasKey(x => x.Id);
+            importItem.Property(x => x.Sequence).IsRequired();
             importItem.Property(x => x.SourcePath).IsRequired();
             importItem.Property(x => x.Outcome).HasConversion<string>();
             importItem.Property(x => x.Message).IsRequired();
+            importItem.HasIndex(x => new { x.ImportRunId, x.Sequence }).IsUnique();
             importItem.HasOne(x => x.ImportRun)
                 .WithMany(x => x.Items)
                 .HasForeignKey(x => x.ImportRunId)

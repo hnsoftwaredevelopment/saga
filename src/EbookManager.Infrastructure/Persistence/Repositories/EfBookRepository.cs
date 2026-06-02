@@ -41,26 +41,11 @@ public sealed class EfBookRepository(
         IReadOnlyList<string> authors,
         CancellationToken cancellationToken)
     {
-        var normalizedTitle = Normalize(title);
-        var normalizedAuthors = NormalizeMetadataNames(authors)
-            .Select(x => x.NormalizedName)
-            .OrderBy(x => x, StringComparer.Ordinal)
-            .ToArray();
-
+        var duplicateKey = BuildDuplicateKey(title, authors);
         await using var context = contextFactory.Create(libraryPath);
-        var candidates = await context.Books
+        return await context.Books
             .AsNoTracking()
-            .Where(x => x.NormalizedTitle == normalizedTitle)
-            .Select(x => x.BookAuthors
-                .Select(bookAuthor => bookAuthor.Author.NormalizedName)
-                .OrderBy(name => name)
-                .ToArray())
-            .ToListAsync(cancellationToken);
-
-        return candidates.Any(candidate =>
-            candidate.Distinct(StringComparer.Ordinal)
-                .OrderBy(x => x, StringComparer.Ordinal)
-                .SequenceEqual(normalizedAuthors, StringComparer.Ordinal));
+            .AnyAsync(x => x.DuplicateKey == duplicateKey, cancellationToken);
     }
 
     public async Task AddAsync(
@@ -237,6 +222,7 @@ public sealed class EfBookRepository(
         entity.Id = book.Id;
         entity.Title = book.Metadata.Title;
         entity.NormalizedTitle = Normalize(book.Metadata.Title);
+        entity.DuplicateKey = BuildDuplicateKey(book.Metadata.Title, book.Metadata.Authors);
         entity.Description = book.Metadata.Description;
         entity.Language = book.Metadata.Language;
         entity.Publisher = book.Metadata.Publisher;
@@ -291,6 +277,16 @@ public sealed class EfBookRepository(
             entity.UpdatedUtc);
 
     private static string Normalize(string value) => value.Trim().ToLowerInvariant();
+
+    private static string BuildDuplicateKey(string title, IReadOnlyList<string> authors)
+    {
+        var normalizedAuthors = NormalizeMetadataNames(authors)
+            .Select(x => x.NormalizedName)
+            .OrderBy(x => x, StringComparer.Ordinal)
+            .ToArray();
+
+        return $"{Normalize(title)}|{string.Join('|', normalizedAuthors)}";
+    }
 
     private static IReadOnlyList<NormalizedMetadataName> NormalizeMetadataNames(
         IReadOnlyList<string>? values)

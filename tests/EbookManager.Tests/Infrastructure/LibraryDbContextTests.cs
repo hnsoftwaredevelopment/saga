@@ -260,6 +260,57 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Import_items_preserve_sequence_order_when_reloaded_from_the_repository()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var importRepository = new EfImportRepository(factory, libraryPath);
+        var runId = await importRepository.StartRunAsync(DateTimeOffset.UtcNow, default);
+
+        await importRepository.RecordItemAsync(runId, 0, "zeta.pdf", ImportOutcome.Added, "Imported", null, default);
+        await importRepository.RecordItemAsync(runId, 1, "alpha.pdf", ImportOutcome.Added, "Imported", null, default);
+
+        await using var context = factory.Create(libraryPath);
+        var connection = (SqliteConnection)context.Database.GetDbConnection();
+        await connection.OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT "Sequence", SourcePath
+            FROM ImportItems
+            ORDER BY "Sequence"
+            """;
+        await using var reader = await command.ExecuteReaderAsync();
+        var rows = new List<(long Sequence, string SourcePath)>();
+        while (await reader.ReadAsync())
+        {
+            rows.Add((reader.GetInt64(0), reader.GetString(1)));
+        }
+
+        rows.Should().Equal((0, "zeta.pdf"), (1, "alpha.pdf"));
+        (await importRepository.GetAsync(runId, default))!.Items.Select(x => x.SourcePath)
+            .Should()
+            .Equal("zeta.pdf", "alpha.pdf");
+    }
+
+    [Fact]
+    public async Task Books_reject_duplicate_logical_title_and_author_combinations()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var firstBook = CreateBook("Same", ["Author"], coverBytes: null);
+        var secondBook = CreateBook("Same", ["Author"], coverBytes: null);
+
+        await repository.AddAsync(firstBook, CreateFile(firstBook.Id, Hash('A')), default);
+
+        var addDuplicate = () => repository.AddAsync(secondBook, CreateFile(secondBook.Id, Hash('B')), default);
+
+        await addDuplicate.Should().ThrowAsync<DbUpdateException>();
+    }
+
+    [Fact]
     public void Design_time_factory_uses_a_temporary_sqlite_database()
     {
         var factory = new DesignTimeLibraryDbContextFactory();

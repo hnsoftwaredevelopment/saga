@@ -8,6 +8,7 @@ public interface IImportRepository
 
     Task RecordItemAsync(
         Guid runId,
+        int sequence,
         string sourceDisplayName,
         ImportOutcome outcome,
         string message,
