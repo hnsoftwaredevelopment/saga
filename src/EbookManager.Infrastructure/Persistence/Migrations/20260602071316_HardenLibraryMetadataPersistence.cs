@@ -28,6 +28,17 @@ namespace EbookManager.Infrastructure.Persistence.Migrations
                 );
                 """);
 
+            migrationBuilder.Sql(
+                """
+                DROP INDEX "IX_BookFiles_Sha256";
+
+                UPDATE "BookFiles"
+                SET "Sha256" = UPPER("Sha256");
+
+                CREATE UNIQUE INDEX "IX_BookFiles_Sha256"
+                ON "BookFiles" ("Sha256" COLLATE NOCASE);
+                """);
+
             migrationBuilder.CreateIndex(
                 name: "IX_BookTags_BookId_Order",
                 table: "BookTags",
@@ -43,6 +54,14 @@ namespace EbookManager.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(
+                """
+                DROP INDEX "IX_BookFiles_Sha256";
+
+                CREATE UNIQUE INDEX "IX_BookFiles_Sha256"
+                ON "BookFiles" ("Sha256");
+                """);
+
             migrationBuilder.DropIndex(
                 name: "IX_BookTags_BookId_Order",
                 table: "BookTags");

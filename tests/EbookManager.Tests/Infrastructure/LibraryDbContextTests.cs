@@ -333,6 +333,57 @@ public sealed class LibraryDbContextTests
         orders.Should().Equal(0, 1);
     }
 
+    [Fact]
+    public async Task Metadata_hardening_migration_canonicalizes_existing_hashes_and_blocks_casing_duplicates()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = new LibraryDbContextFactory();
+        await using var context = factory.Create(library.DirectoryPath);
+        await context.Database.MigrateAsync("20260602065847_InitialLibrarySchema");
+        var firstBookId = Guid.NewGuid();
+        var secondBookId = Guid.NewGuid();
+        var lowercaseHash = Hash('a');
+        var connection = (SqliteConnection)context.Database.GetDbConnection();
+        await connection.OpenAsync();
+        await using (var command = connection.CreateCommand())
+        {
+            command.CommandText = """
+                INSERT INTO Books (Id, Title, NormalizedTitle, ReadingStatus, CreatedUtc, UpdatedUtc)
+                VALUES ($firstBookId, 'Existing', 'existing', 'Unread', $now, $now);
+                INSERT INTO BookFiles (Id, BookId, Format, RelativePath, Sha256, SizeBytes, WriteBackStatus)
+                VALUES ($fileId, $firstBookId, 'Epub', 'books/existing.epub', $sha256, 123, 'NotAttempted');
+                """;
+            command.Parameters.AddWithValue("$firstBookId", firstBookId);
+            command.Parameters.AddWithValue("$fileId", Guid.NewGuid());
+            command.Parameters.AddWithValue("$sha256", lowercaseHash);
+            command.Parameters.AddWithValue("$now", DateTimeOffset.UtcNow);
+            await command.ExecuteNonQueryAsync();
+        }
+
+        await context.Database.MigrateAsync();
+
+        (await context.BookFiles.SingleAsync()).Sha256.Should().Be(Hash('A'));
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        (await repository.HasHashAsync(lowercaseHash, default)).Should().BeTrue();
+        (await repository.HasHashAsync(Hash('A'), default)).Should().BeTrue();
+
+        await using var duplicateCommand = connection.CreateCommand();
+        duplicateCommand.CommandText = """
+            INSERT INTO Books (Id, Title, NormalizedTitle, ReadingStatus, CreatedUtc, UpdatedUtc)
+            VALUES ($secondBookId, 'Duplicate', 'duplicate', 'Unread', $now, $now);
+            INSERT INTO BookFiles (Id, BookId, Format, RelativePath, Sha256, SizeBytes, WriteBackStatus)
+            VALUES ($fileId, $secondBookId, 'Epub', 'books/duplicate.epub', $sha256, 123, 'NotAttempted');
+            """;
+        duplicateCommand.Parameters.AddWithValue("$secondBookId", secondBookId);
+        duplicateCommand.Parameters.AddWithValue("$fileId", Guid.NewGuid());
+        duplicateCommand.Parameters.AddWithValue("$sha256", lowercaseHash);
+        duplicateCommand.Parameters.AddWithValue("$now", DateTimeOffset.UtcNow);
+
+        var insertDuplicate = () => duplicateCommand.ExecuteNonQueryAsync();
+
+        await insertDuplicate.Should().ThrowAsync<SqliteException>();
+    }
+
     private static async Task<LibraryDbContextFactory> CreateMigratedFactoryAsync(string libraryPath)
     {
         var factory = new LibraryDbContextFactory();
