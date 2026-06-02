@@ -1,7 +1,9 @@
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.Metadata;
 using EbookManager.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 
 namespace EbookManager.Infrastructure.Persistence.Repositories;
 
@@ -67,28 +69,35 @@ public sealed class EfBookRepository(
 
     public async Task UpdateAsync(Book book, CancellationToken cancellationToken)
     {
-        await using var context = contextFactory.Create(libraryPath);
-        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
-        var entity = await context.Books
-            .SingleOrDefaultAsync(x => x.Id == book.Id, cancellationToken)
-            ?? throw new KeyNotFoundException($"Book '{book.Id}' does not exist.");
+        try
+        {
+            await using var context = contextFactory.Create(libraryPath);
+            await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            var entity = await context.Books
+                .SingleOrDefaultAsync(x => x.Id == book.Id, cancellationToken)
+                ?? throw new KeyNotFoundException($"Book '{book.Id}' does not exist.");
 
-        Apply(book, entity);
-        await context.SaveChangesAsync(cancellationToken);
-        await context.BookAuthors
-            .Where(x => x.BookId == book.Id)
-            .ExecuteDeleteAsync(cancellationToken);
-        await context.BookTags
-            .Where(x => x.BookId == book.Id)
-            .ExecuteDeleteAsync(cancellationToken);
-        context.ChangeTracker.Clear();
-        entity = await context.Books.SingleAsync(x => x.Id == book.Id, cancellationToken);
-        await AddAuthorsAsync(context, entity, book.Metadata.Authors, cancellationToken);
-        await AddTagsAsync(context, entity, book.Metadata.Tags, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
-        await RemoveOrphanedMetadataAsync(context, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
-        await transaction.CommitAsync(cancellationToken);
+            Apply(book, entity);
+            await context.SaveChangesAsync(cancellationToken);
+            await context.BookAuthors
+                .Where(x => x.BookId == book.Id)
+                .ExecuteDeleteAsync(cancellationToken);
+            await context.BookTags
+                .Where(x => x.BookId == book.Id)
+                .ExecuteDeleteAsync(cancellationToken);
+            context.ChangeTracker.Clear();
+            entity = await context.Books.SingleAsync(x => x.Id == book.Id, cancellationToken);
+            await AddAuthorsAsync(context, entity, book.Metadata.Authors, cancellationToken);
+            await AddTagsAsync(context, entity, book.Metadata.Tags, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+            await RemoveOrphanedMetadataAsync(context, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception exception) when (IsDuplicateKeyViolation(exception))
+        {
+            throw new BookConflictException();
+        }
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
@@ -106,6 +115,35 @@ public sealed class EfBookRepository(
         await RemoveOrphanedMetadataAsync(context, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<BookFile>> ListFilesAsync(
+        Guid bookId,
+        CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var files = await context.BookFiles
+            .AsNoTracking()
+            .Where(x => x.BookId == bookId)
+            .OrderBy(x => x.RelativePath)
+            .ThenBy(x => x.Id)
+            .ToListAsync(cancellationToken);
+        return files.Select(ToDomain).ToList().AsReadOnly();
+    }
+
+    public async Task UpdateFileWriteBackAsync(
+        Guid fileId,
+        MetadataWriteResult result,
+        CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var entity = await context.BookFiles
+            .SingleOrDefaultAsync(x => x.Id == fileId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Book file '{fileId}' does not exist.");
+
+        entity.WriteBackStatus = result.Status;
+        entity.WriteBackMessage = result.Message;
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     private static IQueryable<BookEntity> BooksWithMetadata(LibraryDbContext context) =>
@@ -276,6 +314,17 @@ public sealed class EfBookRepository(
             entity.CreatedUtc,
             entity.UpdatedUtc);
 
+    private static BookFile ToDomain(BookFileEntity entity) =>
+        new(
+            entity.Id,
+            entity.BookId,
+            entity.Format,
+            entity.RelativePath,
+            entity.Sha256,
+            entity.SizeBytes,
+            entity.WriteBackStatus,
+            entity.WriteBackMessage);
+
     private static string Normalize(string value) => value.Trim().ToLowerInvariant();
 
     private static IReadOnlyList<NormalizedMetadataName> NormalizeMetadataNames(
@@ -315,6 +364,21 @@ public sealed class EfBookRepository(
         }
 
         return sha256.ToUpperInvariant();
+    }
+
+    private static bool IsDuplicateKeyViolation(Exception exception)
+    {
+        for (var current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is SqliteException sqliteException &&
+                sqliteException.SqliteErrorCode == 19 &&
+                sqliteException.SqliteExtendedErrorCode == 2067)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private sealed record NormalizedMetadataName(string Name, string NormalizedName);

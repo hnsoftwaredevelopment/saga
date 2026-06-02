@@ -1,4 +1,5 @@
 using EbookManager.Domain.Books;
+using EbookManager.Domain.Metadata;
 
 namespace EbookManager.Domain.Abstractions;
 
@@ -14,4 +15,9 @@ public interface IBookRepository
     Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken);
     Task UpdateAsync(Book book, CancellationToken cancellationToken);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken);
+    Task UpdateFileWriteBackAsync(
+        Guid fileId,
+        MetadataWriteResult result,
+        CancellationToken cancellationToken);
 }

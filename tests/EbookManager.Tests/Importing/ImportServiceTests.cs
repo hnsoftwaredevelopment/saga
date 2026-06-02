@@ -429,6 +429,15 @@ public sealed class ImportServiceTests
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) =>
             inner.DeleteAsync(id, cancellationToken);
+
+        public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
+            inner.ListFilesAsync(bookId, cancellationToken);
+
+        public Task UpdateFileWriteBackAsync(
+            Guid fileId,
+            MetadataWriteResult result,
+            CancellationToken cancellationToken) =>
+            inner.UpdateFileWriteBackAsync(fileId, result, cancellationToken);
     }
 
     private sealed class ThrowOnFirstAddBookRepository(IBookRepository inner) : IBookRepository
@@ -461,6 +470,15 @@ public sealed class ImportServiceTests
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
+
+        public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
+            inner.ListFilesAsync(bookId, cancellationToken);
+
+        public Task UpdateFileWriteBackAsync(
+            Guid fileId,
+            MetadataWriteResult result,
+            CancellationToken cancellationToken) =>
+            inner.UpdateFileWriteBackAsync(fileId, result, cancellationToken);
     }
 
     private sealed class DurableImportRepositoryDecorator(IImportRepository inner) : IImportRepository
@@ -558,11 +576,22 @@ public sealed class ImportServiceTests
             DeleteAsyncCalled = true;
             await inner.DeleteAsync(id, cancellationToken);
         }
+
+        public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
+            inner.ListFilesAsync(bookId, cancellationToken);
+
+        public Task UpdateFileWriteBackAsync(
+            Guid fileId,
+            MetadataWriteResult result,
+            CancellationToken cancellationToken) =>
+            inner.UpdateFileWriteBackAsync(fileId, result, cancellationToken);
     }
 
     private sealed class TrackingCleanupStore(ILibraryFileStore inner) : ILibraryFileStore
     {
         public bool DeleteBookDirectoryCalled { get; private set; }
+
+        public string GetAbsolutePath(string relativePath) => inner.GetAbsolutePath(relativePath);
 
         public async Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
             Guid bookId,
@@ -606,6 +635,15 @@ public sealed class ImportServiceTests
             DeleteAsyncCalled = true;
             await inner.DeleteAsync(id, cancellationToken);
         }
+
+        public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
+            inner.ListFilesAsync(bookId, cancellationToken);
+
+        public Task UpdateFileWriteBackAsync(
+            Guid fileId,
+            MetadataWriteResult result,
+            CancellationToken cancellationToken) =>
+            inner.UpdateFileWriteBackAsync(fileId, result, cancellationToken);
     }
 
     private sealed class RacingDuplicateBookRepository(IBookRepository inner) : IBookRepository
@@ -649,6 +687,15 @@ public sealed class ImportServiceTests
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
+
+        public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
+            inner.ListFilesAsync(bookId, cancellationToken);
+
+        public Task UpdateFileWriteBackAsync(
+            Guid fileId,
+            MetadataWriteResult result,
+            CancellationToken cancellationToken) =>
+            inner.UpdateFileWriteBackAsync(fileId, result, cancellationToken);
     }
 
     private sealed class ThrowingRecordItemImportRepository(IImportRepository inner) : IImportRepository

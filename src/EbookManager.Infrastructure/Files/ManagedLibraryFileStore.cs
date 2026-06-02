@@ -6,6 +6,16 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
 {
     private readonly string libraryRoot = Canonicalize(libraryRootPath);
 
+    public string GetAbsolutePath(string relativePath)
+    {
+        if (string.IsNullOrWhiteSpace(relativePath))
+        {
+            throw new ArgumentException("The relative path must not be blank.", nameof(relativePath));
+        }
+
+        return EnsureContained(Path.Combine(libraryRoot, relativePath));
+    }
+
     public async Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
         Guid bookId,
         string sourcePath,

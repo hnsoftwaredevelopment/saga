@@ -181,6 +181,18 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
+    public void Managed_store_resolves_absolute_paths_safely_within_the_library_root()
+    {
+        var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "Library");
+        Directory.CreateDirectory(libraryRoot);
+        var store = new ManagedLibraryFileStore(libraryRoot);
+
+        var resolved = store.GetAbsolutePath("books/123/book.epub");
+
+        resolved.Should().Be(Path.GetFullPath(Path.Combine(libraryRoot, "books", "123", "book.epub")));
+    }
+
+    [Fact]
     public async Task Managed_store_observes_cancellation_before_copying()
     {
         var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "Library");
