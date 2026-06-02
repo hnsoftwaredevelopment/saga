@@ -331,6 +331,82 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public void Duplicate_key_normalizer_lowercases_ascii_only_and_preserves_non_ascii()
+    {
+        DuplicateKeyNormalizer.NormalizeSqliteText("  AbC ÄÖß  ").Should().Be("abc ÄÖß");
+        DuplicateKeyNormalizer.NormalizeSqliteText("  ÅBC  ").Should().Be("Åbc");
+        DuplicateKeyNormalizer.NormalizeSqliteText("Ä").Should().Be("Ä");
+        DuplicateKeyNormalizer.NormalizeSqliteText("ä").Should().Be("ä");
+        DuplicateKeyNormalizer.NormalizeSqliteText("Ä").Should().NotBe(DuplicateKeyNormalizer.NormalizeSqliteText("ä"));
+    }
+
+    [Fact]
+    public async Task Migration_backfilled_duplicate_key_matches_runtime_key_for_non_ascii_values()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = new LibraryDbContextFactory();
+        await using var context = factory.Create(library.DirectoryPath);
+        await context.Database.MigrateAsync("20260602065847_InitialLibrarySchema");
+
+        var bookId = Guid.NewGuid();
+        var firstAuthorId = Guid.NewGuid();
+        var secondAuthorId = Guid.NewGuid();
+        var title = "  ÅBC  ";
+        var firstAuthor = "ÉXAMPLE";
+        var secondAuthor = "ASCII";
+        var expectedKey = DuplicateKeyNormalizer.BuildDuplicateKey(title, [firstAuthor, secondAuthor]);
+        var connection = (SqliteConnection)context.Database.GetDbConnection();
+        await connection.OpenAsync();
+        await using (var command = connection.CreateCommand())
+        {
+            command.CommandText = """
+                INSERT INTO Books (Id, Title, NormalizedTitle, ReadingStatus, CreatedUtc, UpdatedUtc)
+                VALUES ($bookId, $title, $normalizedTitle, 'Unread', $now, $now);
+                INSERT INTO Authors (Id, Name, NormalizedName)
+                VALUES ($firstAuthorId, $firstAuthor, $firstNormalizedName),
+                       ($secondAuthorId, $secondAuthor, $secondNormalizedName);
+                INSERT INTO BookAuthors (BookId, AuthorId, "Order")
+                VALUES ($bookId, $firstAuthorId, 0), ($bookId, $secondAuthorId, 1);
+                """;
+            command.Parameters.AddWithValue("$bookId", bookId);
+            command.Parameters.AddWithValue("$title", title);
+            command.Parameters.AddWithValue("$normalizedTitle", DuplicateKeyNormalizer.NormalizeSqliteText(title));
+            command.Parameters.AddWithValue("$firstAuthorId", firstAuthorId);
+            command.Parameters.AddWithValue("$secondAuthorId", secondAuthorId);
+            command.Parameters.AddWithValue("$firstAuthor", firstAuthor);
+            command.Parameters.AddWithValue("$secondAuthor", secondAuthor);
+            command.Parameters.AddWithValue("$firstNormalizedName", DuplicateKeyNormalizer.NormalizeSqliteText(firstAuthor));
+            command.Parameters.AddWithValue("$secondNormalizedName", DuplicateKeyNormalizer.NormalizeSqliteText(secondAuthor));
+            command.Parameters.AddWithValue("$now", DateTimeOffset.UtcNow);
+            await command.ExecuteNonQueryAsync();
+        }
+
+        await context.Database.MigrateAsync();
+
+        var runtimeKey = await context.Books.AsNoTracking()
+            .Where(x => x.Id == bookId)
+            .Select(x => x.DuplicateKey)
+            .SingleAsync();
+
+        runtimeKey.Should().Be(expectedKey);
+    }
+
+    [Fact]
+    public async Task Duplicate_key_lookup_folds_ascii_case_but_keeps_non_ascii_case_stable()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var book = CreateBook("  ÅBC  ", ["ÉXAMPLE"]);
+
+        await repository.AddAsync(book, CreateFile(book.Id), default);
+
+        (await repository.HasNormalizedTitleAndAuthorAsync("  Åbc  ", ["Éxample"], default)).Should().BeTrue();
+        (await repository.HasNormalizedTitleAndAuthorAsync("  åbc  ", ["éxample"], default)).Should().BeFalse();
+    }
+
+    [Fact]
     public void Design_time_factory_uses_a_temporary_sqlite_database()
     {
         var factory = new DesignTimeLibraryDbContextFactory();

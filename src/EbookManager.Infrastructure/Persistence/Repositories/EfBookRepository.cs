@@ -1,4 +1,3 @@
-using System.Text;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Infrastructure.Persistence.Entities;
@@ -42,7 +41,7 @@ public sealed class EfBookRepository(
         IReadOnlyList<string> authors,
         CancellationToken cancellationToken)
     {
-        var duplicateKey = BuildDuplicateKey(title, authors);
+        var duplicateKey = DuplicateKeyNormalizer.BuildDuplicateKey(title, authors);
         await using var context = contextFactory.Create(libraryPath);
         return await context.Books
             .AsNoTracking()
@@ -223,7 +222,7 @@ public sealed class EfBookRepository(
         entity.Id = book.Id;
         entity.Title = book.Metadata.Title;
         entity.NormalizedTitle = Normalize(book.Metadata.Title);
-        entity.DuplicateKey = BuildDuplicateKey(book.Metadata.Title, book.Metadata.Authors);
+        entity.DuplicateKey = DuplicateKeyNormalizer.BuildDuplicateKey(book.Metadata.Title, book.Metadata.Authors);
         entity.Description = book.Metadata.Description;
         entity.Language = book.Metadata.Language;
         entity.Publisher = book.Metadata.Publisher;
@@ -278,20 +277,6 @@ public sealed class EfBookRepository(
             entity.UpdatedUtc);
 
     private static string Normalize(string value) => value.Trim().ToLowerInvariant();
-
-    private static string BuildDuplicateKey(string title, IReadOnlyList<string> authors)
-    {
-        var normalizedTitle = Normalize(title);
-        var normalizedAuthors = NormalizeMetadataNames(authors)
-            .Select(x => x.NormalizedName)
-            .OrderBy(x => x, StringComparer.Ordinal)
-            .ToArray();
-
-        return $"T1:{EncodeComponent(normalizedTitle)}|A{normalizedAuthors.Length}:{string.Join('|', normalizedAuthors.Select(EncodeComponent))}";
-    }
-
-    private static string EncodeComponent(string value) =>
-        $"{Encoding.UTF8.GetByteCount(value)}:{value}";
 
     private static IReadOnlyList<NormalizedMetadataName> NormalizeMetadataNames(
         IReadOnlyList<string>? values)
