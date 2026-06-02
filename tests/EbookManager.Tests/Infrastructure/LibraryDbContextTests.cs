@@ -384,6 +384,92 @@ public sealed class LibraryDbContextTests
         await insertDuplicate.Should().ThrowAsync<SqliteException>();
     }
 
+    [Fact]
+    public async Task Metadata_hardening_migration_rejects_malformed_legacy_hash_and_rolls_back()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = new LibraryDbContextFactory();
+        await using var context = factory.Create(library.DirectoryPath);
+        await context.Database.MigrateAsync("20260602065847_InitialLibrarySchema");
+        var malformedHash = "not-a-sha256";
+        await SeedLegacyBookFileAsync(context, malformedHash);
+
+        var migrate = () => context.Database.MigrateAsync();
+
+        var exception = await migrate.Should().ThrowAsync<SqliteException>();
+        exception.Which.Message.Should()
+            .Contain("REPAIR_REQUIRED_LEGACY_BOOKFILES_SHA256_MALFORMED_EXPECTED_64_HEX_CHARS");
+        await AssertFailedHardeningMigrationLeftLegacyHashRecoverableAsync(context, malformedHash);
+    }
+
+    [Fact]
+    public async Task Metadata_hardening_migration_rejects_case_insensitive_legacy_hash_collision_and_rolls_back()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = new LibraryDbContextFactory();
+        await using var context = factory.Create(library.DirectoryPath);
+        await context.Database.MigrateAsync("20260602065847_InitialLibrarySchema");
+        var lowercaseHash = Hash('a');
+        var uppercaseHash = Hash('A');
+        await SeedLegacyBookFileAsync(context, lowercaseHash);
+        await SeedLegacyBookFileAsync(context, uppercaseHash);
+
+        var migrate = () => context.Database.MigrateAsync();
+
+        var exception = await migrate.Should().ThrowAsync<SqliteException>();
+        exception.Which.Message.Should()
+            .Contain("REPAIR_REQUIRED_LEGACY_BOOKFILES_SHA256_CASE_INSENSITIVE_DUPLICATES");
+        await AssertFailedHardeningMigrationLeftLegacyHashRecoverableAsync(
+            context,
+            lowercaseHash,
+            uppercaseHash);
+    }
+
+    private static async Task SeedLegacyBookFileAsync(
+        LibraryDbContext context,
+        string sha256)
+    {
+        var connection = (SqliteConnection)context.Database.GetDbConnection();
+        await connection.OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            INSERT INTO Books (Id, Title, NormalizedTitle, ReadingStatus, CreatedUtc, UpdatedUtc)
+            VALUES ($bookId, $title, $normalizedTitle, 'Unread', $now, $now);
+            INSERT INTO BookFiles (Id, BookId, Format, RelativePath, Sha256, SizeBytes, WriteBackStatus)
+            VALUES ($fileId, $bookId, 'Epub', $relativePath, $sha256, 123, 'NotAttempted');
+            """;
+        var bookId = Guid.NewGuid();
+        command.Parameters.AddWithValue("$bookId", bookId);
+        command.Parameters.AddWithValue("$title", bookId.ToString());
+        command.Parameters.AddWithValue("$normalizedTitle", bookId.ToString());
+        command.Parameters.AddWithValue("$now", DateTimeOffset.UtcNow);
+        command.Parameters.AddWithValue("$fileId", Guid.NewGuid());
+        command.Parameters.AddWithValue("$relativePath", $"books/{bookId:N}/book.epub");
+        command.Parameters.AddWithValue("$sha256", sha256);
+        await command.ExecuteNonQueryAsync();
+    }
+
+    private static async Task AssertFailedHardeningMigrationLeftLegacyHashRecoverableAsync(
+        LibraryDbContext context,
+        params string[] expectedHashes)
+    {
+        var connection = (SqliteConnection)context.Database.GetDbConnection();
+        var migrations = await context.Database.GetAppliedMigrationsAsync();
+        migrations.Should().Equal("20260602065847_InitialLibrarySchema");
+        (await context.BookFiles.OrderBy(x => x.Sha256).Select(x => x.Sha256).ToListAsync())
+            .Should().Equal(expectedHashes.OrderBy(x => x, StringComparer.Ordinal));
+
+        await using var columnsCommand = connection.CreateCommand();
+        columnsCommand.CommandText = """SELECT name FROM pragma_table_info('BookTags') WHERE name = 'Order'""";
+        (await columnsCommand.ExecuteScalarAsync()).Should().BeNull();
+
+        await using var indexCommand = connection.CreateCommand();
+        indexCommand.CommandText = """SELECT sql FROM sqlite_master WHERE type = 'index' AND name = 'IX_BookFiles_Sha256'""";
+        var indexSql = (string?)await indexCommand.ExecuteScalarAsync();
+        indexSql.Should().NotBeNull();
+        indexSql.Should().NotContain("NOCASE");
+    }
+
     private static async Task<LibraryDbContextFactory> CreateMigratedFactoryAsync(string libraryPath)
     {
         var factory = new LibraryDbContextFactory();

@@ -30,6 +30,40 @@ namespace EbookManager.Infrastructure.Persistence.Migrations
 
             migrationBuilder.Sql(
                 """
+                CREATE TEMP TABLE "__BookFilesSha256MalformedMigrationGuard" (
+                    "IsValid" INTEGER NOT NULL
+                        CONSTRAINT "REPAIR_REQUIRED_LEGACY_BOOKFILES_SHA256_MALFORMED_EXPECTED_64_HEX_CHARS"
+                        CHECK ("IsValid" = 1)
+                );
+
+                INSERT INTO "__BookFilesSha256MalformedMigrationGuard" ("IsValid")
+                SELECT 0
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM "BookFiles"
+                    WHERE LENGTH("Sha256") <> 64
+                       OR "Sha256" GLOB '*[^0-9A-Fa-f]*'
+                );
+
+                DROP TABLE "__BookFilesSha256MalformedMigrationGuard";
+
+                CREATE TEMP TABLE "__BookFilesSha256DuplicateMigrationGuard" (
+                    "IsValid" INTEGER NOT NULL
+                        CONSTRAINT "REPAIR_REQUIRED_LEGACY_BOOKFILES_SHA256_CASE_INSENSITIVE_DUPLICATES"
+                        CHECK ("IsValid" = 1)
+                );
+
+                INSERT INTO "__BookFilesSha256DuplicateMigrationGuard" ("IsValid")
+                SELECT 0
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM "BookFiles"
+                    GROUP BY UPPER("Sha256")
+                    HAVING COUNT(*) > 1
+                );
+
+                DROP TABLE "__BookFilesSha256DuplicateMigrationGuard";
+
                 DROP INDEX "IX_BookFiles_Sha256";
 
                 UPDATE "BookFiles"
