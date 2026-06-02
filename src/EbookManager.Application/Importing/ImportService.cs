@@ -189,7 +189,10 @@ public sealed class ImportService(
                 if (shouldCleanup || (!bookPersisted && copied))
                 {
                     var cleanupIncomplete = await CleanupImportedBookAsync(bookId);
-                    if (cleanupIncomplete && result is not null && result.Outcome == ImportOutcome.Failed)
+                    if (
+                        cleanupIncomplete
+                        && result is not null
+                        && result.Outcome is ImportOutcome.Failed or ImportOutcome.PossibleDuplicate)
                     {
                         result = result with { Message = AppendCleanupIncomplete(result.Message) };
                     }
@@ -207,15 +210,30 @@ public sealed class ImportService(
         ImportItemResult result,
         CancellationToken cancellationToken)
     {
-        await importRepository.RecordItemAsync(
-            runId,
-            sequence,
-            sourceDisplayName,
-            result.Outcome,
-            result.Message,
-            result.BookId,
-            CancellationToken.None);
-        return result;
+        try
+        {
+            await importRepository.RecordItemAsync(
+                runId,
+                sequence,
+                sourceDisplayName,
+                result.Outcome,
+                result.Message,
+                result.BookId,
+                CancellationToken.None);
+            return result;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            var cleanupIncomplete = result.BookId is { } bookId && await CleanupImportedBookAsync(bookId);
+            var message = cleanupIncomplete
+                ? $"{SafeImportMessages.CannotPersistResult}; {SafeImportMessages.CleanupIncomplete}"
+                : SafeImportMessages.CannotPersistResult;
+            throw new ImportPersistenceException(message, exception);
+        }
     }
 
     private static ImportItemResult CreateFailedResult(
@@ -298,6 +316,7 @@ public sealed class ImportService(
         public const string CleanupIncomplete = "cleanup incomplete";
         public const string ExactDuplicate = "exact duplicate skipped";
         public const string ImportFailed = "import failed";
+        public const string CannotPersistResult = "cannot persist result";
         public const string InvalidSourcePath = "invalid source path";
         public const string MetadataReadFailed = "metadata read failed";
         public const string MetadataWarning = "metadata warning";

@@ -43,16 +43,22 @@ namespace EbookManager.Infrastructure.Persistence.Migrations
                 """
                 UPDATE "Books"
                 SET "DuplicateKey" = (
-                    SELECT LOWER(TRIM("Books"."Title")) || '|' || COALESCE((
-                        SELECT GROUP_CONCAT("NormalizedName", '|')
-                        FROM (
-                            SELECT DISTINCT "Authors"."NormalizedName" AS "NormalizedName"
-                            FROM "BookAuthors"
-                            INNER JOIN "Authors" ON "Authors"."Id" = "BookAuthors"."AuthorId"
-                            WHERE "BookAuthors"."BookId" = "Books"."Id"
-                            ORDER BY "Authors"."NormalizedName"
+                    SELECT
+                        'T1:' || length(CAST(LOWER(TRIM("Books"."Title")) AS BLOB)) || ':' || LOWER(TRIM("Books"."Title"))
+                        || '|A' || COUNT(*) || ':' || COALESCE(
+                            GROUP_CONCAT(
+                                length(CAST("NormalizedName" AS BLOB)) || ':' || "NormalizedName",
+                                '|'
+                            ),
+                            ''
                         )
-                    ), '')
+                    FROM (
+                        SELECT DISTINCT LOWER(TRIM("Authors"."NormalizedName")) AS "NormalizedName"
+                        FROM "BookAuthors"
+                        INNER JOIN "Authors" ON "Authors"."Id" = "BookAuthors"."AuthorId"
+                        WHERE "BookAuthors"."BookId" = "Books"."Id"
+                        ORDER BY "NormalizedName"
+                    )
                 );
                 """);
 

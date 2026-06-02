@@ -268,6 +268,100 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Import_async_appends_cleanup_incomplete_to_possible_duplicate_race_outcomes_when_cleanup_fails()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var first = fixture.WriteBytesFile(@"incoming\shared\First.pdf", Encoding.UTF8.GetBytes("one"));
+        var second = fixture.WriteBytesFile(@"incoming\shared\Second.pdf", Encoding.UTF8.GetBytes("two"));
+        var racingRepository = new RacingDuplicateBookRepository(fixture.BookRepository);
+        var trackingRepository = new TrackingDeleteBookRepository(racingRepository);
+        var cleanupStore = new TrackingCleanupStore(fixture.FileStore);
+        var service = new ImportService(
+            trackingRepository,
+            fixture.ImportRepository,
+            cleanupStore,
+            fixture.FileHasher,
+            new DirectoryTitleMetadataAdapterResolver(),
+            new DuplicateKeyRaceClassifier());
+
+        var results = await Task.WhenAll(
+            service.ImportAsync([first], default),
+            service.ImportAsync([second], default));
+
+        var possibleDuplicate = results.SelectMany(result => result.Items)
+            .Single(item => item.Outcome == ImportOutcome.PossibleDuplicate);
+        possibleDuplicate.Message.Should().Be("possible duplicate; cleanup incomplete");
+        trackingRepository.DeleteAsyncCalled.Should().BeTrue();
+        cleanupStore.DeleteBookDirectoryCalled.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Import_async_compensates_when_recording_the_result_fails()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var source = fixture.WriteBytesFile(@"incoming\Persisted - Author.pdf", Encoding.UTF8.GetBytes("persisted"));
+        var trackingRepository = new TrackingDeleteBookRepository(fixture.BookRepository);
+        var recordFailureRepository = new ThrowingRecordItemImportRepository(fixture.ImportRepository);
+        var service = new ImportService(
+            trackingRepository,
+            recordFailureRepository,
+            fixture.FileStore,
+            fixture.FileHasher,
+            fixture.MetadataAdapterResolver,
+            fixture.ExceptionClassifier);
+
+        var act = () => service.ImportAsync([source], default);
+
+        var exception = await act.Should().ThrowAsync<ImportPersistenceException>();
+        exception.Which.Message.Should().Be("cannot persist result");
+        exception.Which.Message.Should().NotContain(source);
+        trackingRepository.DeleteAsyncCalled.Should().BeTrue();
+
+        (await fixture.BookRepository.ListAsync(default)).Should().BeEmpty();
+        await using var context = fixture.ContextFactory.Create(fixture.LibraryPath);
+        (await context.BookFiles.AnyAsync()).Should().BeFalse();
+        if (Directory.Exists(Path.Combine(fixture.LibraryPath, "books")))
+        {
+            Directory.EnumerateFileSystemEntries(Path.Combine(fixture.LibraryPath, "books")).Should().BeEmpty();
+        }
+
+        var run = await fixture.LoadImportRunAsync(recordFailureRepository.LastRunId);
+        run.Should().NotBeNull();
+        run!.CompletedUtc.Should().NotBeNull();
+        run.Items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Import_async_reports_cleanup_incomplete_when_recording_the_result_fails_and_compensation_is_partial()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var source = fixture.WriteBytesFile(@"incoming\Partial - Author.pdf", Encoding.UTF8.GetBytes("partial"));
+        var trackingRepository = new TrackingDeleteBookRepository(fixture.BookRepository);
+        var cleanupStore = new TrackingCleanupStore(fixture.FileStore);
+        var recordFailureRepository = new ThrowingRecordItemImportRepository(fixture.ImportRepository);
+        var service = new ImportService(
+            trackingRepository,
+            recordFailureRepository,
+            cleanupStore,
+            fixture.FileHasher,
+            fixture.MetadataAdapterResolver,
+            fixture.ExceptionClassifier);
+
+        var act = () => service.ImportAsync([source], default);
+
+        var exception = await act.Should().ThrowAsync<ImportPersistenceException>();
+        exception.Which.Message.Should().Be("cannot persist result; cleanup incomplete");
+        exception.Which.Message.Should().NotContain(source);
+        trackingRepository.DeleteAsyncCalled.Should().BeTrue();
+        cleanupStore.DeleteBookDirectoryCalled.Should().BeTrue();
+
+        var run = await fixture.LoadImportRunAsync(recordFailureRepository.LastRunId);
+        run.Should().NotBeNull();
+        run!.CompletedUtc.Should().NotBeNull();
+        run.Items.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Import_async_races_can_fall_back_to_possible_duplicate_after_unique_key_violation()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();
@@ -486,6 +580,34 @@ public sealed class ImportServiceTests
         }
     }
 
+    private sealed class TrackingDeleteBookRepository(IBookRepository inner) : IBookRepository
+    {
+        public bool DeleteAsyncCalled { get; private set; }
+
+        public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => inner.ListAsync(cancellationToken);
+
+        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => inner.GetAsync(id, cancellationToken);
+
+        public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) => inner.HasHashAsync(sha256, cancellationToken);
+
+        public Task<bool> HasNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            inner.HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+        public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>
+            inner.AddAsync(book, file, cancellationToken);
+
+        public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
+
+        public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+        {
+            DeleteAsyncCalled = true;
+            await inner.DeleteAsync(id, cancellationToken);
+        }
+    }
+
     private sealed class RacingDuplicateBookRepository(IBookRepository inner) : IBookRepository
     {
         private readonly Barrier checkBarrier = new(2);
@@ -527,6 +649,37 @@ public sealed class ImportServiceTests
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
+    }
+
+    private sealed class ThrowingRecordItemImportRepository(IImportRepository inner) : IImportRepository
+    {
+        public Guid LastRunId { get; private set; }
+
+        public async Task<Guid> StartRunAsync(DateTimeOffset startedUtc, CancellationToken cancellationToken)
+        {
+            var runId = await inner.StartRunAsync(startedUtc, cancellationToken);
+            LastRunId = runId;
+            return runId;
+        }
+
+        public Task RecordItemAsync(
+            Guid runId,
+            int sequence,
+            string sourceDisplayName,
+            ImportOutcome outcome,
+            string message,
+            Guid? bookId,
+            CancellationToken cancellationToken)
+        {
+            LastRunId = runId;
+            throw new InvalidOperationException("record item failed");
+        }
+
+        public Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken) =>
+            inner.CompleteRunAsync(runId, completedUtc, cancellationToken);
+
+        public Task<ImportRunResult?> GetAsync(Guid runId, CancellationToken cancellationToken) =>
+            inner.GetAsync(runId, cancellationToken);
     }
 
     private sealed class DuplicateKeyRaceException : Exception;

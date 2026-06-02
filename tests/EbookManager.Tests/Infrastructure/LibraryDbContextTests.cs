@@ -311,6 +311,26 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Books_with_pipe_characters_in_titles_and_authors_remain_distinct_under_duplicate_key_encoding()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var firstBook = CreateBook("Alpha|Beta", ["Gamma"], coverBytes: null);
+        var secondBook = CreateBook("Alpha", ["Beta|Gamma"], coverBytes: null);
+
+        await repository.AddAsync(firstBook, CreateFile(firstBook.Id, Hash('A')), default);
+
+        var addSecond = () => repository.AddAsync(secondBook, CreateFile(secondBook.Id, Hash('B')), default);
+
+        await addSecond.Should().NotThrowAsync();
+        (await repository.ListAsync(default)).Should().HaveCount(2);
+        (await repository.HasNormalizedTitleAndAuthorAsync(" Alpha|Beta ", [" Gamma "], default)).Should().BeTrue();
+        (await repository.HasNormalizedTitleAndAuthorAsync(" Alpha ", [" Beta|Gamma "], default)).Should().BeTrue();
+    }
+
+    [Fact]
     public void Design_time_factory_uses_a_temporary_sqlite_database()
     {
         var factory = new DesignTimeLibraryDbContextFactory();

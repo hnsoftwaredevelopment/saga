@@ -1,3 +1,4 @@
+using System.Text;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Infrastructure.Persistence.Entities;
@@ -280,13 +281,17 @@ public sealed class EfBookRepository(
 
     private static string BuildDuplicateKey(string title, IReadOnlyList<string> authors)
     {
+        var normalizedTitle = Normalize(title);
         var normalizedAuthors = NormalizeMetadataNames(authors)
             .Select(x => x.NormalizedName)
             .OrderBy(x => x, StringComparer.Ordinal)
             .ToArray();
 
-        return $"{Normalize(title)}|{string.Join('|', normalizedAuthors)}";
+        return $"T1:{EncodeComponent(normalizedTitle)}|A{normalizedAuthors.Length}:{string.Join('|', normalizedAuthors.Select(EncodeComponent))}";
     }
+
+    private static string EncodeComponent(string value) =>
+        $"{Encoding.UTF8.GetByteCount(value)}:{value}";
 
     private static IReadOnlyList<NormalizedMetadataName> NormalizeMetadataNames(
         IReadOnlyList<string>? values)
