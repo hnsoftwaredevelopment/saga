@@ -2,11 +2,22 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build a native Windows-testable .NET MAUI vertical slice that creates portable ebook libraries, imports and scans managed ebook files, stores metadata in SQLite, and exposes the approved three-view library workspace with editable details.
+**Goal:** Build a native Windows WPF vertical slice that creates portable ebook libraries, imports and scans managed ebook files, stores metadata in SQLite, and exposes the approved three-view library workspace with editable details.
 
-**Architecture:** Keep domain rules and use cases independent from MAUI and EF Core. Infrastructure owns SQLite, filesystem, hashing, and format adapters. The MAUI app composes services, hosts Windows-specific picker implementations behind interfaces, and uses Syncfusion `SfDataGrid` only in the detailed view.
+**Architecture:** Keep domain rules and use cases independent from WPF and EF Core. Infrastructure owns SQLite, filesystem, hashing, and format adapters. The WPF app composes services, hosts Windows dialog implementations behind interfaces, and uses Syncfusion `SfDataGrid` only in the detailed view.
 
-**Tech Stack:** .NET 10, .NET MAUI XAML, C#, EF Core SQLite `10.0.8`, CommunityToolkit.Mvvm `8.4.2`, Syncfusion.Maui.DataGrid `33.2.8`, xUnit `2.9.3`, FluentAssertions `8.8.0`
+**Tech Stack:** .NET 10, WPF XAML, C#, EF Core SQLite `10.0.8`, CommunityToolkit.Mvvm `8.4.2`, Syncfusion.SfGrid.WPF `33.2.7`, xUnit `2.9.3`, FluentAssertions `8.8.0`
+
+## Windows WPF Superseding Decision
+
+On June 2, 2026, the mobile direction was dropped because a mobile client cannot directly access a library that exists only on the local Windows filesystem without adding a synchronization service. WPF replaces MAUI as the desktop shell. Tasks 1 through 5 produced reusable core code and remain valid. Before Task 6, execute `docs/superpowers/plans/2026-06-02-ebook-manager-wpf-shell-migration.md`. For Tasks 8 through 13, interpret MAUI-specific shell references as WPF equivalents:
+
+- Use WPF `OpenFileDialog` and folder-picker adapters.
+- Compose services during WPF application startup.
+- Use WPF resource dictionaries for themes and localization.
+- Build the approved workspace as WPF views and `MainWindow`.
+- Build and run with `dotnet build src/EbookManager.App/EbookManager.App.csproj` and `dotnet run --project src/EbookManager.App/EbookManager.App.csproj`.
+- Use `Syncfusion.SfGrid.WPF`, not `Syncfusion.Maui.DataGrid`.
 
 ---
 

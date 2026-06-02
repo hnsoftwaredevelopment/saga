@@ -4,7 +4,9 @@
 
 Ebook Manager is a local-first ebook library application inspired by the useful core workflows of Calibre without copying its code or reproducing its full feature set. Calibre is used only as a functional reference for behavior, supported formats, metadata edge cases, and future e-reader integration patterns.
 
-The application starts as a native Windows desktop app and must retain a practical path to Android and iOS. It must not require a web server. The desktop MVP is intentionally small but functionally testable with real ebook files.
+The application is a native Windows desktop app. It must not require a web server. The desktop MVP is intentionally small but functionally testable with real ebook files.
+
+On June 2, 2026, the mobile client direction was deliberately dropped. A mobile app cannot directly access a library that exists only on the user's local Windows filesystem without adding a synchronization service or shared-storage architecture. That is outside the product goal. The application therefore targets Windows desktop with WPF and may use Windows-specific capabilities where they improve the experience.
 
 ## 2. Product Scope
 
@@ -81,13 +83,13 @@ DRM-protected or unsupported files are not decrypted. The import result reports 
 
 ## 4. Technical Architecture
 
-The application is a native `.NET MAUI` solution using C# and XAML. It uses shared application and domain code so that future Android and iOS clients can reuse the core implementation. The initial UI targets Windows.
+The application is a native `.NET 10` WPF solution using C# and XAML. Domain, application, infrastructure, and presentation logic remain separated from the WPF shell so they can be tested independently.
 
-Syncfusion controls are used where they provide concrete value. In particular, `Syncfusion.Maui.DataGrid.SfDataGrid` is used for the detailed grid view. The project uses `CommunityToolkit.Mvvm` for observable viewmodels and asynchronous commands.
+Syncfusion controls are used where they provide concrete value. In particular, `Syncfusion.SfGrid.WPF` provides `SfDataGrid` for the detailed grid view. The project uses `CommunityToolkit.Mvvm` for observable viewmodels and asynchronous commands.
 
 The solution contains:
 
-- `EbookManager.App`: MAUI UI, XAML pages, viewmodels, dependency injection, localization resources, and themes.
+- `EbookManager.App`: WPF UI, XAML windows and views, dependency injection, localization resources, themes, and Windows dialog adapters.
 - `EbookManager.Domain`: ebook entities, metadata value objects, enums, result types, and service interfaces. It has no UI or database dependency.
 - `EbookManager.Application`: use cases for library management, import, scan, search, metadata editing, undo, and delete.
 - `EbookManager.Infrastructure`: EF Core SQLite persistence, filesystem operations, hashing, and metadata adapter implementations.
@@ -299,7 +301,7 @@ Automated tests focus on business behavior and real persistence boundaries.
 
 ### 13.3 Manual Windows Checks
 
-- Run the native Windows MAUI app with real ebooks.
+- Run the native Windows WPF app with real ebooks.
 - Validate the three library views.
 - Confirm language and theme switching.
 - Confirm file picker import, scan feedback, details editing, and deletion.
@@ -312,4 +314,3 @@ Small representative ebook fixtures are stored only where their licenses permit 
 The first implementation plan must cover Milestone 1 only. Milestone 2 receives a follow-up plan after the vertical slice has been executed and tested.
 
 The application may define extension interfaces for later e-reader support, custom fields, and additional formats, but it must not implement those deferred features during Milestone 1.
-
