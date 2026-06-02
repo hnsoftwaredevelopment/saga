@@ -1,16 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
 namespace EbookManager.App;
 
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
-	public App()
-	{
-		InitializeComponent();
-	}
-
-	protected override Window CreateWindow(IActivationState? activationState)
-	{
-		return new Window(new AppShell());
-	}
+    public App()
+    {
+        InitializeComponent();
+    }
 }

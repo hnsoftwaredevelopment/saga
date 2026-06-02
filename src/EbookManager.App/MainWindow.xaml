@@ -1,0 +1,26 @@
+<Window x:Class="EbookManager.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Ebook Manager"
+        Width="960"
+        Height="600"
+        MinWidth="720"
+        MinHeight="480"
+        WindowStartupLocation="CenterScreen">
+  <Grid Background="#FFF8FAFC">
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MaxWidth="560">
+      <TextBlock Text="Ebook Manager"
+                 FontSize="34"
+                 FontWeight="SemiBold"
+                 HorizontalAlignment="Center"
+                 Margin="0,0,0,12" />
+      <TextBlock Text="The native Windows shell is ready."
+                 TextAlignment="Center"
+                 FontSize="16"
+                 Foreground="#FF475569"
+                 TextWrapping="Wrap" />
+    </StackPanel>
+  </Grid>
+</Window>

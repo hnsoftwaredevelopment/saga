@@ -9,10 +9,8 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.8" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="Syncfusion.Maui.DataGrid" Version="33.2.8" />
+    <PackageVersion Include="Syncfusion.SfGrid.WPF" Version="33.2.7" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
