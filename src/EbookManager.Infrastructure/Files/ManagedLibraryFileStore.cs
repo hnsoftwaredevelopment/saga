@@ -14,7 +14,16 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
     {
         cancellationToken.ThrowIfCancellationRequested();
 
+        var booksDirectory = EnsureContained(Path.Combine(libraryRoot, "books"));
+        Directory.CreateDirectory(booksDirectory);
+
         var bookDirectory = GetBookDirectory(bookId);
+        var stagingDirectory = EnsureContained(Path.Combine(
+            booksDirectory,
+            $".{bookId:N}.{Guid.NewGuid():N}.staging"));
+        var backupDirectory = EnsureContained(Path.Combine(
+            booksDirectory,
+            $".{bookId:N}.{Guid.NewGuid():N}.backup"));
         var managedSourceName = Path.GetFileName(sourcePath);
         if (string.IsNullOrWhiteSpace(managedSourceName))
         {
@@ -31,19 +40,18 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
                 Options = FileOptions.Asynchronous | FileOptions.SequentialScan
             });
 
-        Directory.CreateDirectory(bookDirectory);
-
+        Directory.CreateDirectory(stagingDirectory);
         var absoluteBookPath = EnsureContained(Path.Combine(bookDirectory, managedSourceName));
-        var temporaryBookPath = $"{absoluteBookPath}.{Guid.NewGuid():N}.tmp";
+        var stagedBookPath = EnsureContained(Path.Combine(stagingDirectory, managedSourceName));
 
         try
         {
             await using (var destination = new FileStream(
-                temporaryBookPath,
+                stagedBookPath,
                 new FileStreamOptions
                 {
                     Access = FileAccess.Write,
-                    Mode = FileMode.CreateNew,
+                    Mode = FileMode.Create,
                     Share = FileShare.None,
                     Options = FileOptions.Asynchronous | FileOptions.SequentialScan
                 }))
@@ -51,28 +59,55 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
                 await source.CopyToAsync(destination, cancellationToken);
             }
 
+            string? stagedCoverPath = null;
+            if (coverBytes is { Length: > 0 })
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                stagedCoverPath = EnsureContained(Path.Combine(stagingDirectory, "cover.jpg"));
+                await File.WriteAllBytesAsync(stagedCoverPath, coverBytes, cancellationToken);
+            }
+
             cancellationToken.ThrowIfCancellationRequested();
-            File.Move(temporaryBookPath, absoluteBookPath, overwrite: true);
+            var targetExisted = Directory.Exists(bookDirectory);
+            var backupCreated = false;
+            if (targetExisted)
+            {
+                Directory.Move(bookDirectory, backupDirectory);
+                backupCreated = true;
+            }
+
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                Directory.Move(stagingDirectory, bookDirectory);
+            }
+            catch
+            {
+                if (backupCreated && !Directory.Exists(bookDirectory) && Directory.Exists(backupDirectory))
+                {
+                    Directory.Move(backupDirectory, bookDirectory);
+                    backupCreated = false;
+                }
+
+                throw;
+            }
+
+            if (backupCreated && Directory.Exists(backupDirectory))
+            {
+                TryDeleteDirectory(backupDirectory);
+            }
+
+            return (
+                ToRelativePath(absoluteBookPath),
+                stagedCoverPath is null ? null : ToRelativePath(Path.Combine(bookDirectory, "cover.jpg")));
         }
         finally
         {
-            if (File.Exists(temporaryBookPath))
+            if (Directory.Exists(stagingDirectory))
             {
-                File.Delete(temporaryBookPath);
+                TryDeleteDirectory(stagingDirectory);
             }
         }
-
-        string? relativeCoverPath = null;
-        if (coverBytes is { Length: > 0 })
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var absoluteCoverPath = EnsureContained(Path.Combine(bookDirectory, "cover.jpg"));
-            await File.WriteAllBytesAsync(absoluteCoverPath, coverBytes, cancellationToken);
-            relativeCoverPath = ToRelativePath(absoluteCoverPath);
-        }
-
-        return (ToRelativePath(absoluteBookPath), relativeCoverPath);
     }
 
     public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken)
@@ -111,4 +146,15 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
 
     private string ToRelativePath(string absolutePath) =>
         Path.GetRelativePath(libraryRoot, absolutePath).Replace(Path.DirectorySeparatorChar, '/');
+
+    private static void TryDeleteDirectory(string path)
+    {
+        try
+        {
+            Directory.Delete(path, recursive: true);
+        }
+        catch
+        {
+        }
+    }
 }

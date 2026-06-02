@@ -1,6 +1,6 @@
 using System.IO.Compression;
-using System.Xml.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
@@ -37,16 +37,14 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
             var containerDocument = LoadXmlDocument(archive, "META-INF/container.xml")
                 ?? throw new InvalidDataException("Missing EPUB container.");
 
-            var rootfilePath = GetRootfilePath(containerDocument)
-                ?? throw new InvalidDataException("Missing EPUB rootfile.");
-
-            var opfDocument = LoadXmlDocument(archive, NormalizeZipPath(rootfilePath))
+            var rootfilePath = GetSingleRootfilePath(containerDocument);
+            var opfDocument = LoadXmlDocument(archive, rootfilePath)
                 ?? throw new InvalidDataException("Missing EPUB package.");
 
             var package = opfDocument.Root ?? throw new InvalidDataException("Missing EPUB package root.");
-            var metadataElement = FindChild(package, "metadata")
+            var metadataElement = FindSingleChild(package, "metadata")
                 ?? throw new InvalidDataException("Missing EPUB metadata.");
-            var manifestElement = FindChild(package, "manifest");
+            var manifestElement = FindSingleChild(package, "manifest");
 
             var title = FirstElementValue(metadataElement, "title") ?? fallbackResult.Metadata.Title;
             var authors = FirstElementValues(metadataElement, "creator").ToArray();
@@ -98,9 +96,9 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
             "EPUB write-back is not supported."));
     }
 
-    private static XDocument? LoadXmlDocument(ZipArchive archive, string entryName)
+    private static XDocument? LoadXmlDocument(ZipArchive archive, string entryPath)
     {
-        var entry = archive.GetEntry(NormalizeZipPath(entryName));
+        var entry = FindUniqueEntry(archive, entryPath);
         if (entry is null)
         {
             return null;
@@ -110,15 +108,42 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
         return XDocument.Load(stream, LoadOptions.None);
     }
 
-    private static string? GetRootfilePath(XDocument document) =>
-        document
+    private static string GetSingleRootfilePath(XDocument containerDocument)
+    {
+        var rootfiles = containerDocument
             .Descendants()
-            .FirstOrDefault(element => element.Name.LocalName == "rootfile")
-            ?.Attribute("full-path")
-            ?.Value;
+            .Where(element => element.Name.LocalName == "rootfile")
+            .ToArray();
 
-    private static XElement? FindChild(XElement element, string localName) =>
-        element.Elements().FirstOrDefault(child => child.Name.LocalName == localName);
+        if (rootfiles.Length != 1)
+        {
+            throw new InvalidDataException("EPUB container must contain exactly one rootfile.");
+        }
+
+        var rootfilePath = rootfiles[0].Attribute("full-path")?.Value;
+        if (string.IsNullOrWhiteSpace(rootfilePath))
+        {
+            throw new InvalidDataException("EPUB rootfile is missing its full-path attribute.");
+        }
+
+        return CanonicalizeArchivePath(rootfilePath);
+    }
+
+    private static XElement? FindSingleChild(XElement element, string localName)
+    {
+        var children = element.Elements().Where(child => child.Name.LocalName == localName).ToArray();
+        if (children.Length == 0)
+        {
+            return null;
+        }
+
+        if (children.Length > 1)
+        {
+            throw new InvalidDataException($"EPUB metadata contains multiple '{localName}' elements.");
+        }
+
+        return children[0];
+    }
 
     private static string? FirstElementValue(XElement element, string localName) =>
         element
@@ -144,8 +169,8 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
             var scheme = identifier
                 .Attributes()
                 .FirstOrDefault(attribute =>
-                    attribute.Name.LocalName.Equals("scheme", StringComparison.OrdinalIgnoreCase)
-                    && attribute.Value.Equals("ISBN", StringComparison.OrdinalIgnoreCase))
+                    attribute.Name.LocalName.Equals("scheme", StringComparison.OrdinalIgnoreCase) &&
+                    attribute.Value.Equals("ISBN", StringComparison.OrdinalIgnoreCase))
                 ?.Value;
 
             if (!string.IsNullOrWhiteSpace(scheme))
@@ -176,50 +201,88 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
             return null;
         }
 
-        var coverId = metadataElement
+        var coverMeta = metadataElement
             .Elements()
-            .FirstOrDefault(child =>
+            .Where(child =>
                 child.Name.LocalName == "meta" &&
                 string.Equals(child.Attribute("name")?.Value, "cover", StringComparison.OrdinalIgnoreCase))
-            ?.Attribute("content")
-            ?.Value;
+            .ToArray();
 
-        if (!string.IsNullOrWhiteSpace(coverId))
+        if (coverMeta.Length > 1)
         {
-            var coverItem = manifestElement
-                .Elements()
-                .FirstOrDefault(child =>
-                    child.Name.LocalName == "item" &&
-                    string.Equals(child.Attribute("id")?.Value, coverId, StringComparison.OrdinalIgnoreCase));
-
-            var coverBytes = ReadEntryBytes(
-                archive,
-                ResolveZipPath(rootfilePath, coverItem?.Attribute("href")?.Value));
-            if (coverBytes is not null)
-            {
-                return coverBytes;
-            }
+            throw new InvalidDataException("EPUB metadata contains multiple cover references.");
         }
 
-        var coverImageItem = manifestElement
-            .Elements()
-            .FirstOrDefault(child =>
-                child.Name.LocalName == "item" &&
-                HasToken(child.Attribute("properties")?.Value, "cover-image"));
+        if (coverMeta.Length == 1)
+        {
+            var coverId = coverMeta[0].Attribute("content")?.Value;
+            if (string.IsNullOrWhiteSpace(coverId))
+            {
+                throw new InvalidDataException("EPUB cover reference is missing its content attribute.");
+            }
 
-        return ReadEntryBytes(
-            archive,
-            ResolveZipPath(rootfilePath, coverImageItem?.Attribute("href")?.Value));
+            var coverItem = FindSingleManifestItemById(manifestElement, coverId);
+            var href = coverItem.Attribute("href")?.Value;
+            if (string.IsNullOrWhiteSpace(href))
+            {
+                throw new InvalidDataException("EPUB cover item is missing its href attribute.");
+            }
+
+            return ReadUniqueEntryBytes(archive, ResolveArchivePath(rootfilePath, href));
+        }
+
+        var coverImageItems = manifestElement
+            .Elements()
+            .Where(child =>
+                child.Name.LocalName == "item" &&
+                HasToken(child.Attribute("properties")?.Value, "cover-image"))
+            .ToArray();
+
+        if (coverImageItems.Length > 1)
+        {
+            throw new InvalidDataException("EPUB manifest contains multiple cover-image items.");
+        }
+
+        return coverImageItems.Length == 1
+            ? ReadUniqueEntryBytes(
+                archive,
+                ResolveArchivePath(
+                    rootfilePath,
+                    coverImageItems[0].Attribute("href")?.Value
+                    ?? throw new InvalidDataException("EPUB cover-image item is missing its href attribute.")))
+            : null;
     }
 
-    private static byte[]? ReadEntryBytes(ZipArchive archive, string? entryName)
+    private static XElement FindSingleManifestItemById(XElement manifestElement, string id)
     {
-        if (string.IsNullOrWhiteSpace(entryName))
+        var matches = manifestElement
+            .Elements()
+            .Where(child =>
+                child.Name.LocalName == "item" &&
+                string.Equals(child.Attribute("id")?.Value, id, StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+
+        if (matches.Length == 0)
+        {
+            throw new InvalidDataException($"EPUB manifest does not contain an item with id '{id}'.");
+        }
+
+        if (matches.Length > 1)
+        {
+            throw new InvalidDataException($"EPUB manifest contains multiple items with id '{id}'.");
+        }
+
+        return matches[0];
+    }
+
+    private static byte[]? ReadUniqueEntryBytes(ZipArchive archive, string? entryPath)
+    {
+        if (string.IsNullOrWhiteSpace(entryPath))
         {
             return null;
         }
 
-        var entry = archive.GetEntry(NormalizeZipPath(entryName));
+        var entry = FindUniqueEntry(archive, entryPath);
         if (entry is null)
         {
             return null;
@@ -231,19 +294,111 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
         return memoryStream.ToArray();
     }
 
-    private static string ResolveZipPath(string rootfilePath, string? relativePath)
+    private static ZipArchiveEntry? FindUniqueEntry(ZipArchive archive, string entryPath)
+    {
+        var canonicalEntryPath = CanonicalizeArchivePath(entryPath);
+        ZipArchiveEntry? match = null;
+
+        foreach (var entry in archive.Entries)
+        {
+            var canonicalCandidate = CanonicalizeArchivePath(entry.FullName);
+            if (!string.Equals(canonicalCandidate, canonicalEntryPath, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (match is not null)
+            {
+                throw new InvalidDataException($"EPUB archive contains multiple entries for '{canonicalEntryPath}'.");
+            }
+
+            match = entry;
+        }
+
+        return match;
+    }
+
+    private static string ResolveArchivePath(string rootfilePath, string? relativePath)
     {
         if (string.IsNullOrWhiteSpace(relativePath))
         {
             return string.Empty;
         }
 
-        var rootfileDirectory = Path.GetDirectoryName(NormalizeZipPath(rootfilePath)) ?? string.Empty;
-        return NormalizeZipPath(Path.Combine(rootfileDirectory, relativePath));
+        return CombineArchivePaths(rootfilePath, relativePath);
     }
 
-    private static string NormalizeZipPath(string path) =>
-        path.Replace('\\', '/').TrimStart("./".ToCharArray());
+    private static string CombineArchivePaths(string basePath, string relativePath)
+    {
+        var baseSegments = CanonicalizeArchivePath(basePath)
+            .Split('/', StringSplitOptions.RemoveEmptyEntries)
+            .ToList();
+
+        if (baseSegments.Count == 0)
+        {
+            throw new InvalidDataException("EPUB base path is invalid.");
+        }
+
+        baseSegments.RemoveAt(baseSegments.Count - 1);
+
+        var relativeSegments = CanonicalizeRelativeArchivePath(relativePath)
+            .Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+        baseSegments.AddRange(relativeSegments);
+        return string.Join('/', baseSegments);
+    }
+
+    private static string CanonicalizeRelativeArchivePath(string path)
+    {
+        var canonicalPath = CanonicalizeArchivePath(path);
+        if (path.StartsWith('/') ||
+            path.StartsWith('\\') ||
+            path.Contains(':'))
+        {
+            throw new InvalidDataException($"Unsafe EPUB archive path '{path}'.");
+        }
+
+        return canonicalPath;
+    }
+
+    private static string CanonicalizeArchivePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            throw new InvalidDataException("EPUB archive path is empty.");
+        }
+
+        var normalized = path.Replace('\\', '/');
+        if (normalized.StartsWith('/') ||
+            normalized.StartsWith("//", StringComparison.Ordinal) ||
+            normalized.Contains(':'))
+        {
+            throw new InvalidDataException($"Unsafe EPUB archive path '{path}'.");
+        }
+
+        var segments = new List<string>();
+        foreach (var segment in normalized.Split('/', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (segment == ".")
+            {
+                continue;
+            }
+
+            if (segment == "..")
+            {
+                throw new InvalidDataException($"Unsafe EPUB archive path '{path}'.");
+            }
+
+            segments.Add(segment);
+        }
+
+        if (segments.Count == 0)
+        {
+            throw new InvalidDataException($"Unsafe EPUB archive path '{path}'.");
+        }
+
+        return string.Join('/', segments);
+    }
 
     private static bool HasToken(string? values, string token) =>
         values?

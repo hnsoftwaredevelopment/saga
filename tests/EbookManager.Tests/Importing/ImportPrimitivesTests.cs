@@ -1,7 +1,11 @@
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Text;
 using EbookManager.Application.Importing;
+using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
 using EbookManager.Infrastructure.Files;
@@ -41,6 +45,61 @@ public sealed class ImportPrimitivesTests : IDisposable
         var act = () => scanner.Scan(temporaryDirectory.DirectoryPath, recursive: true, cancellationToken);
 
         act.Should().Throw<OperationCanceledException>();
+    }
+
+    [Fact]
+    public void Scanner_skips_inaccessible_directories_without_aborting_the_batch()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        var root = temporaryDirectory.DirectoryPath;
+        var accessible = WriteTextFile(Path.Combine(root, "accessible.epub"));
+        var blockedDirectory = Directory.CreateDirectory(Path.Combine(root, "blocked"));
+        WriteTextFile(Path.Combine(blockedDirectory.FullName, "hidden.epub"));
+        var denyRule = SetDirectoryInaccessible(blockedDirectory);
+        try
+        {
+            var scanner = new DirectoryScanner();
+            var results = scanner.Scan(root, recursive: true);
+
+            results.Should().Equal(accessible);
+        }
+        finally
+        {
+            RestoreDirectoryAccess(blockedDirectory, denyRule);
+            Directory.Delete(blockedDirectory.FullName, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Scanner_does_not_follow_reparse_points_when_recursive()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        var root = temporaryDirectory.DirectoryPath;
+        var nested = Directory.CreateDirectory(Path.Combine(root, "nested"));
+        var nestedFile = WriteTextFile(Path.Combine(nested.FullName, "nested.epub"));
+        var linkPath = Path.Combine(root, "nested-link");
+        try
+        {
+            Directory.CreateSymbolicLink(linkPath, nested.FullName);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or PlatformNotSupportedException)
+        {
+            return;
+        }
+
+        var scanner = new DirectoryScanner();
+
+        var results = scanner.Scan(root, recursive: true);
+
+        results.Should().Equal(nestedFile);
     }
 
     [Fact]
@@ -109,6 +168,70 @@ public sealed class ImportPrimitivesTests : IDisposable
 
         await act.Should().ThrowAsync<OperationCanceledException>();
         Directory.Exists(Path.Combine(libraryRoot, "books")).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Managed_store_replaces_stale_contents_when_source_filename_changes()
+    {
+        var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "Library");
+        Directory.CreateDirectory(libraryRoot);
+        var store = new ManagedLibraryFileStore(libraryRoot);
+        var bookId = Guid.NewGuid();
+
+        var firstSource = WriteBytesFile("first/The Hobbit.epub", [1, 2, 3]);
+        await store.CopyIntoLibraryAsync(bookId, firstSource, [9, 9, 9], default);
+
+        var secondSource = WriteBytesFile("second/The Hobbit - Revised.epub", [4, 5, 6, 7]);
+        var result = await store.CopyIntoLibraryAsync(bookId, secondSource, null, default);
+
+        var bookDirectory = Path.Combine(libraryRoot, "books", bookId.ToString("N"));
+        result.RelativeBookPath.Should().Be($"books/{bookId:N}/The Hobbit - Revised.epub");
+        result.RelativeCoverPath.Should().BeNull();
+        Directory.EnumerateFiles(bookDirectory, "*", SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
+            .Should()
+            .Equal("The Hobbit - Revised.epub");
+        File.Exists(Path.Combine(bookDirectory, "The Hobbit.epub")).Should().BeFalse();
+        File.Exists(Path.Combine(bookDirectory, "cover.jpg")).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Managed_store_leaves_prior_book_directory_intact_when_a_repeat_copy_is_cancelled()
+    {
+        var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "Library");
+        Directory.CreateDirectory(libraryRoot);
+        var store = new ManagedLibraryFileStore(libraryRoot);
+        var bookId = Guid.NewGuid();
+
+        var firstSource = WriteBytesFile("first/Original.epub", [1, 2, 3]);
+        await store.CopyIntoLibraryAsync(bookId, firstSource, [4, 5, 6], default);
+
+        var secondSource = WriteBytesFile("second/Replacement.epub", [7, 8, 9]);
+        var before = Directory.EnumerateFiles(
+                Path.Combine(libraryRoot, "books", bookId.ToString("N")),
+                "*",
+                SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        var act = () => store.CopyIntoLibraryAsync(
+            bookId,
+            secondSource,
+            [10, 11, 12],
+            new CancellationToken(canceled: true));
+
+        await act.Should().ThrowAsync<OperationCanceledException>();
+
+        var after = Directory.EnumerateFiles(
+                Path.Combine(libraryRoot, "books", bookId.ToString("N")),
+                "*",
+                SearchOption.TopDirectoryOnly)
+            .Select(Path.GetFileName)
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+
+        after.Should().Equal(before);
     }
 
     [Theory]
@@ -214,6 +337,125 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
+    public async Task Epub_adapter_rejects_absolute_or_traversal_cover_hrefs()
+    {
+        var path = CreateArchive("Malicious.epub", archive =>
+        {
+            AddTextEntry(archive, "META-INF/container.xml", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+                  <rootfiles>
+                    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" />
+                  </rootfiles>
+                </container>
+                """);
+
+            AddTextEntry(archive, "OEBPS/content.opf", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <package xmlns="http://www.idpf.org/2007/opf" version="3.0">
+                  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+                    <dc:title>Malicious</dc:title>
+                    <dc:creator>Author</dc:creator>
+                    <meta name="cover" content="cover-image" />
+                  </metadata>
+                  <manifest>
+                    <item id="cover-image" href="../cover.jpg" media-type="image/jpeg" />
+                  </manifest>
+                </package>
+                """);
+        });
+        var adapter = new EpubMetadataAdapter();
+
+        var result = await adapter.ReadAsync(path, EbookFormat.Epub, default);
+
+        result.Metadata.Title.Should().Be("Malicious");
+        result.Metadata.CoverBytes.Should().BeNull();
+        result.Warning.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [Fact]
+    public async Task Epub_adapter_rejects_ambiguous_duplicate_canonical_entries()
+    {
+        var path = CreateArchive("Duplicate.epub", archive =>
+        {
+            AddTextEntry(archive, "META-INF/container.xml", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+                  <rootfiles>
+                    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" />
+                  </rootfiles>
+                </container>
+                """);
+
+            AddTextEntry(archive, "OEBPS/content.opf", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <package xmlns="http://www.idpf.org/2007/opf" version="3.0">
+                  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+                    <dc:title>Duplicate</dc:title>
+                    <dc:creator>Author</dc:creator>
+                    <meta name="cover" content="cover-image" />
+                  </metadata>
+                  <manifest>
+                    <item id="cover-image" href="images/cover.jpg" media-type="image/jpeg" />
+                  </manifest>
+                </package>
+                """);
+
+            AddBinaryEntry(archive, "OEBPS/images/cover.jpg", [1, 2, 3]);
+            AddBinaryEntry(archive, "OEBPS/images/./cover.jpg", [4, 5, 6]);
+        });
+        var adapter = new EpubMetadataAdapter();
+
+        var result = await adapter.ReadAsync(path, EbookFormat.Epub, default);
+
+        result.Metadata.Title.Should().Be("Duplicate");
+        result.Metadata.CoverBytes.Should().BeNull();
+        result.Warning.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [Fact]
+    public async Task Epub_adapter_rejects_duplicate_rootfile_entries()
+    {
+        var path = CreateArchive("DuplicateRootfile.epub", archive =>
+        {
+            AddTextEntry(archive, "META-INF/container.xml", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+                  <rootfiles>
+                    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" />
+                    <rootfile full-path="OEBPS/other.opf" media-type="application/oebps-package+xml" />
+                  </rootfiles>
+                </container>
+                """);
+
+            AddTextEntry(archive, "OEBPS/content.opf", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <package xmlns="http://www.idpf.org/2007/opf" version="3.0">
+                  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+                    <dc:title>Duplicate Rootfile</dc:title>
+                    <dc:creator>Author</dc:creator>
+                  </metadata>
+                </package>
+                """);
+            AddTextEntry(archive, "OEBPS/other.opf", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <package xmlns="http://www.idpf.org/2007/opf" version="3.0">
+                  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+                    <dc:title>Other</dc:title>
+                    <dc:creator>Author</dc:creator>
+                  </metadata>
+                </package>
+                """);
+        });
+        var adapter = new EpubMetadataAdapter();
+
+        var result = await adapter.ReadAsync(path, EbookFormat.Epub, default);
+
+        result.Metadata.Title.Should().Be("DuplicateRootfile");
+        result.Warning.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [Fact]
     public async Task Cbz_adapter_chooses_the_alphabetically_first_supported_image()
     {
         byte[] alphaBytes = [0x11, 0x22];
@@ -234,6 +476,59 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
+    public async Task Cbz_adapter_rejects_archives_with_too_many_entries()
+    {
+        var path = CreateArchive("TooMany.cbz", archive =>
+        {
+            for (var index = 0; index < 2001; index++)
+            {
+                AddTextEntry(archive, $"pages/page-{index:D4}.txt", "ignored");
+            }
+
+            AddBinaryEntry(archive, "images/cover.jpg", [1, 2, 3]);
+        });
+        var adapter = new CbzMetadataAdapter();
+
+        var act = () => adapter.ReadAsync(path, EbookFormat.Cbz, default);
+
+        await act.Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [Fact]
+    public async Task Cbz_adapter_rejects_selected_images_that_exceed_the_size_limit()
+    {
+        var largeCover = new byte[11 * 1024 * 1024];
+        Random.Shared.NextBytes(largeCover);
+        var path = CreateArchive("LargeCover.cbz", archive =>
+        {
+            AddBinaryEntry(archive, "images/cover.png", largeCover);
+        });
+        var adapter = new CbzMetadataAdapter();
+
+        var act = () => adapter.ReadAsync(path, EbookFormat.Cbz, default);
+
+        await act.Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [Fact]
+    public async Task Cbz_adapter_honors_cancellation_during_cover_read()
+    {
+        var largeCover = new byte[8 * 1024 * 1024];
+        Random.Shared.NextBytes(largeCover);
+        var path = CreateArchive("Cancelable.cbz", archive =>
+        {
+            AddBinaryEntry(archive, "images/cover.webp", largeCover);
+        });
+        var adapter = new CbzMetadataAdapter();
+        using var cancellationTokenSource = new CancellationTokenSource();
+
+        var readTask = adapter.ReadAsync(path, EbookFormat.Cbz, cancellationTokenSource.Token);
+        cancellationTokenSource.CancelAfter(1);
+
+        await FluentActions.Awaiting(() => readTask).Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
     public void Metadata_resolver_prefers_specific_adapters_before_fallback()
     {
         var fallback = new FallbackMetadataAdapter();
@@ -244,6 +539,34 @@ public sealed class ImportPrimitivesTests : IDisposable
         resolver.Resolve(EbookFormat.Epub).Should().BeSameAs(epub);
         resolver.Resolve(EbookFormat.Cbz).Should().BeSameAs(cbz);
         resolver.Resolve(EbookFormat.Pdf).Should().BeSameAs(fallback);
+    }
+
+    [Fact]
+    public void Metadata_resolver_rejects_duplicate_specific_adapters_for_same_format()
+    {
+        var fallback = new FallbackMetadataAdapter();
+        var first = new FakeAdapter(EbookFormat.Epub);
+        var second = new FakeAdapter(EbookFormat.Epub);
+
+        var act = () => new MetadataAdapterResolver([fallback, first, second]);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*Epub*");
+    }
+
+    [Fact]
+    public void Metadata_resolver_requires_exactly_one_fallback_adapter()
+    {
+        var specific = new FakeAdapter(EbookFormat.Epub);
+        var fallback = new FallbackMetadataAdapter();
+
+        var missingAct = () => new MetadataAdapterResolver([specific]);
+        var duplicateAct = () => new MetadataAdapterResolver([fallback, new FallbackMetadataAdapter(), specific]);
+
+        missingAct.Should().Throw<InvalidOperationException>()
+            .WithMessage("*fallback*");
+        duplicateAct.Should().Throw<InvalidOperationException>()
+            .WithMessage("*fallback*");
     }
 
     public void Dispose() => temporaryDirectory.Dispose();
@@ -286,5 +609,55 @@ public sealed class ImportPrimitivesTests : IDisposable
         var entry = archive.CreateEntry(entryName);
         using var stream = entry.Open();
         stream.Write(content);
+    }
+
+    private static FileSystemAccessRule? SetDirectoryInaccessible(DirectoryInfo directoryInfo)
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return null;
+        }
+
+        var identity = WindowsIdentity.GetCurrent();
+        if (identity.User is null)
+        {
+            return null;
+        }
+
+        var security = directoryInfo.GetAccessControl();
+        var denyRule = new FileSystemAccessRule(
+            identity.User,
+            FileSystemRights.ListDirectory | FileSystemRights.ReadAndExecute | FileSystemRights.Traverse,
+            AccessControlType.Deny);
+        security.AddAccessRule(denyRule);
+        directoryInfo.SetAccessControl(security);
+        return denyRule;
+    }
+
+    private static void RestoreDirectoryAccess(DirectoryInfo directoryInfo, FileSystemAccessRule? denyRule)
+    {
+        if (!OperatingSystem.IsWindows() || denyRule is null)
+        {
+            return;
+        }
+
+        var security = directoryInfo.GetAccessControl();
+        security.RemoveAccessRuleAll(denyRule);
+        directoryInfo.SetAccessControl(security);
+    }
+
+    private sealed class FakeAdapter(EbookFormat format) : IMetadataAdapter
+    {
+        public bool CanHandle(EbookFormat candidateFormat) => candidateFormat == format;
+
+        public Task<MetadataReadResult> ReadAsync(string path, EbookFormat candidateFormat, CancellationToken cancellationToken) =>
+            Task.FromResult(new MetadataReadResult(new BookMetadata("Fake", ["Fake"])));
+
+        public Task<MetadataWriteResult> WriteAsync(
+            string path,
+            EbookFormat candidateFormat,
+            BookMetadata metadata,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(new MetadataWriteResult(MetadataWriteBackStatus.Unsupported));
     }
 }

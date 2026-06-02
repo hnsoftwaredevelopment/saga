@@ -7,6 +7,9 @@ namespace EbookManager.Infrastructure.Metadata;
 
 public sealed class CbzMetadataAdapter : IMetadataAdapter
 {
+    private const int MaxEntryCount = 2000;
+    private const long MaxSelectedImageSizeBytes = 10 * 1024 * 1024;
+
     private static readonly HashSet<string> SupportedImageExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".jpg",
@@ -40,21 +43,24 @@ public sealed class CbzMetadataAdapter : IMetadataAdapter
                 });
 
             using var archive = new ZipArchive(stream, ZipArchiveMode.Read, leaveOpen: false);
-            var coverEntry = archive.Entries
-                .Where(entry => !string.IsNullOrEmpty(entry.Name))
-                .Where(entry => SupportedImageExtensions.Contains(Path.GetExtension(entry.FullName)))
-                .OrderBy(entry => entry.FullName, StringComparer.OrdinalIgnoreCase)
-                .FirstOrDefault();
+            if (archive.Entries.Count > MaxEntryCount)
+            {
+                throw new InvalidDataException($"CBZ archive contains more than {MaxEntryCount} entries.");
+            }
 
-            if (coverEntry is null)
+            var selectedEntry = SelectCoverEntry(archive, cancellationToken);
+            if (selectedEntry is null)
             {
                 return fallbackResult;
             }
 
-            using var coverStream = coverEntry.Open();
-            using var memoryStream = new MemoryStream();
-            await coverStream.CopyToAsync(memoryStream, cancellationToken);
+            if (selectedEntry.Length > MaxSelectedImageSizeBytes)
+            {
+                throw new InvalidDataException(
+                    $"CBZ cover image exceeds the {MaxSelectedImageSizeBytes} byte size limit.");
+            }
 
+            var coverBytes = await ReadEntryBytesAsync(selectedEntry, cancellationToken);
             return new MetadataReadResult(
                 new BookMetadata(
                     fallbackResult.Metadata.Title,
@@ -67,11 +73,11 @@ public sealed class CbzMetadataAdapter : IMetadataAdapter
                     fallbackResult.Metadata.Series,
                     fallbackResult.Metadata.SeriesNumber,
                     fallbackResult.Metadata.Isbn,
-                    memoryStream.ToArray()),
+                    coverBytes),
                 fallbackResult.Warning);
         }
         catch (Exception exception) when (
-            exception is IOException or InvalidDataException or NotSupportedException)
+            exception is IOException or NotSupportedException)
         {
             return fallbackResult with
             {
@@ -90,5 +96,48 @@ public sealed class CbzMetadataAdapter : IMetadataAdapter
         return Task.FromResult(new MetadataWriteResult(
             MetadataWriteBackStatus.Unsupported,
             "CBZ write-back is not supported."));
+    }
+
+    private static ZipArchiveEntry? SelectCoverEntry(ZipArchive archive, CancellationToken cancellationToken)
+    {
+        ZipArchiveEntry? selectedEntry = null;
+        foreach (var entry in archive.Entries
+                     .Where(entry => !string.IsNullOrEmpty(entry.Name))
+                     .Where(entry => SupportedImageExtensions.Contains(Path.GetExtension(entry.FullName)))
+                     .OrderBy(entry => entry.FullName, StringComparer.OrdinalIgnoreCase))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (selectedEntry is null)
+            {
+                selectedEntry = entry;
+            }
+        }
+
+        return selectedEntry;
+    }
+
+    private static async Task<byte[]> ReadEntryBytesAsync(
+        ZipArchiveEntry entry,
+        CancellationToken cancellationToken)
+    {
+        await using var entryStream = entry.Open();
+        await using var memoryStream = new MemoryStream(
+            entry.Length is > 0 and <= int.MaxValue ? (int)entry.Length : 0);
+        var buffer = new byte[81920];
+
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var bytesRead = await entryStream.ReadAsync(buffer, cancellationToken);
+            if (bytesRead == 0)
+            {
+                break;
+            }
+
+            await memoryStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+        }
+
+        return memoryStream.ToArray();
     }
 }
