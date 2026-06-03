@@ -34,6 +34,7 @@ public sealed partial class LibraryViewModel(
 
     public ObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
     public ObservableCollection<FacetFilterViewModel> AuthorFilters { get; } = [];
+    public ObservableCollection<FacetFilterViewModel> CategoryFilters { get; } = [];
 
     public BookDetailsViewModel Details { get; } = details;
 
@@ -80,7 +81,7 @@ public sealed partial class LibraryViewModel(
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
         books = await bookRepository.ListAsync(cancellationToken);
-        RefreshAuthorFilters();
+        RefreshFacetFilters();
         ApplyFilter();
         RefreshLibraryDisplay();
     }
@@ -207,7 +208,7 @@ public sealed partial class LibraryViewModel(
     private void ApplyFilter()
     {
         var selectedId = SelectedBook?.Id;
-        var rows = ApplyAuthorFilter(searchService.Filter(books, SearchText))
+        var rows = ApplyCategoryFilter(ApplyAuthorFilter(searchService.Filter(books, SearchText)))
             .Select(book => new BookRowViewModel(book, SearchText))
             .ToList();
 
@@ -228,48 +229,78 @@ public sealed partial class LibraryViewModel(
 
     private IReadOnlyList<Book> ApplyAuthorFilter(IReadOnlyList<Book> source)
     {
-        if (AuthorFilters.Count == 0)
+        return ApplyFacetFilter(
+            source,
+            AuthorFilters,
+            book => book.Metadata.Authors);
+    }
+
+    private IReadOnlyList<Book> ApplyCategoryFilter(IReadOnlyList<Book> source)
+    {
+        return ApplyFacetFilter(
+            source,
+            CategoryFilters,
+            book => book.Metadata.Tags ?? []);
+    }
+
+    private static IReadOnlyList<Book> ApplyFacetFilter(
+        IReadOnlyList<Book> source,
+        IReadOnlyCollection<FacetFilterViewModel> filters,
+        Func<Book, IEnumerable<string>> valueSelector)
+    {
+        if (filters.Count == 0)
         {
             return source;
         }
 
-        var selectedAuthors = AuthorFilters
+        var selectedValues = filters
             .Where(filter => filter.IsSelected)
             .Select(filter => filter.Name)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        if (selectedAuthors.Count == AuthorFilters.Count)
+        if (selectedValues.Count == filters.Count)
         {
             return source;
         }
 
         return source
-            .Where(book => book.Metadata.Authors.Any(selectedAuthors.Contains))
+            .Where(book => valueSelector(book).Any(selectedValues.Contains))
             .ToList();
     }
 
-    private void RefreshAuthorFilters()
+    private void RefreshFacetFilters()
     {
-        var existingSelections = AuthorFilters.ToDictionary(
+        RefreshFilters(
+            AuthorFilters,
+            books.SelectMany(book => book.Metadata.Authors));
+        RefreshFilters(
+            CategoryFilters,
+            books.SelectMany(book => book.Metadata.Tags ?? []));
+    }
+
+    private void RefreshFilters(
+        ObservableCollection<FacetFilterViewModel> filters,
+        IEnumerable<string> values)
+    {
+        var existingSelections = filters.ToDictionary(
             filter => filter.Name,
             filter => filter.IsSelected,
             StringComparer.OrdinalIgnoreCase);
-        var authorCounts = books
-            .SelectMany(book => book.Metadata.Authors)
-            .Where(author => !string.IsNullOrWhiteSpace(author))
-            .GroupBy(author => author.Trim(), StringComparer.OrdinalIgnoreCase)
+        var valueCounts = values
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .GroupBy(value => value.Trim(), StringComparer.OrdinalIgnoreCase)
             .Select(group => new
             {
                 Name = group.First(),
                 Count = group.Count()
             })
-            .OrderBy(author => author.Name, StringComparer.CurrentCultureIgnoreCase)
+            .OrderBy(value => value.Name, StringComparer.CurrentCultureIgnoreCase)
             .ToList();
 
-        AuthorFilters.Clear();
-        foreach (var author in authorCounts)
+        filters.Clear();
+        foreach (var value in valueCounts)
         {
-            var isSelected = !existingSelections.TryGetValue(author.Name, out var existingSelection) || existingSelection;
-            AuthorFilters.Add(new FacetFilterViewModel(author.Name, author.Count, isSelected, ApplyFilter));
+            var isSelected = !existingSelections.TryGetValue(value.Name, out var existingSelection) || existingSelection;
+            filters.Add(new FacetFilterViewModel(value.Name, value.Count, isSelected, ApplyFilter));
         }
     }
 

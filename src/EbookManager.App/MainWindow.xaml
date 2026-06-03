@@ -126,7 +126,21 @@
           </Expander>
           <Expander Header="Title" IsEnabled="False" Margin="0,0,0,6" />
           <Expander Header="E-reader" IsEnabled="False" Margin="0,0,0,6" />
-          <Expander Header="Category" IsEnabled="False" Margin="0,0,0,12" />
+          <Expander Header="Category" Margin="0,0,0,12">
+            <ScrollViewer MaxHeight="180"
+                          VerticalScrollBarVisibility="Auto">
+              <ItemsControl ItemsSource="{Binding CategoryFilters}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <CheckBox Content="{Binding DisplayName}"
+                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                              Margin="0,2"
+                              Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </Expander>
           <CheckBox Content="Include subdirectories when scanning"
                     IsChecked="{Binding IncludeScanSubdirectories}"
                     Margin="0,0,0,12" />

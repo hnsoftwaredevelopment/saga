@@ -61,6 +61,24 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Category_filters_are_built_from_tags_and_filter_visible_rows()
+    {
+        var fantasy = CreateBook("The Hobbit", ["Tolkien"], tags: ["Fantasy"]);
+        var scienceFiction = CreateBook("Dune", ["Frank Herbert"], tags: ["Science fiction"]);
+        var viewModel = CreateViewModel([fantasy, scienceFiction]);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.CategoryFilters.Select(filter => filter.DisplayName)
+            .Should().Equal("Fantasy (1)", "Science fiction (1)");
+
+        viewModel.CategoryFilters.Single(filter => filter.Name == "Fantasy").IsSelected = false;
+
+        viewModel.VisibleBooks.Should().ContainSingle()
+            .Which.Title.Should().Be("Dune");
+    }
+
+    [Fact]
     public async Task Selecting_a_book_loads_details()
     {
         var book = CreateBook("Selected", ["Author"]);
@@ -186,12 +204,15 @@ public sealed class LibraryViewModelTests
             databaseInitializer: databaseInitializer);
     }
 
-    private static Book CreateBook(string title, IReadOnlyList<string> authors)
+    private static Book CreateBook(
+        string title,
+        IReadOnlyList<string> authors,
+        IReadOnlyList<string>? tags = null)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
             Guid.NewGuid(),
-            new BookMetadata(title, authors),
+            new BookMetadata(title, authors, Tags: tags),
             ReadingStatus.Unread,
             null,
             now,
