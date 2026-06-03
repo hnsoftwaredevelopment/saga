@@ -35,6 +35,10 @@ public sealed partial class LibraryViewModel(
     public ObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
     public ObservableCollection<FacetFilterViewModel> AuthorFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> CategoryFilters { get; } = [];
+    public ObservableCollection<FacetFilterViewModel> SeriesFilters { get; } = [];
+    public ObservableCollection<FacetFilterViewModel> StatusFilters { get; } = [];
+    public ObservableCollection<FacetFilterViewModel> EReaderFilters { get; } = [];
+    public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
 
     public BookDetailsViewModel Details { get; } = details;
 
@@ -208,7 +212,8 @@ public sealed partial class LibraryViewModel(
     private void ApplyFilter()
     {
         var selectedId = SelectedBook?.Id;
-        var rows = ApplyCategoryFilter(ApplyAuthorFilter(searchService.Filter(books, SearchText)))
+        var rows = ApplyLanguageFilter(ApplyEReaderFilter(ApplyStatusFilter(ApplySeriesFilter(
+                ApplyCategoryFilter(ApplyAuthorFilter(searchService.Filter(books, SearchText)))))))
             .Select(book => new BookRowViewModel(book, SearchText))
             .ToList();
 
@@ -243,6 +248,38 @@ public sealed partial class LibraryViewModel(
             book => book.Metadata.Tags ?? []);
     }
 
+    private IReadOnlyList<Book> ApplySeriesFilter(IReadOnlyList<Book> source)
+    {
+        return ApplyFacetFilter(
+            source,
+            SeriesFilters,
+            book => SingleOptionalValue(book.Metadata.Series));
+    }
+
+    private IReadOnlyList<Book> ApplyStatusFilter(IReadOnlyList<Book> source)
+    {
+        return ApplyFacetFilter(
+            source,
+            StatusFilters,
+            book => [book.ReadingStatus.ToString()]);
+    }
+
+    private IReadOnlyList<Book> ApplyEReaderFilter(IReadOnlyList<Book> source)
+    {
+        return ApplyFacetFilter(
+            source,
+            EReaderFilters,
+            book => [new BookRowViewModel(book).EReader]);
+    }
+
+    private IReadOnlyList<Book> ApplyLanguageFilter(IReadOnlyList<Book> source)
+    {
+        return ApplyFacetFilter(
+            source,
+            LanguageFilters,
+            book => SingleOptionalValue(book.Metadata.Language));
+    }
+
     private static IReadOnlyList<Book> ApplyFacetFilter(
         IReadOnlyList<Book> source,
         IReadOnlyCollection<FacetFilterViewModel> filters,
@@ -275,6 +312,16 @@ public sealed partial class LibraryViewModel(
         RefreshFilters(
             CategoryFilters,
             books.SelectMany(book => book.Metadata.Tags ?? []));
+        RefreshFilters(
+            SeriesFilters,
+            books.SelectMany(book => SingleOptionalValue(book.Metadata.Series)));
+        RefreshStatusFilters();
+        RefreshFilters(
+            EReaderFilters,
+            books.Select(book => new BookRowViewModel(book).EReader));
+        RefreshFilters(
+            LanguageFilters,
+            books.SelectMany(book => SingleOptionalValue(book.Metadata.Language)));
     }
 
     private void RefreshFilters(
@@ -303,6 +350,33 @@ public sealed partial class LibraryViewModel(
             filters.Add(new FacetFilterViewModel(value.Name, value.Count, isSelected, ApplyFilter));
         }
     }
+
+    private void RefreshStatusFilters()
+    {
+        var existingSelections = StatusFilters.ToDictionary(
+            filter => filter.Name,
+            filter => filter.IsSelected,
+            StringComparer.OrdinalIgnoreCase);
+        var statusCounts = books
+            .GroupBy(book => book.ReadingStatus)
+            .ToDictionary(group => group.Key, group => group.Count());
+
+        StatusFilters.Clear();
+        foreach (var status in Enum.GetValues<ReadingStatus>())
+        {
+            if (!statusCounts.TryGetValue(status, out var count))
+            {
+                continue;
+            }
+
+            var name = status.ToString();
+            var isSelected = !existingSelections.TryGetValue(name, out var existingSelection) || existingSelection;
+            StatusFilters.Add(new FacetFilterViewModel(name, count, isSelected, ApplyFilter));
+        }
+    }
+
+    private static IEnumerable<string> SingleOptionalValue(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? [] : [value];
 
     partial void OnCurrentLibraryPathChanged(string? value) => OnPropertyChanged(nameof(HasActiveLibrary));
 

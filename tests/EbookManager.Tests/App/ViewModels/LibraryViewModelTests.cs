@@ -79,6 +79,39 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_filters_are_built_from_series_status_ereader_and_language()
+    {
+        var fantasy = CreateBook(
+            "The Hobbit",
+            ["Tolkien"],
+            language: "en",
+            series: "Middle-earth",
+            readingStatus: ReadingStatus.Read);
+        var scienceFiction = CreateBook(
+            "Dune",
+            ["Frank Herbert"],
+            language: "nl",
+            series: "Dune",
+            readingStatus: ReadingStatus.Unread);
+        var viewModel = CreateViewModel([fantasy, scienceFiction]);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SeriesFilters.Select(filter => filter.DisplayName)
+            .Should().Equal("Dune (1)", "Middle-earth (1)");
+        viewModel.StatusFilters.Select(filter => filter.DisplayName)
+            .Should().Equal("Unread (1)", "Read (1)");
+        viewModel.EReaderFilters.Select(filter => filter.DisplayName)
+            .Should().Equal("Unavailable (2)");
+        viewModel.LanguageFilters.Select(filter => filter.DisplayName)
+            .Should().Equal("en (1)", "nl (1)");
+
+        viewModel.SeriesFilters.Single(filter => filter.Name == "Middle-earth").IsSelected = false;
+        viewModel.VisibleBooks.Should().ContainSingle()
+            .Which.Title.Should().Be("Dune");
+    }
+
+    [Fact]
     public async Task Selecting_a_book_loads_details()
     {
         var book = CreateBook("Selected", ["Author"]);
@@ -207,13 +240,16 @@ public sealed class LibraryViewModelTests
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,
-        IReadOnlyList<string>? tags = null)
+        IReadOnlyList<string>? tags = null,
+        string? language = null,
+        string? series = null,
+        ReadingStatus readingStatus = ReadingStatus.Unread)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
             Guid.NewGuid(),
-            new BookMetadata(title, authors, Tags: tags),
-            ReadingStatus.Unread,
+            new BookMetadata(title, authors, Language: language, Tags: tags, Series: series),
+            readingStatus,
             null,
             now,
             now);
