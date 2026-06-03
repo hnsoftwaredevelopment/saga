@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Compression;
 using System.Xml;
 using System.Xml.Linq;
@@ -57,6 +58,12 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
             var language = FirstElementValue(metadataElement, "language") ?? fallbackResult.Metadata.Language;
             var publisher = FirstElementValue(metadataElement, "publisher") ?? fallbackResult.Metadata.Publisher;
             var isbn = FirstIsbn(metadataElement) ?? fallbackResult.Metadata.Isbn;
+            var tags = ElementValues(metadataElement, "subject")
+                .Distinct(StringComparer.Ordinal)
+                .ToArray();
+            var series = MetaContent(metadataElement, "calibre:series") ?? fallbackResult.Metadata.Series;
+            var seriesNumber = ParseSeriesNumber(MetaContent(metadataElement, "calibre:series_index"))
+                ?? fallbackResult.Metadata.SeriesNumber;
             var coverBytes = TryGetCoverBytes(archive, rootfilePath, metadataElement, manifestElement)
                 ?? fallbackResult.Metadata.CoverBytes;
 
@@ -68,9 +75,9 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
                     language,
                     publisher,
                     fallbackResult.Metadata.PublicationDate,
-                    fallbackResult.Metadata.Tags,
-                    fallbackResult.Metadata.Series,
-                    fallbackResult.Metadata.SeriesNumber,
+                    tags.Length > 0 ? tags : fallbackResult.Metadata.Tags,
+                    series,
+                    seriesNumber,
                     isbn,
                     coverBytes));
         }
@@ -156,11 +163,31 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
             : null;
 
     private static IEnumerable<string> FirstElementValues(XElement element, string localName) =>
+        ElementValues(element, localName);
+
+    private static IEnumerable<string> ElementValues(XElement element, string localName) =>
         element
             .Elements()
             .Where(child => child.Name.LocalName == localName)
             .Select(child => child.Value.Trim())
             .Where(value => value.Length > 0);
+
+    private static string? MetaContent(XElement metadataElement, string name) =>
+        metadataElement
+            .Elements()
+            .Where(child => child.Name.LocalName == "meta")
+            .FirstOrDefault(child => string.Equals(child.Attribute("name")?.Value, name, StringComparison.OrdinalIgnoreCase))
+            ?.Attribute("content")
+            ?.Value
+            .Trim()
+        is { Length: > 0 } value
+            ? value
+            : null;
+
+    private static decimal? ParseSeriesNumber(string? value) =>
+        decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed)
+            ? parsed
+            : null;
 
     private static string? FirstIsbn(XElement metadataElement)
     {

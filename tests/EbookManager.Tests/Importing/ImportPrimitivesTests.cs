@@ -356,6 +356,45 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
+    public async Task Epub_adapter_reads_subject_tags_and_calibre_series_metadata()
+    {
+        var path = CreateArchive("series.epub", archive =>
+        {
+            AddTextEntry(archive, "META-INF/container.xml", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+                  <rootfiles>
+                    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" />
+                  </rootfiles>
+                </container>
+                """);
+
+            AddTextEntry(archive, "OEBPS/content.opf", """
+                <?xml version="1.0" encoding="utf-8"?>
+                <package xmlns="http://www.idpf.org/2007/opf" version="3.0">
+                  <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+                    <dc:title>Triptiek</dc:title>
+                    <dc:creator>Karin Slaughter</dc:creator>
+                    <dc:subject>Thriller</dc:subject>
+                    <dc:subject>Crime</dc:subject>
+                    <dc:subject>Thriller</dc:subject>
+                    <meta name="calibre:series" content="Atlanta" />
+                    <meta name="calibre:series_index" content="1" />
+                  </metadata>
+                </package>
+                """);
+        });
+        var adapter = new EpubMetadataAdapter();
+
+        var result = await adapter.ReadAsync(path, EbookFormat.Epub, default);
+
+        result.Metadata.Tags.Should().Equal("Thriller", "Crime");
+        result.Metadata.Series.Should().Be("Atlanta");
+        result.Metadata.SeriesNumber.Should().Be(1);
+        result.Warning.Should().BeNull();
+    }
+
+    [Fact]
     public async Task Epub_adapter_returns_filename_fallback_with_warning_for_malformed_archive()
     {
         var path = CreateArchive("Malformed.epub", archive =>
