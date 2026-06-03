@@ -18,5 +18,6 @@
 
   <ItemGroup>
     <PackageReference Include="Syncfusion.SfGrid.WPF" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 </Project>
