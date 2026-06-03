@@ -31,7 +31,7 @@ Set the Syncfusion key in your user environment before running the app:
 [Environment]::SetEnvironmentVariable("SYNCFUSION_LICENSE_KEY", "<your-key>", "User")
 ```
 
-Do not commit a Syncfusion license key.
+Alternatively, place the key in `docs/SynfusionLicense.txt` or `docs/SyncfusionLicense.txt` for local development. These files are ignored by Git. Do not commit a Syncfusion license key.
 
 ## Build And Test
 
@@ -73,17 +73,22 @@ SQLite is authoritative for metadata. Format write-back currently reports adapte
 
 Use [docs/manual-tests/milestone-1-checklist.md](docs/manual-tests/milestone-1-checklist.md) for the current manual test checklist.
 
-## Explicit Milestone 2 Candidates
+## Milestone 2 Work
 
-The following are deliberately outside Milestone 1:
+Milestone 2 extends the desktop app with:
 
 - drag-and-drop import
 - faceted filters in the left action list
 - search-term highlighting
+- refined import result summaries
+- extra themes beyond light/dark
+
+The following remain later-version candidates:
+
 - active e-reader detection and USB sync
 - metadata write-back into ebook files
-- extra themes beyond light/dark
 - custom metadata fields
 - user-defined views
 - ebook conversion
 - full-text search inside book contents
+- in-app bug reports and feature requests that can prepare or create GitHub issues after user review

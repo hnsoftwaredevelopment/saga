@@ -62,8 +62,13 @@ The following features are explicitly deferred:
 - A Calibre-wide set of legacy ebook formats.
 - German, French, Spanish, and Italian translations beyond prepared resource infrastructure.
 - Free versus paid product editions.
+- In-app bug reports and feature requests that can create GitHub issues.
 
 Version `0.2` should address e-reader support separately, with USB mass-storage and Kobo as the first practical priorities.
+
+Version `0.3` or later should consider an opt-in support workflow for bug reports and feature requests. The app can expose actions such as `Report a bug`, `Request a feature`, and `Report issue` on unexpected error dialogs. When GitHub integration is configured, these actions may prepare or create a GitHub issue containing useful diagnostic context such as application version, operating system version, selected app language/theme, exception type, stack trace, and the current workflow that failed.
+
+Privacy is mandatory for this workflow: the user must review the issue content before submission, and the app must not include ebook contents, personal library paths, full filenames, account identifiers, or library metadata unless the user explicitly chooses to include them. If direct GitHub issue creation is unavailable, the app should copy a prepared Markdown report to the clipboard or save it as a local text file.
 
 ## 3. Supported Ebook Formats
 
@@ -273,6 +278,8 @@ Expected file-level failures are reported in import results rather than crashing
 - Cleanup failure
 
 Metadata extraction failure does not necessarily block import: when the file remains readable, the application falls back to filename-derived metadata and a default cover.
+
+A later support workflow can add a `Report issue` action to unexpected error dialogs. That workflow is deferred beyond version `0.1` and must remain opt-in, reviewable, and privacy-preserving.
 
 ## 13. Testing Strategy
 
