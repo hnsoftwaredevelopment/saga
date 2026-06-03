@@ -137,14 +137,20 @@
           <TextBlock Text="{loc:Loc SortBy}"
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      Margin="0,0,0,4" />
-          <ComboBox SelectedItem="{Binding SelectedSortOption}"
+          <ComboBox SelectedValue="{Binding SelectedSortOption}"
+                    SelectedValuePath="Tag"
                     Margin="0,0,0,12"
                     ToolTip="{loc:Loc SortLibraryTooltip}">
-            <viewModels:LibrarySortOption>None</viewModels:LibrarySortOption>
-            <viewModels:LibrarySortOption>Title</viewModels:LibrarySortOption>
-            <viewModels:LibrarySortOption>Author</viewModels:LibrarySortOption>
-            <viewModels:LibrarySortOption>EReader</viewModels:LibrarySortOption>
-            <viewModels:LibrarySortOption>Category</viewModels:LibrarySortOption>
+            <ComboBoxItem Content="{loc:Loc NoSort}"
+                          Tag="{x:Static viewModels:LibrarySortOption.None}" />
+            <ComboBoxItem Content="{loc:Loc Title}"
+                          Tag="{x:Static viewModels:LibrarySortOption.Title}" />
+            <ComboBoxItem Content="{loc:Loc Authors}"
+                          Tag="{x:Static viewModels:LibrarySortOption.Author}" />
+            <ComboBoxItem Content="{loc:Loc EReader}"
+                          Tag="{x:Static viewModels:LibrarySortOption.EReader}" />
+            <ComboBoxItem Content="{loc:Loc Tags}"
+                          Tag="{x:Static viewModels:LibrarySortOption.Category}" />
           </ComboBox>
           <Expander Header="{loc:Loc Authors}" IsExpanded="True" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="180"
