@@ -7,7 +7,7 @@ public sealed class ThemeService(IAppSettingsStore settingsStore)
     private const string ThemeDictionaryMarker = "EbookManagerTheme";
     private readonly IAppSettingsStore settingsStore = settingsStore;
 
-    public IReadOnlyList<string> SelectableThemes { get; } = ["Light", "Dark"];
+    public IReadOnlyList<string> SelectableThemes { get; } = ["Light", "Dark", "Sepia", "Blue", "Red"];
 
     public async Task ApplySavedThemeAsync(CancellationToken cancellationToken)
     {
@@ -17,9 +17,8 @@ public sealed class ThemeService(IAppSettingsStore settingsStore)
 
     public void ApplyTheme(string theme)
     {
-        var normalizedTheme = string.Equals(theme, "Dark", StringComparison.OrdinalIgnoreCase)
-            ? "Dark"
-            : "Light";
+        var normalizedTheme = SelectableThemes.FirstOrDefault(
+            selectableTheme => string.Equals(selectableTheme, theme, StringComparison.OrdinalIgnoreCase)) ?? "Light";
         var application = System.Windows.Application.Current;
         if (application is null)
         {

@@ -8,6 +8,14 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class SettingsViewModelTests
 {
     [Fact]
+    public void SelectableThemes_include_milestone_2_themes()
+    {
+        var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore());
+
+        viewModel.SelectableThemes.Should().Equal("Light", "Dark", "Sepia", "Blue", "Red");
+    }
+
+    [Fact]
     public async Task Save_preserves_last_library_path_while_updating_preferences()
     {
         var store = new InMemoryAppSettingsStore();

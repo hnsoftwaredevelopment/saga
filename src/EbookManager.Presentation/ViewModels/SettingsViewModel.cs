@@ -7,6 +7,8 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
 {
     private readonly IAppSettingsStore settingsStore = settingsStore;
 
+    public IReadOnlyList<string> SelectableThemes { get; } = ["Light", "Dark", "Sepia", "Blue", "Red"];
+
     [ObservableProperty]
     private string culture = "en-US";
 

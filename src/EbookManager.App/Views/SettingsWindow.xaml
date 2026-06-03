@@ -26,10 +26,11 @@
     </ComboBox>
 
     <TextBlock Text="Theme" Grid.Row="1" FontWeight="SemiBold" Margin="0,0,12,12" />
-    <ComboBox Grid.Row="1" Grid.Column="1" SelectedValue="{Binding Theme}" SelectedValuePath="Content" Margin="0,0,0,12">
-      <ComboBoxItem Content="Light" />
-      <ComboBoxItem Content="Dark" />
-    </ComboBox>
+    <ComboBox Grid.Row="1"
+              Grid.Column="1"
+              ItemsSource="{Binding SelectableThemes}"
+              SelectedItem="{Binding Theme}"
+              Margin="0,0,0,12" />
 
     <TextBlock Text="Default view" Grid.Row="2" FontWeight="SemiBold" Margin="0,0,12,12" />
     <ComboBox Grid.Row="2" Grid.Column="1" SelectedValue="{Binding DefaultView}" SelectedValuePath="Content" Margin="0,0,0,12">
