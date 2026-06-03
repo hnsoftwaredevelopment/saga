@@ -2,20 +2,27 @@
 
 Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, CommunityToolkit.Mvvm, EF Core, and Syncfusion WPF DataGrid.
 
-## Current Milestone
+## Current Status
 
-Milestone 1 is a functional vertical slice:
+Milestone 2 completes version `0.1` as a functional Windows desktop test release.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
 - EPUB metadata and cover extraction
+- EPUB subject/tag and Calibre-style series metadata extraction
 - CBZ cover extraction
 - safe fallback import for recognized formats
+- drag-and-drop import
+- faceted sorting and filters in the left action list
+- search-term highlighting
+- refined import result summaries
+- portable `metadata.json` sidecar metadata
 - searchable library viewmodels
 - editable metadata details with save, undo, and delete services
 - WPF workspace with bookshelf, detailed grid, and list views
-- light/dark theme infrastructure
-- English and Dutch selectable culture support
+- light, dark, sepia, blue, and red themes
+- English and Dutch selectable UI localization
+- toolbar and details action icons with localized tooltips
 - prepared fallback resource files for German, French, Spanish, and Italian
 
 ## Prerequisites
@@ -49,7 +56,7 @@ dotnet run --project src/EbookManager.App/EbookManager.App.csproj
 
 ## Supported Import Formats
 
-Milestone 1 recognizes:
+Version `0.1` recognizes:
 
 - EPUB
 - KEPUB
@@ -72,18 +79,9 @@ SQLite is authoritative for metadata inside the application. Metadata edits are 
 
 ## Manual Verification
 
-Use [docs/manual-tests/milestone-1-checklist.md](docs/manual-tests/milestone-1-checklist.md) for the current manual test checklist.
+Use [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md) for the current manual test checklist.
 
-## Milestone 2 Work
-
-Milestone 2 extends the desktop app with:
-
-- drag-and-drop import
-- faceted sorting and filters in the left action list
-- search-term highlighting
-- refined import result summaries
-- extra themes beyond light/dark
-- portable `metadata.json` sidecar metadata
+## Later-Version Candidates
 
 The following remain later-version candidates:
 
