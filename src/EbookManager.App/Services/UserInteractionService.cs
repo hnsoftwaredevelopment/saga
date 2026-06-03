@@ -36,6 +36,19 @@ public sealed class UserInteractionService(DeleteConfirmationService deleteConfi
         return Task.FromResult(result);
     }
 
+    public Task<string?> PickLibraryDirectoryAsync(string title, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var dialog = new OpenFolderDialog
+        {
+            Title = title,
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+        };
+
+        var result = dialog.ShowDialog() == true ? dialog.FolderName : null;
+        return Task.FromResult(result);
+    }
+
     public Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken) =>
         deleteConfirmationService.ConfirmAsync(title, cancellationToken);
 

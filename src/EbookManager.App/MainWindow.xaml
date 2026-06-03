@@ -28,6 +28,16 @@
                    VerticalAlignment="Center"
                    Foreground="{DynamicResource TextPrimaryBrush}"
                    DockPanel.Dock="Left" />
+        <StackPanel DockPanel.Dock="Left"
+                    Margin="18,0,0,0"
+                    VerticalAlignment="Center">
+          <TextBlock Text="{Binding CurrentLibraryName}"
+                     FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{Binding CurrentLibraryPath}"
+                     FontSize="11"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     DockPanel.Dock="Right">
@@ -36,6 +46,11 @@
                   Margin="6,12"
                   Padding="14,6"
                   ToolTip="Create a new library" />
+          <Button Content="Open library"
+                  Command="{Binding OpenLibraryCommand}"
+                  Margin="6,12"
+                  Padding="14,6"
+                  ToolTip="Open an existing library" />
           <Button Content="Add books"
                   Command="{Binding AddBooksCommand}"
                   Margin="6,12"
@@ -109,6 +124,40 @@
               Padding="10"
               Margin="0,0,12,0">
         <Grid>
+          <Border Background="{DynamicResource PanelBackgroundBrush}"
+                  Panel.ZIndex="1">
+            <Border.Style>
+              <Style TargetType="Border">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding VisibleBookCount}" Value="0">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Border.Style>
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Width="420">
+              <TextBlock Text="{Binding EmptyStateMessage}"
+                         FontSize="18"
+                         FontWeight="SemiBold"
+                         TextAlignment="Center"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         Margin="0,0,0,16" />
+              <StackPanel Orientation="Horizontal"
+                          HorizontalAlignment="Center">
+                <Button Content="New library"
+                        Command="{Binding CreateLibraryCommand}"
+                        Padding="16,8"
+                        Margin="0,0,8,0" />
+                <Button Content="Open library"
+                        Command="{Binding OpenLibraryCommand}"
+                        Padding="16,8" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
           <views:BookshelfView>
             <views:BookshelfView.Style>
               <Style TargetType="views:BookshelfView">

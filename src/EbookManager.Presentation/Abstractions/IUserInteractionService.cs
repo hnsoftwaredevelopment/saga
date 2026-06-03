@@ -7,6 +7,7 @@ public interface IUserInteractionService
 {
     Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken);
     Task<string?> PickScanFolderAsync(CancellationToken cancellationToken);
+    Task<string?> PickLibraryDirectoryAsync(string title, CancellationToken cancellationToken);
     Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken);
     Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken);
 }
