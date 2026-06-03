@@ -1,15 +1,18 @@
 <UserControl x:Class="EbookManager.App.Views.BookshelfView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:EbookManager.App.Converters">
+             xmlns:converters="clr-namespace:EbookManager.App.Converters"
+             AllowDrop="True">
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
   </UserControl.Resources>
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
+  <ScrollViewer VerticalScrollBarVisibility="Auto"
+                AllowDrop="True">
     <ListBox ItemsSource="{Binding VisibleBooks}"
              SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
              BorderThickness="0"
-             Background="Transparent">
+             Background="Transparent"
+             AllowDrop="True">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
           <WrapPanel />
