@@ -103,7 +103,7 @@ public partial class App : System.Windows.Application
 
     private static void RegisterSyncfusionLicense()
     {
-        var licenseKey = Environment.GetEnvironmentVariable("SYNCFUSION_LICENSE_KEY");
+        var licenseKey = SyncfusionLicenseKeyResolver.ResolveFromEnvironmentAndLocalFiles();
         if (string.IsNullOrWhiteSpace(licenseKey))
         {
             return;

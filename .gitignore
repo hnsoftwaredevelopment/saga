@@ -15,3 +15,7 @@ TestResults/
 *.db
 *.db-shm
 *.db-wal
+
+# Local commercial license keys
+docs/SynfusionLicense.txt
+docs/SyncfusionLicense.txt
