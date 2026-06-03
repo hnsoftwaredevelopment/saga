@@ -154,6 +154,14 @@
                          Margin="0,0,0,16" />
               <StackPanel Orientation="Horizontal"
                           HorizontalAlignment="Center">
+                <Button Content="Add books"
+                        Command="{Binding AddBooksCommand}"
+                        Padding="16,8"
+                        Margin="0,0,8,0" />
+                <Button Content="Scan"
+                        Command="{Binding ScanFolderCommand}"
+                        Padding="16,8"
+                        Margin="0,0,8,0" />
                 <Button Content="New library"
                         Command="{Binding CreateLibraryCommand}"
                         Padding="16,8"

@@ -15,7 +15,7 @@ public sealed class Sha256FileHasher : IFileHasher
             {
                 Access = FileAccess.Read,
                 Mode = FileMode.Open,
-                Share = FileShare.Read,
+                Share = FileShare.ReadWrite | FileShare.Delete,
                 Options = FileOptions.Asynchronous | FileOptions.SequentialScan
             });
 

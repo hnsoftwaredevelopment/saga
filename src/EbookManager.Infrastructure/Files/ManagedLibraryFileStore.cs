@@ -46,7 +46,7 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
             {
                 Access = FileAccess.Read,
                 Mode = FileMode.Open,
-                Share = FileShare.Read,
+                Share = FileShare.ReadWrite | FileShare.Delete,
                 Options = FileOptions.Asynchronous | FileOptions.SequentialScan
             });
 

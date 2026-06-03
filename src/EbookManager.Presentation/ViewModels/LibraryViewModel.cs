@@ -176,8 +176,9 @@ public sealed partial class LibraryViewModel(
             ? directoryPath
             : Path.Combine(directoryPath, "ELibrary");
         var library = await libraryService.CreateAsync("ELibrary", libraryRoot, cancellationToken);
-        await databaseInitializer.InitializeAsync(library, cancellationToken);
         currentLibrary.Set(library);
+        RefreshLibraryDisplay();
+        await databaseInitializer.InitializeAsync(library, cancellationToken);
         await RefreshAsync(cancellationToken);
     }
 
@@ -195,8 +196,9 @@ public sealed partial class LibraryViewModel(
         }
 
         var library = await libraryService.OpenAsync(directoryPath, cancellationToken);
-        await databaseInitializer.InitializeAsync(library, cancellationToken);
         currentLibrary.Set(library);
+        RefreshLibraryDisplay();
+        await databaseInitializer.InitializeAsync(library, cancellationToken);
         await RefreshAsync(cancellationToken);
     }
 
