@@ -1,0 +1,15 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  <sys:Boolean x:Key="EbookManagerTheme">True</sys:Boolean>
+  <Color x:Key="AppBackgroundColor">#111827</Color>
+  <Color x:Key="PanelBackgroundColor">#1F2937</Color>
+  <Color x:Key="TextPrimaryColor">#F9FAFB</Color>
+  <Color x:Key="TextSecondaryColor">#CBD5E1</Color>
+  <Color x:Key="AccentColor">#7C93FF</Color>
+  <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource AppBackgroundColor}" />
+  <SolidColorBrush x:Key="PanelBackgroundBrush" Color="{StaticResource PanelBackgroundColor}" />
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+</ResourceDictionary>

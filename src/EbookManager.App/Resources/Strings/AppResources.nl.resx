@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AddBooks" xml:space="preserve"><value>Boeken toevoegen</value></data>
+  <data name="AppVersion" xml:space="preserve"><value>Versie</value></data>
+  <data name="Authors" xml:space="preserve"><value>Auteurs</value></data>
+  <data name="BookCount" xml:space="preserve"><value>Boeken</value></data>
+  <data name="BookshelfView" xml:space="preserve"><value>Boekenplank</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Annuleren</value></data>
+  <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Vragen voordat boeken worden verwijderd</value></data>
+  <data name="CreateLibrary" xml:space="preserve"><value>Nieuwe bibliotheek</value></data>
+  <data name="Culture" xml:space="preserve"><value>Taal</value></data>
+  <data name="DefaultView" xml:space="preserve"><value>Standaardweergave</value></data>
+  <data name="Delete" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="DeleteConfirmationMessage" xml:space="preserve"><value>Wilt u "{0}" echt uit de bibliotheek verwijderen?</value></data>
+  <data name="DeleteConfirmationTitle" xml:space="preserve"><value>Boek verwijderen</value></data>
+  <data name="Description" xml:space="preserve"><value>Omschrijving</value></data>
+  <data name="DetailedView" xml:space="preserve"><value>Gedetailleerd</value></data>
+  <data name="EReader" xml:space="preserve"><value>E-reader</value></data>
+  <data name="EReaderUnavailable" xml:space="preserve"><value>Niet beschikbaar</value></data>
+  <data name="Failed" xml:space="preserve"><value>Mislukt</value></data>
+  <data name="ImportAdded" xml:space="preserve"><value>Toegevoegd</value></data>
+  <data name="ImportExactDuplicate" xml:space="preserve"><value>Exact duplicaat</value></data>
+  <data name="ImportFailed" xml:space="preserve"><value>Mislukt</value></data>
+  <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Mogelijk duplicaat</value></data>
+  <data name="ImportResults" xml:space="preserve"><value>Importresultaten</value></data>
+  <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
+  <data name="Language" xml:space="preserve"><value>Taal</value></data>
+  <data name="ListView" xml:space="preserve"><value>Lijst</value></data>
+  <data name="OpenLibrary" xml:space="preserve"><value>Bibliotheek openen</value></data>
+  <data name="PublicationDate" xml:space="preserve"><value>Publicatiedatum</value></data>
+  <data name="Publisher" xml:space="preserve"><value>Uitgever</value></data>
+  <data name="Reading" xml:space="preserve"><value>Aan het lezen</value></data>
+  <data name="Read" xml:space="preserve"><value>Gelezen</value></data>
+  <data name="RememberAnswer" xml:space="preserve"><value>Mijn antwoord onthouden</value></data>
+  <data name="Save" xml:space="preserve"><value>Opslaan</value></data>
+  <data name="ScanFolder" xml:space="preserve"><value>Map scannen</value></data>
+  <data name="ScanSubdirectories" xml:space="preserve"><value>Submappen meenemen</value></data>
+  <data name="SearchPlaceholder" xml:space="preserve"><value>Zoeken in alle velden...</value></data>
+  <data name="Series" xml:space="preserve"><value>Serie</value></data>
+  <data name="SeriesNumber" xml:space="preserve"><value>Serienummer</value></data>
+  <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
+  <data name="Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Tags" xml:space="preserve"><value>Tags</value></data>
+  <data name="Theme" xml:space="preserve"><value>Thema</value></data>
+  <data name="Title" xml:space="preserve"><value>Titel</value></data>
+  <data name="Undo" xml:space="preserve"><value>Ongedaan maken</value></data>
+  <data name="Unread" xml:space="preserve"><value>Ongelezen</value></data>
+  <data name="UnsavedChanges" xml:space="preserve"><value>Er zijn niet-opgeslagen wijzigingen.</value></data>
+</root>

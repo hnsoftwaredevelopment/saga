@@ -1,5 +1,6 @@
 using EbookManager.Application.Books;
 using EbookManager.Application.Importing;
+using EbookManager.App.Services;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Infrastructure.Files;
 using EbookManager.Infrastructure.Metadata;
@@ -28,6 +29,11 @@ public partial class App : System.Windows.Application
         {
             RegisterSyncfusionLicense();
             serviceProvider = BuildServiceProvider();
+
+            await serviceProvider.GetRequiredService<LocalizationService>()
+                .ApplySavedCultureAsync(CancellationToken.None);
+            await serviceProvider.GetRequiredService<ThemeService>()
+                .ApplySavedThemeAsync(CancellationToken.None);
 
             var startupService = serviceProvider.GetRequiredService<AppStartupService>();
             await startupService.InitializeAsync(CancellationToken.None);
@@ -63,6 +69,9 @@ public partial class App : System.Windows.Application
         services.AddSingleton<ILibraryDatabaseInitializer, LibraryDatabaseInitializer>();
         services.AddSingleton<LibraryService>();
         services.AddSingleton<AppStartupService>();
+        services.AddSingleton<LocalizationService>();
+        services.AddSingleton<ThemeService>();
+        services.AddSingleton<DeleteConfirmationService>();
         services.AddSingleton<DirectoryScanner>();
         services.AddSingleton<Sha256FileHasher>();
         services.AddSingleton<IImportExceptionClassifier, SqliteImportExceptionClassifier>();
