@@ -67,6 +67,9 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
     private AsyncRelayCommand? deleteCommand;
     private RelayCommand? undoCommand;
 
+    public event EventHandler<Book>? BookSaved;
+    public event EventHandler<Guid>? BookDeleted;
+
     public void Load(Book book)
     {
         ArgumentNullException.ThrowIfNull(book);
@@ -140,6 +143,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         {
             originalBook = book;
             RefreshDirtyState();
+            BookSaved?.Invoke(this, book);
         }
     }
 
@@ -153,7 +157,9 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         LastDeleteResult = await bookService.DeleteAsync(originalBook.Id, cancellationToken);
         if (LastDeleteResult.Status == BookDeleteStatus.Deleted)
         {
+            var deletedBookId = originalBook.Id;
             Clear();
+            BookDeleted?.Invoke(this, deletedBookId);
         }
     }
 

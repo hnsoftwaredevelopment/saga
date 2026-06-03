@@ -10,30 +10,48 @@ using EbookManager.Presentation.Abstractions;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed partial class LibraryViewModel(
-    IBookRepository bookRepository,
-    BookSearchService searchService,
-    BookDetailsViewModel details,
-    IUserInteractionService userInteraction,
-    ImportService? importService = null,
-    LibraryService? libraryService = null,
-    CurrentLibrary? currentLibrary = null,
-    ILibraryDatabaseInitializer? databaseInitializer = null,
-    DirectoryScanner? directoryScanner = null,
-    IAppSettingsStore? settingsStore = null)
-    : ObservableObject
+public sealed partial class LibraryViewModel : ObservableObject
 {
-    private readonly IBookRepository bookRepository = bookRepository;
-    private readonly BookSearchService searchService = searchService;
-    private readonly IUserInteractionService userInteraction = userInteraction;
-    private readonly ImportService? importService = importService;
-    private readonly LibraryService? libraryService = libraryService;
-    private readonly CurrentLibrary? currentLibrary = currentLibrary;
-    private readonly ILibraryDatabaseInitializer? databaseInitializer = databaseInitializer;
-    private readonly DirectoryScanner? directoryScanner = directoryScanner;
-    private readonly IAppSettingsStore? settingsStore = settingsStore;
+    private readonly IBookRepository bookRepository;
+    private readonly BookSearchService searchService;
+    private readonly IUserInteractionService userInteraction;
+    private readonly ImportService? importService;
+    private readonly LibraryService? libraryService;
+    private readonly CurrentLibrary? currentLibrary;
+    private readonly ILibraryDatabaseInitializer? databaseInitializer;
+    private readonly DirectoryScanner? directoryScanner;
+    private readonly IAppSettingsStore? settingsStore;
     private IReadOnlyList<Book> books = [];
     private bool hasAppliedDefaultView;
+
+    public LibraryViewModel(
+        IBookRepository bookRepository,
+        BookSearchService searchService,
+        BookDetailsViewModel details,
+        IUserInteractionService userInteraction,
+        ImportService? importService = null,
+        LibraryService? libraryService = null,
+        CurrentLibrary? currentLibrary = null,
+        ILibraryDatabaseInitializer? databaseInitializer = null,
+        DirectoryScanner? directoryScanner = null,
+        IAppSettingsStore? settingsStore = null)
+    {
+        this.bookRepository = bookRepository;
+        this.searchService = searchService;
+        Details = details;
+        this.userInteraction = userInteraction;
+        this.importService = importService;
+        this.libraryService = libraryService;
+        this.currentLibrary = currentLibrary;
+        this.databaseInitializer = databaseInitializer;
+        this.directoryScanner = directoryScanner;
+        this.settingsStore = settingsStore;
+        currentLibraryName = currentLibrary?.Current?.Name ?? "No library selected";
+        currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
+
+        details.BookSaved += OnDetailsBookSaved;
+        details.BookDeleted += OnDetailsBookDeleted;
+    }
 
     public ObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
     public ObservableCollection<FacetFilterViewModel> AuthorFilters { get; } = [];
@@ -43,7 +61,7 @@ public sealed partial class LibraryViewModel(
     public ObservableCollection<FacetFilterViewModel> EReaderFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
 
-    public BookDetailsViewModel Details { get; } = details;
+    public BookDetailsViewModel Details { get; }
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -61,10 +79,10 @@ public sealed partial class LibraryViewModel(
     private ImportResultViewModel? lastImportResult;
 
     [ObservableProperty]
-    private string currentLibraryName = currentLibrary?.Current?.Name ?? "No library selected";
+    private string currentLibraryName = "No library selected";
 
     [ObservableProperty]
-    private string? currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
+    private string? currentLibraryPath;
 
     [ObservableProperty]
     private string emptyStateMessage = "Create or open a library to get started.";
@@ -220,8 +238,7 @@ public sealed partial class LibraryViewModel(
     private void ApplyFilter()
     {
         var selectedId = SelectedBook?.Id;
-        var filteredBooks = ApplyLanguageFilter(ApplyEReaderFilter(ApplyStatusFilter(ApplySeriesFilter(
-            ApplyCategoryFilter(ApplyAuthorFilter(searchService.Filter(books, SearchText)))))));
+        var filteredBooks = ApplyFacetFilters(searchService.Filter(books, SearchText));
         var rows = ApplySort(
                 filteredBooks.Select(book => new BookRowViewModel(book, SearchText)),
                 SelectedSortOption)
@@ -242,75 +259,33 @@ public sealed partial class LibraryViewModel(
             : "Create or open a library to get started.";
     }
 
-    private IReadOnlyList<Book> ApplyAuthorFilter(IReadOnlyList<Book> source)
+    private IReadOnlyList<Book> ApplyFacetFilters(IReadOnlyList<Book> source)
     {
-        return ApplyFacetFilter(
-            source,
-            AuthorFilters,
-            book => book.Metadata.Authors);
-    }
+        var selectedFilters = new[]
+            {
+                (Filters: AuthorFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => book.Metadata.Authors)),
+                (Filters: CategoryFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => book.Metadata.Tags ?? [])),
+                (Filters: SeriesFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(book.Metadata.Series))),
+                (Filters: StatusFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => [book.ReadingStatus.ToString()])),
+                (Filters: EReaderFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => [new BookRowViewModel(book).EReader])),
+                (Filters: LanguageFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(book.Metadata.Language)))
+            }
+            .Select(group => (
+                group.ValueSelector,
+                Values: group.Filters
+                    .Where(filter => filter.IsSelected)
+                    .Select(filter => filter.Name)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase)))
+            .Where(group => group.Values.Count > 0)
+            .ToArray();
 
-    private IReadOnlyList<Book> ApplyCategoryFilter(IReadOnlyList<Book> source)
-    {
-        return ApplyFacetFilter(
-            source,
-            CategoryFilters,
-            book => book.Metadata.Tags ?? []);
-    }
-
-    private IReadOnlyList<Book> ApplySeriesFilter(IReadOnlyList<Book> source)
-    {
-        return ApplyFacetFilter(
-            source,
-            SeriesFilters,
-            book => SingleOptionalValue(book.Metadata.Series));
-    }
-
-    private IReadOnlyList<Book> ApplyStatusFilter(IReadOnlyList<Book> source)
-    {
-        return ApplyFacetFilter(
-            source,
-            StatusFilters,
-            book => [book.ReadingStatus.ToString()]);
-    }
-
-    private IReadOnlyList<Book> ApplyEReaderFilter(IReadOnlyList<Book> source)
-    {
-        return ApplyFacetFilter(
-            source,
-            EReaderFilters,
-            book => [new BookRowViewModel(book).EReader]);
-    }
-
-    private IReadOnlyList<Book> ApplyLanguageFilter(IReadOnlyList<Book> source)
-    {
-        return ApplyFacetFilter(
-            source,
-            LanguageFilters,
-            book => SingleOptionalValue(book.Metadata.Language));
-    }
-
-    private static IReadOnlyList<Book> ApplyFacetFilter(
-        IReadOnlyList<Book> source,
-        IReadOnlyCollection<FacetFilterViewModel> filters,
-        Func<Book, IEnumerable<string>> valueSelector)
-    {
-        if (filters.Count == 0)
-        {
-            return source;
-        }
-
-        var selectedValues = filters
-            .Where(filter => filter.IsSelected)
-            .Select(filter => filter.Name)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        if (selectedValues.Count == filters.Count)
+        if (selectedFilters.Length == 0)
         {
             return source;
         }
 
         return source
-            .Where(book => valueSelector(book).Any(selectedValues.Contains))
+            .Where(book => selectedFilters.Any(group => group.ValueSelector(book).Any(group.Values.Contains)))
             .ToList();
     }
 
@@ -356,7 +331,7 @@ public sealed partial class LibraryViewModel(
         filters.Clear();
         foreach (var value in valueCounts)
         {
-            var isSelected = !existingSelections.TryGetValue(value.Name, out var existingSelection) || existingSelection;
+            var isSelected = existingSelections.TryGetValue(value.Name, out var existingSelection) && existingSelection;
             filters.Add(new FacetFilterViewModel(value.Name, value.Count, isSelected, ApplyFilter));
         }
     }
@@ -380,7 +355,7 @@ public sealed partial class LibraryViewModel(
             }
 
             var name = status.ToString();
-            var isSelected = !existingSelections.TryGetValue(name, out var existingSelection) || existingSelection;
+            var isSelected = existingSelections.TryGetValue(name, out var existingSelection) && existingSelection;
             StatusFilters.Add(new FacetFilterViewModel(name, count, isSelected, ApplyFilter));
         }
     }
@@ -431,5 +406,30 @@ public sealed partial class LibraryViewModel(
     {
         CurrentLibraryName = currentLibrary?.Current?.Name ?? "No library selected";
         CurrentLibraryPath = currentLibrary?.Current?.DirectoryPath;
+    }
+
+    private void OnDetailsBookSaved(object? sender, Book savedBook)
+    {
+        var mutableBooks = books.ToList();
+        var index = mutableBooks.FindIndex(book => book.Id == savedBook.Id);
+        if (index >= 0)
+        {
+            mutableBooks[index] = savedBook;
+        }
+        else
+        {
+            mutableBooks.Add(savedBook);
+        }
+
+        books = mutableBooks;
+        RefreshFacetFilters();
+        ApplyFilter();
+    }
+
+    private void OnDetailsBookDeleted(object? sender, Guid bookId)
+    {
+        books = books.Where(book => book.Id != bookId).ToList();
+        RefreshFacetFilters();
+        ApplyFilter();
     }
 }

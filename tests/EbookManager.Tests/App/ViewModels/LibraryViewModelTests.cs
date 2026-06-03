@@ -68,7 +68,8 @@ public sealed class LibraryViewModelTests
         viewModel.AuthorFilters.Select(filter => filter.DisplayName)
             .Should().Equal("Frank Herbert (1)", "Tolkien (1)");
 
-        viewModel.AuthorFilters.Single(filter => filter.Name == "Tolkien").IsSelected = false;
+        viewModel.AuthorFilters.Should().OnlyContain(filter => !filter.IsSelected);
+        viewModel.AuthorFilters.Single(filter => filter.Name == "Frank Herbert").IsSelected = true;
 
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Title.Should().Be("Dune");
@@ -86,7 +87,8 @@ public sealed class LibraryViewModelTests
         viewModel.CategoryFilters.Select(filter => filter.DisplayName)
             .Should().Equal("Fantasy (1)", "Science fiction (1)");
 
-        viewModel.CategoryFilters.Single(filter => filter.Name == "Fantasy").IsSelected = false;
+        viewModel.CategoryFilters.Should().OnlyContain(filter => !filter.IsSelected);
+        viewModel.CategoryFilters.Single(filter => filter.Name == "Science fiction").IsSelected = true;
 
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Title.Should().Be("Dune");
@@ -120,9 +122,60 @@ public sealed class LibraryViewModelTests
         viewModel.LanguageFilters.Select(filter => filter.DisplayName)
             .Should().Equal("en (1)", "nl (1)");
 
-        viewModel.SeriesFilters.Single(filter => filter.Name == "Middle-earth").IsSelected = false;
+        viewModel.SeriesFilters.Should().OnlyContain(filter => !filter.IsSelected);
+        viewModel.SeriesFilters.Single(filter => filter.Name == "Dune").IsSelected = true;
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Title.Should().Be("Dune");
+    }
+
+    [Fact]
+    public async Task Selected_filters_expand_results_across_facets()
+    {
+        var art = CreateBook("Art Book", ["Art Jefferson"]);
+        var kim = CreateBook("Kim Book", ["Kim Maurits"]);
+        var arendsoog = CreateBook("Arendsoog", ["N. Nowee"], series: "Arendsoog");
+        var unrelated = CreateBook("Other", ["Other Author"], series: "Other Series");
+        var viewModel = CreateViewModel([art, kim, arendsoog, unrelated]);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.VisibleBooks.Select(book => book.Title)
+            .Should().BeEquivalentTo("Art Book", "Kim Book", "Arendsoog", "Other");
+
+        viewModel.AuthorFilters.Single(filter => filter.Name == "Art Jefferson").IsSelected = true;
+        viewModel.VisibleBooks.Select(book => book.Title)
+            .Should().Equal("Art Book");
+
+        viewModel.AuthorFilters.Single(filter => filter.Name == "Kim Maurits").IsSelected = true;
+        viewModel.VisibleBooks.Select(book => book.Title)
+            .Should().BeEquivalentTo("Art Book", "Kim Book");
+
+        viewModel.SeriesFilters.Single(filter => filter.Name == "Arendsoog").IsSelected = true;
+        viewModel.VisibleBooks.Select(book => book.Title)
+            .Should().BeEquivalentTo("Art Book", "Kim Book", "Arendsoog");
+    }
+
+    [Fact]
+    public async Task Saved_details_refresh_visible_rows_and_filters()
+    {
+        var book = CreateBook("Original", ["Author"]);
+        var repository = new StaticBookRepository([book]);
+        var details = new BookDetailsViewModel(new BookService(
+            repository,
+            new NoopLibraryFileStore(),
+            new NoopMetadataAdapterResolver()));
+        var viewModel = CreateViewModel([book], repository: repository, details: details);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedBook = viewModel.VisibleBooks.Single();
+        viewModel.Details.Title = "Updated";
+        viewModel.Details.Series = "New Series";
+
+        await viewModel.Details.SaveCommand.ExecuteAsync(null);
+
+        viewModel.VisibleBooks.Should().ContainSingle()
+            .Which.Title.Should().Be("Updated");
+        viewModel.SeriesFilters.Should().ContainSingle(filter => filter.Name == "New Series");
     }
 
     [Fact]
@@ -258,10 +311,12 @@ public sealed class LibraryViewModelTests
         LibraryService? libraryService = null,
         CurrentLibrary? currentLibrary = null,
         ILibraryDatabaseInitializer? databaseInitializer = null,
-        IAppSettingsStore? settingsStore = null)
+        IAppSettingsStore? settingsStore = null,
+        IBookRepository? repository = null,
+        BookDetailsViewModel? details = null)
     {
-        var repository = new StaticBookRepository(books);
-        var details = new BookDetailsViewModel(new BookService(
+        repository ??= new StaticBookRepository(books);
+        details ??= new BookDetailsViewModel(new BookService(
             repository,
             new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver()));
@@ -296,13 +351,29 @@ public sealed class LibraryViewModelTests
 
     private sealed class StaticBookRepository(IReadOnlyList<Book> books) : IBookRepository
     {
-        public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult(books);
+        private readonly List<Book> books = [.. books];
+
+        public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([.. books]);
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult(books.SingleOrDefault(book => book.Id == id));
         public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) => Task.FromResult(false);
         public Task<bool> HasNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) => Task.FromResult(false);
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task UpdateAsync(Book book, CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task UpdateAsync(Book book, CancellationToken cancellationToken)
+        {
+            var index = books.FindIndex(existing => existing.Id == book.Id);
+            if (index >= 0)
+            {
+                books[index] = book;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+        {
+            books.RemoveAll(book => book.Id == id);
+            return Task.CompletedTask;
+        }
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<BookFile>>([]);
         public Task UpdateFileWriteBackAsync(Guid fileId, MetadataWriteResult result, CancellationToken cancellationToken) => Task.CompletedTask;
     }

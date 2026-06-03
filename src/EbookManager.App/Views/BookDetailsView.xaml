@@ -6,8 +6,8 @@
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
   </UserControl.Resources>
-  <ScrollViewer VerticalScrollBarVisibility="Auto">
-    <StackPanel Margin="16">
+  <DockPanel Margin="16">
+    <StackPanel DockPanel.Dock="Top">
       <Border Background="#FFFFF3CD"
               CornerRadius="8"
               Padding="10"
@@ -39,7 +39,10 @@
                 Command="{Binding DeleteCommand}"
                 MinWidth="70" />
       </StackPanel>
+    </StackPanel>
 
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel>
       <Border Height="220"
               Background="#FFE2E8F0"
               CornerRadius="12"
@@ -84,6 +87,7 @@
         <ComboBoxItem Content="Reading" Tag="{x:Static books:ReadingStatus.Reading}" />
         <ComboBoxItem Content="Read" Tag="{x:Static books:ReadingStatus.Read}" />
       </ComboBox>
-    </StackPanel>
-  </ScrollViewer>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
 </UserControl>
