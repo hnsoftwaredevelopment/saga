@@ -321,7 +321,7 @@ public sealed class ImportService(
         public const string MetadataReadFailed = "metadata read failed";
         public const string MetadataWarning = "metadata warning";
         public const string PossibleDuplicate = "possible duplicate";
-        public const string SourceUnreadable = "source unreadable";
+        public const string SourceUnreadable = "source unreadable; make sure the file is available locally";
         public const string UnsupportedFormat = "unsupported format";
     }
 }

@@ -8,6 +8,9 @@
         Height="820"
         MinWidth="1100"
         MinHeight="680"
+        AllowDrop="True"
+        PreviewDragOver="LibraryDropZoneDragOver"
+        PreviewDrop="LibraryDropZoneDrop"
         WindowStartupLocation="CenterScreen">
   <Grid Background="{DynamicResource AppBackgroundBrush}">
     <Grid.RowDefinitions>
@@ -127,8 +130,8 @@
               Padding="10"
               Margin="0,0,12,0"
               AllowDrop="True"
-              DragOver="LibraryDropZoneDragOver"
-              Drop="LibraryDropZoneDrop">
+              PreviewDragOver="LibraryDropZoneDragOver"
+              PreviewDrop="LibraryDropZoneDrop">
         <Grid>
           <Border Background="{DynamicResource PanelBackgroundBrush}"
                   Panel.ZIndex="1">

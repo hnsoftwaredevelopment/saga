@@ -53,6 +53,7 @@ public partial class MainWindow : System.Windows.Window
     {
         if (e.Data.GetData(System.Windows.DataFormats.FileDrop) is string[] paths)
         {
+            e.Handled = true;
             await viewModel.ImportFilesAsync(paths);
         }
     }
