@@ -14,7 +14,7 @@ public sealed class AppStartupServiceTests
         using var temporaryDirectory = new TemporaryDirectory();
         var libraryPath = temporaryDirectory.CreateSubdirectory("Library").FullName;
         var settingsStore = new InMemoryAppSettingsStore();
-        await settingsStore.SaveAsync(new AppSettings(libraryPath, "en-US", "Light", "Detailed", true), default);
+        await settingsStore.SaveAsync(new AppSettings(libraryPath, "en-US", "Light", "Detailed", true, true), default);
         var currentLibrary = new CurrentLibrary();
         var initializer = new RecordingLibraryDatabaseInitializer();
         var service = new AppStartupService(settingsStore, new LibraryService(settingsStore), currentLibrary, initializer);
@@ -34,7 +34,7 @@ public sealed class AppStartupServiceTests
         using var temporaryDirectory = new TemporaryDirectory();
         var missingLibraryPath = Path.Combine(temporaryDirectory.DirectoryPath, "MissingLibrary");
         var settingsStore = new InMemoryAppSettingsStore();
-        await settingsStore.SaveAsync(new AppSettings(missingLibraryPath, "en-US", "Light", "Detailed", true), default);
+        await settingsStore.SaveAsync(new AppSettings(missingLibraryPath, "en-US", "Light", "Detailed", true, true), default);
         var currentLibrary = new CurrentLibrary();
         currentLibrary.Set(new LibraryDescriptor("Previous", temporaryDirectory.DirectoryPath, DateTimeOffset.UtcNow));
         var initializer = new RecordingLibraryDatabaseInitializer();

@@ -19,7 +19,8 @@ public sealed partial class LibraryViewModel(
     LibraryService? libraryService = null,
     CurrentLibrary? currentLibrary = null,
     ILibraryDatabaseInitializer? databaseInitializer = null,
-    DirectoryScanner? directoryScanner = null)
+    DirectoryScanner? directoryScanner = null,
+    IAppSettingsStore? settingsStore = null)
     : ObservableObject
 {
     private readonly IBookRepository bookRepository = bookRepository;
@@ -30,6 +31,7 @@ public sealed partial class LibraryViewModel(
     private readonly CurrentLibrary? currentLibrary = currentLibrary;
     private readonly ILibraryDatabaseInitializer? databaseInitializer = databaseInitializer;
     private readonly DirectoryScanner? directoryScanner = directoryScanner;
+    private readonly IAppSettingsStore? settingsStore = settingsStore;
     private IReadOnlyList<Book> books = [];
 
     public ObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
@@ -62,9 +64,6 @@ public sealed partial class LibraryViewModel(
 
     [ObservableProperty]
     private string emptyStateMessage = "Create or open a library to get started.";
-
-    [ObservableProperty]
-    private bool includeScanSubdirectories = true;
 
     public bool HasActiveLibrary => CurrentLibraryPath is not null;
 
@@ -161,7 +160,9 @@ public sealed partial class LibraryViewModel(
             return;
         }
 
-        var files = directoryScanner.Scan(folder, IncludeScanSubdirectories, cancellationToken);
+        var includeSubdirectories = settingsStore is null ||
+            (await settingsStore.LoadAsync(cancellationToken)).IncludeScanSubdirectories;
+        var files = directoryScanner.Scan(folder, includeSubdirectories, cancellationToken);
         await ImportFilesAsync(files, cancellationToken);
     }
 

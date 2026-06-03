@@ -89,7 +89,17 @@ public partial class App : System.Windows.Application
         services.AddTransient<BookService>();
         services.AddTransient<ImportService>();
         services.AddTransient<BookDetailsViewModel>();
-        services.AddTransient<LibraryViewModel>();
+        services.AddTransient(provider => new LibraryViewModel(
+            provider.GetRequiredService<IBookRepository>(),
+            provider.GetRequiredService<BookSearchService>(),
+            provider.GetRequiredService<BookDetailsViewModel>(),
+            provider.GetRequiredService<IUserInteractionService>(),
+            provider.GetService<ImportService>(),
+            provider.GetService<LibraryService>(),
+            provider.GetService<CurrentLibrary>(),
+            provider.GetService<ILibraryDatabaseInitializer>(),
+            provider.GetService<DirectoryScanner>(),
+            provider.GetRequiredService<IAppSettingsStore>()));
         services.AddTransient<SettingsViewModel>();
         services.AddSingleton<MainWindow>();
 

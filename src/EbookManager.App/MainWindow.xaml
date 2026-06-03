@@ -199,9 +199,6 @@
               </ItemsControl>
             </ScrollViewer>
           </Expander>
-          <CheckBox Content="Include subdirectories when scanning"
-                    IsChecked="{Binding IncludeScanSubdirectories}"
-                    Margin="0,0,0,12" />
           <TextBlock Text="Filters are based on metadata found during import."
                      TextWrapping="Wrap"
                      Foreground="{DynamicResource TextSecondaryBrush}" />

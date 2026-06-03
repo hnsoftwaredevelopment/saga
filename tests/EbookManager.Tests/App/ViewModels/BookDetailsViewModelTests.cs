@@ -10,6 +10,17 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class BookDetailsViewModelTests
 {
     [Fact]
+    public void Loading_a_book_does_not_set_dirty_state()
+    {
+        var viewModel = CreateViewModel(out _);
+        var book = CreateBook("Original", ["First Author"]);
+
+        viewModel.Load(book);
+
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
     public void Editing_metadata_sets_dirty_state_and_undo_restores_original_values()
     {
         var viewModel = CreateViewModel(out _);

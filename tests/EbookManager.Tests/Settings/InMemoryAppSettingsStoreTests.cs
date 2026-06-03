@@ -12,7 +12,7 @@ public sealed class InMemoryAppSettingsStoreTests
     {
         var store = new InMemoryAppSettingsStore();
         var cancellationToken = new CancellationToken(canceled: true);
-        var changedSettings = new AppSettings("C:\\Changed", "nl-NL", "Dark", "List", false);
+        var changedSettings = new AppSettings("C:\\Changed", "nl-NL", "Dark", "List", false, true);
         LibraryDescriptor[] changedLibraries =
         [
             new("Changed", "C:\\Changed", DateTimeOffset.Parse("2026-06-02T08:00:00Z"))
@@ -27,7 +27,7 @@ public sealed class InMemoryAppSettingsStoreTests
         await FluentActions.Awaiting(() => store.SaveLibrariesAsync(changedLibraries, cancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
 
-        store.Settings.Should().Be(new AppSettings(null, "en-US", "Light", "Detailed", true));
+        store.Settings.Should().Be(new AppSettings(null, "en-US", "Light", "Detailed", true, true));
         store.Libraries.Should().BeEmpty();
     }
 }

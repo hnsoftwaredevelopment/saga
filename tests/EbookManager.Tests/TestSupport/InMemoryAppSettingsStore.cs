@@ -5,7 +5,7 @@ namespace EbookManager.Tests.TestSupport;
 
 public sealed class InMemoryAppSettingsStore : IAppSettingsStore
 {
-    public AppSettings Settings { get; private set; } = new(null, "en-US", "Light", "Detailed", true);
+    public AppSettings Settings { get; private set; } = new(null, "en-US", "Light", "Detailed", true, true);
 
     public List<LibraryDescriptor> Libraries { get; private set; } = [];
 

@@ -7,7 +7,8 @@ public sealed record AppSettings(
     string Culture,
     string Theme,
     string DefaultView,
-    bool ConfirmDelete);
+    bool ConfirmDelete,
+    bool IncludeScanSubdirectories = true);
 
 public interface IAppSettingsStore
 {

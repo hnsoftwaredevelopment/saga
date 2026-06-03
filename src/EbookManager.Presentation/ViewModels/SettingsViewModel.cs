@@ -21,6 +21,9 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
     [ObservableProperty]
     private bool confirmDelete = true;
 
+    [ObservableProperty]
+    private bool includeScanSubdirectories = true;
+
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
         var settings = await settingsStore.LoadAsync(cancellationToken);
@@ -28,6 +31,7 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
         Theme = settings.Theme;
         DefaultView = settings.DefaultView;
         ConfirmDelete = settings.ConfirmDelete;
+        IncludeScanSubdirectories = settings.IncludeScanSubdirectories;
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
@@ -39,7 +43,8 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
                 Culture = Culture,
                 Theme = Theme,
                 DefaultView = DefaultView,
-                ConfirmDelete = ConfirmDelete
+                ConfirmDelete = ConfirmDelete,
+                IncludeScanSubdirectories = IncludeScanSubdirectories
             },
             cancellationToken);
     }

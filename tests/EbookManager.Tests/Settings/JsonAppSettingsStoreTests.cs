@@ -14,7 +14,7 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
     public async Task Settings_round_trip_through_injected_base_directory()
     {
         var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
-        var settings = new AppSettings("C:\\Books", "nl-NL", "Dark", "List", false);
+        var settings = new AppSettings("C:\\Books", "nl-NL", "Dark", "List", false, true);
 
         await store.SaveAsync(settings, CancellationToken.None);
 
@@ -48,7 +48,7 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
         var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
         await store.SaveAsync(new(null, "en-US", "Light", "Detailed", true), default);
 
-        var updated = new AppSettings("C:\\Updated", "nl-NL", "Dark", "List", false);
+        var updated = new AppSettings("C:\\Updated", "nl-NL", "Dark", "List", false, true);
         await store.SaveAsync(updated, default);
 
         (await store.LoadAsync(default)).Should().Be(updated);
@@ -79,9 +79,32 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
 
         var settings = await store.LoadAsync(default);
 
-        settings.Should().Be(new AppSettings(null, "en-US", "Light", "Detailed", true));
+        settings.Should().Be(new AppSettings(null, "en-US", "Light", "Detailed", true, true));
         File.Exists(path).Should().BeFalse();
         Directory.GetFiles(temporaryDirectory.DirectoryPath, "settings.json.*.corrupt").Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Load_uses_default_scan_recursion_when_setting_is_missing()
+    {
+        var path = Path.Combine(temporaryDirectory.DirectoryPath, "settings.json");
+        Directory.CreateDirectory(temporaryDirectory.DirectoryPath);
+        await File.WriteAllTextAsync(
+            path,
+            """
+            {
+              "lastLibraryPath": null,
+              "culture": "en-US",
+              "theme": "Light",
+              "defaultView": "Detailed",
+              "confirmDelete": true
+            }
+            """);
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+
+        var settings = await store.LoadAsync(default);
+
+        settings.IncludeScanSubdirectories.Should().BeTrue();
     }
 
     [Fact]
@@ -107,7 +130,7 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
         for (var index = 0; index < 100; index++)
         {
             await File.WriteAllTextAsync(path, "{");
-            var savedSettings = new AppSettings($"C:\\Library{index}", "nl-NL", "Dark", "List", false);
+            var savedSettings = new AppSettings($"C:\\Library{index}", "nl-NL", "Dark", "List", false, true);
             var operations = Enumerable.Range(0, 20)
                 .Select(_ => store.LoadAsync(default))
                 .Cast<Task>()
@@ -166,7 +189,7 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
         var store = new JsonAppSettingsStore(baseDirectory);
 
         var act = () => store.SaveAsync(
-            new AppSettings(null, "en-US", "Light", "Detailed", true),
+            new AppSettings(null, "en-US", "Light", "Detailed", true, true),
             new CancellationToken(canceled: true));
 
         await act.Should().ThrowAsync<OperationCanceledException>();

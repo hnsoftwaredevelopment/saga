@@ -7,7 +7,7 @@ namespace EbookManager.Infrastructure.Settings;
 
 public sealed class JsonAppSettingsStore : IAppSettingsStore
 {
-    private static readonly AppSettings DefaultSettings = new(null, "en-US", "Light", "Detailed", true);
+    private static readonly AppSettings DefaultSettings = new(null, "en-US", "Light", "Detailed", true, true);
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         WriteIndented = true

@@ -9,6 +9,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
 {
     private readonly BookService bookService = bookService;
     private Book? originalBook;
+    private bool isApplyingBook;
 
     [ObservableProperty]
     private Guid? bookId;
@@ -183,27 +184,48 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
 
     private void Apply(Book book)
     {
-        BookId = book.Id;
-        Title = book.Metadata.Title;
-        AuthorsText = JoinList(book.Metadata.Authors);
-        Description = book.Metadata.Description;
-        Language = book.Metadata.Language;
-        Publisher = book.Metadata.Publisher;
-        PublicationDate = book.Metadata.PublicationDate;
-        TagsText = book.Metadata.Tags is null ? null : JoinList(book.Metadata.Tags);
-        Series = book.Metadata.Series;
-        SeriesNumber = book.Metadata.SeriesNumber;
-        Isbn = book.Metadata.Isbn;
-        ReadingStatus = book.ReadingStatus;
-        CoverBytes = book.Metadata.CoverBytes;
+        ApplyValues(() =>
+        {
+            BookId = book.Id;
+            Title = book.Metadata.Title;
+            AuthorsText = JoinList(book.Metadata.Authors);
+            Description = book.Metadata.Description;
+            Language = book.Metadata.Language;
+            Publisher = book.Metadata.Publisher;
+            PublicationDate = book.Metadata.PublicationDate;
+            TagsText = book.Metadata.Tags is null ? null : JoinList(book.Metadata.Tags);
+            Series = book.Metadata.Series;
+            SeriesNumber = book.Metadata.SeriesNumber;
+            Isbn = book.Metadata.Isbn;
+            ReadingStatus = book.ReadingStatus;
+            CoverBytes = book.Metadata.CoverBytes;
+        });
     }
 
     private void RefreshDirtyState()
     {
+        if (isApplyingBook)
+        {
+            return;
+        }
+
         var editedBook = ToBook();
         HasUnsavedChanges = originalBook is not null &&
             editedBook is not null &&
             !BooksEquivalentForEditing(originalBook, editedBook);
+    }
+
+    private void ApplyValues(Action apply)
+    {
+        isApplyingBook = true;
+        try
+        {
+            apply();
+        }
+        finally
+        {
+            isApplyingBook = false;
+        }
     }
 
     private bool CanEdit() => originalBook is not null;
