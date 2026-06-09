@@ -4,12 +4,14 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 2 completes version `0.1` as a functional Windows desktop test release.
+Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-quality improvements.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
 - EPUB metadata and cover extraction
 - EPUB subject/tag and Calibre-style series metadata extraction
+- Calibre `metadata.opf` sidecar import
+- conservative title, author, and series cleanup
 - CBZ cover extraction
 - safe fallback import for recognized formats
 - drag-and-drop import
@@ -75,11 +77,23 @@ Metadata extraction is intentionally conservative:
 - CBZ: first supported image as cover, filename fallback for title/author
 - PDF, CBR, MOBI, AZW, AZW3, and KFX: safe import with filename fallback
 
-SQLite is authoritative for metadata inside the application. Metadata edits are also written to a portable `metadata.json` sidecar file next to the managed book file. On import, a sibling `metadata.json` is preferred over embedded metadata so corrected metadata can travel with a copied book directory. Native write-back into ebook files remains a later opt-in feature per format, starting with EPUB only after representative safety tests.
+SQLite is authoritative for metadata inside the application. Metadata edits are also written to a portable `metadata.json` sidecar file next to the managed book file.
+
+During import, metadata is resolved in this order:
+
+1. Ebook Manager `metadata.json` sidecar next to the source file.
+2. Calibre `metadata.opf` sidecar next to the source file.
+3. Embedded format metadata, strongest for EPUB and KEPUB.
+4. Filename fallback.
+
+Native write-back into ebook files remains a later opt-in feature per format, starting with EPUB only after representative safety tests.
 
 ## Manual Verification
 
-Use [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md) for the current manual test checklist.
+Use these manual test checklists:
+
+- [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)
+- [docs/manual-tests/milestone-3-checklist.md](docs/manual-tests/milestone-3-checklist.md)
 
 ## Later-Version Candidates
 
