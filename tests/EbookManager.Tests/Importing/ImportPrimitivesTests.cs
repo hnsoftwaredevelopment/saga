@@ -364,6 +364,45 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
+    public async Task Calibre_opf_sidecar_returns_warning_for_malformed_opf_without_throwing()
+    {
+        var bookPath = WriteBytesFile("Calibre/Broken/Broken.epub", [1, 2, 3]);
+        File.WriteAllText(Path.Combine(Path.GetDirectoryName(bookPath)!, "metadata.opf"), "<package>");
+        var store = new CalibreOpfMetadataSidecarStore();
+
+        var result = await store.TryReadAsync(bookPath, default);
+
+        result.Should().NotBeNull();
+        result!.Metadata.Title.Should().Be("Broken");
+        result.Metadata.Authors.Should().Equal("Unknown");
+        result.Warning.Should().Contain("Calibre OPF ignored");
+    }
+
+    [Fact]
+    public async Task Calibre_opf_sidecar_ignores_non_numeric_series_index()
+    {
+        var bookPath = WriteBytesFile("Calibre/Series/Book.epub", [1, 2, 3]);
+        File.WriteAllText(
+            Path.Combine(Path.GetDirectoryName(bookPath)!, "metadata.opf"),
+            """
+            <package xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <metadata>
+                <dc:title>Book</dc:title>
+                <dc:creator>Author</dc:creator>
+                <meta name="calibre:series" content="Series" />
+                <meta name="calibre:series_index" content="one" />
+              </metadata>
+            </package>
+            """);
+        var store = new CalibreOpfMetadataSidecarStore();
+
+        var result = await store.TryReadAsync(bookPath, default);
+
+        result!.Metadata.Series.Should().Be("Series");
+        result.Metadata.SeriesNumber.Should().BeNull();
+    }
+
+    [Fact]
     public void Metadata_cleaner_extracts_bracketed_series_title_and_number()
     {
         var metadata = new BookMetadata("[Atlanta 01] - Triptiek", ["Slaughter, Karin"]);

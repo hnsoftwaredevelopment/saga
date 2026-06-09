@@ -129,6 +129,37 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Directory_scan_import_associates_sibling_calibre_opf()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var root = Path.Combine(fixture.WorkspacePath, "CalibreLibrary");
+        var bookDirectory = Path.Combine(root, "Author", "Book");
+        Directory.CreateDirectory(bookDirectory);
+        var source = Path.Combine(bookDirectory, "Book.pdf");
+        File.WriteAllBytes(source, Encoding.UTF8.GetBytes("scan-opf"));
+        File.WriteAllText(
+            Path.Combine(bookDirectory, "metadata.opf"),
+            """
+            <package xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <metadata>
+                <dc:title>Scanned OPF Title</dc:title>
+                <dc:creator>Scanned Author</dc:creator>
+                <dc:subject>Scanned Tag</dc:subject>
+              </metadata>
+            </package>
+            """);
+        var scanner = new DirectoryScanner();
+        var sources = scanner.Scan(root, recursive: true);
+
+        var result = await fixture.CreateService().ImportAsync(sources, default);
+
+        var book = await fixture.BookRepository.GetAsync(result.Items.Single().BookId!.Value, default);
+        book!.Metadata.Title.Should().Be("Scanned OPF Title");
+        book.Metadata.Authors.Should().Equal("Scanned Author");
+        book.Metadata.Tags.Should().Equal("Scanned Tag");
+    }
+
+    [Fact]
     public async Task Import_async_skips_exact_duplicates_without_copying_them()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();
