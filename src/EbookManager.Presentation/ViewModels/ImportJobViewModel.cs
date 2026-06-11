@@ -98,6 +98,15 @@ public sealed partial class ImportJobViewModel : ObservableObject
         Title = "Import cancelled";
     }
 
+    public void Cancelled(ImportBatchResult result)
+    {
+        LatestResult = result;
+        IsActive = false;
+        IsIndeterminate = false;
+        Title = "Import cancelled";
+        OnPropertyChanged(nameof(CanShowDetails));
+    }
+
     public void Failed(string message)
     {
         IsVisible = true;
@@ -106,6 +115,14 @@ public sealed partial class ImportJobViewModel : ObservableObject
         Title = "Import failed";
         StatusText = message;
         RefreshProgressProperties();
+    }
+
+    public void Close()
+    {
+        if (!IsActive)
+        {
+            IsVisible = false;
+        }
     }
 
     private void ClearCounts()

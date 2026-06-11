@@ -111,6 +111,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IAsyncRelayCommand OpenLibraryCommand => openLibraryCommand ??= new AsyncRelayCommand(OpenLibraryAsync);
     public IRelayCommand CancelImportCommand => cancelImportCommand ??= new RelayCommand(() => importAgent?.CancelActiveJob());
     public IAsyncRelayCommand ShowImportDetailsCommand => showImportDetailsCommand ??= new AsyncRelayCommand(ShowImportDetailsAsync);
+    public IRelayCommand CloseImportJobCommand => closeImportJobCommand ??= new RelayCommand(() => importAgent?.Job.Close());
 
     private AsyncRelayCommand? refreshCommand;
     private AsyncRelayCommand? addBooksCommand;
@@ -119,6 +120,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand? openLibraryCommand;
     private RelayCommand? cancelImportCommand;
     private AsyncRelayCommand? showImportDetailsCommand;
+    private RelayCommand? closeImportJobCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -272,7 +274,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         var selectedId = SelectedBook?.Id;
         var filteredBooks = ApplyFacetFilters(searchService.Filter(books, SearchText));
         var rows = ApplySort(
-                filteredBooks.Select(book => new BookRowViewModel(book, SearchText)),
+                filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath)),
                 SelectedSortOption)
             .ToList();
 

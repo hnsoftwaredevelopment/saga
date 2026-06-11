@@ -2,7 +2,7 @@ using EbookManager.Domain.Books;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed class BookRowViewModel(Book book, string searchText = "")
+public sealed class BookRowViewModel(Book book, string searchText = "", string? libraryPath = null)
 {
     public Book Book { get; } = book;
     public Guid Id => Book.Id;
@@ -12,5 +12,8 @@ public sealed class BookRowViewModel(Book book, string searchText = "")
     public string EReader => "Unavailable";
     public byte[]? CoverBytes => Book.Metadata.CoverBytes;
     public string? CoverRelativePath => Book.CoverRelativePath;
+    public string? CoverPath => libraryPath is null || string.IsNullOrWhiteSpace(Book.CoverRelativePath)
+        ? null
+        : Path.Combine(libraryPath, Book.CoverRelativePath);
     public string SearchText { get; } = searchText;
 }

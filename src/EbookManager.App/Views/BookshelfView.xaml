@@ -7,6 +7,7 @@
              AllowDrop="True">
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
+    <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
   </UserControl.Resources>
   <ScrollViewer VerticalScrollBarVisibility="Auto"
                 AllowDrop="True">
@@ -37,7 +38,7 @@
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"
                              Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <Image Source="{Binding CoverBytes, Converter={StaticResource ByteArrayToImageSourceConverter}}"
+                  <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=220}"
                          Stretch="UniformToFill" />
                 </Grid>
               </Border>

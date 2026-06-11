@@ -69,6 +69,25 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Import_async_returns_partial_result_when_cancelled_after_progress()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var service = fixture.CreateService();
+        var first = fixture.WriteBytesFile(@"incoming\First - Author.pdf", Encoding.UTF8.GetBytes("first"));
+        var second = fixture.WriteBytesFile(@"incoming\Second - Author.pdf", Encoding.UTF8.GetBytes("second"));
+        using var cancellation = new CancellationTokenSource();
+
+        var result = await service.ImportAsync(
+            [first, second],
+            new SynchronousProgress<ImportProgress>(_ => cancellation.Cancel()),
+            cancellation.Token);
+
+        result.WasCancelled.Should().BeTrue();
+        result.Items.Should().ContainSingle();
+        result.Items[0].SourcePath.Should().Be(first);
+    }
+
+    [Fact]
     public async Task Import_async_prefers_sidecar_metadata_when_available_next_to_source_file()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();
@@ -343,9 +362,11 @@ public sealed class ImportServiceTests
         var first = fixture.WriteBytesFile(@"incoming\One - Author.pdf", Encoding.UTF8.GetBytes("one"));
         var second = fixture.WriteBytesFile(@"incoming\Two - Author.pdf", Encoding.UTF8.GetBytes("two"));
 
-        var act = () => service.ImportAsync([first, second], cancellation.Token);
+        var result = await service.ImportAsync([first, second], cancellation.Token);
 
-        await act.Should().ThrowAsync<OperationCanceledException>();
+        result.WasCancelled.Should().BeTrue();
+        result.Items.Should().ContainSingle()
+            .Which.SourcePath.Should().Be(first);
         var run = await fixture.LoadImportRunAsync(importRepository.LastRunId);
         run.Should().NotBeNull();
         run!.CompletedUtc.Should().NotBeNull();

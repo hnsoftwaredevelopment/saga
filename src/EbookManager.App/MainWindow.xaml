@@ -334,6 +334,20 @@
                     </Style>
                   </Button.Style>
                 </Button>
+                <Button Content="{loc:Loc Close}"
+                        Command="{Binding CloseImportJobCommand}"
+                        Padding="12,6">
+                  <Button.Style>
+                    <Style TargetType="Button">
+                      <Setter Property="Visibility" Value="Visible" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding ImportJob.IsActive, Mode=OneWay}" Value="True">
+                          <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                </Button>
               </StackPanel>
             </Grid>
           </Border>

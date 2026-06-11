@@ -8,6 +8,7 @@
              AllowDrop="True">
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
+    <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
   </UserControl.Resources>
   <syncfusion:SfDataGrid ItemsSource="{Binding VisibleBooks}"
                          SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
@@ -31,7 +32,7 @@
                     CornerRadius="4"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
-              <Image Source="{Binding CoverBytes, Converter={StaticResource ByteArrayToImageSourceConverter}}"
+              <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=48}"
                      Stretch="UniformToFill" />
             </Border>
           </DataTemplate>

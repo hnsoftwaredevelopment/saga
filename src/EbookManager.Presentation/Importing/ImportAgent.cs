@@ -64,7 +64,15 @@ public sealed class ImportAgent(
                 _ = onProgress(snapshot);
             });
             var result = await importRunner.ImportAsync(sourcePaths, progress, cancellationToken);
-            Job.Complete(result);
+            if (result.WasCancelled)
+            {
+                Job.Cancelled(result);
+            }
+            else
+            {
+                Job.Complete(result);
+            }
+
             Completed?.Invoke(this, result);
         }
         catch (OperationCanceledException)

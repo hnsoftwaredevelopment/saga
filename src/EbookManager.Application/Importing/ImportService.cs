@@ -37,6 +37,11 @@ public sealed class ImportService(
         var startedUtc = DateTimeOffset.UtcNow;
         var runId = await importRepository.StartRunAsync(startedUtc, cancellationToken);
         var results = new List<ImportItemResult>(sourcePaths.Count);
+        var addedCount = 0;
+        var exactDuplicateCount = 0;
+        var possibleDuplicateCount = 0;
+        var failedCount = 0;
+        var wasCancelled = false;
 
         try
         {
@@ -45,8 +50,36 @@ public sealed class ImportService(
                 cancellationToken.ThrowIfCancellationRequested();
                 var item = await ImportSingleAsync(runId, sequence, sourcePaths[sequence], cancellationToken);
                 results.Add(item);
-                progress?.Report(ImportProgress.FromItems(runId, sourcePaths.Count, results));
+                switch (item.Outcome)
+                {
+                    case ImportOutcome.Added:
+                        addedCount++;
+                        break;
+                    case ImportOutcome.ExactDuplicate:
+                        exactDuplicateCount++;
+                        break;
+                    case ImportOutcome.PossibleDuplicate:
+                        possibleDuplicateCount++;
+                        break;
+                    case ImportOutcome.Failed:
+                        failedCount++;
+                        break;
+                }
+
+                progress?.Report(new ImportProgress(
+                    runId,
+                    sourcePaths.Count,
+                    results.Count,
+                    addedCount,
+                    exactDuplicateCount,
+                    possibleDuplicateCount,
+                    failedCount,
+                    item));
             }
+        }
+        catch (OperationCanceledException)
+        {
+            wasCancelled = true;
         }
         finally
         {
@@ -59,7 +92,7 @@ public sealed class ImportService(
             }
         }
 
-        return new ImportBatchResult(runId, results);
+        return new ImportBatchResult(runId, results, wasCancelled);
     }
 
     private async Task<ImportItemResult> ImportSingleAsync(

@@ -14,7 +14,10 @@ public sealed record ImportItemResult(
     string Message,
     Guid? BookId = null);
 
-public sealed record ImportBatchResult(Guid RunId, IReadOnlyList<ImportItemResult> Items);
+public sealed record ImportBatchResult(
+    Guid RunId,
+    IReadOnlyList<ImportItemResult> Items,
+    bool WasCancelled = false);
 
 public sealed record ImportRunResult(
     Guid Id,

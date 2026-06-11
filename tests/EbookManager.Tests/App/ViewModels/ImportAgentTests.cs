@@ -40,6 +40,23 @@ public sealed class ImportAgentTests
     }
 
     [Fact]
+    public async Task Cancelled_partial_result_enables_details()
+    {
+        var job = new ImportJobViewModel();
+        var runner = new CancelledResultImportRunner();
+        var agent = new ImportAgent(runner, job);
+
+        await agent.StartImportAsync(["a.epub"], _ => Task.CompletedTask, CancellationToken.None);
+        await agent.ActiveTask!;
+
+        job.IsActive.Should().BeFalse();
+        job.Title.Should().Be("Import cancelled");
+        job.CanShowDetails.Should().BeTrue();
+        job.LatestResult!.WasCancelled.Should().BeTrue();
+        job.LatestResult.Items.Should().ContainSingle();
+    }
+
+    [Fact]
     public async Task StartScanning_marks_agent_active_until_import_starts_or_is_cancelled()
     {
         var job = new ImportJobViewModel();
@@ -68,6 +85,17 @@ public sealed class ImportAgentTests
 
         agent.IsActive.Should().BeFalse();
         job.Title.Should().Be("Import cancelled");
+    }
+
+    [Fact]
+    public void Close_hides_inactive_job_card()
+    {
+        var job = new ImportJobViewModel();
+
+        job.Cancelled();
+        job.Close();
+
+        job.IsVisible.Should().BeFalse();
     }
 
     private sealed class FakeImportRunner : IImportRunner
@@ -102,6 +130,21 @@ public sealed class ImportAgentTests
             Started.SetResult();
             await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
             throw new InvalidOperationException("The delay should be cancelled.");
+        }
+    }
+
+    private sealed class CancelledResultImportRunner : IImportRunner
+    {
+        public Task<ImportBatchResult> ImportAsync(
+            IReadOnlyList<string> sourcePaths,
+            IProgress<ImportProgress>? progress,
+            CancellationToken cancellationToken = default)
+        {
+            var result = new ImportBatchResult(
+                Guid.NewGuid(),
+                [new ImportItemResult(sourcePaths[0], ImportOutcome.Added, "added")],
+                WasCancelled: true);
+            return Task.FromResult(result);
         }
     }
 }
