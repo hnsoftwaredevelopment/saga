@@ -266,7 +266,7 @@
               <Style TargetType="Border">
                 <Setter Property="Visibility" Value="Collapsed" />
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ImportJob.IsVisible}" Value="True">
+                  <DataTrigger Binding="{Binding ImportJob.IsVisible, Mode=OneWay}" Value="True">
                     <Setter Property="Visibility" Value="Visible" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -278,10 +278,10 @@
                 <ColumnDefinition Width="Auto" />
               </Grid.ColumnDefinitions>
               <StackPanel Grid.Column="0">
-                <TextBlock Text="{Binding ImportJob.Title}"
+                <TextBlock Text="{Binding ImportJob.Title, Mode=OneWay}"
                            FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
-                <TextBlock Text="{Binding ImportJob.StatusText}"
+                <TextBlock Text="{Binding ImportJob.StatusText, Mode=OneWay}"
                            FontSize="12"
                            TextTrimming="CharacterEllipsis"
                            Foreground="{DynamicResource TextSecondaryBrush}"
@@ -289,25 +289,25 @@
                 <ProgressBar Height="8"
                              Minimum="0"
                              Maximum="100"
-                             Value="{Binding ImportJob.ProgressValue}"
-                             IsIndeterminate="{Binding ImportJob.IsIndeterminate}" />
+                             Value="{Binding ImportJob.ProgressValue, Mode=OneWay}"
+                             IsIndeterminate="{Binding ImportJob.IsIndeterminate, Mode=OneWay}" />
                 <DockPanel Margin="0,8,0,0">
-                  <TextBlock Text="{Binding ImportJob.ProgressText}"
+                  <TextBlock Text="{Binding ImportJob.ProgressText, Mode=OneWay}"
                              Foreground="{DynamicResource TextSecondaryBrush}"
                              DockPanel.Dock="Left" />
                   <TextBlock HorizontalAlignment="Right"
                              Foreground="{DynamicResource TextSecondaryBrush}">
                     <Run Text="{loc:Loc ImportAdded}" />
                     <Run Text=": " />
-                    <Run Text="{Binding ImportJob.AddedCount}" />
+                    <Run Text="{Binding ImportJob.AddedCount, Mode=OneWay}" />
                     <Run Text="  |  " />
                     <Run Text="{loc:Loc ImportDuplicates}" />
                     <Run Text=": " />
-                    <Run Text="{Binding ImportJob.DuplicateCount}" />
+                    <Run Text="{Binding ImportJob.DuplicateCount, Mode=OneWay}" />
                     <Run Text="  |  " />
                     <Run Text="{loc:Loc ImportFailed}" />
                     <Run Text=": " />
-                    <Run Text="{Binding ImportJob.FailedCount}" />
+                    <Run Text="{Binding ImportJob.FailedCount, Mode=OneWay}" />
                   </TextBlock>
                 </DockPanel>
               </StackPanel>
@@ -317,7 +317,7 @@
                           Margin="12,0,0,0">
                 <Button Content="{loc:Loc Details}"
                         Command="{Binding ShowImportDetailsCommand}"
-                        IsEnabled="{Binding ImportJob.CanShowDetails}"
+                        IsEnabled="{Binding ImportJob.CanShowDetails, Mode=OneWay}"
                         Padding="12,6"
                         Margin="0,0,8,0" />
                 <Button Content="{loc:Loc Cancel}"
@@ -327,7 +327,7 @@
                     <Style TargetType="Button">
                       <Setter Property="Visibility" Value="Collapsed" />
                       <Style.Triggers>
-                        <DataTrigger Binding="{Binding ImportJob.IsActive}" Value="True">
+                        <DataTrigger Binding="{Binding ImportJob.IsActive, Mode=OneWay}" Value="True">
                           <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                       </Style.Triggers>
