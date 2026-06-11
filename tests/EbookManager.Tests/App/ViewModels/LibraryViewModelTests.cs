@@ -30,6 +30,28 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Refresh_sets_loading_state_while_library_is_loading()
+    {
+        var repository = new BlockingBookRepository();
+        var viewModel = CreateViewModel(
+            [],
+            repository: repository,
+            currentLibrary: CreateActiveLibrary());
+
+        var refresh = viewModel.RefreshAsync();
+        await repository.ListStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        viewModel.IsLoadingLibrary.Should().BeTrue();
+        viewModel.EmptyStateMessage.Should().Be("Loading library...");
+
+        repository.Release([]);
+        await refresh;
+
+        viewModel.IsLoadingLibrary.Should().BeFalse();
+    }
+
+
+    [Fact]
     public async Task First_refresh_applies_default_view_from_settings()
     {
         var settingsStore = new InMemoryAppSettingsStore();
@@ -451,6 +473,27 @@ public sealed class LibraryViewModelTests
             ListCalls++;
             return Task.FromResult<IReadOnlyList<Book>>(ListCalls == 1 ? firstRefreshBooks : laterRefreshBooks);
         }
+    }
+
+    private sealed class BlockingBookRepository : StaticBookRepository
+    {
+        private readonly TaskCompletionSource<IReadOnlyList<Book>> release =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public BlockingBookRepository() : base([])
+        {
+        }
+
+        public TaskCompletionSource ListStarted { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public override Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
+        {
+            ListStarted.TrySetResult();
+            return release.Task;
+        }
+
+        public void Release(IReadOnlyList<Book> books) => release.TrySetResult(books);
     }
 
     private sealed class NoopLibraryFileStore : ILibraryFileStore

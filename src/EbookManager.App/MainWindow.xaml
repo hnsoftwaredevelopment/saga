@@ -368,6 +368,20 @@
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Width="420">
+              <ProgressBar Height="8"
+                           Margin="0,0,0,16"
+                           IsIndeterminate="True">
+                <ProgressBar.Style>
+                  <Style TargetType="ProgressBar">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsLoadingLibrary}" Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </ProgressBar.Style>
+              </ProgressBar>
               <TextBlock Text="{Binding EmptyStateMessage}"
                          FontSize="18"
                          FontWeight="SemiBold"
@@ -377,6 +391,16 @@
                          Margin="0,0,0,16" />
               <StackPanel Orientation="Horizontal"
                           HorizontalAlignment="Center">
+                <StackPanel.Style>
+                  <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsLoadingLibrary}" Value="True">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </StackPanel.Style>
                 <Button Content="{loc:Loc AddBooks}"
                         Command="{Binding AddBooksCommand}"
                         Padding="16,8"

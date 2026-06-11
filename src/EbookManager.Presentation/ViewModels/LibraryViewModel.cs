@@ -98,6 +98,9 @@ public sealed partial class LibraryViewModel : ObservableObject
     [ObservableProperty]
     private string emptyStateMessage = "Create or open a library to get started.";
 
+    [ObservableProperty]
+    private bool isLoadingLibrary;
+
     public bool HasActiveLibrary => CurrentLibraryPath is not null;
 
     public bool HasActiveImport => importAgent?.IsActive == true;
@@ -124,11 +127,22 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
-        await ApplyDefaultViewAsync(cancellationToken);
-        books = await bookRepository.ListAsync(cancellationToken);
-        RefreshFacetFilters();
-        ApplyFilter();
-        RefreshLibraryDisplay();
+        IsLoadingLibrary = true;
+        EmptyStateMessage = HasActiveLibrary
+            ? "Loading library..."
+            : "Create or open a library to get started.";
+        try
+        {
+            await ApplyDefaultViewAsync(cancellationToken);
+            books = await bookRepository.ListAsync(cancellationToken);
+            RefreshFacetFilters();
+            ApplyFilter();
+            RefreshLibraryDisplay();
+        }
+        finally
+        {
+            IsLoadingLibrary = false;
+        }
     }
 
     partial void OnSearchTextChanged(string value) => ApplyFilter();
