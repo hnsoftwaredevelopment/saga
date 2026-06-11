@@ -11,7 +11,7 @@ public sealed class ImportService(
     ILibraryFileStore fileStore,
     IFileHasher hasher,
     IMetadataSourceResolver metadataSourceResolver,
-    IImportExceptionClassifier exceptionClassifier)
+    IImportExceptionClassifier exceptionClassifier) : IImportRunner
 {
     private const string InvalidSourceDisplayName = "(invalid source)";
 
