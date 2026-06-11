@@ -65,6 +65,7 @@
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Taal</value></data>
   <data name="ListView" xml:space="preserve"><value>Lijst</value></data>
+  <data name="LoadingLibrary" xml:space="preserve"><value>Inlezen bibliotheek</value></data>
   <data name="Message" xml:space="preserve"><value>Melding</value></data>
   <data name="NoSort" xml:space="preserve"><value>Geen</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Open een bestaande bibliotheek</value></data>

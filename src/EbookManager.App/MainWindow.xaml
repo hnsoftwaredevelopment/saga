@@ -359,6 +359,9 @@
               <Style TargetType="Border">
                 <Setter Property="Visibility" Value="Collapsed" />
                 <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsLoadingLibrary}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
                   <DataTrigger Binding="{Binding VisibleBookCount}" Value="0">
                     <Setter Property="Visibility" Value="Visible" />
                   </DataTrigger>
@@ -401,13 +404,42 @@
                   </Style>
                 </TextBlock.Style>
               </TextBlock>
+              <TextBlock Text="{loc:Loc LoadingLibrary}"
+                         FontSize="18"
+                         FontWeight="SemiBold"
+                         TextAlignment="Center"
+                         TextWrapping="Wrap"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         Margin="0,0,0,16">
+                <TextBlock.Style>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsLoadingLibrary}" Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
               <TextBlock Text="{Binding EmptyStateMessage}"
                          FontSize="18"
                          FontWeight="SemiBold"
                          TextAlignment="Center"
                          TextWrapping="Wrap"
                          Foreground="{DynamicResource TextPrimaryBrush}"
-                         Margin="0,0,0,16" />
+                         Margin="0,0,0,16">
+                <TextBlock.Style>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsLoadingLibrary}" Value="True">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
               <StackPanel Orientation="Horizontal"
                           HorizontalAlignment="Center">
                 <StackPanel.Style>

@@ -299,6 +299,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
                 loadedBooks.AddRange(page);
                 LoadedLibraryCount = loadedBooks.Count;
+                await Task.Yield();
             }
 
             return loadedBooks.AsReadOnly();
