@@ -11,6 +11,9 @@ Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-qu
 - EPUB metadata and cover extraction
 - EPUB subject/tag and Calibre-style series metadata extraction
 - Calibre `metadata.opf` sidecar import
+- background import progress for large scans
+- live library refresh during imports
+- cancel and close-warning behavior for active imports
 - conservative title, author, and series cleanup
 - CBZ cover extraction
 - safe fallback import for recognized formats
@@ -94,6 +97,7 @@ Use these manual test checklists:
 
 - [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)
 - [docs/manual-tests/milestone-3-checklist.md](docs/manual-tests/milestone-3-checklist.md)
+- [docs/manual-tests/milestone-3-1-checklist.md](docs/manual-tests/milestone-3-1-checklist.md)
 
 ## Later-Version Candidates
 

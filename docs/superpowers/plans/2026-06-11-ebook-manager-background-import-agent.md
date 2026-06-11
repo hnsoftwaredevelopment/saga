@@ -8,6 +8,14 @@
 
 **Tech Stack:** .NET 10, C#, WPF, CommunityToolkit.Mvvm, xUnit, FluentAssertions, existing SQLite import repositories and WPF resource localization.
 
+**Implementation status:** Completed inline on `main`.
+
+- `d11a809` Add import progress reporting
+- `6f92d15` Add import job view model
+- `cf06b2b` Add background import agent
+- `3b854e4` Refresh library during background imports
+- `26a8bfa` Show background import progress
+
 ---
 
 ## File Structure
