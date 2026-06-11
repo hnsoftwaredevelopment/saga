@@ -400,6 +400,46 @@ public sealed class LibraryViewModelTests
         viewModel.VisibleBooks.Select(book => book.Title).Should().Contain("Imported");
     }
 
+    [Fact]
+    public async Task Import_history_command_opens_selected_run_details()
+    {
+        var runId = Guid.NewGuid();
+        var interaction = new ScriptedUserInteractionService { SelectedImportRunId = runId };
+        var importRepository = new StaticImportRepository(
+            [
+                new ImportRunSummary(
+                    runId,
+                    DateTimeOffset.UtcNow,
+                    DateTimeOffset.UtcNow,
+                    TotalCount: 2,
+                    AddedCount: 1,
+                    ExactDuplicateCount: 1,
+                    PossibleDuplicateCount: 0,
+                    FailedCount: 0)
+            ],
+            new ImportRunResult(
+                runId,
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow,
+                [
+                    new ImportItemResult("added.epub", ImportOutcome.Added, "added"),
+                    new ImportItemResult("duplicate.epub", ImportOutcome.ExactDuplicate, "duplicate")
+                ]));
+        var viewModel = CreateViewModel(
+            [],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            importRepository: importRepository);
+
+        await viewModel.ShowImportHistoryCommand.ExecuteAsync(null);
+
+        interaction.ImportHistory.Should().NotBeNull();
+        interaction.ShownImportResult.Should().NotBeNull();
+        interaction.ShownImportResult!.RunId.Should().Be(runId);
+        interaction.ShownImportResult.TotalCount.Should().Be(2);
+        viewModel.LastImportResult.Should().BeSameAs(interaction.ShownImportResult);
+    }
+
     private static LibraryViewModel CreateViewModel(
         IReadOnlyList<Book> books,
         IUserInteractionService? userInteraction = null,
@@ -409,7 +449,8 @@ public sealed class LibraryViewModelTests
         IAppSettingsStore? settingsStore = null,
         IBookRepository? repository = null,
         BookDetailsViewModel? details = null,
-        IImportAgent? importAgent = null)
+        IImportAgent? importAgent = null,
+        IImportRepository? importRepository = null)
     {
         repository ??= new StaticBookRepository(books);
         details ??= new BookDetailsViewModel(new BookService(
@@ -425,7 +466,8 @@ public sealed class LibraryViewModelTests
             currentLibrary: currentLibrary,
             databaseInitializer: databaseInitializer,
             settingsStore: settingsStore,
-            importAgent: importAgent);
+            importAgent: importAgent,
+            importRepository: importRepository);
     }
 
     private static Book CreateBook(
@@ -597,8 +639,11 @@ public sealed class LibraryViewModelTests
     private sealed class ScriptedUserInteractionService : IUserInteractionService
     {
         public string? LibraryDirectory { get; init; }
+        public Guid? SelectedImportRunId { get; init; }
         public int PickBookFilesCalls { get; private set; }
         public int PickScanFolderCalls { get; private set; }
+        public ImportHistoryViewModel? ImportHistory { get; private set; }
+        public ImportResultViewModel? ShownImportResult { get; private set; }
 
         public Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<string>>(RecordPickBookFiles());
@@ -612,13 +657,50 @@ public sealed class LibraryViewModelTests
             Task.FromResult(LibraryDirectory);
 
         public Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken) => Task.FromResult(true);
-        public Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken)
+        {
+            ShownImportResult = result;
+            return Task.CompletedTask;
+        }
+
+        public Task<Guid?> PickImportRunAsync(ImportHistoryViewModel history, CancellationToken cancellationToken)
+        {
+            ImportHistory = history;
+            return Task.FromResult(SelectedImportRunId);
+        }
 
         private IReadOnlyList<string> RecordPickBookFiles()
         {
             PickBookFilesCalls++;
             return [];
         }
+    }
+
+    private sealed class StaticImportRepository(
+        IReadOnlyList<ImportRunSummary> summaries,
+        ImportRunResult? run = null) : IImportRepository
+    {
+        public Task<Guid> StartRunAsync(DateTimeOffset startedUtc, CancellationToken cancellationToken) =>
+            Task.FromResult(Guid.NewGuid());
+
+        public Task RecordItemAsync(
+            Guid runId,
+            int sequence,
+            string sourceDisplayName,
+            ImportOutcome outcome,
+            string message,
+            Guid? bookId,
+            CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task<ImportRunResult?> GetAsync(Guid runId, CancellationToken cancellationToken) =>
+            Task.FromResult(run?.Id == runId ? run : null);
+
+        public Task<IReadOnlyList<ImportRunSummary>> ListRecentAsync(int maxCount, CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<ImportRunSummary>>(summaries.Take(maxCount).ToList());
     }
 
     private sealed class RecordingLibraryDatabaseInitializer : ILibraryDatabaseInitializer

@@ -1,0 +1,44 @@
+<Window x:Class="EbookManager.App.Views.ImportHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:EbookManager.App.Localization"
+        Title="{loc:Loc ImportHistory}"
+        Width="760"
+        Height="460"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="18">
+    <TextBlock DockPanel.Dock="Top"
+               Text="{loc:Loc ImportHistory}"
+               FontSize="20"
+               FontWeight="SemiBold"
+               Foreground="{DynamicResource TextPrimaryBrush}"
+               Margin="0,0,0,12" />
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="0,12,0,0">
+      <Button Content="{loc:Loc Details}"
+              MinWidth="90"
+              Margin="0,0,8,0"
+              Click="DetailsClicked" />
+      <Button Content="{loc:Loc Close}"
+              MinWidth="90"
+              Click="CloseClicked" />
+    </StackPanel>
+    <DataGrid ItemsSource="{Binding Items}"
+              SelectedItem="{Binding SelectedRun, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+              AutoGenerateColumns="False"
+              IsReadOnly="True"
+              GridLinesVisibility="Horizontal"
+              HeadersVisibility="Column">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="{loc:Loc Started}" Binding="{Binding StartedText}" Width="150" />
+        <DataGridTextColumn Header="{loc:Loc Completed}" Binding="{Binding CompletedText}" Width="150" />
+        <DataGridTextColumn Header="{loc:Loc ImportTotal}" Binding="{Binding TotalCount}" Width="90" />
+        <DataGridTextColumn Header="{loc:Loc ImportAdded}" Binding="{Binding AddedCount}" Width="90" />
+        <DataGridTextColumn Header="{loc:Loc ImportDuplicates}" Binding="{Binding SkippedCount}" Width="100" />
+        <DataGridTextColumn Header="{loc:Loc Failed}" Binding="{Binding FailedCount}" Width="90" />
+      </DataGrid.Columns>
+    </DataGrid>
+  </DockPanel>
+</Window>

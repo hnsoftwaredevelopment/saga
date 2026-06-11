@@ -79,4 +79,33 @@ public sealed class EfImportRepository(
 
         return new ImportRunResult(run.Id, run.StartedUtc, run.CompletedUtc, items);
     }
+
+    public async Task<IReadOnlyList<ImportRunSummary>> ListRecentAsync(
+        int maxCount,
+        CancellationToken cancellationToken)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxCount);
+
+        await using var context = contextFactory.Create(libraryPath);
+        var runs = await context.ImportRuns
+            .AsNoTracking()
+            .Include(x => x.Items)
+            .ToListAsync(cancellationToken);
+
+        return runs
+            .OrderByDescending(x => x.StartedUtc)
+            .ThenByDescending(x => x.Id)
+            .Take(maxCount)
+            .Select(x => new ImportRunSummary(
+                x.Id,
+                x.StartedUtc,
+                x.CompletedUtc,
+                x.Items.Count,
+                x.Items.Count(item => item.Outcome == ImportOutcome.Added),
+                x.Items.Count(item => item.Outcome == ImportOutcome.ExactDuplicate),
+                x.Items.Count(item => item.Outcome == ImportOutcome.PossibleDuplicate),
+                x.Items.Count(item => item.Outcome == ImportOutcome.Failed)))
+            .ToList()
+            .AsReadOnly();
+    }
 }

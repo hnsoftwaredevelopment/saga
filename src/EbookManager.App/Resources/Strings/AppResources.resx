@@ -34,6 +34,9 @@
   <data name="ImportDuplicates" xml:space="preserve"><value>Duplicates</value></data>
   <data name="ImportExactDuplicate" xml:space="preserve"><value>Exact duplicate</value></data>
   <data name="ImportFailed" xml:space="preserve"><value>Failed</value></data>
+  <data name="ImportHistory" xml:space="preserve"><value>Import history</value></data>
+  <data name="ImportHistoryShort" xml:space="preserve"><value>History</value></data>
+  <data name="ImportHistoryTooltip" xml:space="preserve"><value>Show recent import and scan results</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>An import is still running. Close the application and cancel the import?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Import in progress</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>
@@ -90,6 +93,8 @@
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Saga startup failed</value></data>
+  <data name="Started" xml:space="preserve"><value>Started</value></data>
+  <data name="Completed" xml:space="preserve"><value>Completed</value></data>
   <data name="Status" xml:space="preserve"><value>Status</value></data>
   <data name="Tags" xml:space="preserve"><value>Tags</value></data>
   <data name="Theme" xml:space="preserve"><value>Theme</value></data>

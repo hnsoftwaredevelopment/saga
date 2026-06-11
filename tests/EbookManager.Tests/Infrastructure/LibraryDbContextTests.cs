@@ -391,6 +391,41 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Import_repository_lists_recent_runs_with_summary_counts()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var importRepository = new EfImportRepository(factory, libraryPath);
+        var olderRunId = await importRepository.StartRunAsync(
+            new DateTimeOffset(2026, 6, 10, 12, 0, 0, TimeSpan.Zero),
+            default);
+        var newerRunId = await importRepository.StartRunAsync(
+            new DateTimeOffset(2026, 6, 11, 12, 0, 0, TimeSpan.Zero),
+            default);
+
+        await importRepository.RecordItemAsync(olderRunId, 0, "older.epub", ImportOutcome.Added, "Imported", null, default);
+        await importRepository.CompleteRunAsync(olderRunId, new DateTimeOffset(2026, 6, 10, 12, 5, 0, TimeSpan.Zero), default);
+        await importRepository.RecordItemAsync(newerRunId, 0, "duplicate.epub", ImportOutcome.ExactDuplicate, "Duplicate", null, default);
+        await importRepository.RecordItemAsync(newerRunId, 1, "possible.epub", ImportOutcome.PossibleDuplicate, "Possible", null, default);
+        await importRepository.RecordItemAsync(newerRunId, 2, "failed.epub", ImportOutcome.Failed, "Failed", null, default);
+
+        var recentRuns = await importRepository.ListRecentAsync(10, default);
+
+        recentRuns.Select(run => run.Id).Should().Equal(newerRunId, olderRunId);
+        recentRuns[0].TotalCount.Should().Be(3);
+        recentRuns[0].AddedCount.Should().Be(0);
+        recentRuns[0].ExactDuplicateCount.Should().Be(1);
+        recentRuns[0].PossibleDuplicateCount.Should().Be(1);
+        recentRuns[0].SkippedCount.Should().Be(2);
+        recentRuns[0].FailedCount.Should().Be(1);
+        recentRuns[0].CompletedUtc.Should().BeNull();
+        recentRuns[1].TotalCount.Should().Be(1);
+        recentRuns[1].AddedCount.Should().Be(1);
+        recentRuns[1].CompletedUtc.Should().NotBeNull();
+    }
+
+    [Fact]
     public async Task Books_reject_duplicate_logical_title_and_author_combinations()
     {
         using var library = new TemporaryLibrary();

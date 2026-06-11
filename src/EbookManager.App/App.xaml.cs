@@ -104,6 +104,7 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<IUserInteractionService>(),
             provider.GetService<ImportService>(),
             provider.GetService<IImportAgent>(),
+            provider.GetService<IImportRepository>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),

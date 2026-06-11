@@ -4,6 +4,11 @@ namespace EbookManager.Presentation.ViewModels;
 
 public sealed class ImportResultViewModel
 {
+    public ImportResultViewModel(ImportRunResult result)
+        : this(new ImportBatchResult(result.Id, result.Items))
+    {
+    }
+
     public ImportResultViewModel(ImportBatchResult result)
     {
         RunId = result.RunId;
@@ -26,6 +31,29 @@ public sealed class ImportResultViewModel
         $"{TotalCount} files processed: {AddedCount} added, {SkippedCount} skipped, {FailedCount} failed.";
 
     private int Count(ImportOutcome outcome) => Items.Count(item => item.Outcome == outcome);
+}
+
+public sealed class ImportHistoryViewModel(IEnumerable<ImportRunSummary> summaries)
+{
+    public IReadOnlyList<ImportRunSummaryViewModel> Items { get; } = summaries
+        .Select(summary => new ImportRunSummaryViewModel(summary))
+        .ToList()
+        .AsReadOnly();
+
+    public bool HasItems => Items.Count > 0;
+}
+
+public sealed class ImportRunSummaryViewModel(ImportRunSummary summary)
+{
+    public Guid RunId { get; } = summary.Id;
+    public DateTimeOffset StartedUtc { get; } = summary.StartedUtc;
+    public DateTimeOffset? CompletedUtc { get; } = summary.CompletedUtc;
+    public int TotalCount { get; } = summary.TotalCount;
+    public int AddedCount { get; } = summary.AddedCount;
+    public int SkippedCount { get; } = summary.SkippedCount;
+    public int FailedCount { get; } = summary.FailedCount;
+    public string StartedText { get; } = summary.StartedUtc.ToLocalTime().ToString("g");
+    public string CompletedText { get; } = summary.CompletedUtc?.ToLocalTime().ToString("g") ?? string.Empty;
 }
 
 public sealed class ImportResultItemViewModel(ImportItemResult item)

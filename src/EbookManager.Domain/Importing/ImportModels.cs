@@ -24,3 +24,16 @@ public sealed record ImportRunResult(
     DateTimeOffset StartedUtc,
     DateTimeOffset? CompletedUtc,
     IReadOnlyList<ImportItemResult> Items);
+
+public sealed record ImportRunSummary(
+    Guid Id,
+    DateTimeOffset StartedUtc,
+    DateTimeOffset? CompletedUtc,
+    int TotalCount,
+    int AddedCount,
+    int ExactDuplicateCount,
+    int PossibleDuplicateCount,
+    int FailedCount)
+{
+    public int SkippedCount => ExactDuplicateCount + PossibleDuplicateCount;
+}

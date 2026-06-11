@@ -10,4 +10,5 @@ public interface IUserInteractionService
     Task<string?> PickLibraryDirectoryAsync(string title, CancellationToken cancellationToken);
     Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken);
     Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken);
+    Task<Guid?> PickImportRunAsync(ImportHistoryViewModel history, CancellationToken cancellationToken);
 }

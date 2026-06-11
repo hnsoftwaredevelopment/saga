@@ -30,6 +30,9 @@ public sealed class CurrentLibraryImportRepository(
     public Task<ImportRunResult?> GetAsync(Guid runId, CancellationToken cancellationToken) =>
         CreateRepository().GetAsync(runId, cancellationToken);
 
+    public Task<IReadOnlyList<ImportRunSummary>> ListRecentAsync(int maxCount, CancellationToken cancellationToken) =>
+        CreateRepository().ListRecentAsync(maxCount, cancellationToken);
+
     private EfImportRepository CreateRepository()
     {
         var library = currentLibrary.Current ?? throw new InvalidOperationException("No active library is loaded.");

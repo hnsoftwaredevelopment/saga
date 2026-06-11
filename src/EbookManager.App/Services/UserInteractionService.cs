@@ -64,4 +64,17 @@ public sealed class UserInteractionService(DeleteConfirmationService deleteConfi
         window.ShowDialog();
         return Task.CompletedTask;
     }
+
+    public Task<Guid?> PickImportRunAsync(ImportHistoryViewModel history, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = new ImportHistoryWindow(history);
+        if (System.Windows.Application.Current?.MainWindow is { } owner)
+        {
+            window.Owner = owner;
+        }
+
+        var result = window.ShowDialog() == true ? window.SelectedRunId : null;
+        return Task.FromResult(result);
+    }
 }

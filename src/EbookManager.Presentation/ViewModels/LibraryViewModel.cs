@@ -20,6 +20,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IUserInteractionService userInteraction;
     private readonly ImportService? importService;
     private readonly IImportAgent? importAgent;
+    private readonly IImportRepository? importRepository;
     private readonly LibraryService? libraryService;
     private readonly CurrentLibrary? currentLibrary;
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
@@ -36,6 +37,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         IUserInteractionService userInteraction,
         ImportService? importService = null,
         IImportAgent? importAgent = null,
+        IImportRepository? importRepository = null,
         LibraryService? libraryService = null,
         CurrentLibrary? currentLibrary = null,
         ILibraryDatabaseInitializer? databaseInitializer = null,
@@ -48,6 +50,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.userInteraction = userInteraction;
         this.importService = importService;
         this.importAgent = importAgent;
+        this.importRepository = importRepository;
         this.libraryService = libraryService;
         this.currentLibrary = currentLibrary;
         this.databaseInitializer = databaseInitializer;
@@ -134,6 +137,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IAsyncRelayCommand OpenLibraryCommand => openLibraryCommand ??= new AsyncRelayCommand(OpenLibraryAsync);
     public IRelayCommand CancelImportCommand => cancelImportCommand ??= new RelayCommand(() => importAgent?.CancelActiveJob());
     public IAsyncRelayCommand ShowImportDetailsCommand => showImportDetailsCommand ??= new AsyncRelayCommand(ShowImportDetailsAsync);
+    public IAsyncRelayCommand ShowImportHistoryCommand => showImportHistoryCommand ??= new AsyncRelayCommand(ShowImportHistoryAsync);
     public IRelayCommand CloseImportJobCommand => closeImportJobCommand ??= new RelayCommand(() => importAgent?.Job.Close());
 
     private AsyncRelayCommand? refreshCommand;
@@ -143,6 +147,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand? openLibraryCommand;
     private RelayCommand? cancelImportCommand;
     private AsyncRelayCommand? showImportDetailsCommand;
+    private AsyncRelayCommand? showImportHistoryCommand;
     private RelayCommand? closeImportJobCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
@@ -592,6 +597,31 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         LastImportResult = new ImportResultViewModel(result);
+        await userInteraction.ShowImportResultAsync(LastImportResult, cancellationToken);
+    }
+
+    private async Task ShowImportHistoryAsync(CancellationToken cancellationToken)
+    {
+        if (!HasActiveLibrary || importRepository is null)
+        {
+            return;
+        }
+
+        var summaries = await importRepository.ListRecentAsync(50, cancellationToken);
+        var history = new ImportHistoryViewModel(summaries);
+        var selectedRunId = await userInteraction.PickImportRunAsync(history, cancellationToken);
+        if (selectedRunId is null)
+        {
+            return;
+        }
+
+        var run = await importRepository.GetAsync(selectedRunId.Value, cancellationToken);
+        if (run is null)
+        {
+            return;
+        }
+
+        LastImportResult = new ImportResultViewModel(run);
         await userInteraction.ShowImportResultAsync(LastImportResult, cancellationToken);
     }
 }

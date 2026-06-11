@@ -79,6 +79,15 @@
               <TextBlock Text="{loc:Loc Scan}" Margin="8,0,0,0" />
             </StackPanel>
           </Button>
+          <Button Command="{Binding ShowImportHistoryCommand}"
+                  Margin="6,12"
+                  Padding="14,6"
+                  ToolTip="{loc:Loc ImportHistoryTooltip}">
+            <StackPanel Orientation="Horizontal">
+              <Path Data="{StaticResource ImportHistoryIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" />
+              <TextBlock Text="{loc:Loc ImportHistoryShort}" Margin="8,0,0,0" />
+            </StackPanel>
+          </Button>
           <Button Margin="6,12"
                   Padding="14,6"
                   ToolTip="{loc:Loc OpenSettingsTooltip}"

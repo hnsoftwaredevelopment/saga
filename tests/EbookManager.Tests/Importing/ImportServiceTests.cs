@@ -753,6 +753,9 @@ public sealed class ImportServiceTests
 
         public Task<ImportRunResult?> GetAsync(Guid runId, CancellationToken cancellationToken) =>
             inner.GetAsync(runId, cancellationToken);
+
+        public Task<IReadOnlyList<ImportRunSummary>> ListRecentAsync(int maxCount, CancellationToken cancellationToken) =>
+            inner.ListRecentAsync(maxCount, cancellationToken);
     }
 
     private sealed class DirectoryTitleMetadataAdapterResolver : IMetadataAdapterResolver
@@ -982,6 +985,9 @@ public sealed class ImportServiceTests
 
         public Task<ImportRunResult?> GetAsync(Guid runId, CancellationToken cancellationToken) =>
             inner.GetAsync(runId, cancellationToken);
+
+        public Task<IReadOnlyList<ImportRunSummary>> ListRecentAsync(int maxCount, CancellationToken cancellationToken) =>
+            inner.ListRecentAsync(maxCount, cancellationToken);
     }
 
     private sealed class DuplicateKeyRaceException : Exception;

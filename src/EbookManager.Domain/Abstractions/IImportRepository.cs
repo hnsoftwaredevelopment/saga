@@ -18,4 +18,6 @@ public interface IImportRepository
     Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken);
 
     Task<ImportRunResult?> GetAsync(Guid runId, CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<ImportRunSummary>> ListRecentAsync(int maxCount, CancellationToken cancellationToken);
 }
