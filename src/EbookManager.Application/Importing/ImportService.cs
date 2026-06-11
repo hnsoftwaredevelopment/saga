@@ -42,13 +42,14 @@ public sealed class ImportService(
         var possibleDuplicateCount = 0;
         var failedCount = 0;
         var wasCancelled = false;
+        var duplicateTracker = await ImportDuplicateTracker.CreateAsync(bookRepository, cancellationToken);
 
         try
         {
             for (var sequence = 0; sequence < sourcePaths.Count; sequence++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var item = await ImportSingleAsync(runId, sequence, sourcePaths[sequence], cancellationToken);
+                var item = await ImportSingleAsync(runId, sequence, sourcePaths[sequence], duplicateTracker, cancellationToken);
                 results.Add(item);
                 switch (item.Outcome)
                 {
@@ -99,6 +100,7 @@ public sealed class ImportService(
         Guid runId,
         int sequence,
         string? sourcePath,
+        ImportDuplicateTracker duplicateTracker,
         CancellationToken cancellationToken)
     {
         var sourceDisplayName = GetSafeSourceDisplayName(sourcePath);
@@ -124,7 +126,7 @@ public sealed class ImportService(
                 string sha256;
                 try
                 {
-                    sha256 = await hasher.ComputeSha256Async(sourcePath!, cancellationToken);
+                    sha256 = CanonicalizeSha256(await hasher.ComputeSha256Async(sourcePath!, cancellationToken));
                 }
                 catch (OperationCanceledException)
                 {
@@ -136,7 +138,7 @@ public sealed class ImportService(
                     return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
                 }
 
-                if (await bookRepository.HasHashAsync(sha256, cancellationToken))
+                if (await duplicateTracker.HasHashAsync(sha256, cancellationToken))
                 {
                     result = CreateSuccessResult(
                         sourcePath,
@@ -160,9 +162,13 @@ public sealed class ImportService(
                     return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
                 }
 
-                if (await bookRepository.HasNormalizedTitleAndAuthorAsync(
+                var duplicateKey = DuplicateKeyNormalizer.BuildDuplicateKey(
+                    metadata.Metadata.Title,
+                    metadata.Metadata.Authors);
+                if (await duplicateTracker.HasDuplicateKeyAsync(
                         metadata.Metadata.Title,
                         metadata.Metadata.Authors,
+                        duplicateKey,
                         cancellationToken))
                 {
                     result = CreateSuccessResult(
@@ -218,6 +224,7 @@ public sealed class ImportService(
                         sourcePath,
                         metadata.Warning,
                         bookId);
+                    duplicateTracker.Add(sha256, duplicateKey);
                 }
                 catch (OperationCanceledException)
                 {
@@ -362,6 +369,111 @@ public sealed class ImportService(
         $"{message}; {SafeImportMessages.CleanupIncomplete}";
 
     private static bool IsBlank(string? value) => string.IsNullOrWhiteSpace(value);
+
+    private static string CanonicalizeSha256(string sha256)
+    {
+        ArgumentNullException.ThrowIfNull(sha256);
+        if (sha256.Length != 64 || sha256.Any(character => !Uri.IsHexDigit(character)))
+        {
+            throw new ArgumentException("SHA-256 hashes must contain exactly 64 hexadecimal characters.", nameof(sha256));
+        }
+
+        return sha256.ToUpperInvariant();
+    }
+
+    private sealed class ImportDuplicateTracker
+    {
+        private readonly IBookRepository bookRepository;
+        private readonly bool snapshotLoaded;
+        private readonly HashSet<string> knownHashes;
+        private readonly HashSet<string> knownDuplicateKeys;
+
+        private ImportDuplicateTracker(
+            IBookRepository bookRepository,
+            bool snapshotLoaded,
+            IEnumerable<string> knownHashes,
+            IEnumerable<string> knownDuplicateKeys)
+        {
+            this.bookRepository = bookRepository;
+            this.snapshotLoaded = snapshotLoaded;
+            this.knownHashes = knownHashes.ToHashSet(StringComparer.Ordinal);
+            this.knownDuplicateKeys = knownDuplicateKeys.ToHashSet(StringComparer.Ordinal);
+        }
+
+        public static async Task<ImportDuplicateTracker> CreateAsync(
+            IBookRepository bookRepository,
+            CancellationToken cancellationToken)
+        {
+            if (bookRepository is IBookDuplicateSnapshotRepository snapshotRepository)
+            {
+                var snapshot = await snapshotRepository.CreateDuplicateSnapshotAsync(cancellationToken);
+                return new ImportDuplicateTracker(
+                    bookRepository,
+                    snapshotLoaded: true,
+                    snapshot.FileHashes,
+                    snapshot.DuplicateKeys);
+            }
+
+            return new ImportDuplicateTracker(
+                bookRepository,
+                snapshotLoaded: false,
+                knownHashes: [],
+                knownDuplicateKeys: []);
+        }
+
+        public async Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken)
+        {
+            var canonicalSha256 = CanonicalizeSha256(sha256);
+            if (knownHashes.Contains(canonicalSha256))
+            {
+                return true;
+            }
+
+            if (snapshotLoaded)
+            {
+                return false;
+            }
+
+            if (await bookRepository.HasHashAsync(canonicalSha256, cancellationToken))
+            {
+                knownHashes.Add(canonicalSha256);
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> HasDuplicateKeyAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            string duplicateKey,
+            CancellationToken cancellationToken)
+        {
+            if (knownDuplicateKeys.Contains(duplicateKey))
+            {
+                return true;
+            }
+
+            if (snapshotLoaded)
+            {
+                return false;
+            }
+
+            if (await bookRepository.HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken))
+            {
+                knownDuplicateKeys.Add(duplicateKey);
+                return true;
+            }
+
+            return false;
+        }
+
+        public void Add(string sha256, string duplicateKey)
+        {
+            knownHashes.Add(CanonicalizeSha256(sha256));
+            knownDuplicateKeys.Add(duplicateKey);
+        }
+    }
 
     private static class SafeImportMessages
     {

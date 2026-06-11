@@ -284,6 +284,25 @@ public sealed class LibraryDbContextTests
         (await context.BookFiles.SingleAsync()).Sha256.Should().Be(canonicalHash);
     }
 
+    [Fact]
+    public async Task Duplicate_snapshot_lists_existing_hashes_and_duplicate_keys()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var book = CreateBook("Snapshot Title", ["Snapshot Author"]);
+        var hash = Hash('D');
+
+        await repository.AddAsync(book, CreateFile(book.Id, sha256: hash), default);
+
+        var snapshot = await repository.CreateDuplicateSnapshotAsync(default);
+
+        snapshot.FileHashes.Should().Contain(hash);
+        snapshot.DuplicateKeys.Should().Contain(
+            DuplicateKeyNormalizer.BuildDuplicateKey(book.Metadata.Title, book.Metadata.Authors));
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("ABC")]

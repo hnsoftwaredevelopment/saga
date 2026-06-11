@@ -223,6 +223,26 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Import_async_skips_exact_duplicates_inside_the_same_batch()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var duplicateBytes = Encoding.UTF8.GetBytes("duplicate-bytes");
+        var first = fixture.WriteBytesFile(@"incoming\first\First Title - Author.pdf", duplicateBytes);
+        var second = fixture.WriteBytesFile(@"incoming\second\Different Title - Someone Else.pdf", duplicateBytes);
+        var service = fixture.CreateService();
+
+        var result = await service.ImportAsync([first, second], default);
+
+        result.Items.Select(item => item.Outcome).Should().Equal(
+            ImportOutcome.Added,
+            ImportOutcome.ExactDuplicate);
+        result.Items[1].BookId.Should().BeNull();
+        (await fixture.BookRepository.ListAsync(default)).Should().ContainSingle();
+        await using var context = fixture.ContextFactory.Create(fixture.LibraryPath);
+        (await context.BookFiles.CountAsync()).Should().Be(1);
+    }
+
+    [Fact]
     public async Task Import_async_reports_possible_duplicates_without_copying_them()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();
@@ -241,6 +261,29 @@ public sealed class ImportServiceTests
         result.Items.Should().ContainSingle().Which.Outcome.Should().Be(ImportOutcome.PossibleDuplicate);
         Directory.Exists(Path.Combine(fixture.LibraryPath, "books")).Should().BeFalse();
         (await fixture.BookRepository.ListAsync(default)).Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Import_async_reports_possible_duplicates_inside_the_same_batch()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var first = fixture.WriteBytesFile(
+            @"incoming\first\The Hobbit - J.R.R. Tolkien.pdf",
+            Encoding.UTF8.GetBytes("first-bytes"));
+        var second = fixture.WriteBytesFile(
+            @"incoming\second\the hobbit - j.r.r. tolkien.pdf",
+            Encoding.UTF8.GetBytes("different-bytes"));
+        var service = fixture.CreateService();
+
+        var result = await service.ImportAsync([first, second], default);
+
+        result.Items.Select(item => item.Outcome).Should().Equal(
+            ImportOutcome.Added,
+            ImportOutcome.PossibleDuplicate);
+        result.Items[1].BookId.Should().BeNull();
+        (await fixture.BookRepository.ListAsync(default)).Should().ContainSingle();
+        await using var context = fixture.ContextFactory.Create(fixture.LibraryPath);
+        (await context.BookFiles.CountAsync()).Should().Be(1);
     }
 
     [Fact]

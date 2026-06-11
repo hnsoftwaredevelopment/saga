@@ -10,7 +10,7 @@ namespace EbookManager.App.Services;
 public sealed class CurrentLibraryBookRepository(
     CurrentLibrary currentLibrary,
     LibraryDbContextFactory contextFactory)
-    : IBookRepository
+    : IBookRepository, IBookDuplicateSnapshotRepository
 {
     public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
@@ -36,6 +36,16 @@ public sealed class CurrentLibraryBookRepository(
         IReadOnlyList<string> authors,
         CancellationToken cancellationToken) =>
         CreateRepository().HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+    public Task<BookDuplicateSnapshot> CreateDuplicateSnapshotAsync(CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult(new BookDuplicateSnapshot(
+                new HashSet<string>(StringComparer.Ordinal),
+                new HashSet<string>(StringComparer.Ordinal)))
+            : repository.CreateDuplicateSnapshotAsync(cancellationToken);
+    }
 
     public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>
         CreateRepository().AddAsync(book, file, cancellationToken);

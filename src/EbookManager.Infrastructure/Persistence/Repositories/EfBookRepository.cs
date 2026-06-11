@@ -9,7 +9,7 @@ namespace EbookManager.Infrastructure.Persistence.Repositories;
 
 public sealed class EfBookRepository(
     LibraryDbContextFactory contextFactory,
-    string libraryPath) : IBookRepository
+    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository
 {
     public async Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
@@ -70,6 +70,23 @@ public sealed class EfBookRepository(
         return await context.Books
             .AsNoTracking()
             .AnyAsync(x => x.DuplicateKey == duplicateKey, cancellationToken);
+    }
+
+    public async Task<BookDuplicateSnapshot> CreateDuplicateSnapshotAsync(CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var hashes = await context.BookFiles
+            .AsNoTracking()
+            .Select(x => x.Sha256)
+            .ToListAsync(cancellationToken);
+        var duplicateKeys = await context.Books
+            .AsNoTracking()
+            .Select(x => x.DuplicateKey)
+            .ToListAsync(cancellationToken);
+
+        return new BookDuplicateSnapshot(
+            hashes.ToHashSet(StringComparer.Ordinal),
+            duplicateKeys.ToHashSet(StringComparer.Ordinal));
     }
 
     public async Task AddAsync(
@@ -182,14 +199,19 @@ public sealed class EfBookRepository(
         CancellationToken cancellationToken)
     {
         var normalizedAuthors = NormalizeMetadataNames(authors);
+        var normalizedNames = normalizedAuthors
+            .Select(x => x.NormalizedName)
+            .ToList();
+        var existingAuthors = normalizedNames.Count == 0
+            ? new Dictionary<string, AuthorEntity>(StringComparer.Ordinal)
+            : await context.Authors
+                .Where(x => normalizedNames.Contains(x.NormalizedName))
+                .ToDictionaryAsync(x => x.NormalizedName, StringComparer.Ordinal, cancellationToken);
+
         for (var order = 0; order < normalizedAuthors.Count; order++)
         {
             var (name, normalizedName) = normalizedAuthors[order];
-            var author = context.Authors.Local
-                .SingleOrDefault(x => x.NormalizedName == normalizedName)
-                ?? await context.Authors
-                    .SingleOrDefaultAsync(x => x.NormalizedName == normalizedName, cancellationToken);
-            if (author is null)
+            if (!existingAuthors.TryGetValue(normalizedName, out var author))
             {
                 author = new AuthorEntity
                 {
@@ -198,6 +220,7 @@ public sealed class EfBookRepository(
                     NormalizedName = normalizedName
                 };
                 context.Authors.Add(author);
+                existingAuthors.Add(normalizedName, author);
             }
             else
             {
@@ -225,14 +248,19 @@ public sealed class EfBookRepository(
         }
 
         var normalizedTags = NormalizeMetadataNames(tags);
+        var normalizedNames = normalizedTags
+            .Select(x => x.NormalizedName)
+            .ToList();
+        var existingTags = normalizedNames.Count == 0
+            ? new Dictionary<string, TagEntity>(StringComparer.Ordinal)
+            : await context.Tags
+                .Where(x => normalizedNames.Contains(x.NormalizedName))
+                .ToDictionaryAsync(x => x.NormalizedName, StringComparer.Ordinal, cancellationToken);
+
         for (var order = 0; order < normalizedTags.Count; order++)
         {
             var (name, normalizedName) = normalizedTags[order];
-            var tag = context.Tags.Local
-                .SingleOrDefault(x => x.NormalizedName == normalizedName)
-                ?? await context.Tags
-                    .SingleOrDefaultAsync(x => x.NormalizedName == normalizedName, cancellationToken);
-            if (tag is null)
+            if (!existingTags.TryGetValue(normalizedName, out var tag))
             {
                 tag = new TagEntity
                 {
@@ -241,6 +269,7 @@ public sealed class EfBookRepository(
                     NormalizedName = normalizedName
                 };
                 context.Tags.Add(tag);
+                existingTags.Add(normalizedName, tag);
             }
             else
             {

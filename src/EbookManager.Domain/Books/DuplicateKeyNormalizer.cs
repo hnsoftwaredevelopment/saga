@@ -1,16 +1,16 @@
 using System.Text;
 
-namespace EbookManager.Infrastructure.Persistence;
+namespace EbookManager.Domain.Books;
 
-internal static class DuplicateKeyNormalizer
+public static class DuplicateKeyNormalizer
 {
-    internal static string NormalizeSqliteText(string value)
+    public static string NormalizeSqliteText(string value)
     {
         ArgumentNullException.ThrowIfNull(value);
         return LowerAsciiOnly(TrimSpaces(value));
     }
 
-    internal static string BuildDuplicateKey(string title, IReadOnlyList<string> authors)
+    public static string BuildDuplicateKey(string title, IReadOnlyList<string> authors)
     {
         var normalizedTitle = NormalizeSqliteText(title);
         var normalizedAuthors = NormalizeAuthors(authors);
