@@ -237,6 +237,30 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Import_async_reports_copy_failures_without_throwing()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var source = fixture.WriteBytesFile(
+            @"incoming\Locked - Author.pdf",
+            Encoding.UTF8.GetBytes("locked-copy"));
+        var service = CreateImportService(
+            fixture.BookRepository,
+            fixture.ImportRepository,
+            new ThrowingCopyStore(),
+            fixture.FileHasher,
+            fixture.MetadataAdapterResolver,
+            fixture.ExceptionClassifier);
+
+        var result = await service.ImportAsync([source], default);
+
+        result.Items.Should().ContainSingle();
+        result.Items.Single().Outcome.Should().Be(ImportOutcome.Failed);
+        result.Items.Single().Message.Should().Be("managed copy failed");
+        result.Items.Single().BookId.Should().BeNull();
+        (await fixture.BookRepository.ListAsync(default)).Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Import_async_persists_sanitized_source_display_names_for_restart_recovery()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();
@@ -738,6 +762,21 @@ public sealed class ImportServiceTests
             DeleteBookDirectoryCalled = true;
             throw new IOException("cleanup store failure");
         }
+    }
+
+    private sealed class ThrowingCopyStore : ILibraryFileStore
+    {
+        public string GetAbsolutePath(string relativePath) => Path.GetFullPath(relativePath);
+
+        public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
+            Guid bookId,
+            string sourcePath,
+            byte[]? coverBytes,
+            CancellationToken cancellationToken) =>
+            throw new IOException("simulated access denied");
+
+        public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
     }
 
     private sealed class TrackingDeleteBookRepository(IBookRepository inner) : IBookRepository

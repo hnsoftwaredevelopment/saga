@@ -132,12 +132,25 @@ public sealed class ImportService(
                     return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
                 }
 
-                var copy = await fileStore.CopyIntoLibraryAsync(
-                    bookId,
-                    sourcePath!,
-                    metadata.Metadata.CoverBytes,
-                    cancellationToken);
-                copied = true;
+                (string RelativeBookPath, string? RelativeCoverPath) copy;
+                try
+                {
+                    copy = await fileStore.CopyIntoLibraryAsync(
+                        bookId,
+                        sourcePath!,
+                        metadata.Metadata.CoverBytes,
+                        cancellationToken);
+                    copied = true;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch
+                {
+                    result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.ManagedCopyFailed);
+                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                }
 
                 var now = DateTimeOffset.UtcNow;
                 var book = new Book(
@@ -318,6 +331,7 @@ public sealed class ImportService(
         public const string ImportFailed = "import failed";
         public const string CannotPersistResult = "cannot persist result";
         public const string InvalidSourcePath = "invalid source path";
+        public const string ManagedCopyFailed = "managed copy failed";
         public const string MetadataReadFailed = "metadata read failed";
         public const string MetadataWarning = "metadata warning";
         public const string PossibleDuplicate = "possible duplicate";
