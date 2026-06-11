@@ -9,37 +9,36 @@ namespace EbookManager.Infrastructure.Persistence.Repositories;
 
 public sealed class EfBookRepository(
     LibraryDbContextFactory contextFactory,
-    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository
+    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository
 {
     public async Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
         await using var context = contextFactory.Create(libraryPath);
-        var books = await context.Books
+        var books = await ListProjectionQuery(context)
+            .ToListAsync(cancellationToken);
+        return books.Select(ToDomain).ToList().AsReadOnly();
+    }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        return await context.Books
             .AsNoTracking()
-            .OrderBy(x => x.Title)
-            .ThenBy(x => x.Id)
-            .Select(x => new BookListProjection(
-                x.Id,
-                x.Title,
-                x.Description,
-                x.Language,
-                x.Publisher,
-                x.PublicationDate,
-                x.Series,
-                x.SeriesNumber,
-                x.Isbn,
-                x.ReadingStatus,
-                x.CoverRelativePath,
-                x.CreatedUtc,
-                x.UpdatedUtc,
-                x.BookAuthors
-                    .OrderBy(bookAuthor => bookAuthor.Order)
-                    .Select(bookAuthor => bookAuthor.Author.Name)
-                    .ToList(),
-                x.BookTags
-                    .OrderBy(bookTag => bookTag.Order)
-                    .Select(bookTag => bookTag.Tag.Name)
-                    .ToList()))
+            .CountAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Book>> ListPageAsync(
+        int skip,
+        int take,
+        CancellationToken cancellationToken)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(skip);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(take);
+
+        await using var context = contextFactory.Create(libraryPath);
+        var books = await ListProjectionQuery(context)
+            .Skip(skip)
+            .Take(take)
             .ToListAsync(cancellationToken);
         return books.Select(ToDomain).ToList().AsReadOnly();
     }
@@ -191,6 +190,34 @@ public sealed class EfBookRepository(
                 .ThenInclude(x => x.Author)
             .Include(x => x.BookTags)
                 .ThenInclude(x => x.Tag);
+
+    private static IQueryable<BookListProjection> ListProjectionQuery(LibraryDbContext context) =>
+        context.Books
+            .AsNoTracking()
+            .OrderBy(x => x.Title)
+            .ThenBy(x => x.Id)
+            .Select(x => new BookListProjection(
+                x.Id,
+                x.Title,
+                x.Description,
+                x.Language,
+                x.Publisher,
+                x.PublicationDate,
+                x.Series,
+                x.SeriesNumber,
+                x.Isbn,
+                x.ReadingStatus,
+                x.CoverRelativePath,
+                x.CreatedUtc,
+                x.UpdatedUtc,
+                x.BookAuthors
+                    .OrderBy(bookAuthor => bookAuthor.Order)
+                    .Select(bookAuthor => bookAuthor.Author.Name)
+                    .ToList(),
+                x.BookTags
+                    .OrderBy(bookTag => bookTag.Order)
+                    .Select(bookTag => bookTag.Tag.Name)
+                    .ToList()));
 
     private static async Task AddAuthorsAsync(
         LibraryDbContext context,

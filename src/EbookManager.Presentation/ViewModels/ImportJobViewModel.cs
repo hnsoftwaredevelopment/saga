@@ -43,9 +43,9 @@ public sealed partial class ImportJobViewModel : ObservableObject
 
     public bool CanShowDetails => LatestResult is not null;
 
-    public double ProgressValue => TotalCount <= 0 ? 0 : ProcessedCount * 100.0 / TotalCount;
+    public double ProgressValue => TotalCount <= 0 ? 0 : Math.Min(100, ProcessedCount * 100.0 / TotalCount);
 
-    public string ProgressText => TotalCount <= 0 ? StatusText : $"Processed {ProcessedCount} of {TotalCount}";
+    public string ProgressText => TotalCount <= 0 ? StatusText : $"{ProcessedCount} / {Math.Max(TotalCount, ProcessedCount)}";
 
     public void StartScanning()
     {

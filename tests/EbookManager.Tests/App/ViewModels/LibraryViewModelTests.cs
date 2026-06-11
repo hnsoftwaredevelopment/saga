@@ -50,6 +50,34 @@ public sealed class LibraryViewModelTests
         viewModel.IsLoadingLibrary.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task Refresh_reports_paged_loading_progress_while_library_is_loading()
+    {
+        var books = Enumerable.Range(1, 1_200)
+            .Select(index => CreateBook($"Book {index:0000}", ["Author"]))
+            .ToList();
+        var repository = new BlockingPagedBookRepository(books);
+        var viewModel = CreateViewModel(
+            [],
+            repository: repository,
+            currentLibrary: CreateActiveLibrary());
+
+        var refresh = viewModel.RefreshAsync();
+        await repository.FirstPageLoaded.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        viewModel.IsLoadingLibrary.Should().BeTrue();
+        viewModel.LoadingLibraryTotalCount.Should().Be(1_200);
+        viewModel.LoadedLibraryCount.Should().Be(500);
+        viewModel.LoadingLibraryProgressValue.Should().BeApproximately(41.67, 0.01);
+        viewModel.LoadingLibraryProgressText.Should().Be("500 / 1200");
+
+        repository.ReleaseRemainingPages();
+        await refresh;
+
+        viewModel.IsLoadingLibrary.Should().BeFalse();
+        viewModel.VisibleBookCount.Should().Be(1_200);
+    }
+
 
     [Fact]
     public async Task First_refresh_applies_default_view_from_settings()
@@ -494,6 +522,43 @@ public sealed class LibraryViewModelTests
         }
 
         public void Release(IReadOnlyList<Book> books) => release.TrySetResult(books);
+    }
+
+    private sealed class BlockingPagedBookRepository(IReadOnlyList<Book> books)
+        : StaticBookRepository(books), IBookPagedRepository
+    {
+        private readonly TaskCompletionSource releaseRemainingPages =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private int pageCalls;
+
+        public TaskCompletionSource FirstPageLoaded { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public Task<int> CountAsync(CancellationToken cancellationToken) =>
+            Task.FromResult(Books.Count);
+
+        public async Task<IReadOnlyList<Book>> ListPageAsync(
+            int skip,
+            int take,
+            CancellationToken cancellationToken)
+        {
+            var page = Books
+                .OrderBy(book => book.Metadata.Title)
+                .ThenBy(book => book.Id)
+                .Skip(skip)
+                .Take(take)
+                .ToList();
+            if (Interlocked.Increment(ref pageCalls) == 1)
+            {
+                FirstPageLoaded.TrySetResult();
+                return page;
+            }
+
+            await releaseRemainingPages.Task.WaitAsync(cancellationToken);
+            return page;
+        }
+
+        public void ReleaseRemainingPages() => releaseRemainingPages.TrySetResult();
     }
 
     private sealed class NoopLibraryFileStore : ILibraryFileStore

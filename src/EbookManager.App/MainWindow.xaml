@@ -370,7 +370,10 @@
                         Width="420">
               <ProgressBar Height="8"
                            Margin="0,0,0,16"
-                           IsIndeterminate="True">
+                           Minimum="0"
+                           Maximum="100"
+                           Value="{Binding LoadingLibraryProgressValue, Mode=OneWay}"
+                           IsIndeterminate="{Binding IsLoadingLibraryProgressIndeterminate, Mode=OneWay}">
                 <ProgressBar.Style>
                   <Style TargetType="ProgressBar">
                     <Setter Property="Visibility" Value="Collapsed" />
@@ -382,6 +385,22 @@
                   </Style>
                 </ProgressBar.Style>
               </ProgressBar>
+              <TextBlock Text="{Binding LoadingLibraryProgressText, Mode=OneWay}"
+                         FontSize="13"
+                         TextAlignment="Center"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         Margin="0,-8,0,12">
+                <TextBlock.Style>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsLoadingLibraryProgressIndeterminate}" Value="False">
+                        <Setter Property="Visibility" Value="Visible" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
               <TextBlock Text="{Binding EmptyStateMessage}"
                          FontSize="18"
                          FontWeight="SemiBold"

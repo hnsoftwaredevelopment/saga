@@ -28,7 +28,9 @@ public sealed class ImportJobViewModelTests
         viewModel.IsActive.Should().BeTrue();
         viewModel.IsIndeterminate.Should().BeFalse();
         viewModel.ProgressValue.Should().Be(25);
-        viewModel.ProgressText.Should().Be("Processed 25 of 100");
+        viewModel.ProgressText.Should().Be("25 / 100");
+        viewModel.ProgressText.Should().NotContain("Processed");
+        viewModel.ProgressText.Should().NotContain(" of ");
         viewModel.AddedCount.Should().Be(20);
         viewModel.DuplicateCount.Should().Be(3);
         viewModel.PossibleDuplicateCount.Should().Be(1);
@@ -48,5 +50,25 @@ public sealed class ImportJobViewModelTests
         viewModel.IsActive.Should().BeFalse();
         viewModel.CanShowDetails.Should().BeTrue();
         viewModel.LatestResult.Should().BeSameAs(result);
+    }
+
+    [Fact]
+    public void Progress_display_never_shows_processed_count_above_total_count()
+    {
+        var viewModel = new ImportJobViewModel();
+        var runId = Guid.NewGuid();
+
+        viewModel.ApplyProgress(new ImportProgress(
+            runId,
+            10,
+            12,
+            12,
+            0,
+            0,
+            0,
+            null));
+
+        viewModel.ProgressValue.Should().Be(100);
+        viewModel.ProgressText.Should().Be("12 / 12");
     }
 }

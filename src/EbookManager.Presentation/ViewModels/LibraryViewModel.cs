@@ -13,6 +13,8 @@ namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class LibraryViewModel : ObservableObject
 {
+    private const int LibraryLoadPageSize = 500;
+
     private readonly IBookRepository bookRepository;
     private readonly BookSearchService searchService;
     private readonly IUserInteractionService userInteraction;
@@ -101,6 +103,24 @@ public sealed partial class LibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool isLoadingLibrary;
 
+    [ObservableProperty]
+    private int loadingLibraryTotalCount;
+
+    [ObservableProperty]
+    private int loadedLibraryCount;
+
+    public double LoadingLibraryProgressValue =>
+        LoadingLibraryTotalCount <= 0
+            ? 0
+            : Math.Min(100, LoadedLibraryCount * 100.0 / LoadingLibraryTotalCount);
+
+    public bool IsLoadingLibraryProgressIndeterminate => LoadingLibraryTotalCount <= 0;
+
+    public string LoadingLibraryProgressText =>
+        LoadingLibraryTotalCount <= 0
+            ? string.Empty
+            : $"{LoadedLibraryCount} / {Math.Max(LoadingLibraryTotalCount, LoadedLibraryCount)}";
+
     public bool HasActiveLibrary => CurrentLibraryPath is not null;
 
     public bool HasActiveImport => importAgent?.IsActive == true;
@@ -128,13 +148,14 @@ public sealed partial class LibraryViewModel : ObservableObject
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
         IsLoadingLibrary = true;
+        ResetLoadingLibraryProgress();
         EmptyStateMessage = HasActiveLibrary
             ? "Loading library..."
             : "Create or open a library to get started.";
         try
         {
             await ApplyDefaultViewAsync(cancellationToken);
-            books = await bookRepository.ListAsync(cancellationToken);
+            books = await LoadBooksAsync(cancellationToken);
             RefreshFacetFilters();
             ApplyFilter();
             RefreshLibraryDisplay();
@@ -143,6 +164,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             IsLoadingLibrary = false;
         }
+    }
+
+    partial void OnLoadingLibraryTotalCountChanged(int value)
+    {
+        OnPropertyChanged(nameof(LoadingLibraryProgressValue));
+        OnPropertyChanged(nameof(IsLoadingLibraryProgressIndeterminate));
+        OnPropertyChanged(nameof(LoadingLibraryProgressText));
+    }
+
+    partial void OnLoadedLibraryCountChanged(int value)
+    {
+        OnPropertyChanged(nameof(LoadingLibraryProgressValue));
+        OnPropertyChanged(nameof(LoadingLibraryProgressText));
     }
 
     partial void OnSearchTextChanged(string value) => ApplyFilter();
@@ -237,6 +271,49 @@ public sealed partial class LibraryViewModel : ObservableObject
             () => directoryScanner.Scan(folder, includeSubdirectories, cancellationToken),
             cancellationToken);
         await ImportFilesAsync(files, cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<Book>> LoadBooksAsync(CancellationToken cancellationToken)
+    {
+        if (HasActiveLibrary && bookRepository is IBookPagedRepository pagedRepository)
+        {
+            var totalCount = await pagedRepository.CountAsync(cancellationToken);
+            LoadingLibraryTotalCount = totalCount;
+            if (totalCount == 0)
+            {
+                return [];
+            }
+
+            var loadedBooks = new List<Book>(totalCount);
+            for (var skip = 0; skip < totalCount; skip += LibraryLoadPageSize)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var page = await pagedRepository.ListPageAsync(
+                    skip,
+                    LibraryLoadPageSize,
+                    cancellationToken);
+                if (page.Count == 0)
+                {
+                    break;
+                }
+
+                loadedBooks.AddRange(page);
+                LoadedLibraryCount = loadedBooks.Count;
+            }
+
+            return loadedBooks.AsReadOnly();
+        }
+
+        var allBooks = await bookRepository.ListAsync(cancellationToken);
+        LoadingLibraryTotalCount = allBooks.Count;
+        LoadedLibraryCount = allBooks.Count;
+        return allBooks;
+    }
+
+    private void ResetLoadingLibraryProgress()
+    {
+        LoadingLibraryTotalCount = 0;
+        LoadedLibraryCount = 0;
     }
 
     private async Task CreateLibraryAsync(CancellationToken cancellationToken)

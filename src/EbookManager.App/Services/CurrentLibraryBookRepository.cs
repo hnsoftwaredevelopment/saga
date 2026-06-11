@@ -10,7 +10,7 @@ namespace EbookManager.App.Services;
 public sealed class CurrentLibraryBookRepository(
     CurrentLibrary currentLibrary,
     LibraryDbContextFactory contextFactory)
-    : IBookRepository, IBookDuplicateSnapshotRepository
+    : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository
 {
     public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
@@ -26,6 +26,25 @@ public sealed class CurrentLibraryBookRepository(
         return repository is null
             ? Task.FromResult<Book?>(null)
             : repository.GetAsync(id, cancellationToken);
+    }
+
+    public Task<int> CountAsync(CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult(0)
+            : repository.CountAsync(cancellationToken);
+    }
+
+    public Task<IReadOnlyList<Book>> ListPageAsync(
+        int skip,
+        int take,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult<IReadOnlyList<Book>>([])
+            : repository.ListPageAsync(skip, take, cancellationToken);
     }
 
     public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) =>
