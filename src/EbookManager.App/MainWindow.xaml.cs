@@ -26,6 +26,7 @@ public partial class MainWindow : System.Windows.Window
         DataContext = viewModel;
         RegisterLibraryDragDropHandlers();
         Loaded += OnLoaded;
+        Closing += OnClosing;
     }
 
     private async void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
@@ -41,6 +42,28 @@ public partial class MainWindow : System.Windows.Window
             Owner = this
         };
         window.ShowDialog();
+    }
+
+    private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        if (!viewModel.HasActiveImport)
+        {
+            return;
+        }
+
+        var result = System.Windows.MessageBox.Show(
+            localizationService.GetString("ImportInProgressCloseMessage"),
+            localizationService.GetString("ImportInProgressTitle"),
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+
+        if (result != System.Windows.MessageBoxResult.Yes)
+        {
+            e.Cancel = true;
+            return;
+        }
+
+        viewModel.CancelImportCommand.Execute(null);
     }
 
     private void LibraryDropZoneDragOver(object sender, System.Windows.DragEventArgs e)

@@ -9,6 +9,7 @@ using EbookManager.Infrastructure.Persistence.Repositories;
 using EbookManager.Infrastructure.Settings;
 using EbookManager.Libraries;
 using EbookManager.Presentation.Abstractions;
+using EbookManager.Presentation.Importing;
 using EbookManager.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Syncfusion.Licensing;
@@ -91,7 +92,10 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IBookRepository, CurrentLibraryBookRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();
         services.AddTransient<BookService>();
-        services.AddTransient<ImportService>();
+        services.AddSingleton<ImportService>();
+        services.AddSingleton<IImportRunner>(provider => provider.GetRequiredService<ImportService>());
+        services.AddSingleton<ImportJobViewModel>();
+        services.AddSingleton<IImportAgent, ImportAgent>();
         services.AddTransient<BookDetailsViewModel>();
         services.AddTransient(provider => new LibraryViewModel(
             provider.GetRequiredService<IBookRepository>(),
@@ -99,6 +103,7 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<BookDetailsViewModel>(),
             provider.GetRequiredService<IUserInteractionService>(),
             provider.GetService<ImportService>(),
+            provider.GetService<IImportAgent>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),

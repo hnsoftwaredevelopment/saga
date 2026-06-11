@@ -19,6 +19,7 @@
   <data name="DeleteConfirmationMessage" xml:space="preserve"><value>Do you really want to delete "{0}" from the library?</value></data>
   <data name="DeleteConfirmationTitle" xml:space="preserve"><value>Delete book</value></data>
   <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Details" xml:space="preserve"><value>Détails</value></data>
   <data name="DetailedView" xml:space="preserve"><value>Detailed</value></data>
   <data name="EReader" xml:space="preserve"><value>E-reader</value></data>
   <data name="EReaderUnavailable" xml:space="preserve"><value>Unavailable</value></data>
@@ -26,6 +27,8 @@
   <data name="ImportAdded" xml:space="preserve"><value>Added</value></data>
   <data name="ImportExactDuplicate" xml:space="preserve"><value>Exact duplicate</value></data>
   <data name="ImportFailed" xml:space="preserve"><value>Failed</value></data>
+  <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>Une importation est encore en cours. Fermer l'application et annuler l'importation ?</value></data>
+  <data name="ImportInProgressTitle" xml:space="preserve"><value>Importation en cours</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>
   <data name="ImportResults" xml:space="preserve"><value>Import results</value></data>
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>

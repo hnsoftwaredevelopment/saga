@@ -254,7 +254,91 @@
               Padding="10"
               Margin="0,0,12,0"
               AllowDrop="True">
-        <Grid>
+        <DockPanel LastChildFill="True">
+          <Border DockPanel.Dock="Top"
+                  Background="{DynamicResource AppBackgroundBrush}"
+                  BorderBrush="{DynamicResource AccentBrush}"
+                  BorderThickness="1"
+                  CornerRadius="12"
+                  Padding="12"
+                  Margin="0,0,0,10">
+            <Border.Style>
+              <Style TargetType="Border">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding ImportJob.IsVisible}" Value="True">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Border.Style>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+              <StackPanel Grid.Column="0">
+                <TextBlock Text="{Binding ImportJob.Title}"
+                           FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="{Binding ImportJob.StatusText}"
+                           FontSize="12"
+                           TextTrimming="CharacterEllipsis"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           Margin="0,2,0,8" />
+                <ProgressBar Height="8"
+                             Minimum="0"
+                             Maximum="100"
+                             Value="{Binding ImportJob.ProgressValue}"
+                             IsIndeterminate="{Binding ImportJob.IsIndeterminate}" />
+                <DockPanel Margin="0,8,0,0">
+                  <TextBlock Text="{Binding ImportJob.ProgressText}"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             DockPanel.Dock="Left" />
+                  <TextBlock HorizontalAlignment="Right"
+                             Foreground="{DynamicResource TextSecondaryBrush}">
+                    <Run Text="{loc:Loc ImportAdded}" />
+                    <Run Text=": " />
+                    <Run Text="{Binding ImportJob.AddedCount}" />
+                    <Run Text="  |  " />
+                    <Run Text="{loc:Loc ImportDuplicates}" />
+                    <Run Text=": " />
+                    <Run Text="{Binding ImportJob.DuplicateCount}" />
+                    <Run Text="  |  " />
+                    <Run Text="{loc:Loc ImportFailed}" />
+                    <Run Text=": " />
+                    <Run Text="{Binding ImportJob.FailedCount}" />
+                  </TextBlock>
+                </DockPanel>
+              </StackPanel>
+              <StackPanel Grid.Column="1"
+                          Orientation="Horizontal"
+                          VerticalAlignment="Top"
+                          Margin="12,0,0,0">
+                <Button Content="{loc:Loc Details}"
+                        Command="{Binding ShowImportDetailsCommand}"
+                        IsEnabled="{Binding ImportJob.CanShowDetails}"
+                        Padding="12,6"
+                        Margin="0,0,8,0" />
+                <Button Content="{loc:Loc Cancel}"
+                        Command="{Binding CancelImportCommand}"
+                        Padding="12,6">
+                  <Button.Style>
+                    <Style TargetType="Button">
+                      <Setter Property="Visibility" Value="Collapsed" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding ImportJob.IsActive}" Value="True">
+                          <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                </Button>
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <Grid>
           <Border Background="{DynamicResource PanelBackgroundBrush}"
                   Panel.ZIndex="1">
             <Border.Style>
@@ -333,7 +417,8 @@
               </Style>
             </views:LibraryListView.Style>
           </views:LibraryListView>
-        </Grid>
+          </Grid>
+        </DockPanel>
       </Border>
 
       <Border Grid.Column="2"
