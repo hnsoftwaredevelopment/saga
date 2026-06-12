@@ -1,8 +1,10 @@
+using System.Buffers;
+using System.Security.Cryptography;
 using EbookManager.Domain.Abstractions;
 
 namespace EbookManager.Infrastructure.Files;
 
-public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFileStore
+public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLibraryFileStore
 {
     private readonly string libraryRoot = Canonicalize(libraryRootPath);
 
@@ -22,8 +24,38 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
         byte[]? coverBytes,
         CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        var copy = await CopyIntoLibraryCoreAsync(
+            bookId,
+            sourcePath,
+            coverBytes,
+            computeSha256: false,
+            cancellationToken);
+        return (copy.RelativeBookPath, copy.RelativeCoverPath);
+    }
 
+    public async Task<(string RelativeBookPath, string? RelativeCoverPath, string Sha256)> CopyIntoLibraryWithHashAsync(
+        Guid bookId,
+        string sourcePath,
+        byte[]? coverBytes,
+        CancellationToken cancellationToken)
+    {
+        var copy = await CopyIntoLibraryCoreAsync(
+            bookId,
+            sourcePath,
+            coverBytes,
+            computeSha256: true,
+            cancellationToken);
+        return (copy.RelativeBookPath, copy.RelativeCoverPath, copy.Sha256!);
+    }
+
+    private async Task<(string RelativeBookPath, string? RelativeCoverPath, string? Sha256)> CopyIntoLibraryCoreAsync(
+        Guid bookId,
+        string sourcePath,
+        byte[]? coverBytes,
+        bool computeSha256,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
         var booksDirectory = EnsureContained(Path.Combine(libraryRoot, "books"));
         Directory.CreateDirectory(booksDirectory);
 
@@ -53,6 +85,7 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
         Directory.CreateDirectory(stagingDirectory);
         var absoluteBookPath = EnsureContained(Path.Combine(bookDirectory, managedSourceName));
         var stagedBookPath = EnsureContained(Path.Combine(stagingDirectory, managedSourceName));
+        string? hash = null;
 
         try
         {
@@ -66,7 +99,15 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
                     Options = FileOptions.Asynchronous | FileOptions.SequentialScan
                 }))
             {
-                await source.CopyToAsync(destination, cancellationToken);
+                var sha256 = computeSha256
+                    ? await CopyToAsyncAndHashAsync(source, destination, cancellationToken)
+                    : null;
+                if (!computeSha256)
+                {
+                    await source.CopyToAsync(destination, cancellationToken);
+                }
+
+                hash = sha256;
             }
 
             string? stagedCoverPath = null;
@@ -109,7 +150,8 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
 
             return (
                 ToRelativePath(absoluteBookPath),
-                stagedCoverPath is null ? null : ToRelativePath(Path.Combine(bookDirectory, "cover.jpg")));
+                stagedCoverPath is null ? null : ToRelativePath(Path.Combine(bookDirectory, "cover.jpg")),
+                hash);
         }
         finally
         {
@@ -117,6 +159,35 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : ILibraryFi
             {
                 TryDeleteDirectory(stagingDirectory);
             }
+        }
+    }
+
+    private static async Task<string> CopyToAsyncAndHashAsync(
+        Stream source,
+        Stream destination,
+        CancellationToken cancellationToken)
+    {
+        using var incrementalHash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        var buffer = ArrayPool<byte>.Shared.Rent(1024 * 1024);
+        try
+        {
+            while (true)
+            {
+                var bytesRead = await source.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken);
+                if (bytesRead == 0)
+                {
+                    break;
+                }
+
+                incrementalHash.AppendData(buffer.AsSpan(0, bytesRead));
+                await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+            }
+
+            return Convert.ToHexString(incrementalHash.GetHashAndReset());
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
         }
     }
 

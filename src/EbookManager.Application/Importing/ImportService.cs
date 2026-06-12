@@ -14,6 +14,7 @@ public sealed class ImportService(
     IImportExceptionClassifier exceptionClassifier) : IImportRunner
 {
     private const string InvalidSourceDisplayName = "(invalid source)";
+    private const long LargeFileSinglePassCopyThresholdBytes = 16 * 1024 * 1024;
 
     private readonly IBookRepository bookRepository = bookRepository;
     private readonly IImportRepository importRepository = importRepository;
@@ -124,28 +125,43 @@ public sealed class ImportService(
 
             try
             {
-                string sha256;
-                try
-                {
-                    sha256 = CanonicalizeSha256(await hasher.ComputeSha256Async(sourcePath!, cancellationToken));
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch
+                var sourceLength = GetSourceLengthOrNull(sourcePath!);
+                if (sourceLength is null)
                 {
                     result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
                     return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
                 }
 
-                if (await duplicateTracker.HasHashAsync(sha256, cancellationToken))
+                var hashingFileStore = fileStore as IHashingLibraryFileStore;
+                var useSinglePassCopy =
+                    hashingFileStore is not null &&
+                    sourceLength.Value >= LargeFileSinglePassCopyThresholdBytes;
+                string? sha256 = null;
+
+                if (!useSinglePassCopy)
                 {
-                    result = CreateSuccessResult(
-                        sourcePath,
-                        ImportOutcome.ExactDuplicate,
-                        SafeImportMessages.ExactDuplicate);
-                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    try
+                    {
+                        sha256 = CanonicalizeSha256(await hasher.ComputeSha256Async(sourcePath!, cancellationToken));
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch
+                    {
+                        result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
+                        return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    }
+
+                    if (await duplicateTracker.HasHashAsync(sha256, cancellationToken))
+                    {
+                        result = CreateSuccessResult(
+                            sourcePath,
+                            ImportOutcome.ExactDuplicate,
+                            SafeImportMessages.ExactDuplicate);
+                        return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    }
                 }
 
                 MetadataReadResult metadata;
@@ -166,27 +182,47 @@ public sealed class ImportService(
                 var duplicateKey = DuplicateKeyNormalizer.BuildDuplicateKey(
                     metadata.Metadata.Title,
                     metadata.Metadata.Authors);
+                var isPossibleDuplicate = false;
                 if (await duplicateTracker.HasDuplicateKeyAsync(
                         metadata.Metadata.Title,
                         metadata.Metadata.Authors,
                         duplicateKey,
                         cancellationToken))
                 {
-                    result = CreateSuccessResult(
-                        sourcePath,
-                        ImportOutcome.PossibleDuplicate,
-                        SafeImportMessages.PossibleDuplicate);
-                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    if (!useSinglePassCopy)
+                    {
+                        result = CreateSuccessResult(
+                            sourcePath,
+                            ImportOutcome.PossibleDuplicate,
+                            SafeImportMessages.PossibleDuplicate);
+                        return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    }
+
+                    isPossibleDuplicate = true;
                 }
 
                 (string RelativeBookPath, string? RelativeCoverPath) copy;
                 try
                 {
-                    copy = await fileStore.CopyIntoLibraryAsync(
-                        bookId,
-                        sourcePath!,
-                        metadata.Metadata.CoverBytes,
-                        cancellationToken);
+                    if (useSinglePassCopy)
+                    {
+                        var hashingCopy = await hashingFileStore!.CopyIntoLibraryWithHashAsync(
+                            bookId,
+                            sourcePath!,
+                            metadata.Metadata.CoverBytes,
+                            cancellationToken);
+                        copy = (hashingCopy.RelativeBookPath, hashingCopy.RelativeCoverPath);
+                        sha256 = CanonicalizeSha256(hashingCopy.Sha256);
+                    }
+                    else
+                    {
+                        copy = await fileStore.CopyIntoLibraryAsync(
+                            bookId,
+                            sourcePath!,
+                            metadata.Metadata.CoverBytes,
+                            cancellationToken);
+                    }
+
                     copied = true;
                 }
                 catch (OperationCanceledException)
@@ -196,6 +232,26 @@ public sealed class ImportService(
                 catch
                 {
                     result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.ManagedCopyFailed);
+                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                }
+
+                if (useSinglePassCopy && await duplicateTracker.HasHashAsync(sha256!, cancellationToken))
+                {
+                    result = CreateSuccessResult(
+                        sourcePath,
+                        ImportOutcome.ExactDuplicate,
+                        SafeImportMessages.ExactDuplicate);
+                    shouldCleanup = true;
+                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                }
+
+                if (isPossibleDuplicate)
+                {
+                    result = CreateSuccessResult(
+                        sourcePath,
+                        ImportOutcome.PossibleDuplicate,
+                        SafeImportMessages.PossibleDuplicate);
+                    shouldCleanup = true;
                     return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
                 }
 
@@ -212,8 +268,8 @@ public sealed class ImportService(
                     bookId,
                     format,
                     copy.RelativeBookPath,
-                    sha256,
-                    new FileInfo(sourcePath!).Length,
+                    sha256!,
+                    sourceLength.Value,
                     MetadataWriteBackStatus.NotAttempted,
                     null);
 
@@ -225,7 +281,7 @@ public sealed class ImportService(
                         sourcePath,
                         metadata.Warning,
                         bookId);
-                    duplicateTracker.Add(sha256, duplicateKey);
+                    duplicateTracker.Add(sha256!, duplicateKey);
                 }
                 catch (OperationCanceledException)
                 {
@@ -370,6 +426,19 @@ public sealed class ImportService(
         $"{message}; {SafeImportMessages.CleanupIncomplete}";
 
     private static bool IsBlank(string? value) => string.IsNullOrWhiteSpace(value);
+
+    private static long? GetSourceLengthOrNull(string sourcePath)
+    {
+        try
+        {
+            return new FileInfo(sourcePath).Length;
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or FileNotFoundException or PathTooLongException)
+        {
+            return null;
+        }
+    }
 
     private static string CanonicalizeSha256(string sha256)
     {

@@ -12,6 +12,19 @@
         AllowDrop="True"
         WindowStartupLocation="CenterScreen">
   <Grid Background="{DynamicResource AppBackgroundBrush}">
+    <Grid.Style>
+      <Style TargetType="Grid">
+        <Setter Property="Cursor" Value="Arrow" />
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding IsLoadingLibrary}" Value="True">
+            <Setter Property="Cursor" Value="Wait" />
+          </DataTrigger>
+          <DataTrigger Binding="{Binding ImportJob.IsActive, Mode=OneWay}" Value="True">
+            <Setter Property="Cursor" Value="Wait" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </Grid.Style>
     <Grid.RowDefinitions>
       <RowDefinition Height="64" />
       <RowDefinition Height="56" />

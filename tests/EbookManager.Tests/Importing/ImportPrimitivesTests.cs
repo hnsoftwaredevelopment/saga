@@ -181,6 +181,28 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
+    public async Task Managed_store_can_copy_and_hash_file_in_one_pass()
+    {
+        var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "Library");
+        Directory.CreateDirectory(libraryRoot);
+        var sourceBytes = Encoding.UTF8.GetBytes("large-comic-archive");
+        var sourcePath = WriteBytesFile("source.cbr", sourceBytes);
+        var store = new ManagedLibraryFileStore(libraryRoot);
+        var bookId = Guid.NewGuid();
+
+        var (relativeBookPath, relativeCoverPath, sha256) = await store.CopyIntoLibraryWithHashAsync(
+            bookId,
+            sourcePath,
+            coverBytes: null,
+            default);
+
+        relativeBookPath.Should().Be($"books/{bookId:N}/source.cbr");
+        relativeCoverPath.Should().BeNull();
+        sha256.Should().Be(Convert.ToHexString(SHA256.HashData(sourceBytes)));
+        File.ReadAllBytes(Path.Combine(libraryRoot, relativeBookPath)).Should().Equal(sourceBytes);
+    }
+
+    [Fact]
     public void Managed_store_resolves_absolute_paths_safely_within_the_library_root()
     {
         var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "Library");

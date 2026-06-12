@@ -612,6 +612,36 @@ public sealed class ImportServiceTests
         results.SelectMany(result => result.Items).Should().Contain(item => item.Outcome == ImportOutcome.PossibleDuplicate);
     }
 
+    [Fact]
+    public async Task Import_async_uses_hashing_copy_store_for_large_files()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var source = Path.Combine(fixture.WorkspacePath, "incoming", "Large Comic - Artist.cbr");
+        Directory.CreateDirectory(Path.GetDirectoryName(source)!);
+        await using (var stream = new FileStream(source, FileMode.Create, FileAccess.Write, FileShare.Read))
+        {
+            stream.SetLength(17 * 1024 * 1024);
+        }
+
+        var fileStore = new RecordingHashingFileStore();
+        var service = CreateImportService(
+            fixture.BookRepository,
+            fixture.ImportRepository,
+            fileStore,
+            new ThrowingFileHasher(),
+            fixture.MetadataAdapterResolver,
+            fixture.ExceptionClassifier);
+
+        var result = await service.ImportAsync([source], default);
+
+        result.Items.Should().ContainSingle().Which.Outcome.Should().Be(ImportOutcome.Added);
+        fileStore.CopyWithHashCalled.Should().BeTrue();
+        await using var context = fixture.ContextFactory.Create(fixture.LibraryPath);
+        var file = await context.BookFiles.SingleAsync();
+        file.Sha256.Should().Be(RecordingHashingFileStore.KnownHash);
+        file.SizeBytes.Should().Be(17 * 1024 * 1024);
+    }
+
     private static ImportService CreateImportService(
         IBookRepository bookRepository,
         IImportRepository importRepository,
@@ -873,6 +903,44 @@ public sealed class ImportServiceTests
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
             Task.CompletedTask;
+    }
+
+    private sealed class RecordingHashingFileStore : IHashingLibraryFileStore
+    {
+        public const string KnownHash = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+        public bool CopyWithHashCalled { get; private set; }
+
+        public string GetAbsolutePath(string relativePath) => Path.GetFullPath(relativePath);
+
+        public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
+            Guid bookId,
+            string sourcePath,
+            byte[]? coverBytes,
+            CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("The separate copy path should not be used for large files.");
+
+        public Task<(string RelativeBookPath, string? RelativeCoverPath, string Sha256)> CopyIntoLibraryWithHashAsync(
+            Guid bookId,
+            string sourcePath,
+            byte[]? coverBytes,
+            CancellationToken cancellationToken)
+        {
+            CopyWithHashCalled = true;
+            return Task.FromResult((
+                $"books/{bookId:N}/{Path.GetFileName(sourcePath)}",
+                (string?)null,
+                KnownHash));
+        }
+
+        public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+    }
+
+    private sealed class ThrowingFileHasher : IFileHasher
+    {
+        public Task<string> ComputeSha256Async(string path, CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("The separate hasher should not be used for large files.");
     }
 
     private sealed class TrackingDeleteBookRepository(IBookRepository inner) : IBookRepository
