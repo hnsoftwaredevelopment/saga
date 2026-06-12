@@ -63,6 +63,8 @@ The following features are explicitly deferred:
 - German, French, Spanish, and Italian translations beyond prepared resource infrastructure.
 - Free versus paid product editions.
 - In-app bug reports and feature requests that can create GitHub issues.
+- Picking a cover from CBR archives in the details pane by extracting the first image from the archive.
+- Retrying failed imports from import history with a redo action.
 
 Version `0.2` should address e-reader support separately, with USB mass-storage and Kobo as the first practical priorities.
 

@@ -108,6 +108,8 @@ The following remain later-version candidates:
 - custom metadata fields
 - filter by book file type, such as EPUB, PDF, CBR, CBZ, MOBI, AZW, AZW3, and KFX
 - duplicate finder for possible duplicates, with options to delete one copy or merge metadata
+- details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
+- import history redo action for failed items or failed runs
 - user-defined views
 - ebook conversion
 - full-text search inside book contents
