@@ -68,6 +68,12 @@
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Taal</value></data>
   <data name="ListView" xml:space="preserve"><value>Lijst</value></data>
+  <data name="EmptyStateLoadingLibrary" xml:space="preserve"><value>Bibliotheek wordt ingelezen...</value></data>
+  <data name="EmptyStateCreateOrOpenLibrary" xml:space="preserve"><value>Maak of open een bibliotheek om te beginnen.</value></data>
+  <data name="EmptyStateCreateOrOpenBeforeAdding" xml:space="preserve"><value>Maak of open eerst een bibliotheek voordat u boeken toevoegt.</value></data>
+  <data name="EmptyStateCreateOrOpenBeforeScanning" xml:space="preserve"><value>Maak of open eerst een bibliotheek voordat u mappen scant.</value></data>
+  <data name="EmptyStateLibraryEmpty" xml:space="preserve"><value>Deze bibliotheek is leeg. Voeg boeken toe of scan een map om te beginnen.</value></data>
+  <data name="EmptyStateLibraryFolderMissing" xml:space="preserve"><value>De actieve bibliotheekmap bestaat niet meer. Maak of open een bibliotheek om verder te gaan.</value></data>
   <data name="LoadingLibrary" xml:space="preserve"><value>Inlezen bibliotheek</value></data>
   <data name="Message" xml:space="preserve"><value>Melding</value></data>
   <data name="NoSort" xml:space="preserve"><value>Geen</value></data>

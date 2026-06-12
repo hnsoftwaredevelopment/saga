@@ -1,6 +1,7 @@
 <Window x:Class="EbookManager.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:EbookManager.App.Converters"
         xmlns:loc="clr-namespace:EbookManager.App.Localization"
         xmlns:views="clr-namespace:EbookManager.App.Views"
         xmlns:viewModels="clr-namespace:EbookManager.Presentation.ViewModels;assembly=EbookManager.Presentation"
@@ -12,6 +13,9 @@
         AllowDrop="True"
         WindowStartupLocation="CenterScreen">
   <Grid Background="{DynamicResource AppBackgroundBrush}">
+    <Grid.Resources>
+      <converters:EmptyStateMessageToLocalizedStringConverter x:Key="EmptyStateMessageToLocalizedStringConverter" />
+    </Grid.Resources>
     <Grid.Style>
       <Style TargetType="Grid">
         <Setter Property="Cursor" Value="Arrow" />
@@ -444,13 +448,18 @@
                   </Style>
                 </TextBlock.Style>
               </TextBlock>
-              <TextBlock Text="{Binding EmptyStateMessage}"
-                         FontSize="18"
+              <TextBlock FontSize="18"
                          FontWeight="SemiBold"
                          TextAlignment="Center"
                          TextWrapping="Wrap"
                          Foreground="{DynamicResource TextPrimaryBrush}"
                          Margin="0,0,0,16">
+                <TextBlock.Text>
+                  <MultiBinding Converter="{StaticResource EmptyStateMessageToLocalizedStringConverter}">
+                    <Binding Path="EmptyStateMessage" />
+                    <Binding Source="{x:Static loc:LocalizedStrings.Current}" Path="[AppName]" />
+                  </MultiBinding>
+                </TextBlock.Text>
                 <TextBlock.Style>
                   <Style TargetType="TextBlock">
                     <Setter Property="Visibility" Value="Visible" />
@@ -462,34 +471,6 @@
                   </Style>
                 </TextBlock.Style>
               </TextBlock>
-              <StackPanel Orientation="Horizontal"
-                          HorizontalAlignment="Center">
-                <StackPanel.Style>
-                  <Style TargetType="StackPanel">
-                    <Setter Property="Visibility" Value="Visible" />
-                    <Style.Triggers>
-                      <DataTrigger Binding="{Binding IsLoadingLibrary}" Value="True">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                      </DataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </StackPanel.Style>
-                <Button Content="{loc:Loc AddBooks}"
-                        Command="{Binding AddBooksCommand}"
-                        Padding="16,8"
-                        Margin="0,0,8,0" />
-                <Button Content="{loc:Loc Scan}"
-                        Command="{Binding ScanFolderCommand}"
-                        Padding="16,8"
-                        Margin="0,0,8,0" />
-                <Button Content="{loc:Loc CreateLibrary}"
-                        Command="{Binding CreateLibraryCommand}"
-                        Padding="16,8"
-                        Margin="0,0,8,0" />
-                <Button Content="{loc:Loc OpenLibrary}"
-                        Command="{Binding OpenLibraryCommand}"
-                        Padding="16,8" />
-              </StackPanel>
             </StackPanel>
           </Border>
           <views:BookshelfView>

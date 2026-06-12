@@ -37,6 +37,12 @@
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
   <data name="ListView" xml:space="preserve"><value>List</value></data>
+  <data name="EmptyStateLoadingLibrary" xml:space="preserve"><value>Bibliothek wird geladen...</value></data>
+  <data name="EmptyStateCreateOrOpenLibrary" xml:space="preserve"><value>Erstellen oder öffnen Sie eine Bibliothek, um zu beginnen.</value></data>
+  <data name="EmptyStateCreateOrOpenBeforeAdding" xml:space="preserve"><value>Erstellen oder öffnen Sie zuerst eine Bibliothek, bevor Sie Bücher hinzufügen.</value></data>
+  <data name="EmptyStateCreateOrOpenBeforeScanning" xml:space="preserve"><value>Erstellen oder öffnen Sie zuerst eine Bibliothek, bevor Sie Ordner scannen.</value></data>
+  <data name="EmptyStateLibraryEmpty" xml:space="preserve"><value>Diese Bibliothek ist leer. Fügen Sie Bücher hinzu oder scannen Sie einen Ordner, um zu beginnen.</value></data>
+  <data name="EmptyStateLibraryFolderMissing" xml:space="preserve"><value>Der aktive Bibliotheksordner existiert nicht mehr. Erstellen oder öffnen Sie eine Bibliothek, um fortzufahren.</value></data>
   <data name="LoadingLibrary" xml:space="preserve"><value>Bibliothek wird geladen</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>
   <data name="PublicationDate" xml:space="preserve"><value>Publication date</value></data>
