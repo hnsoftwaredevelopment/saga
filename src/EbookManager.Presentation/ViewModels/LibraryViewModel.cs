@@ -14,6 +14,8 @@ namespace EbookManager.Presentation.ViewModels;
 public sealed partial class LibraryViewModel : ObservableObject
 {
     private const int LibraryLoadPageSize = 500;
+    private const string MissingActiveLibraryMessage =
+        "The active library folder no longer exists. Create or open a library to continue.";
 
     private readonly IBookRepository bookRepository;
     private readonly BookSearchService searchService;
@@ -160,6 +162,12 @@ public sealed partial class LibraryViewModel : ObservableObject
         try
         {
             await ApplyDefaultViewAsync(cancellationToken);
+            if (currentLibrary is not null &&
+                !EnsureActiveLibraryStillExists("Create or open a library to get started."))
+            {
+                return;
+            }
+
             books = await LoadBooksAsync(cancellationToken);
             RefreshFacetFilters();
             ApplyFilter();
@@ -207,9 +215,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private async Task AddBooksAsync(CancellationToken cancellationToken)
     {
-        if (!HasActiveLibrary)
+        if (!EnsureActiveLibraryStillExists("Create or open a library before adding books."))
         {
-            EmptyStateMessage = "Create or open a library before adding books.";
             return;
         }
 
@@ -227,9 +234,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         CancellationToken cancellationToken = default,
         ImportRunContext? context = null)
     {
-        if (!HasActiveLibrary)
+        if (!EnsureActiveLibraryStillExists("Create or open a library before adding books."))
         {
-            EmptyStateMessage = "Create or open a library before adding books.";
             return;
         }
 
@@ -253,9 +259,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private async Task ScanFolderAsync(CancellationToken cancellationToken)
     {
-        if (!HasActiveLibrary)
+        if (!EnsureActiveLibraryStillExists("Create or open a library before scanning folders."))
         {
-            EmptyStateMessage = "Create or open a library before scanning folders.";
             return;
         }
 
@@ -558,6 +563,36 @@ public sealed partial class LibraryViewModel : ObservableObject
         CurrentLibraryPath = currentLibrary?.Current?.DirectoryPath;
     }
 
+    private bool EnsureActiveLibraryStillExists(string noActiveLibraryMessage)
+    {
+        if (!HasActiveLibrary)
+        {
+            EmptyStateMessage = noActiveLibraryMessage;
+            return false;
+        }
+
+        if (CurrentLibraryPath is not { Length: > 0 } currentPath || Directory.Exists(currentPath))
+        {
+            return true;
+        }
+
+        currentLibrary?.Clear();
+        books = [];
+        VisibleBooks.Clear();
+        AuthorFilters.Clear();
+        CategoryFilters.Clear();
+        SeriesFilters.Clear();
+        StatusFilters.Clear();
+        EReaderFilters.Clear();
+        LanguageFilters.Clear();
+        Details.Clear();
+        RefreshLibraryDisplay();
+        EmptyStateMessage = MissingActiveLibraryMessage;
+        OnPropertyChanged(nameof(VisibleBookCount));
+        OnPropertyChanged(nameof(HasActiveLibrary));
+        return false;
+    }
+
     private void OnDetailsBookSaved(object? sender, Book savedBook)
     {
         var mutableBooks = books.ToList();
@@ -606,7 +641,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private async Task ShowImportHistoryAsync(CancellationToken cancellationToken)
     {
-        if (!HasActiveLibrary || importRepository is null)
+        if (!EnsureActiveLibraryStillExists("Create or open a library to get started.") || importRepository is null)
         {
             return;
         }

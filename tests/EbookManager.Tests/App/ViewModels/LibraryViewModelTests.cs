@@ -334,6 +334,55 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Refresh_clears_active_library_when_library_folder_was_deleted_outside_the_app()
+    {
+        using var temporaryDirectory = new TemporaryDirectory();
+        var libraryPath = temporaryDirectory.CreateSubdirectory("DeletedLibrary").FullName;
+        var currentLibrary = CreateActiveLibrary(libraryPath);
+        var repository = new ThrowingBookRepository();
+        var viewModel = CreateViewModel(
+            [CreateBook("Ghost", ["Author"])],
+            repository: repository,
+            currentLibrary: currentLibrary);
+
+        Directory.Delete(libraryPath, recursive: true);
+
+        await viewModel.RefreshAsync();
+
+        currentLibrary.Current.Should().BeNull();
+        viewModel.HasActiveLibrary.Should().BeFalse();
+        viewModel.CurrentLibraryPath.Should().BeNull();
+        viewModel.CurrentLibraryName.Should().Be("No library selected");
+        viewModel.VisibleBooks.Should().BeEmpty();
+        viewModel.EmptyStateMessage.Should().Be(
+            "The active library folder no longer exists. Create or open a library to continue.");
+    }
+
+    [Fact]
+    public async Task ScanFolderCommand_does_not_prompt_when_active_library_folder_was_deleted_outside_the_app()
+    {
+        using var temporaryDirectory = new TemporaryDirectory();
+        var libraryPath = temporaryDirectory.CreateSubdirectory("DeletedLibrary").FullName;
+        var currentLibrary = CreateActiveLibrary(libraryPath);
+        var interaction = new ScriptedUserInteractionService { ScanFolder = temporaryDirectory.DirectoryPath };
+        var viewModel = CreateViewModel(
+            [],
+            interaction,
+            currentLibrary: currentLibrary,
+            directoryScanner: new DirectoryScanner(),
+            settingsStore: new InMemoryAppSettingsStore());
+
+        Directory.Delete(libraryPath, recursive: true);
+
+        await viewModel.ScanFolderCommand.ExecuteAsync(null);
+
+        interaction.PickScanFolderCalls.Should().Be(0);
+        currentLibrary.Current.Should().BeNull();
+        viewModel.EmptyStateMessage.Should().Be(
+            "The active library folder no longer exists. Create or open a library to continue.");
+    }
+
+    [Fact]
     public async Task AddBooksCommand_without_active_library_updates_empty_state_without_prompting_for_files()
     {
         var interaction = new ScriptedUserInteractionService();
@@ -541,6 +590,16 @@ public sealed class LibraryViewModelTests
         return currentLibrary;
     }
 
+    private static CurrentLibrary CreateActiveLibrary(string directoryPath)
+    {
+        var currentLibrary = new CurrentLibrary();
+        currentLibrary.Set(new LibraryDescriptor(
+            Path.GetFileName(Path.TrimEndingDirectorySeparator(directoryPath)),
+            directoryPath,
+            DateTimeOffset.UtcNow));
+        return currentLibrary;
+    }
+
     private class StaticBookRepository(IReadOnlyList<Book> books) : IBookRepository
     {
         protected readonly List<Book> Books = [.. books];
@@ -610,6 +669,16 @@ public sealed class LibraryViewModelTests
         }
 
         public void Release(IReadOnlyList<Book> books) => release.TrySetResult(books);
+    }
+
+    private sealed class ThrowingBookRepository : StaticBookRepository
+    {
+        public ThrowingBookRepository() : base([])
+        {
+        }
+
+        public override Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) =>
+            throw new InvalidOperationException("The repository should not be called when the library folder is missing.");
     }
 
     private sealed class BlockingPagedBookRepository(IReadOnlyList<Book> books)
