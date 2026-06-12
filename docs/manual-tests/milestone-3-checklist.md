@@ -5,11 +5,12 @@ Use this checklist for Calibre metadata import testing.
 ## Calibre-Style Import
 
 - Create or select a test library.
-- Scan a folder where each book directory contains one supported ebook file and a sibling `metadata.opf`.
+- Scan a folder where each book directory contains one supported ebook file plus sibling `metadata.opf` and `cover.jpg`.
 - Confirm imported title, authors, description, language, publisher, ISBN, tags, series, and series number match the OPF metadata.
 - Confirm tags and series appear immediately in the left filters.
 - Confirm search finds values imported from OPF metadata.
 - Confirm bookshelf, detailed grid, list view, and details pane show the imported metadata.
+- Confirm covers are shown from Calibre `cover.jpg` when available.
 
 ## Precedence
 

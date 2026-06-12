@@ -29,6 +29,7 @@ When metadata is absent or incomplete, the existing embedded metadata and filena
 Milestone 3 includes:
 
 - Read Calibre `metadata.opf` sidecar files located next to an imported ebook file.
+- Read Calibre `cover.jpg` sidecar files located next to an imported ebook file when no higher-priority cover is available.
 - Prefer the app's own `metadata.json` sidecar when present, then Calibre `metadata.opf`, then embedded metadata, then filename fallback.
 - Use the same precedence for file picker import, drag-and-drop import, and directory scan.
 - Make directory scan Calibre-friendly by associating an ebook file with a sibling `metadata.opf` in the same book folder.
@@ -52,11 +53,11 @@ Milestone 3 excludes:
 The import pipeline keeps SQLite authoritative once a book is imported. During import, source metadata is resolved in this order:
 
 1. `metadata.json` next to the source ebook file, because this is Ebook Manager's own portable correction format.
-2. Calibre `metadata.opf` next to the source ebook file.
+2. Calibre `metadata.opf` and `cover.jpg` next to the source ebook file.
 3. Format-specific embedded metadata, currently strongest for EPUB and KEPUB.
 4. Filename fallback.
 
-Precedence is field-level rather than all-or-nothing where practical. For example, if `metadata.opf` contains tags and series but no cover, the existing EPUB cover extraction can still supply the cover. The final merged `BookMetadata` is what gets stored in SQLite and later written to Ebook Manager's `metadata.json` sidecar inside the managed library book folder.
+Precedence is field-level rather than all-or-nothing where practical. For example, if `metadata.opf` contains tags and series and the book folder contains `cover.jpg`, the text metadata and cover can both be imported while embedded EPUB metadata remains available as fallback. The final merged `BookMetadata` is what gets stored in SQLite and later written to Ebook Manager's `metadata.json` sidecar inside the managed library book folder.
 
 ## 5. Calibre OPF Reader
 
@@ -73,6 +74,8 @@ Supported OPF fields:
 - `dc:identifier` values for ISBN, preferring identifiers whose scheme or value indicates ISBN.
 - `dc:subject` values for tags.
 - Calibre `meta` entries for `calibre:series` and `calibre:series_index`.
+
+When a sibling `cover.jpg` exists, the OPF reader imports it as cover bytes. Missing, unreadable, empty, or unexpectedly large cover files are ignored without aborting the import.
 
 Malformed OPF files must not crash a batch import. They are ignored with a warning recorded in the import item when possible, and the pipeline continues with embedded metadata or filename fallback.
 
@@ -98,6 +101,7 @@ File picker and drag-and-drop continue to accept one or more ebook files. For ea
 
 - `metadata.json`
 - `metadata.opf`
+- `cover.jpg`
 
 Directory scan continues to find supported ebook files. It does not import OPF files as books by themselves. If a Calibre book folder contains multiple ebook formats for the same title, the existing duplicate detection remains authoritative:
 
@@ -136,6 +140,7 @@ Automated tests cover:
 - Import prefers `metadata.json` over `metadata.opf`.
 - Import prefers `metadata.opf` over embedded EPUB metadata for overlapping fields.
 - EPUB cover extraction can still supply cover bytes when OPF sidecar supplies text metadata.
+- Calibre `cover.jpg` sidecar can supply cover bytes during directory scan import.
 - Directory scan associates sibling `metadata.opf` with the discovered ebook file.
 - Bracketed title cleanup extracts title, series, and numeric series number.
 - Non-numeric series numbers are ignored.

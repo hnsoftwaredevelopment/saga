@@ -386,6 +386,30 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
+    public async Task Calibre_opf_sidecar_reads_sibling_cover_jpg()
+    {
+        var bookPath = WriteBytesFile("Calibre/Cover/Book.epub", [1, 2, 3]);
+        byte[] coverBytes = [0x10, 0x20, 0x30];
+        File.WriteAllBytes(Path.Combine(Path.GetDirectoryName(bookPath)!, "cover.jpg"), coverBytes);
+        File.WriteAllText(
+            Path.Combine(Path.GetDirectoryName(bookPath)!, "metadata.opf"),
+            """
+            <package xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <metadata>
+                <dc:title>Book With Cover</dc:title>
+                <dc:creator>Cover Author</dc:creator>
+              </metadata>
+            </package>
+            """);
+        var store = new CalibreOpfMetadataSidecarStore();
+
+        var result = await store.TryReadAsync(bookPath, default);
+
+        result.Should().NotBeNull();
+        result!.Metadata.CoverBytes.Should().Equal(coverBytes);
+    }
+
+    [Fact]
     public async Task Calibre_opf_sidecar_returns_warning_for_malformed_opf_without_throwing()
     {
         var bookPath = WriteBytesFile("Calibre/Broken/Broken.epub", [1, 2, 3]);

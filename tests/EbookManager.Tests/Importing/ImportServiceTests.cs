@@ -200,6 +200,38 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Directory_scan_import_uses_sibling_calibre_cover_jpg()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var root = Path.Combine(fixture.WorkspacePath, "CalibreLibrary");
+        var bookDirectory = Path.Combine(root, "Author", "Book");
+        Directory.CreateDirectory(bookDirectory);
+        var source = Path.Combine(bookDirectory, "Book.pdf");
+        File.WriteAllBytes(source, Encoding.UTF8.GetBytes("scan-opf-cover"));
+        byte[] coverBytes = [0x40, 0x50, 0x60];
+        File.WriteAllBytes(Path.Combine(bookDirectory, "cover.jpg"), coverBytes);
+        File.WriteAllText(
+            Path.Combine(bookDirectory, "metadata.opf"),
+            """
+            <package xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <metadata>
+                <dc:title>Scanned Cover Title</dc:title>
+                <dc:creator>Scanned Cover Author</dc:creator>
+              </metadata>
+            </package>
+            """);
+        var scanner = new DirectoryScanner();
+        var sources = scanner.Scan(root, recursive: true);
+
+        var result = await fixture.CreateService().ImportAsync(sources, default);
+
+        var book = await fixture.BookRepository.GetAsync(result.Items.Single().BookId!.Value, default);
+        book.Should().NotBeNull();
+        book!.CoverRelativePath.Should().Be($"books/{book.Id:N}/cover.jpg");
+        File.ReadAllBytes(Path.Combine(fixture.LibraryPath, book.CoverRelativePath!)).Should().Equal(coverBytes);
+    }
+
+    [Fact]
     public async Task Import_async_skips_exact_duplicates_without_copying_them()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();

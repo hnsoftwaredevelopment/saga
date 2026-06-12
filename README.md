@@ -11,6 +11,7 @@ Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-qu
 - EPUB metadata and cover extraction
 - EPUB subject/tag and Calibre-style series metadata extraction
 - Calibre `metadata.opf` sidecar import
+- Calibre `cover.jpg` sidecar import
 - background import progress for large scans
 - live library refresh during imports
 - cancel and close-warning behavior for active imports
@@ -85,7 +86,7 @@ SQLite is authoritative for metadata inside the application. Metadata edits are 
 During import, metadata is resolved in this order:
 
 1. Saga `metadata.json` sidecar next to the source file.
-2. Calibre `metadata.opf` sidecar next to the source file.
+2. Calibre `metadata.opf` and `cover.jpg` sidecars next to the source file.
 3. Embedded format metadata, strongest for EPUB and KEPUB.
 4. Filename fallback.
 

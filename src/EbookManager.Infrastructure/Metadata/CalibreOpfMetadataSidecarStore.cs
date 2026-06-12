@@ -9,6 +9,7 @@ namespace EbookManager.Infrastructure.Metadata;
 public sealed class CalibreOpfMetadataSidecarStore
 {
     public const string FileName = "metadata.opf";
+    private const long MaxCoverSizeBytes = 10 * 1024 * 1024;
 
     public async Task<MetadataReadResult?> TryReadAsync(
         string bookFilePath,
@@ -75,14 +76,42 @@ public sealed class CalibreOpfMetadataSidecarStore
                     tags.Length > 0 ? tags : null,
                     MetaContent(metadataElement, "calibre:series"),
                     ParseSeriesNumber(MetaContent(metadataElement, "calibre:series_index")),
-                    FirstIsbn(metadataElement)));
+                    FirstIsbn(metadataElement),
+                    await TryReadCoverAsync(directory, cancellationToken)));
         }
         catch (Exception exception) when (
             exception is IOException or UnauthorizedAccessException or XmlException or InvalidDataException)
         {
             return new MetadataReadResult(
                 FallbackMetadata(bookFilePath),
-                $"Calibre OPF ignored: {exception.GetType().Name}");
+            $"Calibre OPF ignored: {exception.GetType().Name}");
+        }
+    }
+
+    private static async Task<byte[]?> TryReadCoverAsync(
+        string directory,
+        CancellationToken cancellationToken)
+    {
+        var coverPath = Path.Combine(directory, "cover.jpg");
+        if (!File.Exists(coverPath))
+        {
+            return null;
+        }
+
+        try
+        {
+            var fileInfo = new FileInfo(coverPath);
+            if (fileInfo.Length <= 0 || fileInfo.Length > MaxCoverSizeBytes)
+            {
+                return null;
+            }
+
+            return await File.ReadAllBytesAsync(fileInfo.FullName, cancellationToken);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or FileNotFoundException or PathTooLongException)
+        {
+            return null;
         }
     }
 
