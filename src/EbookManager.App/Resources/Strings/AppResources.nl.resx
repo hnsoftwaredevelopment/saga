@@ -9,6 +9,8 @@
   <data name="AppVersion" xml:space="preserve"><value>Versie</value></data>
   <data name="Authors" xml:space="preserve"><value>Auteurs</value></data>
   <data name="BookCount" xml:space="preserve"><value>Boeken</value></data>
+  <data name="BookSaveConflict" xml:space="preserve"><value>Er bestaat al een boek met dezelfde titel en auteur.</value></data>
+  <data name="BookSaveFailed" xml:space="preserve"><value>De wijzigingen konden niet worden opgeslagen.</value></data>
   <data name="BookshelfView" xml:space="preserve"><value>Boekenplank</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuleren</value></data>
   <data name="Close" xml:space="preserve"><value>Sluiten</value></data>
@@ -52,6 +54,8 @@
   <data name="ImportMessageManagedCopyFailed" xml:space="preserve"><value>Het boek kon niet naar de Saga bibliotheekmap worden gekopieerd</value></data>
   <data name="ImportMessageMetadataReadFailed" xml:space="preserve"><value>De metadata kon niet uit dit bestand worden gelezen</value></data>
   <data name="ImportMessageSourceUnreadable" xml:space="preserve"><value>Het bronbestand kon niet worden gelezen; controleer of het bestand lokaal beschikbaar is</value></data>
+  <data name="ImportMessageSourceUnreadablePrefix" xml:space="preserve"><value>Het bronbestand kon niet worden gelezen</value></data>
+  <data name="ImportMessageSourceUnreadableAdvice" xml:space="preserve"><value>controleer of het bestand lokaal beschikbaar is</value></data>
   <data name="ImportMessageUnsupportedFormat" xml:space="preserve"><value>Niet-ondersteund bestandsformaat</value></data>
   <data name="ImportMessageInvalidSourcePath" xml:space="preserve"><value>Ongeldig bronpad</value></data>
   <data name="ImportMessageImportFailed" xml:space="preserve"><value>Importeren mislukt</value></data>

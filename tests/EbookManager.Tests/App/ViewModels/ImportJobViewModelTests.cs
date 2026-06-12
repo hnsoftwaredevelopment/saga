@@ -34,6 +34,7 @@ public sealed class ImportJobViewModelTests
         viewModel.AddedCount.Should().Be(20);
         viewModel.DuplicateCount.Should().Be(3);
         viewModel.PossibleDuplicateCount.Should().Be(1);
+        viewModel.SkippedCount.Should().Be(4);
         viewModel.FailedCount.Should().Be(1);
     }
 

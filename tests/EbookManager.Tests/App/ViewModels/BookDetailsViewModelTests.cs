@@ -83,6 +83,23 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public async Task Save_conflict_keeps_dirty_state_and_exposes_save_error()
+    {
+        var viewModel = CreateViewModel(out var repository);
+        repository.ThrowConflictOnUpdate = true;
+        var book = CreateBook("Original", ["First Author"]);
+        viewModel.Load(book);
+        viewModel.AuthorsText = "Second Author";
+
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        viewModel.LastSaveResult!.Status.Should().Be(BookSaveStatus.Conflict);
+        viewModel.HasSaveError.Should().BeTrue();
+        viewModel.SaveErrorMessage.Should().Be("A book with the same title and author already exists.");
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Delete_removes_loaded_book_and_clears_details()
     {
         var viewModel = CreateViewModel(out var repository);
@@ -130,6 +147,7 @@ public sealed class BookDetailsViewModelTests
     {
         public Book? UpdatedBook { get; private set; }
         public Guid? DeletedBookId { get; private set; }
+        public bool ThrowConflictOnUpdate { get; set; }
 
         public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([]);
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult<Book?>(null);
@@ -139,6 +157,11 @@ public sealed class BookDetailsViewModelTests
 
         public Task UpdateAsync(Book book, CancellationToken cancellationToken)
         {
+            if (ThrowConflictOnUpdate)
+            {
+                throw new BookConflictException();
+            }
+
             UpdatedBook = book;
             return Task.CompletedTask;
         }

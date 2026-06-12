@@ -111,6 +111,9 @@ The following remain later-version candidates:
 - duplicate finder for possible duplicates, with options to delete one copy or merge metadata
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - import history redo action for failed items or failed runs
+- import history diagnostics with per-item duration, file size, and format for slow-file analysis
+- optional cloud-file hydration for OneDrive files that are not available locally
+- context-menu actions on filters to rename or remove authors, series, tags, languages, and other metadata values across affected books
 - user-defined views
 - ebook conversion
 - full-text search inside book contents

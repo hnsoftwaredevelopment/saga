@@ -114,6 +114,14 @@ public sealed class EfBookRepository(
             var entity = await context.Books
                 .SingleOrDefaultAsync(x => x.Id == book.Id, cancellationToken)
                 ?? throw new KeyNotFoundException($"Book '{book.Id}' does not exist.");
+            var previousAuthorIds = await context.BookAuthors
+                .Where(x => x.BookId == book.Id)
+                .Select(x => x.AuthorId)
+                .ToListAsync(cancellationToken);
+            var previousTagIds = await context.BookTags
+                .Where(x => x.BookId == book.Id)
+                .Select(x => x.TagId)
+                .ToListAsync(cancellationToken);
 
             Apply(book, entity);
             await context.SaveChangesAsync(cancellationToken);
@@ -128,7 +136,7 @@ public sealed class EfBookRepository(
             await AddAuthorsAsync(context, entity, book.Metadata.Authors, cancellationToken);
             await AddTagsAsync(context, entity, book.Metadata.Tags, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
-            await RemoveOrphanedMetadataAsync(context, cancellationToken);
+            await RemoveOrphanedMetadataAsync(context, previousAuthorIds, previousTagIds, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
         }
@@ -324,6 +332,29 @@ public sealed class EfBookRepository(
             .ToListAsync(cancellationToken);
         context.Authors.RemoveRange(authors);
         context.Tags.RemoveRange(tags);
+    }
+
+    private static async Task RemoveOrphanedMetadataAsync(
+        LibraryDbContext context,
+        IReadOnlyList<Guid> authorIds,
+        IReadOnlyList<Guid> tagIds,
+        CancellationToken cancellationToken)
+    {
+        if (authorIds.Count > 0)
+        {
+            var authors = await context.Authors
+                .Where(x => authorIds.Contains(x.Id) && !x.BookAuthors.Any())
+                .ToListAsync(cancellationToken);
+            context.Authors.RemoveRange(authors);
+        }
+
+        if (tagIds.Count > 0)
+        {
+            var tags = await context.Tags
+                .Where(x => tagIds.Contains(x.Id) && !x.BookTags.Any())
+                .ToListAsync(cancellationToken);
+            context.Tags.RemoveRange(tags);
+        }
     }
 
     private static BookEntity ToEntity(Book book)

@@ -56,6 +56,17 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
     [ObservableProperty]
     private BookSaveResult? lastSaveResult;
 
+    public bool HasSaveError => LastSaveResult?.Status is BookSaveStatus.Conflict or BookSaveStatus.Failed;
+
+    public string? SaveErrorMessage => LastSaveResult?.Status switch
+    {
+        BookSaveStatus.Conflict => "A book with the same title and author already exists.",
+        BookSaveStatus.Failed => string.IsNullOrWhiteSpace(LastSaveResult.Message)
+            ? "The changes could not be saved."
+            : LastSaveResult.Message,
+        _ => null
+    };
+
     [ObservableProperty]
     private BookDeleteResult? lastDeleteResult;
 
@@ -69,6 +80,12 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
 
     public event EventHandler<Book>? BookSaved;
     public event EventHandler<Guid>? BookDeleted;
+
+    partial void OnLastSaveResultChanged(BookSaveResult? value)
+    {
+        OnPropertyChanged(nameof(HasSaveError));
+        OnPropertyChanged(nameof(SaveErrorMessage));
+    }
 
     public void Load(Book book)
     {

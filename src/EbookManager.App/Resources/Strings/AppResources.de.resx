@@ -9,6 +9,8 @@
   <data name="AppVersion" xml:space="preserve"><value>Version</value></data>
   <data name="Authors" xml:space="preserve"><value>Authors</value></data>
   <data name="BookCount" xml:space="preserve"><value>Books</value></data>
+  <data name="BookSaveConflict" xml:space="preserve"><value>Es existiert bereits ein Buch mit demselben Titel und Autor.</value></data>
+  <data name="BookSaveFailed" xml:space="preserve"><value>Die Änderungen konnten nicht gespeichert werden.</value></data>
   <data name="BookshelfView" xml:space="preserve"><value>Bookshelf</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Ask before deleting books</value></data>
@@ -34,6 +36,8 @@
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Import laeuft</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>
   <data name="ImportResults" xml:space="preserve"><value>Import results</value></data>
+  <data name="ImportMessageSourceUnreadablePrefix" xml:space="preserve"><value>Die Quelldatei konnte nicht gelesen werden</value></data>
+  <data name="ImportMessageSourceUnreadableAdvice" xml:space="preserve"><value>stellen Sie sicher, dass die Datei lokal verfügbar ist</value></data>
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
   <data name="ListView" xml:space="preserve"><value>List</value></data>

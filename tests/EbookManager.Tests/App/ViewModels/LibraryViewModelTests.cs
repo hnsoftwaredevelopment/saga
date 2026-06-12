@@ -152,13 +152,13 @@ public sealed class LibraryViewModelTests
         var fantasy = CreateBook(
             "The Hobbit",
             ["Tolkien"],
-            language: "en",
+            language: "eng",
             series: "Middle-earth",
             readingStatus: ReadingStatus.Read);
         var scienceFiction = CreateBook(
             "Dune",
             ["Frank Herbert"],
-            language: "nl",
+            language: "nl-NL",
             series: "Dune",
             readingStatus: ReadingStatus.Unread);
         var viewModel = CreateViewModel([fantasy, scienceFiction]);
@@ -172,7 +172,7 @@ public sealed class LibraryViewModelTests
         viewModel.EReaderFilters.Select(filter => filter.DisplayName)
             .Should().Equal("Unavailable (2)");
         viewModel.LanguageFilters.Select(filter => filter.DisplayName)
-            .Should().Equal("en (1)", "nl (1)");
+            .Should().Equal("Engels (1)", "Nederlands (1)");
 
         viewModel.SeriesFilters.Should().OnlyContain(filter => !filter.IsSelected);
         viewModel.SeriesFilters.Single(filter => filter.Name == "Dune").IsSelected = true;

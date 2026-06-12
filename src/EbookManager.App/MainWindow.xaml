@@ -329,7 +329,7 @@
                     <Run Text="  |  " />
                     <Run Text="{loc:Loc ImportDuplicates}" />
                     <Run Text=": " />
-                    <Run Text="{Binding ImportJob.DuplicateCount, Mode=OneWay}" />
+                    <Run Text="{Binding ImportJob.SkippedCount, Mode=OneWay}" />
                     <Run Text="  |  " />
                     <Run Text="{loc:Loc ImportFailed}" />
                     <Run Text=": " />

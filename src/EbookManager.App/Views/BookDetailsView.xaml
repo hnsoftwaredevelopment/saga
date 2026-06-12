@@ -6,6 +6,7 @@
              xmlns:loc="clr-namespace:EbookManager.App.Localization">
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
+    <converters:BookSaveErrorToLocalizedStringConverter x:Key="BookSaveErrorToLocalizedStringConverter" />
   </UserControl.Resources>
   <DockPanel Margin="16">
     <StackPanel DockPanel.Dock="Top">
@@ -25,6 +26,25 @@
         </Border.Style>
         <TextBlock Text="{loc:Loc UnsavedChanges}"
                    Foreground="#FF7A4A00" />
+      </Border>
+
+      <Border Background="#FFF8D7DA"
+              CornerRadius="8"
+              Padding="10"
+              Margin="0,0,0,12">
+        <Border.Style>
+          <Style TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding HasSaveError}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Text="{Binding SaveErrorMessage, Converter={StaticResource BookSaveErrorToLocalizedStringConverter}}"
+                   TextWrapping="Wrap"
+                   Foreground="#FF842029" />
       </Border>
 
       <StackPanel Orientation="Horizontal" Margin="0,0,0,12">

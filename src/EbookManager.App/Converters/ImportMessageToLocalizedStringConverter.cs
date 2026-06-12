@@ -14,6 +14,8 @@ public sealed class ImportMessageToLocalizedStringConverter : IValueConverter
             ["possible duplicate"] = "ImportMessagePossibleDuplicate",
             ["managed copy failed"] = "ImportMessageManagedCopyFailed",
             ["metadata read failed"] = "ImportMessageMetadataReadFailed",
+            ["source unreadable"] = "ImportMessageSourceUnreadablePrefix",
+            ["make sure the file is available locally"] = "ImportMessageSourceUnreadableAdvice",
             ["source unreadable; make sure the file is available locally"] = "ImportMessageSourceUnreadable",
             ["unsupported format"] = "ImportMessageUnsupportedFormat",
             ["invalid source path"] = "ImportMessageInvalidSourcePath",

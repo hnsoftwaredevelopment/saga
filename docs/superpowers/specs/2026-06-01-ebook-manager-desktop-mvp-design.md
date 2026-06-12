@@ -65,6 +65,9 @@ The following features are explicitly deferred:
 - In-app bug reports and feature requests that can create GitHub issues.
 - Picking a cover from CBR archives in the details pane by extracting the first image from the archive.
 - Retrying failed imports from import history with a redo action.
+- Import diagnostics that record per-item duration, file size, and format so unusually slow files can be identified after a scan.
+- Optional OneDrive/cloud-only file hydration before import when source files are not locally available.
+- Filter context-menu actions for renaming or removing metadata values across all affected books.
 
 Version `0.2` should address e-reader support separately, with USB mass-storage and Kobo as the first practical priorities.
 

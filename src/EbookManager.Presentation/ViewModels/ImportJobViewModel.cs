@@ -47,6 +47,8 @@ public sealed partial class ImportJobViewModel : ObservableObject
 
     public string ProgressText => TotalCount <= 0 ? StatusText : $"{ProcessedCount} / {Math.Max(TotalCount, ProcessedCount)}";
 
+    public int SkippedCount => DuplicateCount + PossibleDuplicateCount;
+
     public void StartScanning()
     {
         IsVisible = true;
@@ -80,6 +82,7 @@ public sealed partial class ImportJobViewModel : ObservableObject
             ? string.Empty
             : Path.GetFileName(progress.LatestItem.SourcePath);
         RefreshProgressProperties();
+        OnPropertyChanged(nameof(SkippedCount));
     }
 
     public void Complete(ImportBatchResult result)
@@ -136,6 +139,7 @@ public sealed partial class ImportJobViewModel : ObservableObject
         LatestResult = null;
         OnPropertyChanged(nameof(CanShowDetails));
         RefreshProgressProperties();
+        OnPropertyChanged(nameof(SkippedCount));
     }
 
     private void RefreshProgressProperties()

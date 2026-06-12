@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
@@ -423,7 +424,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 (Filters: SeriesFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(book.Metadata.Series))),
                 (Filters: StatusFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => [book.ReadingStatus.ToString()])),
                 (Filters: EReaderFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => [new BookRowViewModel(book).EReader])),
-                (Filters: LanguageFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(book.Metadata.Language)))
+                (Filters: LanguageFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(LanguageFilterKey(book.Metadata.Language))))
             }
             .Select(group => (
                 group.ValueSelector,
@@ -461,12 +462,14 @@ public sealed partial class LibraryViewModel : ObservableObject
             books.Select(book => new BookRowViewModel(book).EReader));
         RefreshFilters(
             LanguageFilters,
-            books.SelectMany(book => SingleOptionalValue(book.Metadata.Language)));
+            books.SelectMany(book => SingleOptionalValue(LanguageFilterKey(book.Metadata.Language))),
+            LanguageDisplayName);
     }
 
     private void RefreshFilters(
         ObservableCollection<FacetFilterViewModel> filters,
-        IEnumerable<string> values)
+        IEnumerable<string> values,
+        Func<string, string>? displayNameSelector = null)
     {
         var existingSelections = filters.ToDictionary(
             filter => filter.Name,
@@ -487,7 +490,12 @@ public sealed partial class LibraryViewModel : ObservableObject
         foreach (var value in valueCounts)
         {
             var isSelected = existingSelections.TryGetValue(value.Name, out var existingSelection) && existingSelection;
-            filters.Add(new FacetFilterViewModel(value.Name, value.Count, isSelected, ApplyFilter));
+            filters.Add(new FacetFilterViewModel(
+                value.Name,
+                value.Count,
+                isSelected,
+                ApplyFilter,
+                displayNameSelector?.Invoke(value.Name)));
         }
     }
 
@@ -517,6 +525,49 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private static IEnumerable<string> SingleOptionalValue(string? value) =>
         string.IsNullOrWhiteSpace(value) ? [] : [value];
+
+    private static string LanguageDisplayName(string value)
+    {
+        var normalized = LanguageFilterKey(value) ?? value.Trim();
+        if (normalized.Length == 0)
+        {
+            return normalized;
+        }
+
+        try
+        {
+            var culture = CultureInfo.GetCultureInfo(normalized);
+            var languageOnly = CultureInfo.GetCultureInfo(culture.TwoLetterISOLanguageName);
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(languageOnly.DisplayName);
+        }
+        catch (CultureNotFoundException)
+        {
+            return value;
+        }
+    }
+
+    private static string? LanguageFilterKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var normalized = value.Trim();
+        if (normalized.Equals("eng", StringComparison.OrdinalIgnoreCase))
+        {
+            return "en";
+        }
+
+        try
+        {
+            return CultureInfo.GetCultureInfo(normalized).TwoLetterISOLanguageName;
+        }
+        catch (CultureNotFoundException)
+        {
+            return normalized;
+        }
+    }
 
     private static IEnumerable<BookRowViewModel> ApplySort(
         IEnumerable<BookRowViewModel> rows,

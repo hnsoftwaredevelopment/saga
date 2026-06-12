@@ -6,14 +6,15 @@ public sealed partial class FacetFilterViewModel(
     string name,
     int count,
     bool isSelected,
-    Action selectionChanged)
+    Action selectionChanged,
+    string? displayName = null)
     : ObservableObject
 {
     private readonly Action selectionChanged = selectionChanged;
 
     public string Name { get; } = name;
     public int Count { get; } = count;
-    public string DisplayName => $"{Name} ({Count})";
+    public string DisplayName => $"{displayName ?? Name} ({Count})";
 
     [ObservableProperty]
     private bool isSelected = isSelected;
