@@ -287,6 +287,29 @@ public sealed class LibraryViewModelTests
         repository.BooksSnapshot.Select(book => book.Metadata.Language)
             .Should().Equal("en", "en");
         viewModel.LanguageFilters.Should().ContainSingle(filter => filter.Name == "en" && filter.Count == 2);
+        viewModel.IsCleaningMetadata.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Rename_filter_shows_metadata_cleanup_busy_state_until_update_completes()
+    {
+        var first = CreateBook("First", ["Author"], language: "eng");
+        var repository = new BlockingBulkScalarMetadataRepository([first]);
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "nl" };
+        var viewModel = CreateViewModel([first], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        var rename = viewModel.RenameLanguageFilterCommand.ExecuteAsync(
+            viewModel.LanguageFilters.Single(filter => filter.Name == "en"));
+        await repository.BulkUpdateStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        viewModel.IsCleaningMetadata.Should().BeTrue();
+        viewModel.MetadataCleanupStatusText.Should().Be("Updating metadata...");
+
+        repository.ReleaseBulkUpdate();
+        await rename;
+
+        viewModel.IsCleaningMetadata.Should().BeFalse();
     }
 
     [Fact]
@@ -746,12 +769,12 @@ public sealed class LibraryViewModelTests
         public Task UpdateFileWriteBackAsync(Guid fileId, MetadataWriteResult result, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 
-    private sealed class BulkScalarMetadataRepository(IReadOnlyList<Book> books)
+    private class BulkScalarMetadataRepository(IReadOnlyList<Book> books)
         : StaticBookRepository(books), IBookBulkMetadataRepository
     {
         public int BulkUpdateCalls { get; private set; }
 
-        public Task<int> UpdateScalarMetadataAsync(
+        public virtual Task<int> UpdateScalarMetadataAsync(
             IReadOnlyCollection<Guid> bookIds,
             BookScalarMetadataField field,
             string? value,
@@ -788,6 +811,29 @@ public sealed class LibraryViewModelTests
 
             return Task.FromResult(updated);
         }
+    }
+
+    private sealed class BlockingBulkScalarMetadataRepository(IReadOnlyList<Book> books)
+        : BulkScalarMetadataRepository(books)
+    {
+        private readonly TaskCompletionSource release =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public TaskCompletionSource BulkUpdateStarted { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public override async Task<int> UpdateScalarMetadataAsync(
+            IReadOnlyCollection<Guid> bookIds,
+            BookScalarMetadataField field,
+            string? value,
+            CancellationToken cancellationToken)
+        {
+            BulkUpdateStarted.TrySetResult();
+            await release.Task.WaitAsync(cancellationToken);
+            return await base.UpdateScalarMetadataAsync(bookIds, field, value, cancellationToken);
+        }
+
+        public void ReleaseBulkUpdate() => release.TrySetResult();
     }
 
     private sealed class RefreshingBookRepository : StaticBookRepository

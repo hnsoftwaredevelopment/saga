@@ -85,6 +85,7 @@
   <data name="EmptyStateLibraryFolderMissing" xml:space="preserve"><value>The active library folder no longer exists. Create or open a library to continue.</value></data>
   <data name="LoadingLibrary" xml:space="preserve"><value>Loading library</value></data>
   <data name="Message" xml:space="preserve"><value>Message</value></data>
+  <data name="MetadataCleanupStatus" xml:space="preserve"><value>Updating metadata...</value></data>
   <data name="NoSort" xml:space="preserve"><value>None</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Open an existing library</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>

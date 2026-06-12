@@ -26,6 +26,9 @@
           <DataTrigger Binding="{Binding ImportJob.IsActive, Mode=OneWay}" Value="True">
             <Setter Property="Cursor" Value="Wait" />
           </DataTrigger>
+          <DataTrigger Binding="{Binding IsCleaningMetadata}" Value="True">
+            <Setter Property="Cursor" Value="Wait" />
+          </DataTrigger>
         </Style.Triggers>
       </Style>
     </Grid.Style>
@@ -581,6 +584,38 @@
               Background="{DynamicResource PanelBackgroundBrush}"
               CornerRadius="16">
         <views:BookDetailsView DataContext="{Binding Details}" />
+      </Border>
+
+      <Border Grid.ColumnSpan="3"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Top"
+              Margin="0,22,0,0"
+              Padding="18,12"
+              CornerRadius="16"
+              Background="{DynamicResource PanelBackgroundBrush}"
+              BorderBrush="{DynamicResource AccentBrush}"
+              BorderThickness="1">
+        <Border.Style>
+          <Style TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsCleaningMetadata}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <StackPanel Orientation="Horizontal">
+          <ProgressBar Width="88"
+                       Height="8"
+                       IsIndeterminate="True"
+                       VerticalAlignment="Center"
+                       Margin="0,0,12,0" />
+          <TextBlock Text="{loc:Loc MetadataCleanupStatus}"
+                     FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     VerticalAlignment="Center" />
+        </StackPanel>
       </Border>
     </Grid>
 

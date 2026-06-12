@@ -115,6 +115,12 @@ public sealed partial class LibraryViewModel : ObservableObject
     [ObservableProperty]
     private int loadedLibraryCount;
 
+    [ObservableProperty]
+    private bool isCleaningMetadata;
+
+    [ObservableProperty]
+    private string metadataCleanupStatusText = "Updating metadata...";
+
     public double LoadingLibraryProgressValue =>
         LoadingLibraryTotalCount <= 0
             ? 0
@@ -669,44 +675,53 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        if (TryGetScalarField(kind, out var scalarField) &&
-            bookRepository is IBookBulkMetadataRepository bulkRepository)
+        IsCleaningMetadata = true;
+        MetadataCleanupStatusText = "Updating metadata...";
+        try
         {
-            var affectedIds = changedBooks.Select(book => book.Id).ToArray();
-            var affectedCount = await bulkRepository.UpdateScalarMetadataAsync(
-                affectedIds,
-                scalarField,
-                remove ? null : replacementValue,
-                cancellationToken);
-            if (affectedCount == 0)
+            if (TryGetScalarField(kind, out var scalarField) &&
+                bookRepository is IBookBulkMetadataRepository bulkRepository)
+            {
+                var affectedIds = changedBooks.Select(book => book.Id).ToArray();
+                var affectedCount = await bulkRepository.UpdateScalarMetadataAsync(
+                    affectedIds,
+                    scalarField,
+                    remove ? null : replacementValue,
+                    cancellationToken);
+                if (affectedCount == 0)
+                {
+                    return;
+                }
+
+                ApplyPersistedMetadataChanges(changedBooks);
+                return;
+            }
+
+            var persistedBooks = new List<Book>(changedBooks.Count);
+            foreach (var changedBook in changedBooks)
+            {
+                try
+                {
+                    await bookRepository.UpdateAsync(changedBook, cancellationToken);
+                    persistedBooks.Add(changedBook);
+                }
+                catch (BookConflictException)
+                {
+                    // Keep the original book unchanged when a bulk cleanup would create a duplicate.
+                }
+            }
+
+            if (persistedBooks.Count == 0)
             {
                 return;
             }
 
-            ApplyPersistedMetadataChanges(changedBooks);
-            return;
+            ApplyPersistedMetadataChanges(persistedBooks);
         }
-
-        var persistedBooks = new List<Book>(changedBooks.Count);
-        foreach (var changedBook in changedBooks)
+        finally
         {
-            try
-            {
-                await bookRepository.UpdateAsync(changedBook, cancellationToken);
-                persistedBooks.Add(changedBook);
-            }
-            catch (BookConflictException)
-            {
-                // Keep the original book unchanged when a bulk cleanup would create a duplicate.
-            }
+            IsCleaningMetadata = false;
         }
-
-        if (persistedBooks.Count == 0)
-        {
-            return;
-        }
-
-        ApplyPersistedMetadataChanges(persistedBooks);
     }
 
     private void ApplyPersistedMetadataChanges(IReadOnlyList<Book> persistedBooks)
