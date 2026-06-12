@@ -477,6 +477,30 @@ public sealed class ImportPrimitivesTests : IDisposable
         cleaned.SeriesNumber.Should().Be(1);
     }
 
+    [Fact]
+    public void Metadata_cleaner_converts_html_descriptions_to_readable_plain_text()
+    {
+        var metadata = new BookMetadata(
+            "Deep Water",
+            ["Author"],
+            Description: """
+                <p class="description"> Een verhaal over vriendschap.<br><br>
+                Recensie(s)<br> NBD|Biblion recensie<br><br>
+                Bushman&apos;s Hole &amp; trimix-duiken.<br></p>
+                """);
+
+        var cleaned = BookMetadataCleaner.Clean(metadata);
+
+        cleaned.Description.Should().Be("""
+            Een verhaal over vriendschap.
+
+            Recensie(s)
+            NBD|Biblion recensie
+
+            Bushman's Hole & trimix-duiken.
+            """);
+    }
+
     [Theory]
     [InlineData("[Atlanta XX] - Triptiek")]
     [InlineData("[Atlanta] - Triptiek")]

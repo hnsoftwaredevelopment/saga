@@ -136,6 +136,30 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Repository_returns_readable_plain_text_descriptions_for_existing_html_metadata()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        var book = CreateBook(
+            "Html Description",
+            ["Author"],
+            description: "<p>First line.<br><br>Second &amp; final line.</p>");
+
+        await repository.AddAsync(book, CreateFile(book.Id), default);
+
+        var listed = (await repository.ListAsync(default)).Should().ContainSingle().Which;
+        var full = await repository.GetAsync(book.Id, default);
+
+        listed.Metadata.Description.Should().Be("""
+            First line.
+
+            Second & final line.
+            """);
+        full!.Metadata.Description.Should().Be(listed.Metadata.Description);
+    }
+
+    [Fact]
     public async Task ListPageAsync_orders_by_normalized_title_for_indexed_library_loading()
     {
         using var library = new TemporaryLibrary();
@@ -838,6 +862,7 @@ public sealed class LibraryDbContextTests
         IReadOnlyList<string> authors,
         IReadOnlyList<string>? tags = null,
         DateOnly? publicationDate = null,
+        string? description = "Description",
         byte[]? coverBytes = null)
     {
         var now = DateTimeOffset.UtcNow;
@@ -846,7 +871,7 @@ public sealed class LibraryDbContextTests
             new BookMetadata(
                 title,
                 authors,
-                Description: "Description",
+                Description: description,
                 Language: "en",
                 Publisher: "Publisher",
                 PublicationDate: publicationDate,

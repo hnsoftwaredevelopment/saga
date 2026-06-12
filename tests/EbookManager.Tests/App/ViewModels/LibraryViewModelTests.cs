@@ -471,11 +471,11 @@ public sealed class LibraryViewModelTests
         await viewModel.RefreshAsync();
         await viewModel.ImportFilesAsync(["book.epub"]);
         await agent.CompleteAsync(result);
-        await WaitUntilAsync(() => viewModel.VisibleBooks.Any(book => book.Title == "Imported"));
+        await WaitUntilAsync(() => VisibleBookTitles(viewModel).Contains("Imported", StringComparer.Ordinal));
 
         viewModel.LastImportResult.Should().NotBeNull();
         viewModel.LastImportResult!.TotalCount.Should().Be(1);
-        viewModel.VisibleBooks.Select(book => book.Title).Should().Contain("Imported");
+        VisibleBookTitles(viewModel).Should().Contain("Imported");
     }
 
     private static async Task WaitUntilAsync(Func<bool> condition)
@@ -490,6 +490,18 @@ public sealed class LibraryViewModelTests
             }
 
             await Task.Delay(25);
+        }
+    }
+
+    private static IReadOnlyList<string> VisibleBookTitles(LibraryViewModel viewModel)
+    {
+        try
+        {
+            return viewModel.VisibleBooks.Select(book => book.Title).ToArray();
+        }
+        catch (InvalidOperationException)
+        {
+            return [];
         }
     }
 

@@ -1,6 +1,7 @@
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
+using EbookManager.Infrastructure.Metadata;
 using EbookManager.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
@@ -406,7 +407,7 @@ public sealed class EfBookRepository(
                     .OrderBy(x => x.Order)
                     .Select(x => x.Author.Name)
                     .ToList(),
-                entity.Description,
+                BookMetadataCleaner.CleanDescription(entity.Description),
                 entity.Language,
                 entity.Publisher,
                 entity.PublicationDate,
@@ -429,7 +430,7 @@ public sealed class EfBookRepository(
             new BookMetadata(
                 projection.Title,
                 projection.Authors,
-                projection.Description,
+                BookMetadataCleaner.CleanDescription(projection.Description),
                 projection.Language,
                 projection.Publisher,
                 projection.PublicationDate,
