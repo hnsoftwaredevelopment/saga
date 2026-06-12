@@ -184,22 +184,26 @@
               <ItemsControl ItemsSource="{Binding AuthorFilters}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                    <CheckBox Content="{Binding DisplayName}"
-                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
-                              Margin="0,2"
-                              Foreground="{DynamicResource TextSecondaryBrush}">
-                      <CheckBox.ContextMenu>
-                        <ContextMenu>
-                          <MenuItem Header="{loc:Loc Rename}"
-                                    Command="{Binding PlacementTarget.Tag.RenameAuthorFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                          <MenuItem Header="{loc:Loc Delete}"
-                                    Command="{Binding PlacementTarget.Tag.RemoveAuthorFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                        </ContextMenu>
-                      </CheckBox.ContextMenu>
-                    </CheckBox>
+                    <DockPanel Margin="0,2">
+                      <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding DisplayName}"
+                                 Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                                 Margin="6,0,0,0"
+                                 VerticalAlignment="Center"
+                                 Foreground="{DynamicResource TextSecondaryBrush}">
+                        <TextBlock.ContextMenu>
+                          <ContextMenu>
+                            <MenuItem Header="{loc:Loc Rename}"
+                                      Command="{Binding PlacementTarget.Tag.RenameAuthorFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                            <MenuItem Header="{loc:Loc Delete}"
+                                      Command="{Binding PlacementTarget.Tag.RemoveAuthorFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                          </ContextMenu>
+                        </TextBlock.ContextMenu>
+                      </TextBlock>
+                    </DockPanel>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
@@ -211,22 +215,26 @@
               <ItemsControl ItemsSource="{Binding SeriesFilters}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                    <CheckBox Content="{Binding DisplayName}"
-                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
-                              Margin="0,2"
-                              Foreground="{DynamicResource TextSecondaryBrush}">
-                      <CheckBox.ContextMenu>
-                        <ContextMenu>
-                          <MenuItem Header="{loc:Loc Rename}"
-                                    Command="{Binding PlacementTarget.Tag.RenameSeriesFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                          <MenuItem Header="{loc:Loc Delete}"
-                                    Command="{Binding PlacementTarget.Tag.RemoveSeriesFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                        </ContextMenu>
-                      </CheckBox.ContextMenu>
-                    </CheckBox>
+                    <DockPanel Margin="0,2">
+                      <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding DisplayName}"
+                                 Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                                 Margin="6,0,0,0"
+                                 VerticalAlignment="Center"
+                                 Foreground="{DynamicResource TextSecondaryBrush}">
+                        <TextBlock.ContextMenu>
+                          <ContextMenu>
+                            <MenuItem Header="{loc:Loc Rename}"
+                                      Command="{Binding PlacementTarget.Tag.RenameSeriesFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                            <MenuItem Header="{loc:Loc Delete}"
+                                      Command="{Binding PlacementTarget.Tag.RemoveSeriesFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                          </ContextMenu>
+                        </TextBlock.ContextMenu>
+                      </TextBlock>
+                    </DockPanel>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
@@ -238,22 +246,26 @@
               <ItemsControl ItemsSource="{Binding CategoryFilters}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                    <CheckBox Content="{Binding DisplayName}"
-                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
-                              Margin="0,2"
-                              Foreground="{DynamicResource TextSecondaryBrush}">
-                      <CheckBox.ContextMenu>
-                        <ContextMenu>
-                          <MenuItem Header="{loc:Loc Rename}"
-                                    Command="{Binding PlacementTarget.Tag.RenameTagFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                          <MenuItem Header="{loc:Loc Delete}"
-                                    Command="{Binding PlacementTarget.Tag.RemoveTagFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                        </ContextMenu>
-                      </CheckBox.ContextMenu>
-                    </CheckBox>
+                    <DockPanel Margin="0,2">
+                      <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding DisplayName}"
+                                 Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                                 Margin="6,0,0,0"
+                                 VerticalAlignment="Center"
+                                 Foreground="{DynamicResource TextSecondaryBrush}">
+                        <TextBlock.ContextMenu>
+                          <ContextMenu>
+                            <MenuItem Header="{loc:Loc Rename}"
+                                      Command="{Binding PlacementTarget.Tag.RenameTagFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                            <MenuItem Header="{loc:Loc Delete}"
+                                      Command="{Binding PlacementTarget.Tag.RemoveTagFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                          </ContextMenu>
+                        </TextBlock.ContextMenu>
+                      </TextBlock>
+                    </DockPanel>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
@@ -295,22 +307,26 @@
               <ItemsControl ItemsSource="{Binding LanguageFilters}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
-                    <CheckBox Content="{Binding DisplayName}"
-                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                              Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
-                              Margin="0,2"
-                              Foreground="{DynamicResource TextSecondaryBrush}">
-                      <CheckBox.ContextMenu>
-                        <ContextMenu>
-                          <MenuItem Header="{loc:Loc Rename}"
-                                    Command="{Binding PlacementTarget.Tag.RenameLanguageFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                          <MenuItem Header="{loc:Loc Delete}"
-                                    Command="{Binding PlacementTarget.Tag.RemoveLanguageFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                    CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                        </ContextMenu>
-                      </CheckBox.ContextMenu>
-                    </CheckBox>
+                    <DockPanel Margin="0,2">
+                      <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                VerticalAlignment="Center" />
+                      <TextBlock Text="{Binding DisplayName}"
+                                 Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                                 Margin="6,0,0,0"
+                                 VerticalAlignment="Center"
+                                 Foreground="{DynamicResource TextSecondaryBrush}">
+                        <TextBlock.ContextMenu>
+                          <ContextMenu>
+                            <MenuItem Header="{loc:Loc Rename}"
+                                      Command="{Binding PlacementTarget.Tag.RenameLanguageFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                            <MenuItem Header="{loc:Loc Delete}"
+                                      Command="{Binding PlacementTarget.Tag.RemoveLanguageFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                      CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                          </ContextMenu>
+                        </TextBlock.ContextMenu>
+                      </TextBlock>
+                    </DockPanel>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>

@@ -274,7 +274,7 @@ public sealed class LibraryViewModelTests
     {
         var first = CreateBook("First", ["Author"], language: "eng");
         var second = CreateBook("Second", ["Author"], language: "en-US");
-        var repository = new StaticBookRepository([first, second]);
+        var repository = new BulkScalarMetadataRepository([first, second]);
         var interaction = new ScriptedUserInteractionService { PromptTextResult = "en" };
         var viewModel = CreateViewModel([first, second], interaction, repository: repository);
 
@@ -282,6 +282,8 @@ public sealed class LibraryViewModelTests
         await viewModel.RenameLanguageFilterCommand.ExecuteAsync(
             viewModel.LanguageFilters.Single(filter => filter.Name == "en"));
 
+        repository.BulkUpdateCalls.Should().Be(1);
+        repository.UpdateCalls.Should().Be(0);
         repository.BooksSnapshot.Select(book => book.Metadata.Language)
             .Should().Equal("en", "en");
         viewModel.LanguageFilters.Should().ContainSingle(filter => filter.Name == "en" && filter.Count == 2);
@@ -716,6 +718,7 @@ public sealed class LibraryViewModelTests
         protected readonly List<Book> Books = [.. books];
 
         public IReadOnlyList<Book> BooksSnapshot => [.. Books];
+        public int UpdateCalls { get; private set; }
 
         public virtual Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([.. Books]);
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult(Books.SingleOrDefault(book => book.Id == id));
@@ -724,6 +727,7 @@ public sealed class LibraryViewModelTests
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) => Task.CompletedTask;
         public virtual Task UpdateAsync(Book book, CancellationToken cancellationToken)
         {
+            UpdateCalls++;
             var index = Books.FindIndex(existing => existing.Id == book.Id);
             if (index >= 0)
             {
@@ -740,6 +744,50 @@ public sealed class LibraryViewModelTests
         }
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<BookFile>>([]);
         public Task UpdateFileWriteBackAsync(Guid fileId, MetadataWriteResult result, CancellationToken cancellationToken) => Task.CompletedTask;
+    }
+
+    private sealed class BulkScalarMetadataRepository(IReadOnlyList<Book> books)
+        : StaticBookRepository(books), IBookBulkMetadataRepository
+    {
+        public int BulkUpdateCalls { get; private set; }
+
+        public Task<int> UpdateScalarMetadataAsync(
+            IReadOnlyCollection<Guid> bookIds,
+            BookScalarMetadataField field,
+            string? value,
+            CancellationToken cancellationToken)
+        {
+            BulkUpdateCalls++;
+            var idSet = bookIds.ToHashSet();
+            var updated = 0;
+            for (var index = 0; index < Books.Count; index++)
+            {
+                var book = Books[index];
+                if (!idSet.Contains(book.Id))
+                {
+                    continue;
+                }
+
+                Books[index] = book with
+                {
+                    Metadata = new BookMetadata(
+                        book.Metadata.Title,
+                        book.Metadata.Authors,
+                        book.Metadata.Description,
+                        field == BookScalarMetadataField.Language ? value : book.Metadata.Language,
+                        book.Metadata.Publisher,
+                        book.Metadata.PublicationDate,
+                        book.Metadata.Tags,
+                        field == BookScalarMetadataField.Series ? value : book.Metadata.Series,
+                        book.Metadata.SeriesNumber,
+                        book.Metadata.Isbn,
+                        book.Metadata.CoverBytes)
+                };
+                updated++;
+            }
+
+            return Task.FromResult(updated);
+        }
     }
 
     private sealed class RefreshingBookRepository : StaticBookRepository

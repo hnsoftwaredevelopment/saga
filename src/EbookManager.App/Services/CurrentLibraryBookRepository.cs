@@ -10,7 +10,7 @@ namespace EbookManager.App.Services;
 public sealed class CurrentLibraryBookRepository(
     CurrentLibrary currentLibrary,
     LibraryDbContextFactory contextFactory)
-    : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository
+    : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository
 {
     public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
@@ -71,6 +71,18 @@ public sealed class CurrentLibraryBookRepository(
 
     public Task UpdateAsync(Book book, CancellationToken cancellationToken) =>
         CreateRepository().UpdateAsync(book, cancellationToken);
+
+    public Task<int> UpdateScalarMetadataAsync(
+        IReadOnlyCollection<Guid> bookIds,
+        BookScalarMetadataField field,
+        string? value,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult(0)
+            : repository.UpdateScalarMetadataAsync(bookIds, field, value, cancellationToken);
+    }
 
     public Task DeleteAsync(Guid id, CancellationToken cancellationToken) =>
         CreateRepository().DeleteAsync(id, cancellationToken);

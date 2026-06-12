@@ -10,7 +10,7 @@ namespace EbookManager.Infrastructure.Persistence.Repositories;
 
 public sealed class EfBookRepository(
     LibraryDbContextFactory contextFactory,
-    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository
+    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository
 {
     public async Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
@@ -145,6 +145,46 @@ public sealed class EfBookRepository(
         {
             throw new BookConflictException();
         }
+    }
+
+    public async Task<int> UpdateScalarMetadataAsync(
+        IReadOnlyCollection<Guid> bookIds,
+        BookScalarMetadataField field,
+        string? value,
+        CancellationToken cancellationToken)
+    {
+        if (bookIds.Count == 0)
+        {
+            return 0;
+        }
+
+        var total = 0;
+        var updatedUtc = DateTimeOffset.UtcNow;
+        await using var context = contextFactory.Create(libraryPath);
+        foreach (var batch in bookIds.Chunk(500))
+        {
+            var ids = batch;
+            total += field switch
+            {
+                BookScalarMetadataField.Series => await context.Books
+                    .Where(book => ids.Contains(book.Id))
+                    .ExecuteUpdateAsync(
+                        setters => setters
+                            .SetProperty(book => book.Series, value)
+                            .SetProperty(book => book.UpdatedUtc, updatedUtc),
+                        cancellationToken),
+                BookScalarMetadataField.Language => await context.Books
+                    .Where(book => ids.Contains(book.Id))
+                    .ExecuteUpdateAsync(
+                        setters => setters
+                            .SetProperty(book => book.Language, value)
+                            .SetProperty(book => book.UpdatedUtc, updatedUtc),
+                        cancellationToken),
+                _ => 0
+            };
+        }
+
+        return total;
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)

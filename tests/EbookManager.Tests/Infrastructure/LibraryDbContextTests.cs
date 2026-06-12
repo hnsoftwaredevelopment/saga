@@ -1,3 +1,4 @@
+using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Importing;
 using EbookManager.Domain.Metadata;
@@ -157,6 +158,32 @@ public sealed class LibraryDbContextTests
             Second & final line.
             """);
         full!.Metadata.Description.Should().Be(listed.Metadata.Description);
+    }
+
+    [Fact]
+    public async Task Bulk_scalar_metadata_update_updates_only_matching_book_ids()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var third = CreateBook("Third", ["Author"]);
+        await repository.AddAsync(first, CreateFile(first.Id, Hash('A')), default);
+        await repository.AddAsync(second, CreateFile(second.Id, Hash('B')), default);
+        await repository.AddAsync(third, CreateFile(third.Id, Hash('C')), default);
+
+        var updated = await repository.UpdateScalarMetadataAsync(
+            [first.Id, second.Id],
+            BookScalarMetadataField.Language,
+            "nl",
+            default);
+
+        updated.Should().Be(2);
+        var books = await repository.ListAsync(default);
+        books.Single(book => book.Id == first.Id).Metadata.Language.Should().Be("nl");
+        books.Single(book => book.Id == second.Id).Metadata.Language.Should().Be("nl");
+        books.Single(book => book.Id == third.Id).Metadata.Language.Should().Be("en");
     }
 
     [Fact]

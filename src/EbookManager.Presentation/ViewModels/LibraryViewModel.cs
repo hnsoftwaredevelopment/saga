@@ -669,6 +669,24 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
+        if (TryGetScalarField(kind, out var scalarField) &&
+            bookRepository is IBookBulkMetadataRepository bulkRepository)
+        {
+            var affectedIds = changedBooks.Select(book => book.Id).ToArray();
+            var affectedCount = await bulkRepository.UpdateScalarMetadataAsync(
+                affectedIds,
+                scalarField,
+                remove ? null : replacementValue,
+                cancellationToken);
+            if (affectedCount == 0)
+            {
+                return;
+            }
+
+            ApplyPersistedMetadataChanges(changedBooks);
+            return;
+        }
+
         var persistedBooks = new List<Book>(changedBooks.Count);
         foreach (var changedBook in changedBooks)
         {
@@ -688,6 +706,11 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
+        ApplyPersistedMetadataChanges(persistedBooks);
+    }
+
+    private void ApplyPersistedMetadataChanges(IReadOnlyList<Book> persistedBooks)
+    {
         var persistedById = persistedBooks.ToDictionary(book => book.Id);
         books = books
             .Select(book => persistedById.GetValueOrDefault(book.Id) ?? book)
@@ -700,6 +723,19 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         RefreshFacetFilters();
         ApplyFilter();
+    }
+
+    private static bool TryGetScalarField(
+        MetadataFilterKind kind,
+        out BookScalarMetadataField field)
+    {
+        field = kind switch
+        {
+            MetadataFilterKind.Series => BookScalarMetadataField.Series,
+            MetadataFilterKind.Language => BookScalarMetadataField.Language,
+            _ => default
+        };
+        return kind is MetadataFilterKind.Series or MetadataFilterKind.Language;
     }
 
     private static bool MetadataValueMatches(
