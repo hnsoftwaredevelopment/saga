@@ -1070,7 +1070,9 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var result = duplicateCandidateService.FindCandidates(books);
-        await userInteraction.ShowDuplicateCandidatesAsync(new DuplicateCandidatesViewModel(result), cancellationToken);
+        await userInteraction.ShowDuplicateCandidatesAsync(
+            new DuplicateCandidatesViewModel(result, CurrentLibraryPath),
+            cancellationToken);
     }
 
     private enum MetadataFilterKind

@@ -2,12 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:converters="clr-namespace:EbookManager.App.Converters"
         xmlns:loc="clr-namespace:EbookManager.App.Localization"
         Title="{loc:Loc DuplicateCandidates}"
         Width="880"
         Height="560"
         WindowStartupLocation="CenterOwner">
   <Window.Resources>
+    <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
     <CollectionViewSource x:Key="DuplicateRows" Source="{Binding Rows}">
       <CollectionViewSource.GroupDescriptions>
         <PropertyGroupDescription PropertyName="GroupTitle" />
@@ -67,7 +69,8 @@
                 GridLinesVisibility="Horizontal"
                 HeadersVisibility="Column"
                 SelectionMode="Extended"
-                SelectionUnit="FullRow">
+                SelectionUnit="FullRow"
+                MouseDoubleClick="DuplicateRowsDoubleClicked">
         <DataGrid.Style>
           <Style TargetType="DataGrid">
             <Setter Property="Visibility" Value="Visible" />
@@ -106,6 +109,21 @@
           </GroupStyle>
         </DataGrid.GroupStyle>
         <DataGrid.Columns>
+          <DataGridTemplateColumn Header="{loc:Loc Cover}" Width="74">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Border Width="38"
+                        Height="50"
+                        Background="#FFE2E8F0"
+                        CornerRadius="4"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                  <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=64}"
+                         Stretch="UniformToFill" />
+                </Border>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
           <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="2*" />
           <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" Width="2*" />
           <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" Width="1.4*" />
