@@ -44,6 +44,12 @@
   <data name="ImportHistory" xml:space="preserve"><value>Import history</value></data>
   <data name="ImportHistoryShort" xml:space="preserve"><value>History</value></data>
   <data name="ImportHistoryTooltip" xml:space="preserve"><value>Show recent import and scan results</value></data>
+  <data name="DuplicateCandidates" xml:space="preserve"><value>Duplicate candidates</value></data>
+  <data name="DuplicateCandidatesShort" xml:space="preserve"><value>Duplicates</value></data>
+  <data name="DuplicateCandidatesTooltip" xml:space="preserve"><value>Find possible duplicates in the current library</value></data>
+  <data name="DuplicateCandidatesNone" xml:space="preserve"><value>No possible duplicates found.</value></data>
+  <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groups</value></data>
+  <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> books</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>An import is still running. Close the application and cancel the import?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Import in progress</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>

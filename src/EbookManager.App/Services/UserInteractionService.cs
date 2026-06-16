@@ -108,6 +108,19 @@ public sealed class UserInteractionService(DeleteConfirmationService deleteConfi
         return Task.FromResult(result);
     }
 
+    public Task ShowDuplicateCandidatesAsync(DuplicateCandidatesViewModel candidates, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = new DuplicateCandidatesWindow(candidates);
+        if (System.Windows.Application.Current?.MainWindow is { } owner)
+        {
+            window.Owner = owner;
+        }
+
+        window.ShowDialog();
+        return Task.CompletedTask;
+    }
+
     private static string? ShowTextPrompt(string title, string message, string initialValue)
     {
         var window = new System.Windows.Window

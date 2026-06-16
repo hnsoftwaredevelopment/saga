@@ -88,6 +88,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<CalibreOpfMetadataSidecarStore>();
         services.AddSingleton<IMetadataSourceResolver, MetadataSourceResolver>();
         services.AddSingleton<BookSearchService>();
+        services.AddSingleton<DuplicateCandidateService>();
         services.AddSingleton<ILibraryFileStore, CurrentLibraryFileStore>();
         services.AddSingleton<IBookRepository, CurrentLibraryBookRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();
@@ -102,6 +103,7 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<BookSearchService>(),
             provider.GetRequiredService<BookDetailsViewModel>(),
             provider.GetRequiredService<IUserInteractionService>(),
+            provider.GetRequiredService<DuplicateCandidateService>(),
             provider.GetService<ImportService>(),
             provider.GetService<IImportAgent>(),
             provider.GetService<IImportRepository>(),

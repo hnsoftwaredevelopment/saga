@@ -20,6 +20,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private readonly IBookRepository bookRepository;
     private readonly BookSearchService searchService;
+    private readonly DuplicateCandidateService duplicateCandidateService;
     private readonly IUserInteractionService userInteraction;
     private readonly ImportService? importService;
     private readonly IImportAgent? importAgent;
@@ -38,6 +39,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         BookSearchService searchService,
         BookDetailsViewModel details,
         IUserInteractionService userInteraction,
+        DuplicateCandidateService? duplicateCandidateService = null,
         ImportService? importService = null,
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
@@ -49,6 +51,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         this.bookRepository = bookRepository;
         this.searchService = searchService;
+        this.duplicateCandidateService = duplicateCandidateService ?? new DuplicateCandidateService();
         Details = details;
         this.userInteraction = userInteraction;
         this.importService = importService;
@@ -147,6 +150,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IRelayCommand CancelImportCommand => cancelImportCommand ??= new RelayCommand(() => importAgent?.CancelActiveJob());
     public IAsyncRelayCommand ShowImportDetailsCommand => showImportDetailsCommand ??= new AsyncRelayCommand(ShowImportDetailsAsync);
     public IAsyncRelayCommand ShowImportHistoryCommand => showImportHistoryCommand ??= new AsyncRelayCommand(ShowImportHistoryAsync);
+    public IAsyncRelayCommand ShowDuplicateCandidatesCommand => showDuplicateCandidatesCommand ??= new AsyncRelayCommand(ShowDuplicateCandidatesAsync);
     public IRelayCommand CloseImportJobCommand => closeImportJobCommand ??= new RelayCommand(() => importAgent?.Job.Close());
     public IAsyncRelayCommand<FacetFilterViewModel> RenameAuthorFilterCommand =>
         renameAuthorFilterCommand ??= new AsyncRelayCommand<FacetFilterViewModel>(filter => RenameFilterValueAsync(filter, MetadataFilterKind.Author));
@@ -173,6 +177,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private RelayCommand? cancelImportCommand;
     private AsyncRelayCommand? showImportDetailsCommand;
     private AsyncRelayCommand? showImportHistoryCommand;
+    private AsyncRelayCommand? showDuplicateCandidatesCommand;
     private RelayCommand? closeImportJobCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? renameAuthorFilterCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? removeAuthorFilterCommand;
@@ -1055,6 +1060,17 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         LastImportResult = new ImportResultViewModel(run);
         await userInteraction.ShowImportResultAsync(LastImportResult, cancellationToken);
+    }
+
+    private async Task ShowDuplicateCandidatesAsync(CancellationToken cancellationToken)
+    {
+        if (!EnsureActiveLibraryStillExists("Create or open a library to get started."))
+        {
+            return;
+        }
+
+        var result = duplicateCandidateService.FindCandidates(books);
+        await userInteraction.ShowDuplicateCandidatesAsync(new DuplicateCandidatesViewModel(result), cancellationToken);
     }
 
     private enum MetadataFilterKind

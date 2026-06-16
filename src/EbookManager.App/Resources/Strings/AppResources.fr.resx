@@ -32,6 +32,12 @@
   <data name="ImportHistory" xml:space="preserve"><value>Import history</value></data>
   <data name="ImportHistoryShort" xml:space="preserve"><value>History</value></data>
   <data name="ImportHistoryTooltip" xml:space="preserve"><value>Show recent import and scan results</value></data>
+  <data name="DuplicateCandidates" xml:space="preserve"><value>Doublons possibles</value></data>
+  <data name="DuplicateCandidatesShort" xml:space="preserve"><value>Doublons</value></data>
+  <data name="DuplicateCandidatesTooltip" xml:space="preserve"><value>Rechercher les doublons possibles dans la bibliothèque actuelle</value></data>
+  <data name="DuplicateCandidatesNone" xml:space="preserve"><value>Aucun doublon possible trouvé.</value></data>
+  <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groupes</value></data>
+  <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> livres</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>Une importation est encore en cours. Fermer l'application et annuler l'importation ?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Importation en cours</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>

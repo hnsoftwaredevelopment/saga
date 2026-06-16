@@ -44,6 +44,12 @@
   <data name="ImportHistory" xml:space="preserve"><value>Importgeschiedenis</value></data>
   <data name="ImportHistoryShort" xml:space="preserve"><value>Geschiedenis</value></data>
   <data name="ImportHistoryTooltip" xml:space="preserve"><value>Toon recente import- en scanresultaten</value></data>
+  <data name="DuplicateCandidates" xml:space="preserve"><value>Mogelijke duplicaten</value></data>
+  <data name="DuplicateCandidatesShort" xml:space="preserve"><value>Duplicaten</value></data>
+  <data name="DuplicateCandidatesTooltip" xml:space="preserve"><value>Zoek mogelijke duplicaten in de huidige bibliotheek</value></data>
+  <data name="DuplicateCandidatesNone" xml:space="preserve"><value>Geen mogelijke duplicaten gevonden.</value></data>
+  <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groepen</value></data>
+  <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> boeken</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>Er loopt nog een import. Wilt u de applicatie sluiten en de import annuleren?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Import bezig</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Mogelijk duplicaat</value></data>

@@ -109,6 +109,26 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task ShowDuplicateCandidates_opens_duplicate_candidate_overview()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"]);
+        var second = CreateBook(" de hobbit ", ["Tolkien, J.R.R."]);
+        var unrelated = CreateBook("Dune", ["Frank Herbert"]);
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel(
+            [first, second, unrelated],
+            userInteraction: interaction,
+            currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+
+        interaction.DuplicateCandidates.Should().NotBeNull();
+        interaction.DuplicateCandidates!.Groups.Should().ContainSingle()
+            .Which.Books.Select(book => book.Id).Should().Equal(first.Id, second.Id);
+    }
+
+    [Fact]
     public async Task Author_filters_are_built_from_books_and_filter_visible_rows()
     {
         var hobbit = CreateBook("The Hobbit", ["Tolkien"]);
@@ -1008,6 +1028,7 @@ public sealed class LibraryViewModelTests
         public Guid? SelectedImportRunId { get; init; }
         public int PickBookFilesCalls { get; private set; }
         public int PickScanFolderCalls { get; private set; }
+        public DuplicateCandidatesViewModel? DuplicateCandidates { get; private set; }
         public ImportHistoryViewModel? ImportHistory { get; private set; }
         public ImportResultViewModel? ShownImportResult { get; private set; }
 
@@ -1046,6 +1067,12 @@ public sealed class LibraryViewModelTests
         {
             ImportHistory = history;
             return Task.FromResult(SelectedImportRunId);
+        }
+
+        public Task ShowDuplicateCandidatesAsync(DuplicateCandidatesViewModel candidates, CancellationToken cancellationToken)
+        {
+            DuplicateCandidates = candidates;
+            return Task.CompletedTask;
         }
 
         private IReadOnlyList<string> RecordPickBookFiles()
