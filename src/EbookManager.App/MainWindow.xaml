@@ -15,6 +15,13 @@
   <Grid Background="{DynamicResource AppBackgroundBrush}">
     <Grid.Resources>
       <converters:EmptyStateMessageToLocalizedStringConverter x:Key="EmptyStateMessageToLocalizedStringConverter" />
+      <Style x:Key="ToolbarIconButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="42" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Margin" Value="4,12" />
+        <Setter Property="Padding" Value="9" />
+        <Setter Property="ToolTipService.ShowDuration" Value="30000" />
+      </Style>
     </Grid.Resources>
     <Grid.Style>
       <Style TargetType="Grid">
@@ -64,67 +71,39 @@
                     HorizontalAlignment="Right"
                     DockPanel.Dock="Right">
           <Button Command="{Binding CreateLibraryCommand}"
-                  Margin="6,12"
-                  Padding="14,6"
+                  Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc CreateLibraryTooltip}">
-            <StackPanel Orientation="Horizontal">
-              <Path Data="{StaticResource NewLibraryIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" />
-              <TextBlock Text="{loc:Loc CreateLibrary}" Margin="8,0,0,0" />
-            </StackPanel>
+            <Path Data="{StaticResource NewLibraryIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="20" Height="20" Stretch="Uniform" />
           </Button>
           <Button Command="{Binding OpenLibraryCommand}"
-                  Margin="6,12"
-                  Padding="14,6"
+                  Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc OpenLibraryTooltip}">
-            <StackPanel Orientation="Horizontal">
-              <Path Data="{StaticResource OpenLibraryIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" />
-              <TextBlock Text="{loc:Loc OpenLibrary}" Margin="8,0,0,0" />
-            </StackPanel>
+            <Path Data="{StaticResource OpenLibraryIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="20" Height="20" Stretch="Uniform" />
           </Button>
           <Button Command="{Binding AddBooksCommand}"
-                  Margin="6,12"
-                  Padding="14,6"
+                  Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc AddBooks}">
-            <StackPanel Orientation="Horizontal">
-              <Path Data="{StaticResource AddBookIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" />
-              <TextBlock Text="{loc:Loc AddBooks}" Margin="8,0,0,0" />
-            </StackPanel>
+            <Path Data="{StaticResource AddBookIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="20" Height="20" Stretch="Uniform" />
           </Button>
           <Button Command="{Binding ScanFolderCommand}"
-                  Margin="6,12"
-                  Padding="14,6"
+                  Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc ScanFolderTooltip}">
-            <StackPanel Orientation="Horizontal">
-              <Path Data="{StaticResource ScanFolderIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" />
-              <TextBlock Text="{loc:Loc Scan}" Margin="8,0,0,0" />
-            </StackPanel>
+            <Path Data="{StaticResource ScanFolderIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="20" Height="20" Stretch="Uniform" />
           </Button>
           <Button Command="{Binding ShowImportHistoryCommand}"
-                  Margin="6,12"
-                  Padding="14,6"
+                  Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc ImportHistoryTooltip}">
-            <StackPanel Orientation="Horizontal">
-              <Path Data="{StaticResource ImportHistoryIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" />
-              <TextBlock Text="{loc:Loc ImportHistoryShort}" Margin="8,0,0,0" />
-            </StackPanel>
+            <Path Data="{StaticResource ImportHistoryIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="20" Height="20" Stretch="Uniform" />
           </Button>
           <Button Command="{Binding ShowDuplicateCandidatesCommand}"
-                  Margin="6,12"
-                  Padding="14,6"
+                  Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc DuplicateCandidatesTooltip}">
-            <StackPanel Orientation="Horizontal">
-              <Path Data="{StaticResource DuplicateCandidatesIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" />
-              <TextBlock Text="{loc:Loc DuplicateCandidatesShort}" Margin="8,0,0,0" />
-            </StackPanel>
+            <Path Data="{StaticResource DuplicateCandidatesIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="22" Height="22" Stretch="Uniform" />
           </Button>
-          <Button Margin="6,12"
-                  Padding="14,6"
+          <Button Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc OpenSettingsTooltip}"
                   Click="OpenSettingsClicked">
-            <StackPanel Orientation="Horizontal">
-              <Path Data="{StaticResource SettingsIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="18" Height="18" Stretch="Uniform" />
-              <TextBlock Text="{loc:Loc Settings}" Margin="8,0,0,0" />
-            </StackPanel>
+            <Path Data="{StaticResource SettingsIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="20" Height="20" Stretch="Uniform" />
           </Button>
         </StackPanel>
       </DockPanel>

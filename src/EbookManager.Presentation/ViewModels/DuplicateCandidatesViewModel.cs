@@ -1,28 +1,87 @@
 using EbookManager.Application.Books;
+using EbookManager.Domain.Books;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed class DuplicateCandidatesViewModel(DuplicateCandidateResult result, string? libraryPath = null)
+public sealed partial class DuplicateCandidatesViewModel : ObservableObject
 {
-    public IReadOnlyList<DuplicateCandidateGroupViewModel> Groups { get; } = result.Groups
-        .Select(group => new DuplicateCandidateGroupViewModel(group))
-        .ToList()
-        .AsReadOnly();
+    private readonly DuplicateCandidateService duplicateCandidateService = new();
+    private readonly string? libraryPath;
+    private readonly Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync;
+    private IReadOnlyList<Book> books;
 
-    public IReadOnlyList<DuplicateCandidateRowViewModel> Rows { get; } = result.Groups
-        .SelectMany(group => group.Books.Select(book => new DuplicateCandidateRowViewModel(BuildGroupTitle(group), book, libraryPath)))
-        .ToList()
-        .AsReadOnly();
+    public DuplicateCandidatesViewModel(
+        DuplicateCandidateResult result,
+        string? libraryPath = null,
+        Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync = null)
+    {
+        this.libraryPath = libraryPath;
+        this.deleteCandidateAsync = deleteCandidateAsync;
+        books = result.Groups
+            .SelectMany(group => group.Books)
+            .DistinctBy(book => book.Id)
+            .ToList()
+            .AsReadOnly();
+        ApplyResult(result);
+    }
 
+    public ObservableCollection<DuplicateCandidateGroupViewModel> Groups { get; } = [];
+    public ObservableCollection<DuplicateCandidateRowViewModel> Rows { get; } = [];
     public int GroupCount => Groups.Count;
     public int BookCount => Groups.Sum(group => group.Books.Count);
     public bool HasGroups => Groups.Count > 0;
     public string SummaryText => $"{GroupCount} groups, {BookCount} books";
+    public bool HasChanges { get; private set; }
+
+    public async Task DeleteCandidateAsync(
+        DuplicateCandidateRowViewModel row,
+        CancellationToken cancellationToken)
+    {
+        if (deleteCandidateAsync is null)
+        {
+            return;
+        }
+
+        var deleted = await deleteCandidateAsync(row, cancellationToken);
+        if (!deleted)
+        {
+            return;
+        }
+
+        books = books
+            .Where(book => book.Id != row.Id)
+            .ToList()
+            .AsReadOnly();
+        HasChanges = true;
+        OnPropertyChanged(nameof(HasChanges));
+        ApplyResult(duplicateCandidateService.FindCandidates(books));
+    }
 
     public static string BuildGroupTitle(DuplicateCandidateGroup group) =>
         string.IsNullOrWhiteSpace(group.AuthorSummary)
             ? group.DisplayTitle
             : $"{group.DisplayTitle} - {group.AuthorSummary}";
+
+    private void ApplyResult(DuplicateCandidateResult result)
+    {
+        Groups.Clear();
+        Rows.Clear();
+        foreach (var group in result.Groups)
+        {
+            Groups.Add(new DuplicateCandidateGroupViewModel(group));
+            foreach (var book in group.Books)
+            {
+                Rows.Add(new DuplicateCandidateRowViewModel(BuildGroupTitle(group), book, libraryPath));
+            }
+        }
+
+        OnPropertyChanged(nameof(GroupCount));
+        OnPropertyChanged(nameof(BookCount));
+        OnPropertyChanged(nameof(HasGroups));
+        OnPropertyChanged(nameof(SummaryText));
+    }
 }
 
 public sealed class DuplicateCandidateGroupViewModel(DuplicateCandidateGroup group)

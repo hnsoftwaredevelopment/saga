@@ -113,6 +113,11 @@
             <EventSetter Event="MouseDoubleClick" Handler="DuplicateRowDoubleClicked" />
           </Style>
         </DataGrid.RowStyle>
+        <DataGrid.ContextMenu>
+          <ContextMenu>
+            <MenuItem Header="{loc:Loc Delete}" Click="DeleteCandidateClicked" />
+          </ContextMenu>
+        </DataGrid.ContextMenu>
         <DataGrid.Columns>
           <DataGridTemplateColumn Header="{loc:Loc Cover}" Width="74">
             <DataGridTemplateColumn.CellTemplate>

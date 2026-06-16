@@ -43,4 +43,24 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         };
         window.ShowDialog();
     }
+
+    private async void DeleteCandidateClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        if (DuplicateRowsGrid.SelectedItem is not DuplicateCandidateRowViewModel row)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        if (DataContext is not DuplicateCandidatesViewModel viewModel)
+        {
+            return;
+        }
+
+        await viewModel.DeleteCandidateAsync(row, CancellationToken.None);
+        if (!viewModel.HasGroups)
+        {
+            Close();
+        }
+    }
 }

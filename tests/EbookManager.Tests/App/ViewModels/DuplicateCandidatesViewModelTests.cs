@@ -35,6 +35,48 @@ public sealed class DuplicateCandidatesViewModelTests
         viewModel.Rows[0].CoverPath.Should().Be(Path.Combine("C:/Library", "books/cover.jpg"));
     }
 
+    [Fact]
+    public async Task DeleteCandidate_removes_book_and_recomputes_duplicate_groups()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var second = CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var third = CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var result = new DuplicateCandidateService().FindCandidates([first, second, third]);
+        var deletedIds = new List<Guid>();
+        var viewModel = new DuplicateCandidatesViewModel(
+            result,
+            deleteCandidateAsync: (row, _) =>
+            {
+                deletedIds.Add(row.Id);
+                return Task.FromResult(true);
+            });
+
+        await viewModel.DeleteCandidateAsync(viewModel.Rows[0], CancellationToken.None);
+
+        deletedIds.Should().Equal(first.Id);
+        viewModel.HasChanges.Should().BeTrue();
+        viewModel.GroupCount.Should().Be(1);
+        viewModel.BookCount.Should().Be(2);
+        viewModel.Rows.Select(row => row.Id).Should().BeEquivalentTo([second.Id, third.Id]);
+    }
+
+    [Fact]
+    public async Task DeleteCandidate_closes_duplicate_list_when_no_duplicate_groups_remain()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var second = CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var result = new DuplicateCandidateService().FindCandidates([first, second]);
+        var viewModel = new DuplicateCandidatesViewModel(
+            result,
+            deleteCandidateAsync: (_, _) => Task.FromResult(true));
+
+        await viewModel.DeleteCandidateAsync(viewModel.Rows[0], CancellationToken.None);
+
+        viewModel.HasChanges.Should().BeTrue();
+        viewModel.HasGroups.Should().BeFalse();
+        viewModel.Rows.Should().BeEmpty();
+    }
+
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,

@@ -721,15 +721,17 @@ public sealed class LibraryViewModelTests
         DirectoryScanner? directoryScanner = null)
     {
         repository ??= new StaticBookRepository(books);
-        details ??= new BookDetailsViewModel(new BookService(
+        var bookService = new BookService(
             repository,
             new NoopLibraryFileStore(),
-            new NoopMetadataAdapterResolver()));
+            new NoopMetadataAdapterResolver());
+        details ??= new BookDetailsViewModel(bookService);
         return new LibraryViewModel(
             repository,
             new BookSearchService(),
             details,
             userInteraction ?? new ScriptedUserInteractionService(),
+            bookService: bookService,
             libraryService: libraryService,
             currentLibrary: currentLibrary,
             databaseInitializer: databaseInitializer,

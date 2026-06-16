@@ -22,6 +22,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly BookSearchService searchService;
     private readonly DuplicateCandidateService duplicateCandidateService;
     private readonly IUserInteractionService userInteraction;
+    private readonly BookService? bookService;
     private readonly ImportService? importService;
     private readonly IImportAgent? importAgent;
     private readonly IImportRepository? importRepository;
@@ -40,6 +41,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         BookDetailsViewModel details,
         IUserInteractionService userInteraction,
         DuplicateCandidateService? duplicateCandidateService = null,
+        BookService? bookService = null,
         ImportService? importService = null,
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
@@ -54,6 +56,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.duplicateCandidateService = duplicateCandidateService ?? new DuplicateCandidateService();
         Details = details;
         this.userInteraction = userInteraction;
+        this.bookService = bookService;
         this.importService = importService;
         this.importAgent = importAgent;
         this.importRepository = importRepository;
@@ -1070,9 +1073,35 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var result = duplicateCandidateService.FindCandidates(books);
+        var candidates = new DuplicateCandidatesViewModel(
+            result,
+            CurrentLibraryPath,
+            DeleteDuplicateCandidateAsync);
         await userInteraction.ShowDuplicateCandidatesAsync(
-            new DuplicateCandidatesViewModel(result, CurrentLibraryPath),
+            candidates,
             cancellationToken);
+        if (candidates.HasChanges)
+        {
+            await RefreshAsync(cancellationToken);
+        }
+    }
+
+    private async Task<bool> DeleteDuplicateCandidateAsync(
+        DuplicateCandidateRowViewModel row,
+        CancellationToken cancellationToken)
+    {
+        if (bookService is null)
+        {
+            return false;
+        }
+
+        if (!await userInteraction.ConfirmDeleteAsync(row.Title, cancellationToken))
+        {
+            return false;
+        }
+
+        var result = await bookService.DeleteAsync(row.Id, cancellationToken);
+        return result.Status == BookDeleteStatus.Deleted;
     }
 
     private enum MetadataFilterKind
