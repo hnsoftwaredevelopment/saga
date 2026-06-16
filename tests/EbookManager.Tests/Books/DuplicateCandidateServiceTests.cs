@@ -11,7 +11,7 @@ public sealed class DuplicateCandidateServiceTests
     {
         var service = new DuplicateCandidateService();
         var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"]);
-        var second = CreateBook(" de hobbit ", ["Tolkien, J.R.R."]);
+        var second = CreateBook(" de hobbit ", ["J.R.R. Tolkien", "Alan Lee"]);
         var unrelated = CreateBook("Dune", ["Frank Herbert"]);
 
         var result = service.FindCandidates([first, second, unrelated]);
@@ -20,6 +20,36 @@ public sealed class DuplicateCandidateServiceTests
         var group = result.Groups[0];
         group.DisplayTitle.Should().Be("De Hobbit");
         group.Books.Should().Equal(first, second);
+    }
+
+    [Fact]
+    public void FindCandidates_requires_at_least_one_matching_author_for_the_same_title()
+    {
+        var service = new DuplicateCandidateService();
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"]);
+        var second = CreateBook("de hobbit", ["John Ronald Reuel Tolkien"]);
+
+        var result = service.FindCandidates([first, second]);
+
+        result.Groups.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void FindCandidates_splits_same_title_groups_when_authors_do_not_overlap()
+    {
+        var service = new DuplicateCandidateService();
+        var firstAuthorFirst = CreateBook("De Stad", ["Author One"]);
+        var firstAuthorSecond = CreateBook("de stad", ["Author One"]);
+        var secondAuthorFirst = CreateBook("De Stad", ["Author Two"]);
+        var secondAuthorSecond = CreateBook("de stad", ["Author Two"]);
+
+        var result = service.FindCandidates([firstAuthorFirst, firstAuthorSecond, secondAuthorFirst, secondAuthorSecond]);
+
+        result.Groups.Should().HaveCount(2);
+        result.Groups.Should().Contain(group => group.Books.Select(book => book.Id).SequenceEqual(
+            new[] { firstAuthorFirst.Id, firstAuthorSecond.Id }));
+        result.Groups.Should().Contain(group => group.Books.Select(book => book.Id).SequenceEqual(
+            new[] { secondAuthorFirst.Id, secondAuthorSecond.Id }));
     }
 
     [Fact]

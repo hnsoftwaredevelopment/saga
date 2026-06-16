@@ -1,11 +1,24 @@
 <Window x:Class="EbookManager.App.Views.DuplicateCandidatesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:loc="clr-namespace:EbookManager.App.Localization"
         Title="{loc:Loc DuplicateCandidates}"
         Width="880"
         Height="560"
         WindowStartupLocation="CenterOwner">
+  <Window.Resources>
+    <CollectionViewSource x:Key="DuplicateRows" Source="{Binding Rows}">
+      <CollectionViewSource.GroupDescriptions>
+        <PropertyGroupDescription PropertyName="GroupTitle" />
+      </CollectionViewSource.GroupDescriptions>
+      <CollectionViewSource.SortDescriptions>
+        <componentModel:SortDescription PropertyName="GroupTitle" Direction="Ascending" />
+        <componentModel:SortDescription PropertyName="Authors" Direction="Ascending" />
+        <componentModel:SortDescription PropertyName="Title" Direction="Ascending" />
+      </CollectionViewSource.SortDescriptions>
+    </CollectionViewSource>
+  </Window.Resources>
   <DockPanel Margin="18">
     <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
       <TextBlock Text="{loc:Loc DuplicateCandidates}"
@@ -48,9 +61,15 @@
         </TextBlock.Style>
       </TextBlock>
 
-      <TreeView ItemsSource="{Binding Groups}">
-        <TreeView.Style>
-          <Style TargetType="TreeView">
+      <DataGrid ItemsSource="{Binding Source={StaticResource DuplicateRows}}"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                GridLinesVisibility="Horizontal"
+                HeadersVisibility="Column"
+                SelectionMode="Extended"
+                SelectionUnit="FullRow">
+        <DataGrid.Style>
+          <Style TargetType="DataGrid">
             <Setter Property="Visibility" Value="Visible" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding HasGroups}" Value="False">
@@ -58,31 +77,42 @@
               </DataTrigger>
             </Style.Triggers>
           </Style>
-        </TreeView.Style>
-        <TreeView.ItemTemplate>
-          <HierarchicalDataTemplate ItemsSource="{Binding Books}">
-            <TextBlock Text="{Binding Header}"
-                       FontWeight="SemiBold"
-                       Foreground="{DynamicResource TextPrimaryBrush}" />
-            <HierarchicalDataTemplate.ItemTemplate>
-              <DataTemplate>
-                <Grid Margin="18,4,0,4">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="1.4*" />
-                    <ColumnDefinition Width="90" />
-                  </Grid.ColumnDefinitions>
-                  <TextBlock Grid.Column="0" Text="{Binding Title}" />
-                  <TextBlock Grid.Column="1" Text="{Binding Authors}" Margin="12,0,0,0" />
-                  <TextBlock Grid.Column="2" Text="{Binding Series}" Margin="12,0,0,0" />
-                  <TextBlock Grid.Column="3" Text="{Binding Language}" Margin="12,0,0,0" />
-                </Grid>
-              </DataTemplate>
-            </HierarchicalDataTemplate.ItemTemplate>
-          </HierarchicalDataTemplate>
-        </TreeView.ItemTemplate>
-      </TreeView>
+        </DataGrid.Style>
+        <DataGrid.GroupStyle>
+          <GroupStyle>
+            <GroupStyle.ContainerStyle>
+              <Style TargetType="GroupItem">
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="GroupItem">
+                      <Expander IsExpanded="True" Margin="0,8,0,0">
+                        <Expander.Header>
+                          <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text=" (" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            <TextBlock Text="{Binding ItemCount}" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            <TextBlock Text=")" Foreground="{DynamicResource TextSecondaryBrush}" />
+                          </StackPanel>
+                        </Expander.Header>
+                        <ItemsPresenter />
+                      </Expander>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </GroupStyle.ContainerStyle>
+          </GroupStyle>
+        </DataGrid.GroupStyle>
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="2*" />
+          <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" Width="2*" />
+          <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" Width="1.4*" />
+          <DataGridTextColumn Header="{loc:Loc Language}" Binding="{Binding Language}" Width="90" />
+          <DataGridTextColumn Header="{loc:Loc Status}" Binding="{Binding Status}" Width="110" />
+        </DataGrid.Columns>
+      </DataGrid>
     </Grid>
   </DockPanel>
 </Window>

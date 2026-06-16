@@ -10,20 +10,81 @@ public sealed partial class DuplicateCandidateService
     public DuplicateCandidateResult FindCandidates(IReadOnlyList<Book> books)
     {
         var groups = books
-            .Select(book => new { Book = book, Key = NormalizeTitle(book.Metadata.Title) })
+            .Select(book => new DuplicateCandidateBook(book, NormalizeTitle(book.Metadata.Title)))
             .Where(item => item.Key.Length > 0)
             .GroupBy(item => item.Key, StringComparer.Ordinal)
-            .Where(group => group.Count() > 1)
+            .SelectMany(CreateAuthorMatchedGroups)
             .Select(group => new DuplicateCandidateGroup(
                 group.Key,
-                group.First().Book.Metadata.Title.Trim(),
-                group.Select(item => item.Book).ToList().AsReadOnly()))
+                group.Books[0].Metadata.Title.Trim(),
+                FormatAuthorSummary(group.Books),
+                group.Books))
             .OrderBy(group => group.DisplayTitle, StringComparer.CurrentCultureIgnoreCase)
             .ToList()
             .AsReadOnly();
 
         return new DuplicateCandidateResult(groups);
     }
+
+    private static IEnumerable<AuthorMatchedGroup> CreateAuthorMatchedGroups(
+        IGrouping<string, DuplicateCandidateBook> titleGroup)
+    {
+        var remaining = titleGroup
+            .Select(item => item.Book)
+            .ToList();
+
+        var componentIndex = 0;
+        while (remaining.Count > 0)
+        {
+            var seed = remaining[0];
+            remaining.RemoveAt(0);
+            var component = new List<Book> { seed };
+            for (var index = 0; index < component.Count; index++)
+            {
+                var current = component[index];
+                for (var remainingIndex = remaining.Count - 1; remainingIndex >= 0; remainingIndex--)
+                {
+                    if (!SharesAuthor(current, remaining[remainingIndex]))
+                    {
+                        continue;
+                    }
+
+                    component.Add(remaining[remainingIndex]);
+                    remaining.RemoveAt(remainingIndex);
+                }
+            }
+
+            if (component.Count > 1)
+            {
+                yield return new AuthorMatchedGroup(
+                    $"{titleGroup.Key}:{componentIndex++}",
+                    component.AsReadOnly());
+            }
+        }
+    }
+
+    private static bool SharesAuthor(Book first, Book second)
+    {
+        var firstAuthors = first.Metadata.Authors
+            .Select(NormalizeAuthor)
+            .Where(author => author.Length > 0)
+            .ToHashSet(StringComparer.Ordinal);
+        return second.Metadata.Authors
+            .Select(NormalizeAuthor)
+            .Any(firstAuthors.Contains);
+    }
+
+    private static string NormalizeAuthor(string author) =>
+        WhitespaceRegex().Replace(author.Trim().ToLowerInvariant(), " ");
+
+    private static string FormatAuthorSummary(IReadOnlyList<Book> books) =>
+        string.Join(
+            ", ",
+            books
+                .SelectMany(book => book.Metadata.Authors)
+                .Where(author => !string.IsNullOrWhiteSpace(author))
+                .Distinct(StringComparer.CurrentCultureIgnoreCase)
+                .OrderBy(author => author, StringComparer.CurrentCultureIgnoreCase));
 
     private static string NormalizeTitle(string title)
     {
@@ -53,4 +114,9 @@ public sealed record DuplicateCandidateResult(IReadOnlyList<DuplicateCandidateGr
 public sealed record DuplicateCandidateGroup(
     string MatchKey,
     string DisplayTitle,
+    string AuthorSummary,
     IReadOnlyList<Book> Books);
+
+internal sealed record AuthorMatchedGroup(string Key, IReadOnlyList<Book> Books);
+
+internal sealed record DuplicateCandidateBook(Book Book, string Key);

@@ -112,7 +112,7 @@ public sealed class LibraryViewModelTests
     public async Task ShowDuplicateCandidates_opens_duplicate_candidate_overview()
     {
         var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"]);
-        var second = CreateBook(" de hobbit ", ["Tolkien, J.R.R."]);
+        var second = CreateBook(" de hobbit ", ["J.R.R. Tolkien", "Alan Lee"]);
         var unrelated = CreateBook("Dune", ["Frank Herbert"]);
         var interaction = new ScriptedUserInteractionService();
         var viewModel = CreateViewModel(
