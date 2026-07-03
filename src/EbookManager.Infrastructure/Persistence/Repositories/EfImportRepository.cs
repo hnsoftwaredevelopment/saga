@@ -43,7 +43,8 @@ public sealed class EfImportRepository(
         ImportOutcome outcome,
         string message,
         Guid? bookId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        ImportItemDiagnostics? diagnostics = null)
     {
         await using var context = contextFactory.Create(libraryPath);
         context.ImportItems.Add(new ImportItemEntity
@@ -54,7 +55,12 @@ public sealed class EfImportRepository(
             SourcePath = sourceDisplayName,
             Outcome = outcome,
             Message = message,
-            BookId = bookId
+            BookId = bookId,
+            DurationMilliseconds = diagnostics is null
+                ? null
+                : Math.Max(0, (long)Math.Round(diagnostics.Duration.TotalMilliseconds)),
+            SizeBytes = diagnostics?.SizeBytes,
+            Format = diagnostics?.Format
         });
         await context.SaveChangesAsync(cancellationToken);
     }
@@ -83,7 +89,12 @@ public sealed class EfImportRepository(
         var items = run.Items
             .OrderBy(x => x.Sequence)
             .ThenBy(x => x.Id)
-            .Select(x => new ImportItemResult(x.SourcePath, x.Outcome, x.Message, x.BookId))
+            .Select(x => new ImportItemResult(
+                x.SourcePath,
+                x.Outcome,
+                x.Message,
+                x.BookId,
+                ToDiagnostics(x)))
             .ToList()
             .AsReadOnly();
 
@@ -126,5 +137,20 @@ public sealed class EfImportRepository(
             ? parsedKind
             : ImportRunKind.FileImport;
         return new ImportRunContext(kind, run.SourcePath, run.IncludeSubdirectories);
+    }
+
+    private static ImportItemDiagnostics? ToDiagnostics(ImportItemEntity item)
+    {
+        if (item.DurationMilliseconds is null &&
+            item.SizeBytes is null &&
+            item.Format is null)
+        {
+            return null;
+        }
+
+        return new ImportItemDiagnostics(
+            TimeSpan.FromMilliseconds(item.DurationMilliseconds ?? 0),
+            item.SizeBytes,
+            item.Format);
     }
 }

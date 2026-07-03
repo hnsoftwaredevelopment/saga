@@ -199,6 +199,12 @@ namespace EbookManager.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("BookId")
                         .HasColumnType("TEXT");
 
+                    b.Property<long?>("DurationMilliseconds")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Format")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("ImportRunId")
                         .HasColumnType("TEXT");
 
@@ -216,6 +222,9 @@ namespace EbookManager.Infrastructure.Persistence.Migrations
                     b.Property<string>("SourcePath")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<long?>("SizeBytes")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

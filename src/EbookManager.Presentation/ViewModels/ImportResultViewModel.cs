@@ -1,4 +1,5 @@
 using EbookManager.Domain.Importing;
+using System.Globalization;
 
 namespace EbookManager.Presentation.ViewModels;
 
@@ -73,6 +74,9 @@ public sealed class ImportResultItemViewModel(ImportItemResult item)
 {
     public string SourcePath { get; } = item.SourcePath;
     public string FileName { get; } = Path.GetFileName(item.SourcePath);
+    public string FormatText { get; } = item.Diagnostics?.Format?.ToString().ToUpperInvariant() ?? string.Empty;
+    public string SizeText { get; } = FormatSize(item.Diagnostics?.SizeBytes);
+    public string DurationText { get; } = FormatDuration(item.Diagnostics?.Duration);
     public ImportOutcome Outcome { get; } = item.Outcome;
     public string OutcomeLabel { get; } = item.Outcome switch
     {
@@ -84,4 +88,41 @@ public sealed class ImportResultItemViewModel(ImportItemResult item)
     };
     public string Message { get; } = item.Message;
     public Guid? BookId { get; } = item.BookId;
+
+    private static string FormatSize(long? bytes)
+    {
+        if (bytes is null)
+        {
+            return string.Empty;
+        }
+
+        var value = (double)bytes.Value;
+        var units = new[] { "B", "KB", "MB", "GB" };
+        var unitIndex = 0;
+        while (value >= 1024 && unitIndex < units.Length - 1)
+        {
+            value /= 1024;
+            unitIndex++;
+        }
+
+        return unitIndex == 0
+            ? $"{bytes.Value.ToString(CultureInfo.CurrentCulture)} {units[unitIndex]}"
+            : $"{value.ToString("0.#", CultureInfo.CurrentCulture)} {units[unitIndex]}";
+    }
+
+    private static string FormatDuration(TimeSpan? duration)
+    {
+        if (duration is null)
+        {
+            return string.Empty;
+        }
+
+        return duration.Value.TotalSeconds < 1
+            ? $"{Math.Max(1, (int)Math.Round(duration.Value.TotalMilliseconds)).ToString(CultureInfo.CurrentCulture)} ms"
+            : duration.Value.TotalMinutes < 1
+                ? $"{duration.Value.TotalSeconds.ToString("0.0", CultureInfo.CurrentCulture)} s"
+                : duration.Value.TotalHours < 1
+                    ? duration.Value.ToString(@"m\:ss", CultureInfo.CurrentCulture)
+                    : duration.Value.ToString(@"h\:mm\:ss", CultureInfo.CurrentCulture);
+    }
 }

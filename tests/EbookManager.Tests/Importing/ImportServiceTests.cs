@@ -31,6 +31,10 @@ public sealed class ImportServiceTests
         item.SourcePath.Should().Be(source);
         item.Outcome.Should().Be(ImportOutcome.Added);
         item.BookId.Should().NotBeNull();
+        item.Diagnostics.Should().NotBeNull();
+        item.Diagnostics!.Format.Should().Be(EbookFormat.Pdf);
+        item.Diagnostics.SizeBytes.Should().Be(sourceBytes.Length);
+        item.Diagnostics.Duration.Should().BeGreaterThanOrEqualTo(TimeSpan.Zero);
 
         var book = await fixture.BookRepository.GetAsync(item.BookId!.Value, default);
         book.Should().NotBeNull();
@@ -807,11 +811,20 @@ public sealed class ImportServiceTests
             ImportOutcome outcome,
             string message,
             Guid? bookId,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            ImportItemDiagnostics? diagnostics = null)
         {
             LastRunId = runId;
             cancellationToken.CanBeCanceled.Should().BeFalse();
-            await inner.RecordItemAsync(runId, sequence, sourceDisplayName, outcome, message, bookId, cancellationToken);
+            await inner.RecordItemAsync(
+                runId,
+                sequence,
+                sourceDisplayName,
+                outcome,
+                message,
+                bookId,
+                cancellationToken,
+                diagnostics);
         }
 
         public async Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken)
@@ -1092,7 +1105,8 @@ public sealed class ImportServiceTests
             ImportOutcome outcome,
             string message,
             Guid? bookId,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            ImportItemDiagnostics? diagnostics = null)
         {
             LastRunId = runId;
             throw new InvalidOperationException("record item failed");

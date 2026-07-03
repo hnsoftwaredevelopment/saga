@@ -20,8 +20,10 @@ Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-qu
 - safe fallback import for recognized formats
 - drag-and-drop import
 - faceted sorting and filters in the left action list
+- book type filtering for EPUB, PDF, CBR, CBZ, MOBI, AZW, AZW3, and KFX
 - search-term highlighting
 - refined import result summaries
+- import result diagnostics with per-item duration, file size, and format
 - portable `metadata.json` sidecar metadata
 - searchable library viewmodels
 - editable metadata details with save, undo, and delete services
@@ -108,11 +110,9 @@ The following remain later-version candidates:
 - active e-reader detection and USB sync
 - native metadata write-back into ebook files
 - custom metadata fields
-- filter by book file type, such as EPUB, PDF, CBR, CBZ, MOBI, AZW, AZW3, and KFX
 - duplicate finder for possible duplicates, with options to delete one copy or merge metadata
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - import history redo action for failed items or failed runs
-- import history diagnostics with per-item duration, file size, and format for slow-file analysis
 - optional cloud-file hydration for OneDrive files that are not available locally
 - richer metadata cleanup tools, including duplicate-aware merge flows and more bulk-edit diagnostics
 - user-defined views

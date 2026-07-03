@@ -27,8 +27,17 @@ public sealed class CurrentLibraryImportRepository(
         ImportOutcome outcome,
         string message,
         Guid? bookId,
-        CancellationToken cancellationToken) =>
-        CreateRepository().RecordItemAsync(runId, sequence, sourcePath, outcome, message, bookId, cancellationToken);
+        CancellationToken cancellationToken,
+        ImportItemDiagnostics? diagnostics = null) =>
+        CreateRepository().RecordItemAsync(
+            runId,
+            sequence,
+            sourcePath,
+            outcome,
+            message,
+            bookId,
+            cancellationToken,
+            diagnostics);
 
     public Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken) =>
         CreateRepository().CompleteRunAsync(runId, completedUtc, cancellationToken);

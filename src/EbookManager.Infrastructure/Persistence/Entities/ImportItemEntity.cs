@@ -1,4 +1,5 @@
 using EbookManager.Domain.Importing;
+using EbookManager.Domain.Books;
 
 namespace EbookManager.Infrastructure.Persistence.Entities;
 
@@ -13,4 +14,7 @@ public sealed class ImportItemEntity
     public string Message { get; set; } = string.Empty;
     public Guid? BookId { get; set; }
     public BookEntity? Book { get; set; }
+    public long? DurationMilliseconds { get; set; }
+    public long? SizeBytes { get; set; }
+    public EbookFormat? Format { get; set; }
 }

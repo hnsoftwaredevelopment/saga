@@ -1133,7 +1133,8 @@ public sealed class LibraryViewModelTests
             ImportOutcome outcome,
             string message,
             Guid? bookId,
-            CancellationToken cancellationToken) =>
+            CancellationToken cancellationToken,
+            ImportItemDiagnostics? diagnostics = null) =>
             Task.CompletedTask;
 
         public Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken) =>

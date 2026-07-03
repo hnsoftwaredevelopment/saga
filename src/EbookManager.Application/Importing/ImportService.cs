@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Importing;
@@ -106,7 +107,25 @@ public sealed class ImportService(
         CancellationToken cancellationToken)
     {
         var sourceDisplayName = GetSafeSourceDisplayName(sourcePath);
+        var stopwatch = Stopwatch.StartNew();
+        EbookFormat? resolvedFormat = null;
+        long? sourceLength = null;
         ImportItemResult? result = null;
+
+        Task<ImportItemResult> RecordAsync(ImportItemResult item)
+        {
+            stopwatch.Stop();
+            var diagnostics = new ImportItemDiagnostics(
+                stopwatch.Elapsed,
+                sourceLength,
+                resolvedFormat);
+            return RecordAndReturnAsync(
+                runId,
+                sequence,
+                sourceDisplayName,
+                item with { Diagnostics = diagnostics },
+                cancellationToken);
+        }
 
         if (sourceDisplayName == InvalidSourceDisplayName)
         {
@@ -118,6 +137,7 @@ public sealed class ImportService(
         }
         else
         {
+            resolvedFormat = format;
             var bookId = Guid.NewGuid();
             var copied = false;
             var bookPersisted = false;
@@ -125,11 +145,11 @@ public sealed class ImportService(
 
             try
             {
-                var sourceLength = GetSourceLengthOrNull(sourcePath!);
+                sourceLength = GetSourceLengthOrNull(sourcePath!);
                 if (sourceLength is null)
                 {
                     result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
-                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    return await RecordAsync(result);
                 }
 
                 var hashingFileStore = fileStore as IHashingLibraryFileStore;
@@ -151,7 +171,7 @@ public sealed class ImportService(
                     catch
                     {
                         result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
-                        return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                        return await RecordAsync(result);
                     }
 
                     if (await duplicateTracker.HasHashAsync(sha256, cancellationToken))
@@ -160,7 +180,7 @@ public sealed class ImportService(
                             sourcePath,
                             ImportOutcome.ExactDuplicate,
                             SafeImportMessages.ExactDuplicate);
-                        return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                        return await RecordAsync(result);
                     }
                 }
 
@@ -176,7 +196,7 @@ public sealed class ImportService(
                 catch
                 {
                     result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.MetadataReadFailed);
-                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    return await RecordAsync(result);
                 }
 
                 var duplicateKey = DuplicateKeyNormalizer.BuildDuplicateKey(
@@ -195,7 +215,7 @@ public sealed class ImportService(
                             sourcePath,
                             ImportOutcome.PossibleDuplicate,
                             SafeImportMessages.PossibleDuplicate);
-                        return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                        return await RecordAsync(result);
                     }
 
                     isPossibleDuplicate = true;
@@ -232,7 +252,7 @@ public sealed class ImportService(
                 catch
                 {
                     result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.ManagedCopyFailed);
-                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    return await RecordAsync(result);
                 }
 
                 if (useSinglePassCopy && await duplicateTracker.HasHashAsync(sha256!, cancellationToken))
@@ -242,7 +262,7 @@ public sealed class ImportService(
                         ImportOutcome.ExactDuplicate,
                         SafeImportMessages.ExactDuplicate);
                     shouldCleanup = true;
-                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    return await RecordAsync(result);
                 }
 
                 if (isPossibleDuplicate)
@@ -252,7 +272,7 @@ public sealed class ImportService(
                         ImportOutcome.PossibleDuplicate,
                         SafeImportMessages.PossibleDuplicate);
                     shouldCleanup = true;
-                    return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result, cancellationToken);
+                    return await RecordAsync(result);
                 }
 
                 var now = DateTimeOffset.UtcNow;
@@ -317,7 +337,7 @@ public sealed class ImportService(
             }
         }
 
-        return await RecordAndReturnAsync(runId, sequence, sourceDisplayName, result!, cancellationToken);
+        return await RecordAsync(result!);
     }
 
     private async Task<ImportItemResult> RecordAndReturnAsync(
@@ -336,7 +356,8 @@ public sealed class ImportService(
                 result.Outcome,
                 result.Message,
                 result.BookId,
-                CancellationToken.None);
+                CancellationToken.None,
+                result.Diagnostics);
             return result;
         }
         catch (OperationCanceledException)

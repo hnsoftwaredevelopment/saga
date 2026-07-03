@@ -460,6 +460,33 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Import_repository_persists_item_diagnostics()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var importRepository = new EfImportRepository(factory, libraryPath);
+        var runId = await importRepository.StartRunAsync(DateTimeOffset.UtcNow, default);
+        var diagnostics = new ImportItemDiagnostics(
+            TimeSpan.FromMilliseconds(1234),
+            SizeBytes: 42_000,
+            Format: EbookFormat.Cbr);
+
+        await importRepository.RecordItemAsync(
+            runId,
+            0,
+            "comic.cbr",
+            ImportOutcome.Added,
+            "Imported",
+            null,
+            default,
+            diagnostics);
+
+        var item = (await importRepository.GetAsync(runId, default))!.Items.Should().ContainSingle().Which;
+        item.Diagnostics.Should().BeEquivalentTo(diagnostics);
+    }
+
+    [Fact]
     public async Task Import_repository_lists_recent_runs_with_summary_counts()
     {
         using var library = new TemporaryLibrary();

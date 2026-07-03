@@ -74,6 +74,15 @@
             </Style>
           </DataGridTextColumn.ElementStyle>
         </DataGridTextColumn>
+        <DataGridTextColumn Header="{loc:Loc Type}"
+                            Binding="{Binding FormatText}"
+                            Width="70" />
+        <DataGridTextColumn Header="{loc:Loc Size}"
+                            Binding="{Binding SizeText}"
+                            Width="90" />
+        <DataGridTextColumn Header="{loc:Loc Duration}"
+                            Binding="{Binding DurationText}"
+                            Width="90" />
         <DataGridTextColumn Header="{loc:Loc Outcome}"
                             Binding="{Binding Outcome, Converter={StaticResource ImportOutcomeToLocalizedStringConverter}}"
                             Width="180" />

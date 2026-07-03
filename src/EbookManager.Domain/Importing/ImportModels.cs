@@ -1,3 +1,5 @@
+using EbookManager.Domain.Books;
+
 namespace EbookManager.Domain.Importing;
 
 public enum ImportOutcome
@@ -26,7 +28,13 @@ public sealed record ImportItemResult(
     string SourcePath,
     ImportOutcome Outcome,
     string Message,
-    Guid? BookId = null);
+    Guid? BookId = null,
+    ImportItemDiagnostics? Diagnostics = null);
+
+public sealed record ImportItemDiagnostics(
+    TimeSpan Duration,
+    long? SizeBytes = null,
+    EbookFormat? Format = null);
 
 public sealed record ImportBatchResult(
     Guid RunId,

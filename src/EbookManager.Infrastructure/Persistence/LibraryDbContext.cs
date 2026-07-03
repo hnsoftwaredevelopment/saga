@@ -117,6 +117,7 @@ public sealed class LibraryDbContext(DbContextOptions<LibraryDbContext> options)
             importItem.Property(x => x.SourcePath).IsRequired();
             importItem.Property(x => x.Outcome).HasConversion<string>();
             importItem.Property(x => x.Message).IsRequired();
+            importItem.Property(x => x.Format).HasConversion<string>();
             importItem.HasIndex(x => new { x.ImportRunId, x.Sequence }).IsUnique();
             importItem.HasOne(x => x.ImportRun)
                 .WithMany(x => x.Items)
