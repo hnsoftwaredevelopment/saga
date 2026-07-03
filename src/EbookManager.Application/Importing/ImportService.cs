@@ -111,6 +111,7 @@ public sealed class ImportService(
         EbookFormat? resolvedFormat = null;
         long? sourceLength = null;
         ImportItemResult? result = null;
+        Guid? cleanupBookId = null;
 
         Task<ImportItemResult> RecordAsync(ImportItemResult item)
         {
@@ -124,6 +125,7 @@ public sealed class ImportService(
                 sequence,
                 sourceDisplayName,
                 item with { Diagnostics = diagnostics },
+                cleanupBookId,
                 cancellationToken);
         }
 
@@ -142,6 +144,8 @@ public sealed class ImportService(
             var copied = false;
             var bookPersisted = false;
             var shouldCleanup = false;
+            var targetBookId = bookId;
+            var addFileToExistingBook = false;
 
             try
             {
@@ -203,22 +207,31 @@ public sealed class ImportService(
                     metadata.Metadata.Title,
                     metadata.Metadata.Authors);
                 var isPossibleDuplicate = false;
-                if (await duplicateTracker.HasDuplicateKeyAsync(
+                var duplicate = await duplicateTracker.FindDuplicateAsync(
                         metadata.Metadata.Title,
                         metadata.Metadata.Authors,
                         duplicateKey,
-                        cancellationToken))
+                        cancellationToken);
+                if (duplicate is not null)
                 {
-                    if (!useSinglePassCopy)
+                    if (duplicate.BookId is null || duplicate.Formats.Contains(format))
                     {
-                        result = CreateSuccessResult(
-                            sourcePath,
-                            ImportOutcome.PossibleDuplicate,
-                            SafeImportMessages.PossibleDuplicate);
-                        return await RecordAsync(result);
-                    }
+                        if (!useSinglePassCopy)
+                        {
+                            result = CreateSuccessResult(
+                                sourcePath,
+                                ImportOutcome.PossibleDuplicate,
+                                SafeImportMessages.PossibleDuplicate);
+                            return await RecordAsync(result);
+                        }
 
-                    isPossibleDuplicate = true;
+                        isPossibleDuplicate = true;
+                    }
+                    else
+                    {
+                        targetBookId = duplicate.BookId.Value;
+                        addFileToExistingBook = true;
+                    }
                 }
 
                 (string RelativeBookPath, string? RelativeCoverPath) copy;
@@ -227,7 +240,7 @@ public sealed class ImportService(
                     if (useSinglePassCopy)
                     {
                         var hashingCopy = await hashingFileStore!.CopyIntoLibraryWithHashAsync(
-                            bookId,
+                            targetBookId,
                             sourcePath!,
                             metadata.Metadata.CoverBytes,
                             cancellationToken);
@@ -237,7 +250,7 @@ public sealed class ImportService(
                     else
                     {
                         copy = await fileStore.CopyIntoLibraryAsync(
-                            bookId,
+                            targetBookId,
                             sourcePath!,
                             metadata.Metadata.CoverBytes,
                             cancellationToken);
@@ -277,7 +290,7 @@ public sealed class ImportService(
 
                 var now = DateTimeOffset.UtcNow;
                 var book = new Book(
-                    bookId,
+                    targetBookId,
                     metadata.Metadata,
                     ReadingStatus.Unread,
                     copy.RelativeCoverPath,
@@ -285,7 +298,7 @@ public sealed class ImportService(
                     now);
                 var file = new BookFile(
                     Guid.NewGuid(),
-                    bookId,
+                    targetBookId,
                     format,
                     copy.RelativeBookPath,
                     sha256!,
@@ -295,13 +308,22 @@ public sealed class ImportService(
 
                 try
                 {
-                    await bookRepository.AddAsync(book, file, cancellationToken);
+                    if (addFileToExistingBook)
+                    {
+                        await bookRepository.AddFileAsync(file, cancellationToken);
+                    }
+                    else
+                    {
+                        await bookRepository.AddAsync(book, file, cancellationToken);
+                    }
+
                     bookPersisted = true;
+                    cleanupBookId = addFileToExistingBook ? null : targetBookId;
                     result = CreateAddedResult(
                         sourcePath,
                         metadata.Warning,
-                        bookId);
-                    duplicateTracker.Add(sha256!, duplicateKey);
+                        targetBookId);
+                    duplicateTracker.Add(sha256!, duplicateKey, targetBookId, format);
                 }
                 catch (OperationCanceledException)
                 {
@@ -323,9 +345,10 @@ public sealed class ImportService(
             }
             finally
             {
-                if (shouldCleanup || (!bookPersisted && copied))
+                Guid? copiedBookCanBeCleaned = addFileToExistingBook ? null : targetBookId;
+                if ((shouldCleanup || (!bookPersisted && copied)) && copiedBookCanBeCleaned is { } bookToClean)
                 {
-                    var cleanupIncomplete = await CleanupImportedBookAsync(bookId);
+                    var cleanupIncomplete = await CleanupImportedBookAsync(bookToClean);
                     if (
                         cleanupIncomplete
                         && result is not null
@@ -345,6 +368,7 @@ public sealed class ImportService(
         int sequence,
         string sourceDisplayName,
         ImportItemResult result,
+        Guid? cleanupBookId,
         CancellationToken cancellationToken)
     {
         try
@@ -366,7 +390,7 @@ public sealed class ImportService(
         }
         catch (Exception exception)
         {
-            var cleanupIncomplete = result.BookId is { } bookId && await CleanupImportedBookAsync(bookId);
+            var cleanupIncomplete = cleanupBookId is { } bookId && await CleanupImportedBookAsync(bookId);
             var message = cleanupIncomplete
                 ? $"{SafeImportMessages.CannotPersistResult}; {SafeImportMessages.CleanupIncomplete}"
                 : SafeImportMessages.CannotPersistResult;
@@ -478,6 +502,7 @@ public sealed class ImportService(
         private readonly bool snapshotLoaded;
         private readonly HashSet<string> knownHashes;
         private readonly HashSet<string> knownDuplicateKeys;
+        private readonly Dictionary<string, DuplicateBookReference> duplicateBooksByKey = new(StringComparer.Ordinal);
 
         private ImportDuplicateTracker(
             IBookRepository bookRepository,
@@ -534,37 +559,63 @@ public sealed class ImportService(
             return false;
         }
 
-        public async Task<bool> HasDuplicateKeyAsync(
+        public async Task<DuplicateBookReference?> FindDuplicateAsync(
             string title,
             IReadOnlyList<string> authors,
             string duplicateKey,
             CancellationToken cancellationToken)
         {
+            if (duplicateBooksByKey.TryGetValue(duplicateKey, out var cachedDuplicate))
+            {
+                return cachedDuplicate;
+            }
+
             if (knownDuplicateKeys.Contains(duplicateKey))
             {
-                return true;
+                var knownBook = await bookRepository.FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+                var knownReference = knownBook is null
+                    ? new DuplicateBookReference(null, EbookFormatExtensions.Supported.ToHashSet())
+                    : new DuplicateBookReference(
+                        knownBook.Id,
+                        knownBook.Formats.ToHashSet());
+                duplicateBooksByKey[duplicateKey] = knownReference;
+                return knownReference;
             }
 
             if (snapshotLoaded)
             {
-                return false;
+                return null;
             }
 
-            if (await bookRepository.HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken))
+            var book = await bookRepository.FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+            if (book is not null)
             {
                 knownDuplicateKeys.Add(duplicateKey);
-                return true;
+                var reference = new DuplicateBookReference(
+                    book.Id,
+                    book.Formats.ToHashSet());
+                duplicateBooksByKey[duplicateKey] = reference;
+                return reference;
             }
 
-            return false;
+            return null;
         }
 
-        public void Add(string sha256, string duplicateKey)
+        public void Add(string sha256, string duplicateKey, Guid bookId, EbookFormat format)
         {
             knownHashes.Add(CanonicalizeSha256(sha256));
             knownDuplicateKeys.Add(duplicateKey);
+            if (!duplicateBooksByKey.TryGetValue(duplicateKey, out var reference) || reference.BookId != bookId)
+            {
+                duplicateBooksByKey[duplicateKey] = new DuplicateBookReference(bookId, [format]);
+                return;
+            }
+
+            reference.Formats.Add(format);
         }
     }
+
+    private sealed record DuplicateBookReference(Guid? BookId, HashSet<EbookFormat> Formats);
 
     private static class SafeImportMessages
     {

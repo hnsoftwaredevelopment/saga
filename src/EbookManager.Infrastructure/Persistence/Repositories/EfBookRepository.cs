@@ -74,6 +74,19 @@ public sealed class EfBookRepository(
             .AnyAsync(x => x.DuplicateKey == duplicateKey, cancellationToken);
     }
 
+    public async Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+        string title,
+        IReadOnlyList<string> authors,
+        CancellationToken cancellationToken)
+    {
+        var duplicateKey = DuplicateKeyNormalizer.BuildDuplicateKey(title, authors);
+        await using var context = contextFactory.Create(libraryPath);
+        var book = await BooksWithMetadata(context)
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.DuplicateKey == duplicateKey, cancellationToken);
+        return book is null ? null : ToDomain(book, includeCoverBytes: true);
+    }
+
     public async Task<BookDuplicateSnapshot> CreateDuplicateSnapshotAsync(CancellationToken cancellationToken)
     {
         await using var context = contextFactory.Create(libraryPath);
@@ -106,6 +119,20 @@ public sealed class EfBookRepository(
         entity.Files.Add(fileEntity);
         await context.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
+    }
+
+    public async Task AddFileAsync(BookFile file, CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var bookExists = await context.Books
+            .AnyAsync(x => x.Id == file.BookId, cancellationToken);
+        if (!bookExists)
+        {
+            throw new KeyNotFoundException($"Book '{file.BookId}' does not exist.");
+        }
+
+        context.BookFiles.Add(ToEntity(file));
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Book book, CancellationToken cancellationToken)

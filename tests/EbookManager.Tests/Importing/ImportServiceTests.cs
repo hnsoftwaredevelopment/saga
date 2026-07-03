@@ -300,6 +300,33 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Import_async_adds_a_different_format_to_an_existing_book()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var existingBook = await fixture.SeedBookAsync(
+            "The Hobbit",
+            "J.R.R. Tolkien",
+            "existing.pdf",
+            Encoding.UTF8.GetBytes("existing-pdf"),
+            EbookFormat.Pdf);
+        var service = fixture.CreateService();
+        var source = fixture.WriteBytesFile(
+            @"incoming\the hobbit - j.r.r. tolkien.mobi",
+            Encoding.UTF8.GetBytes("different-mobi"));
+
+        var result = await service.ImportAsync([source], default);
+
+        var item = result.Items.Should().ContainSingle().Which;
+        item.Outcome.Should().Be(ImportOutcome.Added);
+        item.BookId.Should().Be(existingBook.Id);
+        (await fixture.BookRepository.ListAsync(default)).Should().ContainSingle()
+            .Which.Formats.Should().BeEquivalentTo([EbookFormat.Pdf, EbookFormat.Mobi]);
+        await using var context = fixture.ContextFactory.Create(fixture.LibraryPath);
+        (await context.Books.CountAsync()).Should().Be(1);
+        (await context.BookFiles.CountAsync()).Should().Be(2);
+    }
+
+    [Fact]
     public async Task Import_async_reports_possible_duplicates_inside_the_same_batch()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();
@@ -320,6 +347,30 @@ public sealed class ImportServiceTests
         (await fixture.BookRepository.ListAsync(default)).Should().ContainSingle();
         await using var context = fixture.ContextFactory.Create(fixture.LibraryPath);
         (await context.BookFiles.CountAsync()).Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Import_async_adds_different_formats_to_one_book_inside_the_same_batch()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var first = fixture.WriteBytesFile(
+            @"incoming\first\The Hobbit - J.R.R. Tolkien.pdf",
+            Encoding.UTF8.GetBytes("first-pdf"));
+        var second = fixture.WriteBytesFile(
+            @"incoming\second\the hobbit - j.r.r. tolkien.mobi",
+            Encoding.UTF8.GetBytes("second-mobi"));
+        var service = fixture.CreateService();
+
+        var result = await service.ImportAsync([first, second], default);
+
+        result.Items.Select(item => item.Outcome).Should().Equal(
+            ImportOutcome.Added,
+            ImportOutcome.Added);
+        result.Items[1].BookId.Should().Be(result.Items[0].BookId);
+        (await fixture.BookRepository.ListAsync(default)).Should().ContainSingle()
+            .Which.Formats.Should().BeEquivalentTo([EbookFormat.Pdf, EbookFormat.Mobi]);
+        await using var context = fixture.ContextFactory.Create(fixture.LibraryPath);
+        (await context.BookFiles.CountAsync()).Should().Be(2);
     }
 
     [Fact]

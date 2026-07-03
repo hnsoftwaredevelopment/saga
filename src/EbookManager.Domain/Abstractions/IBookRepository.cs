@@ -12,7 +12,14 @@ public interface IBookRepository
         string title,
         IReadOnlyList<string> authors,
         CancellationToken cancellationToken);
+    Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+        string title,
+        IReadOnlyList<string> authors,
+        CancellationToken cancellationToken) =>
+        Task.FromResult<Book?>(null);
     Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken);
+    Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
+        throw new NotSupportedException("Adding files to existing books is not supported by this repository.");
     Task UpdateAsync(Book book, CancellationToken cancellationToken);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
     Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken);
