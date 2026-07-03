@@ -38,7 +38,7 @@ public sealed class LibraryDbContextTests
 
         File.Exists(Path.Combine(libraryPath, "library.db")).Should().BeTrue();
         var listedBook = (await repository.ListAsync(default)).Should().ContainSingle().Which;
-        listedBook.Should().Be(book with
+        listedBook.Should().BeEquivalentTo(book with
         {
             Metadata = new BookMetadata(
                 book.Metadata.Title,
@@ -52,7 +52,7 @@ public sealed class LibraryDbContextTests
                 book.Metadata.SeriesNumber,
                 book.Metadata.Isbn)
         });
-        (await repository.GetAsync(book.Id, default)).Should().Be(book);
+        (await repository.GetAsync(book.Id, default)).Should().BeEquivalentTo(book);
         (await repository.HasHashAsync(Hash('A'), default)).Should().BeTrue();
         (await repository.HasNormalizedTitleAndAuthorAsync(
             "  TEST BOOK ",
@@ -263,7 +263,7 @@ public sealed class LibraryDbContextTests
         await repository.UpdateAsync(updated, default);
 
         var reloaded = await repository.GetAsync(book.Id, default);
-        reloaded.Should().Be(updated);
+        reloaded.Should().BeEquivalentTo(updated);
         reloaded!.Metadata.Authors.Should().Equal("Third", "Second", "First");
         reloaded.Metadata.Tags.Should().Equal("New");
 
@@ -910,7 +910,10 @@ public sealed class LibraryDbContextTests
             ReadingStatus.Reading,
             "books/cover.jpg",
             now,
-            now);
+            now)
+        {
+            Formats = [EbookFormat.Epub]
+        };
     }
 
     private static BookFile CreateFile(Guid bookId, string? sha256 = null) =>

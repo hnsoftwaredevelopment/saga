@@ -17,7 +17,8 @@ public sealed class EfBookRepository(
         await using var context = contextFactory.Create(libraryPath);
         var books = await ListProjectionQuery(context)
             .ToListAsync(cancellationToken);
-        return books.Select(ToDomain).ToList().AsReadOnly();
+        var formatsByBookId = await ListFormatsAsync(context, books.Select(book => book.Id).ToList(), cancellationToken);
+        return books.Select(book => ToDomain(book, formatsByBookId)).ToList().AsReadOnly();
     }
 
     public async Task<int> CountAsync(CancellationToken cancellationToken)
@@ -41,7 +42,8 @@ public sealed class EfBookRepository(
             .Skip(skip)
             .Take(take)
             .ToListAsync(cancellationToken);
-        return books.Select(ToDomain).ToList().AsReadOnly();
+        var formatsByBookId = await ListFormatsAsync(context, books.Select(book => book.Id).ToList(), cancellationToken);
+        return books.Select(book => ToDomain(book, formatsByBookId)).ToList().AsReadOnly();
     }
 
     public async Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
@@ -238,7 +240,8 @@ public sealed class EfBookRepository(
             .Include(x => x.BookAuthors)
                 .ThenInclude(x => x.Author)
             .Include(x => x.BookTags)
-                .ThenInclude(x => x.Tag);
+                .ThenInclude(x => x.Tag)
+            .Include(x => x.Files);
 
     private static IQueryable<BookListProjection> ListProjectionQuery(LibraryDbContext context) =>
         context.Books
@@ -267,6 +270,33 @@ public sealed class EfBookRepository(
                     .OrderBy(bookTag => bookTag.Order)
                     .Select(bookTag => bookTag.Tag.Name)
                     .ToList()));
+
+    private static async Task<IReadOnlyDictionary<Guid, IReadOnlyList<EbookFormat>>> ListFormatsAsync(
+        LibraryDbContext context,
+        IReadOnlyCollection<Guid> bookIds,
+        CancellationToken cancellationToken)
+    {
+        if (bookIds.Count == 0)
+        {
+            return new Dictionary<Guid, IReadOnlyList<EbookFormat>>();
+        }
+
+        var rows = await context.BookFiles
+            .AsNoTracking()
+            .Where(file => bookIds.Contains(file.BookId))
+            .Select(file => new { file.BookId, file.Format })
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        return rows
+            .GroupBy(row => row.BookId)
+            .ToDictionary(
+                group => group.Key,
+                group => (IReadOnlyList<EbookFormat>)group
+                    .Select(row => row.Format)
+                    .OrderBy(format => format)
+                    .ToList());
+    }
 
     private static async Task AddAuthorsAsync(
         LibraryDbContext context,
@@ -462,10 +492,21 @@ public sealed class EfBookRepository(
             entity.ReadingStatus,
             entity.CoverRelativePath,
             entity.CreatedUtc,
-            entity.UpdatedUtc);
+            entity.UpdatedUtc)
+        {
+            Formats = entity.Files
+                .Select(file => file.Format)
+                .Distinct()
+                .OrderBy(format => format)
+                .ToList()
+        };
 
-    private static Book ToDomain(BookListProjection projection) =>
-        new(
+    private static Book ToDomain(
+        BookListProjection projection,
+        IReadOnlyDictionary<Guid, IReadOnlyList<EbookFormat>> formatsByBookId)
+    {
+        formatsByBookId.TryGetValue(projection.Id, out var formats);
+        return new Book(
             projection.Id,
             new BookMetadata(
                 projection.Title,
@@ -481,7 +522,11 @@ public sealed class EfBookRepository(
             projection.ReadingStatus,
             projection.CoverRelativePath,
             projection.CreatedUtc,
-            projection.UpdatedUtc);
+            projection.UpdatedUtc)
+        {
+            Formats = formats ?? []
+        };
+    }
 
     private static BookFile ToDomain(BookFileEntity entity) =>
         new(

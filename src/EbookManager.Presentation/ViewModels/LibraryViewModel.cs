@@ -83,6 +83,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<FacetFilterViewModel> StatusFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> EReaderFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
+    public ObservableCollection<FacetFilterViewModel> FormatFilters { get; } = [];
 
     public BookDetailsViewModel Details { get; }
 
@@ -462,7 +463,8 @@ public sealed partial class LibraryViewModel : ObservableObject
                 (Filters: SeriesFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(book.Metadata.Series))),
                 (Filters: StatusFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => [book.ReadingStatus.ToString()])),
                 (Filters: EReaderFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => [new BookRowViewModel(book).EReader])),
-                (Filters: LanguageFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(LanguageFilterKey(book.Metadata.Language))))
+                (Filters: LanguageFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(LanguageFilterKey(book.Metadata.Language)))),
+                (Filters: FormatFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => book.Formats.Select(format => format.ToString())))
             }
             .Select(group => (
                 group.ValueSelector,
@@ -502,6 +504,10 @@ public sealed partial class LibraryViewModel : ObservableObject
             LanguageFilters,
             books.SelectMany(book => SingleOptionalValue(LanguageFilterKey(book.Metadata.Language))),
             LanguageDisplayName);
+        RefreshFilters(
+            FormatFilters,
+            books.SelectMany(book => book.Formats.Select(format => format.ToString())),
+            FormatDisplayName);
     }
 
     private void RefreshFilters(
@@ -606,6 +612,8 @@ public sealed partial class LibraryViewModel : ObservableObject
             return normalized;
         }
     }
+
+    private static string FormatDisplayName(string value) => value.ToUpperInvariant();
 
     private async Task RenameFilterValueAsync(
         FacetFilterViewModel? filter,

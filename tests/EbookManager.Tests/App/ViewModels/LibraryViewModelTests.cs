@@ -193,6 +193,8 @@ public sealed class LibraryViewModelTests
             .Should().Equal("Unavailable (2)");
         viewModel.LanguageFilters.Select(filter => filter.DisplayName)
             .Should().Equal("Engels (1)", "Nederlands (1)");
+        viewModel.FormatFilters.Select(filter => filter.DisplayName)
+            .Should().BeEmpty();
 
         viewModel.SeriesFilters.Should().OnlyContain(filter => !filter.IsSelected);
         viewModel.SeriesFilters.Single(filter => filter.Name == "Dune").IsSelected = true;
@@ -215,6 +217,29 @@ public sealed class LibraryViewModelTests
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Title.Should().Be("Latvian Book");
     }
+
+    [Fact]
+    public async Task Format_filters_show_book_types_and_expand_results()
+    {
+        var epub = CreateBook("Epub Book", ["Author"], formats: [EbookFormat.Epub]);
+        var pdf = CreateBook("Pdf Book", ["Author"], formats: [EbookFormat.Pdf]);
+        var comic = CreateBook("Comic Book", ["Author"], formats: [EbookFormat.Cbr]);
+        var viewModel = CreateViewModel([epub, pdf, comic]);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.FormatFilters.Select(filter => filter.DisplayName)
+            .Should().Equal("CBR (1)", "EPUB (1)", "PDF (1)");
+
+        viewModel.FormatFilters.Single(filter => filter.Name == "Epub").IsSelected = true;
+        viewModel.VisibleBooks.Should().ContainSingle()
+            .Which.Title.Should().Be("Epub Book");
+
+        viewModel.FormatFilters.Single(filter => filter.Name == "Pdf").IsSelected = true;
+        viewModel.VisibleBooks.Select(book => book.Title)
+            .Should().BeEquivalentTo("Epub Book", "Pdf Book");
+    }
+
 
     [Fact]
     public async Task Selected_filters_expand_results_across_facets()
@@ -747,7 +772,8 @@ public sealed class LibraryViewModelTests
         IReadOnlyList<string>? tags = null,
         string? language = null,
         string? series = null,
-        ReadingStatus readingStatus = ReadingStatus.Unread)
+        ReadingStatus readingStatus = ReadingStatus.Unread,
+        IReadOnlyList<EbookFormat>? formats = null)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
@@ -756,7 +782,10 @@ public sealed class LibraryViewModelTests
             readingStatus,
             null,
             now,
-            now);
+            now)
+        {
+            Formats = formats ?? []
+        };
     }
 
     private static CurrentLibrary CreateActiveLibrary()

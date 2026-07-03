@@ -6,4 +6,7 @@ public sealed record Book(
     ReadingStatus ReadingStatus,
     string? CoverRelativePath,
     DateTimeOffset CreatedUtc,
-    DateTimeOffset UpdatedUtc);
+    DateTimeOffset UpdatedUtc)
+{
+    public IReadOnlyList<EbookFormat> Formats { get; init; } = [];
+}
