@@ -18,6 +18,8 @@ Use this checklist for background import testing.
 - Confirm final counts remain visible.
 - Open the details/import result view.
 - Confirm result counts match the progress card.
+- If failed items exist and the source files are still available, confirm Retry failed starts a new import.
+- Confirm Retry failed is disabled when failed items only have unavailable or display-only source paths.
 
 ## Cancellation And Closing
 

@@ -25,6 +25,7 @@ Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-qu
 - refined import result summaries
 - import result diagnostics with per-item duration, file size, and format
 - searchable and outcome-filtered import result details with sortable diagnostic columns
+- retry action for failed import items whose original source files are still available
 - portable `metadata.json` sidecar metadata
 - searchable library viewmodels
 - editable metadata details with save, undo, and delete services
@@ -113,7 +114,6 @@ The following remain later-version candidates:
 - custom metadata fields
 - duplicate finder for possible duplicates, with options to delete one copy or merge metadata
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
-- import history redo action for failed items or failed runs
 - optional cloud-file hydration for OneDrive files that are not available locally
 - richer metadata cleanup tools, including duplicate-aware merge flows and more bulk-edit diagnostics
 - user-defined views

@@ -292,7 +292,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var result = await importService!.ImportAsync(paths, progress: null, cancellationToken, context ?? ImportRunContext.FileImport);
-        LastImportResult = new ImportResultViewModel(result);
+        LastImportResult = CreateImportResultViewModel(result);
         await userInteraction.ShowImportResultAsync(LastImportResult, cancellationToken);
         await RefreshAsync(cancellationToken);
     }
@@ -1031,7 +1031,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private async void OnImportAgentCompleted(object? sender, ImportBatchResult result)
     {
-        LastImportResult = new ImportResultViewModel(result);
+        LastImportResult = CreateImportResultViewModel(result);
         OnPropertyChanged(nameof(HasActiveImport));
         await RefreshAsync(CancellationToken.None);
     }
@@ -1044,7 +1044,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        LastImportResult = new ImportResultViewModel(result);
+        LastImportResult = CreateImportResultViewModel(result);
         await userInteraction.ShowImportResultAsync(LastImportResult, cancellationToken);
     }
 
@@ -1069,9 +1069,18 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        LastImportResult = new ImportResultViewModel(run);
+        LastImportResult = CreateImportResultViewModel(run);
         await userInteraction.ShowImportResultAsync(LastImportResult, cancellationToken);
     }
+
+    private ImportResultViewModel CreateImportResultViewModel(ImportBatchResult result) =>
+        new(result, RetryFailedImportsAsync);
+
+    private ImportResultViewModel CreateImportResultViewModel(ImportRunResult result) =>
+        new(result, RetryFailedImportsAsync);
+
+    private Task RetryFailedImportsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken) =>
+        ImportFilesAsync(paths, cancellationToken, ImportRunContext.FileImport);
 
     private async Task ShowDuplicateCandidatesAsync(CancellationToken cancellationToken)
     {

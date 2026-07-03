@@ -78,4 +78,41 @@ public sealed class ImportResultViewModelTests
         viewModel.VisibleItems.Should().ContainSingle()
             .Which.FileName.Should().Be("slow-comic.cbr");
     }
+
+    [Fact]
+    public async Task RetryFailedCommand_retries_only_failed_items_with_existing_source_paths()
+    {
+        var retryablePath = Path.GetTempFileName();
+        var missingPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.epub");
+        IReadOnlyList<string>? retriedPaths = null;
+
+        try
+        {
+            var viewModel = new ImportResultViewModel(
+                new ImportBatchResult(
+                    Guid.NewGuid(),
+                    [
+                        new ImportItemResult(retryablePath, ImportOutcome.Failed, "source unreadable"),
+                        new ImportItemResult(missingPath, ImportOutcome.Failed, "source unreadable"),
+                        new ImportItemResult("display-only.epub", ImportOutcome.Failed, "source unreadable"),
+                        new ImportItemResult(retryablePath, ImportOutcome.Added, "added")
+                    ]),
+                (paths, _) =>
+                {
+                    retriedPaths = paths;
+                    return Task.CompletedTask;
+                });
+
+            viewModel.RetryFailedCount.Should().Be(1);
+            viewModel.RetryFailedCommand.CanExecute(null).Should().BeTrue();
+
+            await viewModel.RetryFailedCommand.ExecuteAsync(null);
+
+            retriedPaths.Should().Equal(retryablePath);
+        }
+        finally
+        {
+            File.Delete(retryablePath);
+        }
+    }
 }

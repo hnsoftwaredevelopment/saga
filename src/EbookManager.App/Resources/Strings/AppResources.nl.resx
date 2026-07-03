@@ -103,6 +103,8 @@
   <data name="Reading" xml:space="preserve"><value>Aan het lezen</value></data>
   <data name="Read" xml:space="preserve"><value>Gelezen</value></data>
   <data name="RememberAnswer" xml:space="preserve"><value>Mijn antwoord onthouden</value></data>
+  <data name="RetryFailedImports" xml:space="preserve"><value>Mislukte opnieuw proberen</value></data>
+  <data name="RetryFailedImportsTooltip" xml:space="preserve"><value>Probeer mislukte imports opnieuw waarvan de bronbestanden nog beschikbaar zijn</value></data>
   <data name="Save" xml:space="preserve"><value>Opslaan</value></data>
   <data name="Scan" xml:space="preserve"><value>Scannen</value></data>
   <data name="ScanFolder" xml:space="preserve"><value>Map scannen</value></data>

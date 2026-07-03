@@ -103,6 +103,8 @@
   <data name="Reading" xml:space="preserve"><value>Reading</value></data>
   <data name="Read" xml:space="preserve"><value>Read</value></data>
   <data name="RememberAnswer" xml:space="preserve"><value>Remember my answer</value></data>
+  <data name="RetryFailedImports" xml:space="preserve"><value>Retry failed</value></data>
+  <data name="RetryFailedImportsTooltip" xml:space="preserve"><value>Retry failed imports whose source files are still available</value></data>
   <data name="Save" xml:space="preserve"><value>Save</value></data>
   <data name="Scan" xml:space="preserve"><value>Scan</value></data>
   <data name="ScanFolder" xml:space="preserve"><value>Scan folder</value></data>

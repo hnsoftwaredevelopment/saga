@@ -61,6 +61,8 @@
   <data name="Reading" xml:space="preserve"><value>Reading</value></data>
   <data name="Read" xml:space="preserve"><value>Read</value></data>
   <data name="RememberAnswer" xml:space="preserve"><value>Remember my answer</value></data>
+  <data name="RetryFailedImports" xml:space="preserve"><value>Reessayer les echecs</value></data>
+  <data name="RetryFailedImportsTooltip" xml:space="preserve"><value>Reessayer les importations echouees dont les fichiers source sont encore disponibles</value></data>
   <data name="Save" xml:space="preserve"><value>Save</value></data>
   <data name="ScanFolder" xml:space="preserve"><value>Scan folder</value></data>
   <data name="ScanSubdirectories" xml:space="preserve"><value>Include subdirectories</value></data>

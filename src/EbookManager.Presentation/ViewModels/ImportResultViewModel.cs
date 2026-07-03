@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using EbookManager.Domain.Importing;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace EbookManager.Presentation.ViewModels;
 
@@ -16,19 +17,28 @@ public enum ImportResultOutcomeFilter
 
 public sealed partial class ImportResultViewModel : ObservableObject
 {
-    public ImportResultViewModel(ImportRunResult result)
-        : this(new ImportBatchResult(result.Id, result.Items))
+    private readonly Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync;
+    private readonly AsyncRelayCommand retryFailedCommand;
+
+    public ImportResultViewModel(
+        ImportRunResult result,
+        Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null)
+        : this(new ImportBatchResult(result.Id, result.Items), retryFailedAsync)
     {
     }
 
-    public ImportResultViewModel(ImportBatchResult result)
+    public ImportResultViewModel(
+        ImportBatchResult result,
+        Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null)
     {
+        this.retryFailedAsync = retryFailedAsync;
         RunId = result.RunId;
         Items = result.Items
             .Select(item => new ImportResultItemViewModel(item))
             .ToList()
             .AsReadOnly();
         OutcomeFilterOptions = Enum.GetValues<ImportResultOutcomeFilter>();
+        retryFailedCommand = new AsyncRelayCommand(RetryFailedImportsAsync, () => CanRetryFailedImports);
         RefreshVisibleItems();
     }
 
@@ -43,6 +53,9 @@ public sealed partial class ImportResultViewModel : ObservableObject
     public int SkippedCount => ExactDuplicateCount + PossibleDuplicateCount;
     public int FailedCount => Count(ImportOutcome.Failed);
     public bool HasProblems => SkippedCount > 0 || FailedCount > 0;
+    public int RetryFailedCount => GetRetryFailedSourcePaths().Count;
+    public bool CanRetryFailedImports => retryFailedAsync is not null && RetryFailedCount > 0;
+    public IAsyncRelayCommand RetryFailedCommand => retryFailedCommand;
     public string SummaryText =>
         $"{TotalCount} files processed: {AddedCount} added, {SkippedCount} skipped, {FailedCount} failed.";
 
@@ -57,6 +70,39 @@ public sealed partial class ImportResultViewModel : ObservableObject
     partial void OnSearchTextChanged(string value) => RefreshVisibleItems();
 
     partial void OnSelectedOutcomeFilterChanged(ImportResultOutcomeFilter value) => RefreshVisibleItems();
+
+    private async Task RetryFailedImportsAsync(CancellationToken cancellationToken)
+    {
+        if (retryFailedAsync is null)
+        {
+            return;
+        }
+
+        var paths = GetRetryFailedSourcePaths();
+        if (paths.Count == 0)
+        {
+            return;
+        }
+
+        await retryFailedAsync(paths, cancellationToken);
+    }
+
+    private IReadOnlyList<string> GetRetryFailedSourcePaths()
+    {
+        return Items
+            .Where(item => item.Outcome == ImportOutcome.Failed && IsRetryableSourcePath(item.SourcePath))
+            .Select(item => item.SourcePath)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList()
+            .AsReadOnly();
+    }
+
+    private static bool IsRetryableSourcePath(string sourcePath)
+    {
+        return !string.IsNullOrWhiteSpace(sourcePath) &&
+            Path.IsPathFullyQualified(sourcePath) &&
+            File.Exists(sourcePath);
+    }
 
     private void RefreshVisibleItems()
     {

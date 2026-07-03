@@ -732,6 +732,54 @@ public sealed class LibraryViewModelTests
         viewModel.LastImportResult.Should().BeSameAs(interaction.ShownImportResult);
     }
 
+    [Fact]
+    public async Task Import_result_retry_command_starts_import_for_retryable_failed_items()
+    {
+        var runId = Guid.NewGuid();
+        var failedPath = Path.GetTempFileName();
+        var agent = new ScriptedImportAgent();
+        var interaction = new ScriptedUserInteractionService { SelectedImportRunId = runId };
+        var importRepository = new StaticImportRepository(
+            [
+                new ImportRunSummary(
+                    runId,
+                    DateTimeOffset.UtcNow,
+                    DateTimeOffset.UtcNow,
+                    TotalCount: 1,
+                    AddedCount: 0,
+                    ExactDuplicateCount: 0,
+                    PossibleDuplicateCount: 0,
+                    FailedCount: 1)
+            ],
+            new ImportRunResult(
+                runId,
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow,
+                [
+                    new ImportItemResult(failedPath, ImportOutcome.Failed, "source unreadable")
+                ]));
+        var viewModel = CreateViewModel(
+            [],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            importAgent: agent,
+            importRepository: importRepository);
+
+        try
+        {
+            await viewModel.ShowImportHistoryCommand.ExecuteAsync(null);
+
+            await interaction.ShownImportResult!.RetryFailedCommand.ExecuteAsync(null);
+
+            agent.StartedSourcePaths.Should().Equal(failedPath);
+            agent.ImportContext.Should().Be(ImportRunContext.FileImport);
+        }
+        finally
+        {
+            File.Delete(failedPath);
+        }
+    }
+
     private static LibraryViewModel CreateViewModel(
         IReadOnlyList<Book> books,
         IUserInteractionService? userInteraction = null,
