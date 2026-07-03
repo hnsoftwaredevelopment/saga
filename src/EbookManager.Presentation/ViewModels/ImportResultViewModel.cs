@@ -1,9 +1,20 @@
+using System.Collections.ObjectModel;
 using EbookManager.Domain.Importing;
 using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed class ImportResultViewModel
+public enum ImportResultOutcomeFilter
+{
+    All,
+    Added,
+    ExactDuplicate,
+    PossibleDuplicate,
+    Failed
+}
+
+public sealed partial class ImportResultViewModel : ObservableObject
 {
     public ImportResultViewModel(ImportRunResult result)
         : this(new ImportBatchResult(result.Id, result.Items))
@@ -17,10 +28,14 @@ public sealed class ImportResultViewModel
             .Select(item => new ImportResultItemViewModel(item))
             .ToList()
             .AsReadOnly();
+        OutcomeFilterOptions = Enum.GetValues<ImportResultOutcomeFilter>();
+        RefreshVisibleItems();
     }
 
     public Guid RunId { get; }
     public IReadOnlyList<ImportResultItemViewModel> Items { get; }
+    public IReadOnlyList<ImportResultOutcomeFilter> OutcomeFilterOptions { get; }
+    public ObservableCollection<ImportResultItemViewModel> VisibleItems { get; } = [];
     public int TotalCount => Items.Count;
     public int AddedCount => Count(ImportOutcome.Added);
     public int ExactDuplicateCount => Count(ImportOutcome.ExactDuplicate);
@@ -31,7 +46,45 @@ public sealed class ImportResultViewModel
     public string SummaryText =>
         $"{TotalCount} files processed: {AddedCount} added, {SkippedCount} skipped, {FailedCount} failed.";
 
+    [ObservableProperty]
+    private string searchText = string.Empty;
+
+    [ObservableProperty]
+    private ImportResultOutcomeFilter selectedOutcomeFilter = ImportResultOutcomeFilter.All;
+
     private int Count(ImportOutcome outcome) => Items.Count(item => item.Outcome == outcome);
+
+    partial void OnSearchTextChanged(string value) => RefreshVisibleItems();
+
+    partial void OnSelectedOutcomeFilterChanged(ImportResultOutcomeFilter value) => RefreshVisibleItems();
+
+    private void RefreshVisibleItems()
+    {
+        var query = Items.AsEnumerable();
+        if (SelectedOutcomeFilter != ImportResultOutcomeFilter.All)
+        {
+            query = query.Where(item => SelectedOutcomeFilter switch
+            {
+                ImportResultOutcomeFilter.Added => item.Outcome == ImportOutcome.Added,
+                ImportResultOutcomeFilter.ExactDuplicate => item.Outcome == ImportOutcome.ExactDuplicate,
+                ImportResultOutcomeFilter.PossibleDuplicate => item.Outcome == ImportOutcome.PossibleDuplicate,
+                ImportResultOutcomeFilter.Failed => item.Outcome == ImportOutcome.Failed,
+                _ => true
+            });
+        }
+
+        var search = SearchText.Trim();
+        if (search.Length > 0)
+        {
+            query = query.Where(item => item.Matches(search));
+        }
+
+        VisibleItems.Clear();
+        foreach (var item in query)
+        {
+            VisibleItems.Add(item);
+        }
+    }
 }
 
 public sealed class ImportHistoryViewModel(IEnumerable<ImportRunSummary> summaries)
@@ -77,6 +130,8 @@ public sealed class ImportResultItemViewModel(ImportItemResult item)
     public string FormatText { get; } = item.Diagnostics?.Format?.ToString().ToUpperInvariant() ?? string.Empty;
     public string SizeText { get; } = FormatSize(item.Diagnostics?.SizeBytes);
     public string DurationText { get; } = FormatDuration(item.Diagnostics?.Duration);
+    public long SizeBytesSort { get; } = item.Diagnostics?.SizeBytes ?? -1;
+    public double DurationMillisecondsSort { get; } = item.Diagnostics?.Duration.TotalMilliseconds ?? -1;
     public ImportOutcome Outcome { get; } = item.Outcome;
     public string OutcomeLabel { get; } = item.Outcome switch
     {
@@ -88,6 +143,20 @@ public sealed class ImportResultItemViewModel(ImportItemResult item)
     };
     public string Message { get; } = item.Message;
     public Guid? BookId { get; } = item.BookId;
+
+    public bool Matches(string searchText)
+    {
+        return Contains(FileName, searchText) ||
+            Contains(SourcePath, searchText) ||
+            Contains(FormatText, searchText) ||
+            Contains(SizeText, searchText) ||
+            Contains(DurationText, searchText) ||
+            Contains(OutcomeLabel, searchText) ||
+            Contains(Message, searchText);
+    }
+
+    private static bool Contains(string value, string searchText) =>
+        value.Contains(searchText, StringComparison.CurrentCultureIgnoreCase);
 
     private static string FormatSize(long? bytes)
     {

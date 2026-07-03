@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:EbookManager.App.Converters"
         xmlns:loc="clr-namespace:EbookManager.App.Localization"
+        xmlns:viewModels="clr-namespace:EbookManager.Presentation.ViewModels;assembly=EbookManager.Presentation"
         Title="{loc:Loc ImportResults}"
         Width="880"
         Height="560"
@@ -53,6 +54,21 @@
           </StackPanel>
         </Border>
       </UniformGrid>
+      <DockPanel Margin="0,12,0,0">
+        <ComboBox DockPanel.Dock="Right"
+                  Width="180"
+                  Margin="12,0,0,0"
+                  SelectedValue="{Binding SelectedOutcomeFilter}"
+                  SelectedValuePath="Tag">
+          <ComboBoxItem Content="{loc:Loc All}" Tag="{x:Static viewModels:ImportResultOutcomeFilter.All}" />
+          <ComboBoxItem Content="{loc:Loc ImportOutcomeAdded}" Tag="{x:Static viewModels:ImportResultOutcomeFilter.Added}" />
+          <ComboBoxItem Content="{loc:Loc ImportOutcomeExactDuplicate}" Tag="{x:Static viewModels:ImportResultOutcomeFilter.ExactDuplicate}" />
+          <ComboBoxItem Content="{loc:Loc ImportOutcomePossibleDuplicate}" Tag="{x:Static viewModels:ImportResultOutcomeFilter.PossibleDuplicate}" />
+          <ComboBoxItem Content="{loc:Loc ImportOutcomeFailed}" Tag="{x:Static viewModels:ImportResultOutcomeFilter.Failed}" />
+        </ComboBox>
+        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 ToolTip="{loc:Loc SearchAllFields}" />
+      </DockPanel>
     </StackPanel>
     <Button Content="{loc:Loc Close}"
             DockPanel.Dock="Bottom"
@@ -60,9 +76,10 @@
             MinWidth="90"
             Margin="0,12,0,0"
             Click="CloseClicked" />
-    <DataGrid ItemsSource="{Binding Items}"
+    <DataGrid ItemsSource="{Binding VisibleItems}"
               AutoGenerateColumns="False"
               IsReadOnly="True"
+              CanUserSortColumns="True"
               GridLinesVisibility="Horizontal"
               HeadersVisibility="Column">
       <DataGrid.Columns>
@@ -76,15 +93,19 @@
         </DataGridTextColumn>
         <DataGridTextColumn Header="{loc:Loc Type}"
                             Binding="{Binding FormatText}"
+                            SortMemberPath="FormatText"
                             Width="70" />
         <DataGridTextColumn Header="{loc:Loc Size}"
                             Binding="{Binding SizeText}"
+                            SortMemberPath="SizeBytesSort"
                             Width="90" />
         <DataGridTextColumn Header="{loc:Loc Duration}"
                             Binding="{Binding DurationText}"
+                            SortMemberPath="DurationMillisecondsSort"
                             Width="90" />
         <DataGridTextColumn Header="{loc:Loc Outcome}"
                             Binding="{Binding Outcome, Converter={StaticResource ImportOutcomeToLocalizedStringConverter}}"
+                            SortMemberPath="Outcome"
                             Width="180" />
         <DataGridTextColumn Header="{loc:Loc Message}"
                             Binding="{Binding Message, Converter={StaticResource ImportMessageToLocalizedStringConverter}}"

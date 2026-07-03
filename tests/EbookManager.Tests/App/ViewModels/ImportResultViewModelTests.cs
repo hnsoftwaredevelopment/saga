@@ -46,4 +46,36 @@ public sealed class ImportResultViewModelTests
         item.SizeText.Should().Be("1,5 MB");
         item.DurationText.Should().Be("1,2 s");
     }
+
+    [Fact]
+    public void Visible_items_can_be_filtered_by_search_text_and_outcome()
+    {
+        var viewModel = new ImportResultViewModel(new ImportBatchResult(
+            Guid.NewGuid(),
+            [
+                new ImportItemResult(
+                    "fast.epub",
+                    ImportOutcome.Added,
+                    "added",
+                    Diagnostics: new ImportItemDiagnostics(TimeSpan.FromMilliseconds(25), 100, EbookFormat.Epub)),
+                new ImportItemResult(
+                    "slow-comic.cbr",
+                    ImportOutcome.Failed,
+                    "source unreadable",
+                    Diagnostics: new ImportItemDiagnostics(TimeSpan.FromSeconds(2), 200, EbookFormat.Cbr))
+            ]));
+
+        viewModel.SearchText = "CBR";
+        viewModel.VisibleItems.Should().ContainSingle()
+            .Which.FileName.Should().Be("slow-comic.cbr");
+
+        viewModel.SearchText = "2,0 s";
+        viewModel.VisibleItems.Should().ContainSingle()
+            .Which.FileName.Should().Be("slow-comic.cbr");
+
+        viewModel.SearchText = string.Empty;
+        viewModel.SelectedOutcomeFilter = ImportResultOutcomeFilter.Failed;
+        viewModel.VisibleItems.Should().ContainSingle()
+            .Which.FileName.Should().Be("slow-comic.cbr");
+    }
 }

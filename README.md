@@ -24,6 +24,7 @@ Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-qu
 - search-term highlighting
 - refined import result summaries
 - import result diagnostics with per-item duration, file size, and format
+- searchable and outcome-filtered import result details with sortable diagnostic columns
 - portable `metadata.json` sidecar metadata
 - searchable library viewmodels
 - editable metadata details with save, undo, and delete services
