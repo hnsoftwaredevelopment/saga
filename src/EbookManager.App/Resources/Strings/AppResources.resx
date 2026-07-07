@@ -64,11 +64,11 @@
   <data name="ImportPossibleShort" xml:space="preserve"><value>Possible</value></data>
   <data name="ImportResults" xml:space="preserve"><value>Import results</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Added</value></data>
-  <data name="ImportOutcomeExactDuplicate" xml:space="preserve"><value>Skipped, book already exists</value></data>
+  <data name="ImportOutcomeExactDuplicate" xml:space="preserve"><value>Skipped, exact same file already exists</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Probably already exists</value></data>
   <data name="ImportOutcomeFailed" xml:space="preserve"><value>Failed</value></data>
   <data name="ImportMessageAdded" xml:space="preserve"><value>Added</value></data>
-  <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve"><value>Skipped, book already exists</value></data>
+  <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve"><value>Skipped, exact same file already exists</value></data>
   <data name="ImportMessagePossibleDuplicate" xml:space="preserve"><value>This book is probably already in the library</value></data>
   <data name="ImportMessagePossibleTitleMatch" xml:space="preserve"><value>Possible title match: {0}</value></data>
   <data name="ImportMessageManagedCopyFailed" xml:space="preserve"><value>Could not copy the book into the Saga library folder</value></data>

@@ -64,11 +64,11 @@
   <data name="ImportPossibleShort" xml:space="preserve"><value>Mogelijk</value></data>
   <data name="ImportResults" xml:space="preserve"><value>Importresultaten</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Toegevoegd</value></data>
-  <data name="ImportOutcomeExactDuplicate" xml:space="preserve"><value>Overgeslagen, boek al aanwezig</value></data>
+  <data name="ImportOutcomeExactDuplicate" xml:space="preserve"><value>Overgeslagen, exact hetzelfde bestand is al aanwezig</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Waarschijnlijk al aanwezig</value></data>
   <data name="ImportOutcomeFailed" xml:space="preserve"><value>Mislukt</value></data>
   <data name="ImportMessageAdded" xml:space="preserve"><value>Toegevoegd</value></data>
-  <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve"><value>Overgeslagen, boek al aanwezig</value></data>
+  <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve"><value>Overgeslagen, exact hetzelfde bestand is al aanwezig</value></data>
   <data name="ImportMessagePossibleDuplicate" xml:space="preserve"><value>Dit boek staat waarschijnlijk al in de bibliotheek</value></data>
   <data name="ImportMessagePossibleTitleMatch" xml:space="preserve"><value>Mogelijke titelmatch: {0}</value></data>
   <data name="ImportMessageManagedCopyFailed" xml:space="preserve"><value>Het boek kon niet naar de Saga bibliotheekmap worden gekopieerd</value></data>

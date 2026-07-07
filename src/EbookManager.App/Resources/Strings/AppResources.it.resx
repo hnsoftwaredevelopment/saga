@@ -34,7 +34,7 @@
   <data name="Formats" xml:space="preserve"><value>Formati</value></data>
   <data name="FileType" xml:space="preserve"><value>Tipo file</value></data>
   <data name="ImportAdded" xml:space="preserve"><value>Added</value></data>
-  <data name="ImportExactDuplicate" xml:space="preserve"><value>Exact duplicate</value></data>
+  <data name="ImportExactDuplicate" xml:space="preserve"><value>Duplicato esatto</value></data>
   <data name="ImportFailed" xml:space="preserve"><value>Failed</value></data>
   <data name="ImportHistory" xml:space="preserve"><value>Import history</value></data>
   <data name="ImportHistoryShort" xml:space="preserve"><value>History</value></data>
@@ -48,6 +48,8 @@
   <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Suggerimento: tenga premuto Ctrl mentre seleziona un altro libro per selezionare piu duplicati.</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>È ancora in corso un'importazione. Chiudere l'applicazione e annullare l'importazione?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Importazione in corso</value></data>
+  <data name="ImportOutcomeExactDuplicate" xml:space="preserve"><value>Saltato, lo stesso file esiste gia</value></data>
+  <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve"><value>Saltato, lo stesso file esiste gia</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>
   <data name="ImportResults" xml:space="preserve"><value>Import results</value></data>
   <data name="ImportMessageSourceUnreadablePrefix" xml:space="preserve"><value>Impossibile leggere il file sorgente</value></data>

@@ -63,9 +63,6 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
         var stagingDirectory = EnsureContained(Path.Combine(
             booksDirectory,
             $".{bookId:N}.{Guid.NewGuid():N}.staging"));
-        var backupDirectory = EnsureContained(Path.Combine(
-            booksDirectory,
-            $".{bookId:N}.{Guid.NewGuid():N}.backup"));
         var managedSourceName = Path.GetFileName(sourcePath);
         if (string.IsNullOrWhiteSpace(managedSourceName))
         {
@@ -120,32 +117,21 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
 
             cancellationToken.ThrowIfCancellationRequested();
             var targetExisted = Directory.Exists(bookDirectory);
-            var backupCreated = false;
-            if (targetExisted)
+            if (!targetExisted)
             {
-                Directory.Move(bookDirectory, backupDirectory);
-                backupCreated = true;
-            }
-
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
                 Directory.Move(stagingDirectory, bookDirectory);
             }
-            catch
+            else
             {
-                if (backupCreated && !Directory.Exists(bookDirectory) && Directory.Exists(backupDirectory))
+                File.Move(stagedBookPath, absoluteBookPath, overwrite: true);
+
+                if (stagedCoverPath is not null)
                 {
-                    Directory.Move(backupDirectory, bookDirectory);
-                    backupCreated = false;
+                    File.Move(
+                        stagedCoverPath,
+                        EnsureContained(Path.Combine(bookDirectory, "cover.jpg")),
+                        overwrite: true);
                 }
-
-                throw;
-            }
-
-            if (backupCreated && Directory.Exists(backupDirectory))
-            {
-                TryDeleteDirectory(backupDirectory);
             }
 
             return (

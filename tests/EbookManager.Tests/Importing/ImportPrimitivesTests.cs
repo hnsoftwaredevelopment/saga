@@ -233,7 +233,7 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
-    public async Task Managed_store_replaces_stale_contents_when_source_filename_changes()
+    public async Task Managed_store_preserves_existing_book_files_when_adding_another_format()
     {
         var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "Library");
         Directory.CreateDirectory(libraryRoot);
@@ -243,18 +243,20 @@ public sealed class ImportPrimitivesTests : IDisposable
         var firstSource = WriteBytesFile("first/The Hobbit.epub", [1, 2, 3]);
         await store.CopyIntoLibraryAsync(bookId, firstSource, [9, 9, 9], default);
 
-        var secondSource = WriteBytesFile("second/The Hobbit - Revised.epub", [4, 5, 6, 7]);
+        var secondSource = WriteBytesFile("second/The Hobbit.pdf", [4, 5, 6, 7]);
         var result = await store.CopyIntoLibraryAsync(bookId, secondSource, null, default);
 
         var bookDirectory = Path.Combine(libraryRoot, "books", bookId.ToString("N"));
-        result.RelativeBookPath.Should().Be($"books/{bookId:N}/The Hobbit - Revised.epub");
+        result.RelativeBookPath.Should().Be($"books/{bookId:N}/The Hobbit.pdf");
         result.RelativeCoverPath.Should().BeNull();
         Directory.EnumerateFiles(bookDirectory, "*", SearchOption.TopDirectoryOnly)
             .Select(Path.GetFileName)
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
             .Should()
-            .Equal("The Hobbit - Revised.epub");
-        File.Exists(Path.Combine(bookDirectory, "The Hobbit.epub")).Should().BeFalse();
-        File.Exists(Path.Combine(bookDirectory, "cover.jpg")).Should().BeFalse();
+            .Equal("cover.jpg", "The Hobbit.epub", "The Hobbit.pdf");
+        File.ReadAllBytes(Path.Combine(bookDirectory, "The Hobbit.epub")).Should().Equal([1, 2, 3]);
+        File.ReadAllBytes(Path.Combine(bookDirectory, "The Hobbit.pdf")).Should().Equal([4, 5, 6, 7]);
+        File.ReadAllBytes(Path.Combine(bookDirectory, "cover.jpg")).Should().Equal([9, 9, 9]);
     }
 
     [Fact]
