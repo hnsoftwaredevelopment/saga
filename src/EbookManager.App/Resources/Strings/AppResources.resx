@@ -87,6 +87,7 @@
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
   <data name="LinkSuggestion" xml:space="preserve"><value>Link</value></data>
+  <data name="LinkSuggestionLinked" xml:space="preserve"><value>Linked</value></data>
   <data name="LinkSuggestionTooltip" xml:space="preserve"><value>Attach this imported format to the suggested existing book</value></data>
   <data name="ListView" xml:space="preserve"><value>List</value></data>
   <data name="EmptyStateLoadingLibrary" xml:space="preserve"><value>Loading library...</value></data>

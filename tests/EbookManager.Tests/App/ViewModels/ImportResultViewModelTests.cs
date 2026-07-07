@@ -145,12 +145,14 @@ public sealed class ImportResultViewModelTests
         var item = viewModel.Items.Should().ContainSingle().Which;
 
         item.SuggestionText.Should().Be("Pro Git - Scott Chacon; Ben Straub");
+        item.LinkSuggestionLabel.Should().Be("Link");
         item.CanLinkSuggestion.Should().BeTrue();
         item.LinkSuggestionCommand.CanExecute(null).Should().BeTrue();
 
         await item.LinkSuggestionCommand.ExecuteAsync(null);
 
         linked.Should().Be((importedBookId, targetBookId));
+        item.LinkSuggestionLabel.Should().Be("Linked");
         item.CanLinkSuggestion.Should().BeFalse();
         item.LinkSuggestionCommand.CanExecute(null).Should().BeFalse();
     }

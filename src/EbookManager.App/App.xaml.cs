@@ -89,6 +89,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IMetadataSourceResolver, MetadataSourceResolver>();
         services.AddSingleton<BookSearchService>();
         services.AddSingleton<DuplicateCandidateService>();
+        services.AddSingleton<DuplicateMergeService>();
         services.AddSingleton<ILibraryFileStore, CurrentLibraryFileStore>();
         services.AddSingleton<IBookRepository, CurrentLibraryBookRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();

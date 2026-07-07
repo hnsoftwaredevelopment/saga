@@ -123,10 +123,20 @@
         <DataGridTemplateColumn Header="{loc:Loc Action}" Width="110">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <Button Content="{loc:Loc LinkSuggestion}"
-                      Command="{Binding LinkSuggestionCommand}"
+              <Button Command="{Binding LinkSuggestionCommand}"
                       IsEnabled="{Binding CanLinkSuggestion}"
-                      ToolTip="{loc:Loc LinkSuggestionTooltip}" />
+                      ToolTip="{loc:Loc LinkSuggestionTooltip}">
+                <Button.Style>
+                  <Style TargetType="Button">
+                    <Setter Property="Content" Value="{loc:Loc LinkSuggestion}" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding SuggestionLinked}" Value="True">
+                        <Setter Property="Content" Value="{loc:Loc LinkSuggestionLinked}" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </Button.Style>
+              </Button>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

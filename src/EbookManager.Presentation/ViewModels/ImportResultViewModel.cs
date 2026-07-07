@@ -224,6 +224,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
     public string Message { get; }
     public Guid? BookId { get; }
     public string SuggestionText { get; }
+    public string LinkSuggestionLabel => SuggestionLinked ? "Linked" : "Link";
     public IAsyncRelayCommand LinkSuggestionCommand => linkSuggestionCommand;
 
     public bool CanLinkSuggestion =>
@@ -242,6 +243,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
             if (SetProperty(ref suggestionLinked, value))
             {
                 OnPropertyChanged(nameof(CanLinkSuggestion));
+                OnPropertyChanged(nameof(LinkSuggestionLabel));
                 linkSuggestionCommand.NotifyCanExecuteChanged();
             }
         }

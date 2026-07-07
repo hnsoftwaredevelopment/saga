@@ -51,6 +51,7 @@
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
   <data name="LinkSuggestion" xml:space="preserve"><value>Lier</value></data>
+  <data name="LinkSuggestionLinked" xml:space="preserve"><value>Lie</value></data>
   <data name="LinkSuggestionTooltip" xml:space="preserve"><value>Lier ce format importe au livre existant suggere</value></data>
   <data name="ListView" xml:space="preserve"><value>List</value></data>
   <data name="EmptyStateLoadingLibrary" xml:space="preserve"><value>Chargement de la bibliothèque...</value></data>
