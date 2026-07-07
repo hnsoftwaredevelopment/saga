@@ -27,14 +27,22 @@
                  FontSize="20"
                  FontWeight="SemiBold"
                  Foreground="{DynamicResource TextPrimaryBrush}" />
-      <TextBlock Foreground="{DynamicResource TextSecondaryBrush}"
-                 Margin="0,4,0,0">
-        <Run Text="{Binding GroupCount, Mode=OneWay}" />
-        <Run Text="{loc:Loc DuplicateCandidateGroupsSuffix}" />
-        <Run Text=", " />
-        <Run Text="{Binding BookCount, Mode=OneWay}" />
-        <Run Text="{loc:Loc DuplicateCandidateBooksSuffix}" />
-      </TextBlock>
+      <DockPanel Margin="0,4,0,0">
+        <Button DockPanel.Dock="Right"
+                Content="{loc:Loc DeleteSelectedDuplicates}"
+                Command="{Binding DeleteSelectedCandidatesCommand}"
+                Padding="12,4"
+                MinWidth="190"
+                ToolTip="{loc:Loc DeleteSelectedDuplicatesTooltip}" />
+        <TextBlock Foreground="{DynamicResource TextSecondaryBrush}"
+                   VerticalAlignment="Center">
+          <Run Text="{Binding GroupCount, Mode=OneWay}" />
+          <Run Text="{loc:Loc DuplicateCandidateGroupsSuffix}" />
+          <Run Text=", " />
+          <Run Text="{Binding BookCount, Mode=OneWay}" />
+          <Run Text="{loc:Loc DuplicateCandidateBooksSuffix}" />
+        </TextBlock>
+      </DockPanel>
     </StackPanel>
 
     <StackPanel DockPanel.Dock="Bottom"
@@ -70,7 +78,8 @@
                 GridLinesVisibility="Horizontal"
                 HeadersVisibility="Column"
                 SelectionMode="Extended"
-                SelectionUnit="FullRow">
+                SelectionUnit="FullRow"
+                SelectionChanged="DuplicateRowsSelectionChanged">
         <DataGrid.Style>
           <Style TargetType="DataGrid">
             <Setter Property="Visibility" Value="Visible" />
@@ -136,9 +145,19 @@
           </DataGridTemplateColumn>
           <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="2*" />
           <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" Width="2*" />
+          <DataGridTextColumn Header="{loc:Loc FileType}" Binding="{Binding FormatText}" Width="110" />
           <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" Width="1.4*" />
           <DataGridTextColumn Header="{loc:Loc Language}" Binding="{Binding Language}" Width="90" />
           <DataGridTextColumn Header="{loc:Loc Status}" Binding="{Binding Status}" Width="110" />
+          <DataGridTemplateColumn Header="{loc:Loc Action}" Width="160">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Button Content="{loc:Loc DeleteDuplicate}"
+                        Padding="8,2"
+                        Click="DeleteCandidateButtonClicked" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
           <DataGridTemplateColumn Header="{loc:Loc Details}" Width="90">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>

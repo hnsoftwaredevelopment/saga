@@ -31,6 +31,7 @@ public sealed class DuplicateCandidatesViewModelTests
         viewModel.Rows[0].Authors.Should().Be("J.R.R. Tolkien");
         viewModel.Rows[0].Series.Should().Be("Midden-aarde");
         viewModel.Rows[0].Language.Should().Be("nl");
+        viewModel.Rows[0].FormatText.Should().Be("EPUB, PDF");
         viewModel.Rows[0].Description.Should().Be("Een reis door Midden-aarde.");
         viewModel.Rows[0].CoverPath.Should().Be(Path.Combine("C:/Library", "books/cover.jpg"));
     }
@@ -77,6 +78,33 @@ public sealed class DuplicateCandidatesViewModelTests
         viewModel.Rows.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task DeleteSelectedCandidates_deletes_selected_rows_and_recomputes_duplicate_groups()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var second = CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var third = CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var result = new DuplicateCandidateService().FindCandidates([first, second, third]);
+        var deletedIds = new List<Guid>();
+        var viewModel = new DuplicateCandidatesViewModel(
+            result,
+            deleteCandidateAsync: (row, _) =>
+            {
+                deletedIds.Add(row.Id);
+                return Task.FromResult(true);
+            });
+        var selectedIds = viewModel.Rows.Take(2).Select(row => row.Id).ToList();
+        viewModel.Rows[0].IsSelected = true;
+        viewModel.Rows[1].IsSelected = true;
+
+        await viewModel.DeleteSelectedCandidatesCommand.ExecuteAsync(null);
+
+        deletedIds.Should().Equal(selectedIds);
+        viewModel.HasChanges.Should().BeTrue();
+        viewModel.HasGroups.Should().BeFalse();
+        viewModel.Rows.Should().BeEmpty();
+    }
+
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,
@@ -92,6 +120,9 @@ public sealed class DuplicateCandidatesViewModelTests
             ReadingStatus.Unread,
             coverRelativePath,
             now,
-            now);
+            now)
+        {
+            Formats = [EbookFormat.Epub, EbookFormat.Pdf]
+        };
     }
 }

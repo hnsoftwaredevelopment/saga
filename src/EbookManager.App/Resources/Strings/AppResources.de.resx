@@ -22,6 +22,9 @@
   <data name="Delete" xml:space="preserve"><value>Delete</value></data>
   <data name="DeleteConfirmationMessage" xml:space="preserve"><value>Do you really want to delete "{0}" from the library?</value></data>
   <data name="DeleteConfirmationTitle" xml:space="preserve"><value>Delete book</value></data>
+  <data name="DeleteDuplicate" xml:space="preserve"><value>Duplikat loeschen</value></data>
+  <data name="DeleteSelectedDuplicates" xml:space="preserve"><value>Ausgewaehlte Duplikate loeschen</value></data>
+  <data name="DeleteSelectedDuplicatesTooltip" xml:space="preserve"><value>Ausgewaehlte doppelte Buecher loeschen</value></data>
   <data name="Description" xml:space="preserve"><value>Description</value></data>
   <data name="Details" xml:space="preserve"><value>Details</value></data>
   <data name="DetailedView" xml:space="preserve"><value>Detailed</value></data>
@@ -29,6 +32,7 @@
   <data name="EReaderUnavailable" xml:space="preserve"><value>Unavailable</value></data>
   <data name="Failed" xml:space="preserve"><value>Failed</value></data>
   <data name="Formats" xml:space="preserve"><value>Formate</value></data>
+  <data name="FileType" xml:space="preserve"><value>Dateityp</value></data>
   <data name="ImportAdded" xml:space="preserve"><value>Added</value></data>
   <data name="ImportExactDuplicate" xml:space="preserve"><value>Exact duplicate</value></data>
   <data name="ImportFailed" xml:space="preserve"><value>Failed</value></data>

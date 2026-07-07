@@ -1,4 +1,5 @@
 using EbookManager.Presentation.ViewModels;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -44,6 +45,15 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         window.ShowDialog();
     }
 
+    private async void DeleteCandidateButtonClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: DuplicateCandidateRowViewModel row })
+        {
+            e.Handled = true;
+            await DeleteCandidateAsync(row);
+        }
+    }
+
     private async void DeleteCandidateClicked(object sender, System.Windows.RoutedEventArgs e)
     {
         if (DuplicateRowsGrid.SelectedItem is not DuplicateCandidateRowViewModel row)
@@ -52,6 +62,11 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         }
 
         e.Handled = true;
+        await DeleteCandidateAsync(row);
+    }
+
+    private async Task DeleteCandidateAsync(DuplicateCandidateRowViewModel row)
+    {
         if (DataContext is not DuplicateCandidatesViewModel viewModel)
         {
             return;
@@ -61,6 +76,14 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         if (!viewModel.HasGroups)
         {
             Close();
+        }
+    }
+
+    private void DuplicateRowsSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (DataContext is DuplicateCandidatesViewModel viewModel)
+        {
+            viewModel.SetSelectedRows(DuplicateRowsGrid.SelectedItems.OfType<DuplicateCandidateRowViewModel>());
         }
     }
 }
