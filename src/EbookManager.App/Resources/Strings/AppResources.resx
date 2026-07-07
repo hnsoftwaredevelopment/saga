@@ -57,6 +57,7 @@
   <data name="DuplicateCandidatesNone" xml:space="preserve"><value>No possible duplicates found.</value></data>
   <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groups</value></data>
   <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> books</value></data>
+  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Tip: hold Ctrl while selecting another book to select multiple duplicates.</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>An import is still running. Close the application and cancel the import?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Import in progress</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>

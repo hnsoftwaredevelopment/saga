@@ -45,6 +45,7 @@
   <data name="DuplicateCandidatesNone" xml:space="preserve"><value>Aucun doublon possible trouvé.</value></data>
   <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groupes</value></data>
   <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> livres</value></data>
+  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Astuce : maintenez Ctrl enfonce pendant la selection d'un autre livre pour selectionner plusieurs doublons.</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>Une importation est encore en cours. Fermer l'application et annuler l'importation ?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Importation en cours</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>

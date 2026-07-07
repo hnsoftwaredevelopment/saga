@@ -45,6 +45,7 @@
   <data name="DuplicateCandidatesNone" xml:space="preserve"><value>Nessun possibile duplicato trovato.</value></data>
   <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> gruppi</value></data>
   <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> libri</value></data>
+  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Suggerimento: tenga premuto Ctrl mentre seleziona un altro libro per selezionare piu duplicati.</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>È ancora in corso un'importazione. Chiudere l'applicazione e annullare l'importazione?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Importazione in corso</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>

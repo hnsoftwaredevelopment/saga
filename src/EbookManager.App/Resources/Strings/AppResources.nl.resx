@@ -57,6 +57,7 @@
   <data name="DuplicateCandidatesNone" xml:space="preserve"><value>Geen mogelijke duplicaten gevonden.</value></data>
   <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groepen</value></data>
   <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> boeken</value></data>
+  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Tip: houd Ctrl ingedrukt terwijl u een volgend boek selecteert om meerdere duplicaten te selecteren.</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>Er loopt nog een import. Wilt u de applicatie sluiten en de import annuleren?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Import bezig</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Mogelijk duplicaat</value></data>

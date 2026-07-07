@@ -43,6 +43,17 @@
           <Run Text="{loc:Loc DuplicateCandidateBooksSuffix}" />
         </TextBlock>
       </DockPanel>
+      <Border Margin="0,8,0,0"
+              Padding="10,7"
+              Background="{DynamicResource PanelBackgroundBrush}"
+              BorderBrush="{DynamicResource AccentBrush}"
+              BorderThickness="1"
+              CornerRadius="8">
+        <TextBlock Text="{loc:Loc DuplicateSelectionHelp}"
+                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   FontSize="12"
+                   TextWrapping="Wrap" />
+      </Border>
     </StackPanel>
 
     <StackPanel DockPanel.Dock="Bottom"
