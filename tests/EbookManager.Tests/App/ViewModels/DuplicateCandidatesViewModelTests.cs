@@ -32,8 +32,30 @@ public sealed class DuplicateCandidatesViewModelTests
         viewModel.Rows[0].Series.Should().Be("Midden-aarde");
         viewModel.Rows[0].Language.Should().Be("nl");
         viewModel.Rows[0].FormatText.Should().Be("EPUB, PDF");
+        viewModel.Rows[0].MatchKind.Should().Be(DuplicateCandidateMatchKind.AuthorOverlap);
         viewModel.Rows[0].Description.Should().Be("Een reis door Midden-aarde.");
         viewModel.Rows[0].CoverPath.Should().Be(Path.Combine("C:/Library", "books/cover.jpg"));
+    }
+
+    [Fact]
+    public void Rows_expose_title_only_match_kind_for_display()
+    {
+        var first = CreateBook("De Chocoladevilla", ["Maria Nikolai"], series: null, language: "nl");
+        var second = CreateBook("De chocoladevilla", ["Unknown"], series: null, language: null);
+        var result = new DuplicateCandidateResult(
+        [
+            new DuplicateCandidateGroup(
+                "de chocoladevilla:title",
+                "De Chocoladevilla",
+                "Maria Nikolai, Unknown",
+                [first, second],
+                DuplicateCandidateMatchKind.TitleOnly)
+        ]);
+
+        var viewModel = new DuplicateCandidatesViewModel(result, "C:/Library");
+
+        viewModel.Rows.Should().HaveCount(2);
+        viewModel.Rows.Should().OnlyContain(row => row.MatchKind == DuplicateCandidateMatchKind.TitleOnly);
     }
 
     [Fact]

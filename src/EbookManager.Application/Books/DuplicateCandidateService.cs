@@ -18,7 +18,8 @@ public sealed partial class DuplicateCandidateService
                 group.Key,
                 group.Books[0].Metadata.Title.Trim(),
                 FormatAuthorSummary(group.Books),
-                group.Books))
+                group.Books,
+                group.MatchKind))
             .OrderBy(group => group.DisplayTitle, StringComparer.CurrentCultureIgnoreCase)
             .ToList()
             .AsReadOnly();
@@ -29,9 +30,11 @@ public sealed partial class DuplicateCandidateService
     private static IEnumerable<AuthorMatchedGroup> CreateAuthorMatchedGroups(
         IGrouping<string, DuplicateCandidateBook> titleGroup)
     {
-        var remaining = titleGroup
+        var titleBooks = titleGroup
             .Select(item => item.Book)
             .ToList();
+        var remaining = titleBooks.ToList();
+        var authorMatchedGroups = new List<AuthorMatchedGroup>();
 
         var componentIndex = 0;
         while (remaining.Count > 0)
@@ -56,10 +59,29 @@ public sealed partial class DuplicateCandidateService
 
             if (component.Count > 1)
             {
-                yield return new AuthorMatchedGroup(
+                authorMatchedGroups.Add(new AuthorMatchedGroup(
                     $"{titleGroup.Key}:{componentIndex++}",
-                    component.AsReadOnly());
+                    component.AsReadOnly(),
+                    DuplicateCandidateMatchKind.AuthorOverlap));
             }
+        }
+
+        if (authorMatchedGroups.Count > 0)
+        {
+            foreach (var group in authorMatchedGroups)
+            {
+                yield return group;
+            }
+
+            yield break;
+        }
+
+        if (titleBooks.Count > 1)
+        {
+            yield return new AuthorMatchedGroup(
+                $"{titleGroup.Key}:title",
+                titleBooks.AsReadOnly(),
+                DuplicateCandidateMatchKind.TitleOnly);
         }
     }
 
@@ -115,8 +137,18 @@ public sealed record DuplicateCandidateGroup(
     string MatchKey,
     string DisplayTitle,
     string AuthorSummary,
-    IReadOnlyList<Book> Books);
+    IReadOnlyList<Book> Books,
+    DuplicateCandidateMatchKind MatchKind = DuplicateCandidateMatchKind.AuthorOverlap);
 
-internal sealed record AuthorMatchedGroup(string Key, IReadOnlyList<Book> Books);
+public enum DuplicateCandidateMatchKind
+{
+    AuthorOverlap,
+    TitleOnly
+}
+
+internal sealed record AuthorMatchedGroup(
+    string Key,
+    IReadOnlyList<Book> Books,
+    DuplicateCandidateMatchKind MatchKind);
 
 internal sealed record DuplicateCandidateBook(Book Book, string Key);

@@ -68,6 +68,9 @@
   <data name="EmptyStateLibraryEmpty" xml:space="preserve"><value>Questa biblioteca è vuota. Aggiungi libri o scansiona una cartella per iniziare.</value></data>
   <data name="EmptyStateLibraryFolderMissing" xml:space="preserve"><value>La cartella della biblioteca attiva non esiste più. Crea o apri una biblioteca per continuare.</value></data>
   <data name="LoadingLibrary" xml:space="preserve"><value>Caricamento biblioteca</value></data>
+  <data name="Match" xml:space="preserve"><value>Corrispondenza</value></data>
+  <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Autore</value></data>
+  <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Solo titolo</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>
   <data name="PublicationDate" xml:space="preserve"><value>Publication date</value></data>
   <data name="Publisher" xml:space="preserve"><value>Publisher</value></data>

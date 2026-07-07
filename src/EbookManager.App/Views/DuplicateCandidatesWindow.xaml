@@ -10,6 +10,7 @@
         WindowStartupLocation="CenterOwner">
   <Window.Resources>
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
+    <converters:DuplicateMatchKindToLocalizedStringConverter x:Key="DuplicateMatchKindToLocalizedStringConverter" />
     <CollectionViewSource x:Key="DuplicateRows" Source="{Binding Rows}">
       <CollectionViewSource.GroupDescriptions>
         <PropertyGroupDescription PropertyName="GroupTitle" />
@@ -157,6 +158,7 @@
           <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="2*" />
           <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" Width="2*" />
           <DataGridTextColumn Header="{loc:Loc FileType}" Binding="{Binding FormatText}" Width="110" />
+          <DataGridTextColumn Header="{loc:Loc Match}" Binding="{Binding MatchKind, Converter={StaticResource DuplicateMatchKindToLocalizedStringConverter}}" Width="120" />
           <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" Width="1.4*" />
           <DataGridTextColumn Header="{loc:Loc Language}" Binding="{Binding Language}" Width="90" />
           <DataGridTextColumn Header="{loc:Loc Status}" Binding="{Binding Status}" Width="110" />

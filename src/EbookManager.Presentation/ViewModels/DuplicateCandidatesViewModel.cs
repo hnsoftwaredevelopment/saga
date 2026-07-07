@@ -125,7 +125,11 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             Groups.Add(new DuplicateCandidateGroupViewModel(group));
             foreach (var book in group.Books)
             {
-                var row = new DuplicateCandidateRowViewModel(BuildGroupTitle(group), book, libraryPath);
+                var row = new DuplicateCandidateRowViewModel(
+                    BuildGroupTitle(group),
+                    group.MatchKind,
+                    book,
+                    libraryPath);
                 row.PropertyChanged += OnRowPropertyChanged;
                 Rows.Add(row);
             }
@@ -177,11 +181,13 @@ public sealed partial class DuplicateCandidateRowViewModel : ObservableObject
 {
     public DuplicateCandidateRowViewModel(
         string groupTitle,
+        DuplicateCandidateMatchKind matchKind,
         EbookManager.Domain.Books.Book book,
         string? libraryPath = null)
     {
         Id = book.Id;
         GroupTitle = groupTitle;
+        MatchKind = matchKind;
         Title = book.Metadata.Title;
         Authors = string.Join(", ", book.Metadata.Authors);
         Series = book.Metadata.Series ?? string.Empty;
@@ -204,6 +210,7 @@ public sealed partial class DuplicateCandidateRowViewModel : ObservableObject
 
     public Guid Id { get; }
     public string GroupTitle { get; }
+    public DuplicateCandidateMatchKind MatchKind { get; }
     public string Title { get; }
     public string Authors { get; }
     public string Series { get; }

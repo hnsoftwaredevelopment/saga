@@ -23,7 +23,7 @@ public sealed class DuplicateCandidateServiceTests
     }
 
     [Fact]
-    public void FindCandidates_requires_at_least_one_matching_author_for_the_same_title()
+    public void FindCandidates_marks_same_title_without_author_overlap_as_title_only_match()
     {
         var service = new DuplicateCandidateService();
         var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"]);
@@ -31,7 +31,9 @@ public sealed class DuplicateCandidateServiceTests
 
         var result = service.FindCandidates([first, second]);
 
-        result.Groups.Should().BeEmpty();
+        result.Groups.Should().ContainSingle();
+        result.Groups[0].MatchKind.Should().Be(DuplicateCandidateMatchKind.TitleOnly);
+        result.Groups[0].Books.Should().Equal(first, second);
     }
 
     [Fact]
