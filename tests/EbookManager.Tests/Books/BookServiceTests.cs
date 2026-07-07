@@ -379,6 +379,27 @@ public sealed class BookServiceTests : IAsyncLifetime
             return Task.CompletedTask;
         }
 
+        public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken)
+        {
+            if (!filesByBookId.TryGetValue(sourceBookId, out var sourceFiles))
+            {
+                sourceFiles = [];
+            }
+
+            if (!filesByBookId.TryGetValue(targetBookId, out var targetFiles))
+            {
+                targetFiles = [];
+                filesByBookId[targetBookId] = targetFiles;
+            }
+
+            targetFiles.AddRange(sourceFiles.Select(file => file with { BookId = targetBookId }));
+            filesByBookId.Remove(sourceBookId);
+            books.Remove(sourceBookId);
+            StoredFiles.Clear();
+            StoredFiles.AddRange(filesByBookId.Values.SelectMany(files => files));
+            return Task.CompletedTask;
+        }
+
         public Task UpdateAsync(Book book, CancellationToken cancellationToken)
         {
             UpdateAsyncCalled = true;

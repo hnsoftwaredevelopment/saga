@@ -21,6 +21,7 @@ public interface IBookRepository
         CancellationToken cancellationToken);
     Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken);
     Task AddFileAsync(BookFile file, CancellationToken cancellationToken);
+    Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken);
     Task UpdateAsync(Book book, CancellationToken cancellationToken);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
     Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken);

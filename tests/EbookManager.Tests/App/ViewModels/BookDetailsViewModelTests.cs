@@ -175,6 +175,7 @@ public sealed class BookDetailsViewModelTests
         public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(string title, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([]);
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) => Task.CompletedTask;
 
         public Task UpdateAsync(Book book, CancellationToken cancellationToken)
         {

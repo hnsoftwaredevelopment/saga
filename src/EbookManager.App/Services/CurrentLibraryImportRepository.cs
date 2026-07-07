@@ -28,7 +28,8 @@ public sealed class CurrentLibraryImportRepository(
         string message,
         Guid? bookId,
         CancellationToken cancellationToken,
-        ImportItemDiagnostics? diagnostics = null) =>
+        ImportItemDiagnostics? diagnostics = null,
+        ImportItemSuggestion? suggestion = null) =>
         CreateRepository().RecordItemAsync(
             runId,
             sequence,
@@ -37,7 +38,8 @@ public sealed class CurrentLibraryImportRepository(
             message,
             bookId,
             cancellationToken,
-            diagnostics);
+            diagnostics,
+            suggestion);
 
     public Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken) =>
         CreateRepository().CompleteRunAsync(runId, completedUtc, cancellationToken);

@@ -207,7 +207,7 @@ public sealed class ImportService(
                     metadata.Metadata.Title,
                     metadata.Metadata.Authors);
                 var isPossibleDuplicate = false;
-                var possibleTitleMatch = string.Empty;
+                ImportItemSuggestion? possibleTitleMatch = null;
                 var duplicate = await duplicateTracker.FindDuplicateAsync(
                         metadata.Metadata.Title,
                         metadata.Metadata.Authors,
@@ -390,7 +390,8 @@ public sealed class ImportService(
                 result.Message,
                 result.BookId,
                 CancellationToken.None,
-                result.Diagnostics);
+                result.Diagnostics,
+                result.Suggestion);
             return result;
         }
         catch (OperationCanceledException)
@@ -423,7 +424,7 @@ public sealed class ImportService(
         string? sourcePath,
         string? warning,
         Guid bookId,
-        string? possibleTitleMatch = null)
+        ImportItemSuggestion? possibleTitleMatch = null)
     {
         var message = SafeImportMessages.Added;
         if (!string.IsNullOrWhiteSpace(warning))
@@ -431,12 +432,17 @@ public sealed class ImportService(
             message = $"{message}; {SafeImportMessages.MetadataWarning}: {warning}";
         }
 
-        if (!string.IsNullOrWhiteSpace(possibleTitleMatch))
+        if (possibleTitleMatch is not null)
         {
-            message = $"{message}; {SafeImportMessages.PossibleTitleMatch}: {possibleTitleMatch}";
+            message = $"{message}; {SafeImportMessages.PossibleTitleMatch}: {possibleTitleMatch.Title}";
         }
 
-        return new(IsBlank(sourcePath) ? InvalidSourceDisplayName : sourcePath!, ImportOutcome.Added, message, bookId);
+        return new(
+            IsBlank(sourcePath) ? InvalidSourceDisplayName : sourcePath!,
+            ImportOutcome.Added,
+            message,
+            bookId,
+            Suggestion: possibleTitleMatch);
     }
 
     private async Task<bool> CleanupImportedBookAsync(Guid bookId)
@@ -620,7 +626,7 @@ public sealed class ImportService(
             return null;
         }
 
-        public async Task<string> FindPossibleTitleMatchAsync(
+        public async Task<ImportItemSuggestion?> FindPossibleTitleMatchAsync(
             string title,
             IReadOnlyList<string> authors,
             CancellationToken cancellationToken)
@@ -628,7 +634,7 @@ public sealed class ImportService(
             var normalizedTitle = DuplicateKeyNormalizer.NormalizeSqliteText(title);
             if (normalizedTitle.Length == 0)
             {
-                return string.Empty;
+                return null;
             }
 
             if (!titleMatchesByTitle.TryGetValue(normalizedTitle, out var matches))
@@ -638,7 +644,13 @@ public sealed class ImportService(
             }
 
             var match = matches.FirstOrDefault();
-            return match?.Metadata.Title ?? string.Empty;
+            return match is null
+                ? null
+                : new ImportItemSuggestion(
+                    ImportItemSuggestionKind.TitleMatch,
+                    match.Id,
+                    match.Metadata.Title,
+                    string.Join("; ", match.Metadata.Authors));
         }
 
         public void Add(string sha256, string duplicateKey, Guid bookId, EbookFormat format)

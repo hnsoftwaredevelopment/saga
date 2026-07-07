@@ -226,6 +226,18 @@ namespace EbookManager.Infrastructure.Persistence.Migrations
                     b.Property<long?>("SizeBytes")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("SuggestedAuthors")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("SuggestedBookId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SuggestedTitle")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SuggestionKind")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BookId");

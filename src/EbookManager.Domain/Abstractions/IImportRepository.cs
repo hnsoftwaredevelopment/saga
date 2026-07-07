@@ -19,7 +19,8 @@ public interface IImportRepository
         string message,
         Guid? bookId,
         CancellationToken cancellationToken,
-        ImportItemDiagnostics? diagnostics = null);
+        ImportItemDiagnostics? diagnostics = null,
+        ImportItemSuggestion? suggestion = null);
 
     Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken);
 

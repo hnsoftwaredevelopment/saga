@@ -115,4 +115,43 @@ public sealed class ImportResultViewModelTests
             File.Delete(retryablePath);
         }
     }
+
+    [Fact]
+    public async Task LinkSuggestionCommand_links_added_item_to_suggested_book_once()
+    {
+        var importedBookId = Guid.NewGuid();
+        var targetBookId = Guid.NewGuid();
+        (Guid SourceBookId, Guid TargetBookId)? linked = null;
+        var viewModel = new ImportResultViewModel(
+            new ImportBatchResult(
+                Guid.NewGuid(),
+                [
+                    new ImportItemResult(
+                        "Pro Git.pdf",
+                        ImportOutcome.Added,
+                        "added; possible title match: Pro Git",
+                        importedBookId,
+                        Suggestion: new ImportItemSuggestion(
+                            ImportItemSuggestionKind.TitleMatch,
+                            targetBookId,
+                            "Pro Git",
+                            "Scott Chacon; Ben Straub"))
+                ]),
+            linkSuggestionAsync: (sourceBookId, suggestedBookId, _) =>
+            {
+                linked = (sourceBookId, suggestedBookId);
+                return Task.CompletedTask;
+            });
+        var item = viewModel.Items.Should().ContainSingle().Which;
+
+        item.SuggestionText.Should().Be("Pro Git - Scott Chacon; Ben Straub");
+        item.CanLinkSuggestion.Should().BeTrue();
+        item.LinkSuggestionCommand.CanExecute(null).Should().BeTrue();
+
+        await item.LinkSuggestionCommand.ExecuteAsync(null);
+
+        linked.Should().Be((importedBookId, targetBookId));
+        item.CanLinkSuggestion.Should().BeFalse();
+        item.LinkSuggestionCommand.CanExecute(null).Should().BeFalse();
+    }
 }

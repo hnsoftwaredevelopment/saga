@@ -22,19 +22,21 @@ public sealed partial class ImportResultViewModel : ObservableObject
 
     public ImportResultViewModel(
         ImportRunResult result,
-        Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null)
-        : this(new ImportBatchResult(result.Id, result.Items), retryFailedAsync)
+        Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null,
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
+        : this(new ImportBatchResult(result.Id, result.Items), retryFailedAsync, linkSuggestionAsync)
     {
     }
 
     public ImportResultViewModel(
         ImportBatchResult result,
-        Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null)
+        Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null,
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
     {
         this.retryFailedAsync = retryFailedAsync;
         RunId = result.RunId;
         Items = result.Items
-            .Select(item => new ImportResultItemViewModel(item))
+            .Select(item => new ImportResultItemViewModel(item, linkSuggestionAsync))
             .ToList()
             .AsReadOnly();
         OutcomeFilterOptions = Enum.GetValues<ImportResultOutcomeFilter>();
@@ -169,26 +171,95 @@ public sealed class ImportRunSummaryViewModel(ImportRunSummary summary)
             : duration.ToString(@"m\:ss");
 }
 
-public sealed class ImportResultItemViewModel(ImportItemResult item)
+public sealed class ImportResultItemViewModel : ObservableObject
 {
-    public string SourcePath { get; } = item.SourcePath;
-    public string FileName { get; } = Path.GetFileName(item.SourcePath);
-    public string FormatText { get; } = item.Diagnostics?.Format?.ToString().ToUpperInvariant() ?? string.Empty;
-    public string SizeText { get; } = FormatSize(item.Diagnostics?.SizeBytes);
-    public string DurationText { get; } = FormatDuration(item.Diagnostics?.Duration);
-    public long SizeBytesSort { get; } = item.Diagnostics?.SizeBytes ?? -1;
-    public double DurationMillisecondsSort { get; } = item.Diagnostics?.Duration.TotalMilliseconds ?? -1;
-    public ImportOutcome Outcome { get; } = item.Outcome;
-    public string OutcomeLabel { get; } = item.Outcome switch
+    private readonly Guid? bookId;
+    private readonly ImportItemSuggestion? suggestion;
+    private readonly Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync;
+    private readonly AsyncRelayCommand linkSuggestionCommand;
+    private bool suggestionLinked;
+
+    public ImportResultItemViewModel(
+        ImportItemResult item,
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
     {
-        ImportOutcome.Added => "Added",
-        ImportOutcome.ExactDuplicate => "Skipped duplicate",
-        ImportOutcome.PossibleDuplicate => "Possible duplicate",
-        ImportOutcome.Failed => "Failed",
-        _ => item.Outcome.ToString()
-    };
-    public string Message { get; } = item.Message;
-    public Guid? BookId { get; } = item.BookId;
+        this.linkSuggestionAsync = linkSuggestionAsync;
+        bookId = item.BookId;
+        suggestion = item.Suggestion;
+        SourcePath = item.SourcePath;
+        FileName = Path.GetFileName(item.SourcePath);
+        FormatText = item.Diagnostics?.Format?.ToString().ToUpperInvariant() ?? string.Empty;
+        SizeText = FormatSize(item.Diagnostics?.SizeBytes);
+        DurationText = FormatDuration(item.Diagnostics?.Duration);
+        SizeBytesSort = item.Diagnostics?.SizeBytes ?? -1;
+        DurationMillisecondsSort = item.Diagnostics?.Duration.TotalMilliseconds ?? -1;
+        Outcome = item.Outcome;
+        OutcomeLabel = item.Outcome switch
+        {
+            ImportOutcome.Added => "Added",
+            ImportOutcome.ExactDuplicate => "Skipped duplicate",
+            ImportOutcome.PossibleDuplicate => "Possible duplicate",
+            ImportOutcome.Failed => "Failed",
+            _ => item.Outcome.ToString()
+        };
+        Message = item.Message;
+        BookId = item.BookId;
+        SuggestionText = item.Suggestion is null
+            ? string.Empty
+            : string.IsNullOrWhiteSpace(item.Suggestion.Authors)
+                ? item.Suggestion.Title
+                : $"{item.Suggestion.Title} - {item.Suggestion.Authors}";
+        linkSuggestionCommand = new AsyncRelayCommand(LinkSuggestionAsync, () => CanLinkSuggestion);
+    }
+
+    public string SourcePath { get; }
+    public string FileName { get; }
+    public string FormatText { get; }
+    public string SizeText { get; }
+    public string DurationText { get; }
+    public long SizeBytesSort { get; }
+    public double DurationMillisecondsSort { get; }
+    public ImportOutcome Outcome { get; }
+    public string OutcomeLabel { get; }
+    public string Message { get; }
+    public Guid? BookId { get; }
+    public string SuggestionText { get; }
+    public IAsyncRelayCommand LinkSuggestionCommand => linkSuggestionCommand;
+
+    public bool CanLinkSuggestion =>
+        !suggestionLinked &&
+        linkSuggestionAsync is not null &&
+        Outcome == ImportOutcome.Added &&
+        bookId is { } sourceBookId &&
+        suggestion is { Kind: ImportItemSuggestionKind.TitleMatch } &&
+        sourceBookId != suggestion.TargetBookId;
+
+    public bool SuggestionLinked
+    {
+        get => suggestionLinked;
+        private set
+        {
+            if (SetProperty(ref suggestionLinked, value))
+            {
+                OnPropertyChanged(nameof(CanLinkSuggestion));
+                linkSuggestionCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    private async Task LinkSuggestionAsync(CancellationToken cancellationToken)
+    {
+        if (!CanLinkSuggestion ||
+            linkSuggestionAsync is null ||
+            bookId is not { } sourceBookId ||
+            suggestion is null)
+        {
+            return;
+        }
+
+        await linkSuggestionAsync(sourceBookId, suggestion.TargetBookId, cancellationToken);
+        SuggestionLinked = true;
+    }
 
     public bool Matches(string searchText)
     {
@@ -198,7 +269,8 @@ public sealed class ImportResultItemViewModel(ImportItemResult item)
             Contains(SizeText, searchText) ||
             Contains(DurationText, searchText) ||
             Contains(OutcomeLabel, searchText) ||
-            Contains(Message, searchText);
+            Contains(Message, searchText) ||
+            Contains(SuggestionText, searchText);
     }
 
     private static bool Contains(string value, string searchText) =>

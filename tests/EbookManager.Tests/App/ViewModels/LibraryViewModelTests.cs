@@ -780,6 +780,65 @@ public sealed class LibraryViewModelTests
         }
     }
 
+    [Fact]
+    public async Task Import_result_link_suggestion_command_attaches_files_and_refreshes_library()
+    {
+        var runId = Guid.NewGuid();
+        var importedBookId = Guid.NewGuid();
+        var targetBookId = Guid.NewGuid();
+        var targetBefore = CreateBook("Pro Git", ["Scott Chacon"], id: targetBookId);
+        var targetAfter = targetBefore with { Formats = [EbookFormat.Epub, EbookFormat.Pdf] };
+        var importedBook = CreateBook("Pro Git", ["Unknown"], id: importedBookId);
+        var repository = new RefreshingBookRepository([targetBefore, importedBook], [targetAfter]);
+        var interaction = new ScriptedUserInteractionService { SelectedImportRunId = runId };
+        var importRepository = new StaticImportRepository(
+            [
+                new ImportRunSummary(
+                    runId,
+                    DateTimeOffset.UtcNow,
+                    DateTimeOffset.UtcNow,
+                    TotalCount: 1,
+                    AddedCount: 1,
+                    ExactDuplicateCount: 0,
+                    PossibleDuplicateCount: 0,
+                    FailedCount: 0)
+            ],
+            new ImportRunResult(
+                runId,
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow,
+                [
+                    new ImportItemResult(
+                        "Pro Git.pdf",
+                        ImportOutcome.Added,
+                        "added; possible title match: Pro Git",
+                        importedBookId,
+                        Suggestion: new ImportItemSuggestion(
+                            ImportItemSuggestionKind.TitleMatch,
+                            targetBookId,
+                            "Pro Git",
+                            "Scott Chacon"))
+                ]));
+        var viewModel = CreateViewModel(
+            [targetBefore, importedBook],
+            interaction,
+            repository: repository,
+            currentLibrary: CreateActiveLibrary(),
+            importRepository: importRepository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowImportHistoryCommand.ExecuteAsync(null);
+        var item = interaction.ShownImportResult!.Items.Should().ContainSingle().Which;
+
+        await item.LinkSuggestionCommand.ExecuteAsync(null);
+
+        repository.AttachedSourceBookId.Should().Be(importedBookId);
+        repository.AttachedTargetBookId.Should().Be(targetBookId);
+        VisibleBookTitles(viewModel).Should().Equal("Pro Git");
+        viewModel.VisibleBooks.Should().ContainSingle()
+            .Which.Book.Formats.Should().BeEquivalentTo([EbookFormat.Epub, EbookFormat.Pdf]);
+    }
+
     private static LibraryViewModel CreateViewModel(
         IReadOnlyList<Book> books,
         IUserInteractionService? userInteraction = null,
@@ -821,11 +880,12 @@ public sealed class LibraryViewModelTests
         string? language = null,
         string? series = null,
         ReadingStatus readingStatus = ReadingStatus.Unread,
-        IReadOnlyList<EbookFormat>? formats = null)
+        IReadOnlyList<EbookFormat>? formats = null,
+        Guid? id = null)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
-            Guid.NewGuid(),
+            id ?? Guid.NewGuid(),
             new BookMetadata(title, authors, Language: language, Tags: tags, Series: series),
             readingStatus,
             null,
@@ -868,6 +928,7 @@ public sealed class LibraryViewModelTests
         public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(string title, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([]);
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) => Task.CompletedTask;
+        public virtual Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) => Task.CompletedTask;
         public virtual Task UpdateAsync(Book book, CancellationToken cancellationToken)
         {
             UpdateCalls++;
@@ -969,6 +1030,8 @@ public sealed class LibraryViewModelTests
         private readonly IReadOnlyList<Book> firstRefreshBooks;
         private readonly IReadOnlyList<Book> laterRefreshBooks;
         public int ListCalls { get; private set; }
+        public Guid? AttachedSourceBookId { get; private set; }
+        public Guid? AttachedTargetBookId { get; private set; }
 
         public RefreshingBookRepository(
             IReadOnlyList<Book> firstRefreshBooks,
@@ -982,6 +1045,16 @@ public sealed class LibraryViewModelTests
         {
             ListCalls++;
             return Task.FromResult<IReadOnlyList<Book>>(ListCalls == 1 ? firstRefreshBooks : laterRefreshBooks);
+        }
+
+        public override Task AttachFilesToBookAsync(
+            Guid sourceBookId,
+            Guid targetBookId,
+            CancellationToken cancellationToken)
+        {
+            AttachedSourceBookId = sourceBookId;
+            AttachedTargetBookId = targetBookId;
+            return Task.CompletedTask;
         }
     }
 
@@ -1185,7 +1258,8 @@ public sealed class LibraryViewModelTests
             string message,
             Guid? bookId,
             CancellationToken cancellationToken,
-            ImportItemDiagnostics? diagnostics = null) =>
+            ImportItemDiagnostics? diagnostics = null,
+            ImportItemSuggestion? suggestion = null) =>
             Task.CompletedTask;
 
         public Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken) =>

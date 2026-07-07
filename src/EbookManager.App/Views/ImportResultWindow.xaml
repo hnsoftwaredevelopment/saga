@@ -117,6 +117,19 @@
         <DataGridTextColumn Header="{loc:Loc Message}"
                             Binding="{Binding Message, Converter={StaticResource ImportMessageToLocalizedStringConverter}}"
                             Width="2*" />
+        <DataGridTextColumn Header="{loc:Loc SuggestedBook}"
+                            Binding="{Binding SuggestionText}"
+                            Width="1.4*" />
+        <DataGridTemplateColumn Header="{loc:Loc Action}" Width="110">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Button Content="{loc:Loc LinkSuggestion}"
+                      Command="{Binding LinkSuggestionCommand}"
+                      IsEnabled="{Binding CanLinkSuggestion}"
+                      ToolTip="{loc:Loc LinkSuggestionTooltip}" />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
       </DataGrid.Columns>
     </DataGrid>
   </DockPanel>

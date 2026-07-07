@@ -326,6 +326,61 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Repository_attaches_imported_book_files_to_existing_book_and_removes_import_shell()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var importRepository = new EfImportRepository(factory, libraryPath);
+        var targetBook = CreateBook("Pro Git", ["Scott Chacon", "Ben Straub"]);
+        var importedBook = CreateBook("Pro Git", ["Unknown"]);
+        var targetFile = CreateFile(targetBook.Id, Hash('A')) with
+        {
+            Format = EbookFormat.Epub,
+            RelativePath = $"books/{targetBook.Id:N}/Pro Git.epub"
+        };
+        var importedFile = CreateFile(importedBook.Id, Hash('B')) with
+        {
+            Format = EbookFormat.Pdf,
+            RelativePath = $"books/{importedBook.Id:N}/Pro Git.pdf"
+        };
+        await repository.AddAsync(targetBook, targetFile, default);
+        await repository.AddAsync(importedBook, importedFile, default);
+        var runId = await importRepository.StartRunAsync(DateTimeOffset.UtcNow, default);
+        await importRepository.RecordItemAsync(
+            runId,
+            0,
+            "Pro Git.pdf",
+            ImportOutcome.Added,
+            "added; possible title match: Pro Git",
+            importedBook.Id,
+            default,
+            suggestion: new ImportItemSuggestion(
+                ImportItemSuggestionKind.TitleMatch,
+                targetBook.Id,
+                targetBook.Metadata.Title,
+                string.Join("; ", targetBook.Metadata.Authors)));
+
+        await repository.AttachFilesToBookAsync(importedBook.Id, targetBook.Id, default);
+
+        var books = await repository.ListAsync(default);
+        books.Should().ContainSingle().Which.Should().Match<Book>(book =>
+            book.Id == targetBook.Id &&
+            book.Metadata.Authors.SequenceEqual(targetBook.Metadata.Authors) &&
+            book.Formats.Contains(EbookFormat.Epub) &&
+            book.Formats.Contains(EbookFormat.Pdf));
+        (await repository.ListFilesAsync(targetBook.Id, default))
+            .Select(file => file.RelativePath)
+            .Should().BeEquivalentTo([targetFile.RelativePath, importedFile.RelativePath]);
+        var run = await importRepository.GetAsync(runId, default);
+        run!.Items.Should().ContainSingle().Which.BookId.Should().Be(targetBook.Id);
+        await using var context = factory.Create(libraryPath);
+        (await context.BookFiles.AnyAsync(file => file.BookId == importedBook.Id)).Should().BeFalse();
+        (await context.Authors.AnyAsync(author => author.Name == "Unknown")).Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Hashes_are_canonicalized_and_duplicate_add_rolls_back_all_rows()
     {
         using var library = new TemporaryLibrary();

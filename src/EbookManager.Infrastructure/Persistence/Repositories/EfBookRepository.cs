@@ -150,6 +150,55 @@ public sealed class EfBookRepository(
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task AttachFilesToBookAsync(
+        Guid sourceBookId,
+        Guid targetBookId,
+        CancellationToken cancellationToken)
+    {
+        if (sourceBookId == targetBookId)
+        {
+            return;
+        }
+
+        await using var context = contextFactory.Create(libraryPath);
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        var sourceBook = await context.Books
+            .Include(x => x.Files)
+            .SingleOrDefaultAsync(x => x.Id == sourceBookId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Source book '{sourceBookId}' does not exist.");
+        var targetExists = await context.Books
+            .AnyAsync(x => x.Id == targetBookId, cancellationToken);
+        if (!targetExists)
+        {
+            throw new KeyNotFoundException($"Target book '{targetBookId}' does not exist.");
+        }
+
+        var previousAuthorIds = await context.BookAuthors
+            .Where(x => x.BookId == sourceBookId)
+            .Select(x => x.AuthorId)
+            .ToListAsync(cancellationToken);
+        var previousTagIds = await context.BookTags
+            .Where(x => x.BookId == sourceBookId)
+            .Select(x => x.TagId)
+            .ToListAsync(cancellationToken);
+
+        foreach (var file in sourceBook.Files)
+        {
+            file.BookId = targetBookId;
+        }
+
+        await context.ImportItems
+            .Where(x => x.BookId == sourceBookId)
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(item => item.BookId, targetBookId),
+                cancellationToken);
+        context.Books.Remove(sourceBook);
+        await context.SaveChangesAsync(cancellationToken);
+        await RemoveOrphanedMetadataAsync(context, previousAuthorIds, previousTagIds, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+    }
+
     public async Task UpdateAsync(Book book, CancellationToken cancellationToken)
     {
         try

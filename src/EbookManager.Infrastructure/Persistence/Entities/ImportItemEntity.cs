@@ -17,4 +17,8 @@ public sealed class ImportItemEntity
     public long? DurationMilliseconds { get; set; }
     public long? SizeBytes { get; set; }
     public EbookFormat? Format { get; set; }
+    public string? SuggestionKind { get; set; }
+    public Guid? SuggestedBookId { get; set; }
+    public string? SuggestedTitle { get; set; }
+    public string? SuggestedAuthors { get; set; }
 }

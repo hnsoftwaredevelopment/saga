@@ -6,6 +6,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="AddBooks" xml:space="preserve"><value>Add books</value></data>
+  <data name="Action" xml:space="preserve"><value>Acción</value></data>
   <data name="All" xml:space="preserve"><value>All</value></data>
   <data name="AppVersion" xml:space="preserve"><value>Version</value></data>
   <data name="Authors" xml:space="preserve"><value>Authors</value></data>
@@ -49,6 +50,8 @@
   <data name="ImportMessagePossibleTitleMatch" xml:space="preserve"><value>Posible coincidencia de título: {0}</value></data>
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
+  <data name="LinkSuggestion" xml:space="preserve"><value>Vincular</value></data>
+  <data name="LinkSuggestionTooltip" xml:space="preserve"><value>Vincular este formato importado al libro existente sugerido</value></data>
   <data name="ListView" xml:space="preserve"><value>List</value></data>
   <data name="EmptyStateLoadingLibrary" xml:space="preserve"><value>Cargando biblioteca...</value></data>
   <data name="EmptyStateCreateOrOpenLibrary" xml:space="preserve"><value>Cree o abra una biblioteca para empezar.</value></data>
@@ -76,6 +79,7 @@
   <data name="Completed" xml:space="preserve"><value>Completed</value></data>
   <data name="Status" xml:space="preserve"><value>Status</value></data>
   <data name="Source" xml:space="preserve"><value>Source</value></data>
+  <data name="SuggestedBook" xml:space="preserve"><value>Libro sugerido</value></data>
   <data name="Duration" xml:space="preserve"><value>Duration</value></data>
   <data name="Size" xml:space="preserve"><value>Size</value></data>
   <data name="Tags" xml:space="preserve"><value>Tags</value></data>

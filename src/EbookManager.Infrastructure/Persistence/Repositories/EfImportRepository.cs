@@ -44,7 +44,8 @@ public sealed class EfImportRepository(
         string message,
         Guid? bookId,
         CancellationToken cancellationToken,
-        ImportItemDiagnostics? diagnostics = null)
+        ImportItemDiagnostics? diagnostics = null,
+        ImportItemSuggestion? suggestion = null)
     {
         await using var context = contextFactory.Create(libraryPath);
         context.ImportItems.Add(new ImportItemEntity
@@ -60,7 +61,11 @@ public sealed class EfImportRepository(
                 ? null
                 : Math.Max(0, (long)Math.Round(diagnostics.Duration.TotalMilliseconds)),
             SizeBytes = diagnostics?.SizeBytes,
-            Format = diagnostics?.Format
+            Format = diagnostics?.Format,
+            SuggestionKind = suggestion?.Kind.ToString(),
+            SuggestedBookId = suggestion?.TargetBookId,
+            SuggestedTitle = suggestion?.Title,
+            SuggestedAuthors = suggestion?.Authors
         });
         await context.SaveChangesAsync(cancellationToken);
     }
@@ -94,7 +99,8 @@ public sealed class EfImportRepository(
                 x.Outcome,
                 x.Message,
                 x.BookId,
-                ToDiagnostics(x)))
+                ToDiagnostics(x),
+                ToSuggestion(x)))
             .ToList()
             .AsReadOnly();
 
@@ -152,5 +158,22 @@ public sealed class EfImportRepository(
             TimeSpan.FromMilliseconds(item.DurationMilliseconds ?? 0),
             item.SizeBytes,
             item.Format);
+    }
+
+    private static ImportItemSuggestion? ToSuggestion(ImportItemEntity item)
+    {
+        if (item.SuggestedBookId is null ||
+            string.IsNullOrWhiteSpace(item.SuggestionKind) ||
+            string.IsNullOrWhiteSpace(item.SuggestedTitle) ||
+            !Enum.TryParse<ImportItemSuggestionKind>(item.SuggestionKind, out var kind))
+        {
+            return null;
+        }
+
+        return new ImportItemSuggestion(
+            kind,
+            item.SuggestedBookId.Value,
+            item.SuggestedTitle,
+            item.SuggestedAuthors ?? string.Empty);
     }
 }

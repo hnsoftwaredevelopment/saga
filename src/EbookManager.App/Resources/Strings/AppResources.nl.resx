@@ -5,6 +5,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="AddBooks" xml:space="preserve"><value>Boeken toevoegen</value></data>
+  <data name="Action" xml:space="preserve"><value>Actie</value></data>
   <data name="All" xml:space="preserve"><value>Alles</value></data>
   <data name="AppName" xml:space="preserve"><value>Saga</value></data>
   <data name="AppVersion" xml:space="preserve"><value>Versie</value></data>
@@ -85,6 +86,8 @@
   <data name="IncludeScanSubdirectoriesSetting" xml:space="preserve"><value>Submappen meenemen bij scannen</value></data>
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Taal</value></data>
+  <data name="LinkSuggestion" xml:space="preserve"><value>Koppelen</value></data>
+  <data name="LinkSuggestionTooltip" xml:space="preserve"><value>Koppel dit geïmporteerde formaat aan het voorgestelde bestaande boek</value></data>
   <data name="ListView" xml:space="preserve"><value>Lijst</value></data>
   <data name="EmptyStateLoadingLibrary" xml:space="preserve"><value>Bibliotheek wordt ingelezen...</value></data>
   <data name="EmptyStateCreateOrOpenLibrary" xml:space="preserve"><value>Maak of open een bibliotheek om te beginnen.</value></data>
@@ -124,6 +127,7 @@
   <data name="Completed" xml:space="preserve"><value>Voltooid</value></data>
   <data name="Status" xml:space="preserve"><value>Status</value></data>
   <data name="Source" xml:space="preserve"><value>Bron</value></data>
+  <data name="SuggestedBook" xml:space="preserve"><value>Voorgesteld boek</value></data>
   <data name="Duration" xml:space="preserve"><value>Duur</value></data>
   <data name="Size" xml:space="preserve"><value>Grootte</value></data>
   <data name="Tags" xml:space="preserve"><value>Tags</value></data>

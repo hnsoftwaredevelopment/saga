@@ -347,6 +347,11 @@ public sealed class ImportServiceTests
         item.Outcome.Should().Be(ImportOutcome.Added);
         item.BookId.Should().NotBe(existingBook.Id);
         item.Message.Should().Contain("possible title match: The Hobbit");
+        item.Suggestion.Should().Be(new ImportItemSuggestion(
+            ImportItemSuggestionKind.TitleMatch,
+            existingBook.Id,
+            "The Hobbit",
+            "J.R.R. Tolkien"));
         (await fixture.BookRepository.ListAsync(default)).Should().HaveCount(2);
     }
 
@@ -867,6 +872,9 @@ public sealed class ImportServiceTests
         public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
             inner.AddFileAsync(file, cancellationToken);
 
+        public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) =>
+            inner.AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
+
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) =>
             inner.UpdateAsync(book, cancellationToken);
 
@@ -924,6 +932,9 @@ public sealed class ImportServiceTests
         public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
             inner.AddFileAsync(file, cancellationToken);
 
+        public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) =>
+            inner.AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
+
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
@@ -963,7 +974,8 @@ public sealed class ImportServiceTests
             string message,
             Guid? bookId,
             CancellationToken cancellationToken,
-            ImportItemDiagnostics? diagnostics = null)
+            ImportItemDiagnostics? diagnostics = null,
+            ImportItemSuggestion? suggestion = null)
         {
             LastRunId = runId;
             cancellationToken.CanBeCanceled.Should().BeFalse();
@@ -975,7 +987,8 @@ public sealed class ImportServiceTests
                 message,
                 bookId,
                 cancellationToken,
-                diagnostics);
+                diagnostics,
+                suggestion);
         }
 
         public async Task CompleteRunAsync(Guid runId, DateTimeOffset completedUtc, CancellationToken cancellationToken)
@@ -1059,6 +1072,9 @@ public sealed class ImportServiceTests
 
         public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
             inner.AddFileAsync(file, cancellationToken);
+
+        public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) =>
+            inner.AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
 
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
@@ -1186,6 +1202,9 @@ public sealed class ImportServiceTests
         public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
             inner.AddFileAsync(file, cancellationToken);
 
+        public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) =>
+            inner.AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
+
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
         public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
@@ -1256,6 +1275,9 @@ public sealed class ImportServiceTests
         public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
             inner.AddFileAsync(file, cancellationToken);
 
+        public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) =>
+            inner.AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
+
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
@@ -1299,7 +1321,8 @@ public sealed class ImportServiceTests
             string message,
             Guid? bookId,
             CancellationToken cancellationToken,
-            ImportItemDiagnostics? diagnostics = null)
+            ImportItemDiagnostics? diagnostics = null,
+            ImportItemSuggestion? suggestion = null)
         {
             LastRunId = runId;
             throw new InvalidOperationException("record item failed");

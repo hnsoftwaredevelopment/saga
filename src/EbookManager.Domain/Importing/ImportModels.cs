@@ -16,6 +16,11 @@ public enum ImportRunKind
     DirectoryScan
 }
 
+public enum ImportItemSuggestionKind
+{
+    TitleMatch
+}
+
 public sealed record ImportRunContext(
     ImportRunKind Kind,
     string? SourcePath = null,
@@ -29,12 +34,19 @@ public sealed record ImportItemResult(
     ImportOutcome Outcome,
     string Message,
     Guid? BookId = null,
-    ImportItemDiagnostics? Diagnostics = null);
+    ImportItemDiagnostics? Diagnostics = null,
+    ImportItemSuggestion? Suggestion = null);
 
 public sealed record ImportItemDiagnostics(
     TimeSpan Duration,
     long? SizeBytes = null,
     EbookFormat? Format = null);
+
+public sealed record ImportItemSuggestion(
+    ImportItemSuggestionKind Kind,
+    Guid TargetBookId,
+    string Title,
+    string Authors);
 
 public sealed record ImportBatchResult(
     Guid RunId,

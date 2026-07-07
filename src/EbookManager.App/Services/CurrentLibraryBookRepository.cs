@@ -83,6 +83,9 @@ public sealed class CurrentLibraryBookRepository(
     public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
         CreateRepository().AddFileAsync(file, cancellationToken);
 
+    public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) =>
+        CreateRepository().AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
+
     public Task UpdateAsync(Book book, CancellationToken cancellationToken) =>
         CreateRepository().UpdateAsync(book, cancellationToken);
 

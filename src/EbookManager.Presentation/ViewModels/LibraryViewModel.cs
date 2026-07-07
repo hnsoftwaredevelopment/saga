@@ -1074,13 +1074,22 @@ public sealed partial class LibraryViewModel : ObservableObject
     }
 
     private ImportResultViewModel CreateImportResultViewModel(ImportBatchResult result) =>
-        new(result, RetryFailedImportsAsync);
+        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync);
 
     private ImportResultViewModel CreateImportResultViewModel(ImportRunResult result) =>
-        new(result, RetryFailedImportsAsync);
+        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync);
 
     private Task RetryFailedImportsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken) =>
         ImportFilesAsync(paths, cancellationToken, ImportRunContext.FileImport);
+
+    private async Task LinkImportSuggestionAsync(
+        Guid sourceBookId,
+        Guid targetBookId,
+        CancellationToken cancellationToken)
+    {
+        await bookRepository.AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
+        await RefreshAsync(cancellationToken);
+    }
 
     private async Task ShowDuplicateCandidatesAsync(CancellationToken cancellationToken)
     {
