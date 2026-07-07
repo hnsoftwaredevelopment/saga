@@ -64,6 +64,7 @@
   <data name="ImportMessageAdded" xml:space="preserve"><value>Added</value></data>
   <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve"><value>Skipped, book already exists</value></data>
   <data name="ImportMessagePossibleDuplicate" xml:space="preserve"><value>This book is probably already in the library</value></data>
+  <data name="ImportMessagePossibleTitleMatch" xml:space="preserve"><value>Possible title match: {0}</value></data>
   <data name="ImportMessageManagedCopyFailed" xml:space="preserve"><value>Could not copy the book into the Saga library folder</value></data>
   <data name="ImportMessageMetadataReadFailed" xml:space="preserve"><value>Could not read metadata from this file</value></data>
   <data name="ImportMessageSourceUnreadable" xml:space="preserve"><value>Source file could not be read; make sure the file is available locally</value></data>

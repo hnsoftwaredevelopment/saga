@@ -327,6 +327,30 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Import_async_adds_title_match_suggestion_when_authors_are_unreliable()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var existingBook = await fixture.SeedBookAsync(
+            "The Hobbit",
+            "J.R.R. Tolkien",
+            "existing.epub",
+            Encoding.UTF8.GetBytes("existing-epub"),
+            EbookFormat.Epub);
+        var service = fixture.CreateService();
+        var source = fixture.WriteBytesFile(
+            @"incoming\The Hobbit.pdf",
+            Encoding.UTF8.GetBytes("pdf-with-filename-title-only"));
+
+        var result = await service.ImportAsync([source], default);
+
+        var item = result.Items.Should().ContainSingle().Which;
+        item.Outcome.Should().Be(ImportOutcome.Added);
+        item.BookId.Should().NotBe(existingBook.Id);
+        item.Message.Should().Contain("possible title match: The Hobbit");
+        (await fixture.BookRepository.ListAsync(default)).Should().HaveCount(2);
+    }
+
+    [Fact]
     public async Task Import_async_reports_possible_duplicates_inside_the_same_batch()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();

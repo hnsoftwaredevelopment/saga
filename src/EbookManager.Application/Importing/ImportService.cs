@@ -207,6 +207,7 @@ public sealed class ImportService(
                     metadata.Metadata.Title,
                     metadata.Metadata.Authors);
                 var isPossibleDuplicate = false;
+                var possibleTitleMatch = string.Empty;
                 var duplicate = await duplicateTracker.FindDuplicateAsync(
                         metadata.Metadata.Title,
                         metadata.Metadata.Authors,
@@ -232,6 +233,13 @@ public sealed class ImportService(
                         targetBookId = duplicate.BookId.Value;
                         addFileToExistingBook = true;
                     }
+                }
+                else
+                {
+                    possibleTitleMatch = await duplicateTracker.FindPossibleTitleMatchAsync(
+                        metadata.Metadata.Title,
+                        metadata.Metadata.Authors,
+                        cancellationToken);
                 }
 
                 (string RelativeBookPath, string? RelativeCoverPath) copy;
@@ -322,7 +330,8 @@ public sealed class ImportService(
                     result = CreateAddedResult(
                         sourcePath,
                         metadata.Warning,
-                        targetBookId);
+                        targetBookId,
+                        possibleTitleMatch);
                     duplicateTracker.Add(sha256!, duplicateKey, targetBookId, format);
                 }
                 catch (OperationCanceledException)
@@ -413,11 +422,20 @@ public sealed class ImportService(
     private static ImportItemResult CreateAddedResult(
         string? sourcePath,
         string? warning,
-        Guid bookId)
+        Guid bookId,
+        string? possibleTitleMatch = null)
     {
-        var message = warning is null
-            ? SafeImportMessages.Added
-            : $"{SafeImportMessages.Added}; {SafeImportMessages.MetadataWarning}: {warning}";
+        var message = SafeImportMessages.Added;
+        if (!string.IsNullOrWhiteSpace(warning))
+        {
+            message = $"{message}; {SafeImportMessages.MetadataWarning}: {warning}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(possibleTitleMatch))
+        {
+            message = $"{message}; {SafeImportMessages.PossibleTitleMatch}: {possibleTitleMatch}";
+        }
+
         return new(IsBlank(sourcePath) ? InvalidSourceDisplayName : sourcePath!, ImportOutcome.Added, message, bookId);
     }
 
@@ -503,6 +521,7 @@ public sealed class ImportService(
         private readonly HashSet<string> knownHashes;
         private readonly HashSet<string> knownDuplicateKeys;
         private readonly Dictionary<string, DuplicateBookReference> duplicateBooksByKey = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, IReadOnlyList<Book>> titleMatchesByTitle = new(StringComparer.Ordinal);
 
         private ImportDuplicateTracker(
             IBookRepository bookRepository,
@@ -601,6 +620,32 @@ public sealed class ImportService(
             return null;
         }
 
+        public async Task<string> FindPossibleTitleMatchAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken)
+        {
+            if (!HasUnreliableAuthors(authors))
+            {
+                return string.Empty;
+            }
+
+            var normalizedTitle = DuplicateKeyNormalizer.NormalizeSqliteText(title);
+            if (normalizedTitle.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            if (!titleMatchesByTitle.TryGetValue(normalizedTitle, out var matches))
+            {
+                matches = await bookRepository.FindByNormalizedTitleAsync(title, cancellationToken);
+                titleMatchesByTitle[normalizedTitle] = matches;
+            }
+
+            var match = matches.FirstOrDefault();
+            return match?.Metadata.Title ?? string.Empty;
+        }
+
         public void Add(string sha256, string duplicateKey, Guid bookId, EbookFormat format)
         {
             knownHashes.Add(CanonicalizeSha256(sha256));
@@ -612,6 +657,13 @@ public sealed class ImportService(
             }
 
             reference.Formats.Add(format);
+        }
+
+        private static bool HasUnreliableAuthors(IReadOnlyList<string> authors)
+        {
+            return authors.Count == 0 ||
+                authors.All(author => string.IsNullOrWhiteSpace(author) ||
+                    string.Equals(author.Trim(), "Unknown", StringComparison.OrdinalIgnoreCase));
         }
     }
 
@@ -628,6 +680,7 @@ public sealed class ImportService(
         public const string ManagedCopyFailed = "managed copy failed";
         public const string MetadataReadFailed = "metadata read failed";
         public const string MetadataWarning = "metadata warning";
+        public const string PossibleTitleMatch = "possible title match";
         public const string PossibleDuplicate = "possible duplicate";
         public const string SourceUnreadable = "source unreadable; make sure the file is available locally";
         public const string UnsupportedFormat = "unsupported format";

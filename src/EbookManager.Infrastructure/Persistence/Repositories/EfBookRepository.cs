@@ -87,6 +87,21 @@ public sealed class EfBookRepository(
         return book is null ? null : ToDomain(book, includeCoverBytes: true);
     }
 
+    public async Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+        string title,
+        CancellationToken cancellationToken)
+    {
+        var normalizedTitle = Normalize(title);
+        await using var context = contextFactory.Create(libraryPath);
+        var books = await BooksWithMetadata(context)
+            .AsNoTracking()
+            .Where(x => x.NormalizedTitle == normalizedTitle)
+            .OrderBy(x => x.Title)
+            .ThenBy(x => x.Id)
+            .ToListAsync(cancellationToken);
+        return books.Select(book => ToDomain(book, includeCoverBytes: false)).ToList().AsReadOnly();
+    }
+
     public async Task<BookDuplicateSnapshot> CreateDuplicateSnapshotAsync(CancellationToken cancellationToken)
     {
         await using var context = contextFactory.Create(libraryPath);

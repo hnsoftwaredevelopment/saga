@@ -24,6 +24,8 @@ Use this checklist for background import testing.
 - Confirm Saga keeps one book in the library and the Type filter contains both formats for that book.
 - Select that book and confirm the details pane shows both available formats.
 - Import the same book again in an already existing format and confirm it is still treated as a possible duplicate or exact duplicate.
+- Import a file whose filename title matches an existing book but whose author falls back to Unknown.
+- Confirm the import result keeps the file as a separate book and shows a possible title match suggestion.
 
 ## Cancellation And Closing
 

@@ -52,6 +52,15 @@ public sealed class ImportMessageToLocalizedStringConverter : IValueConverter
             return $"{LocalizedStrings.Current["ImportMessageMetadataWarning"]}: {LocalizeMetadataWarning(part[metadataWarningPrefix.Length..].Trim())}";
         }
 
+        const string possibleTitleMatchPrefix = "possible title match:";
+        if (part.StartsWith(possibleTitleMatchPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return string.Format(
+                CultureInfo.CurrentCulture,
+                LocalizedStrings.Current["ImportMessagePossibleTitleMatch"],
+                part[possibleTitleMatchPrefix.Length..].Trim());
+        }
+
         return LocalizeMetadataWarning(part);
     }
 

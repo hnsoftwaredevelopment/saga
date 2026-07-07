@@ -46,6 +46,7 @@
   <data name="ImportResults" xml:space="preserve"><value>Import results</value></data>
   <data name="ImportMessageSourceUnreadablePrefix" xml:space="preserve"><value>No se pudo leer el archivo de origen</value></data>
   <data name="ImportMessageSourceUnreadableAdvice" xml:space="preserve"><value>asegúrese de que el archivo esté disponible localmente</value></data>
+  <data name="ImportMessagePossibleTitleMatch" xml:space="preserve"><value>Posible coincidencia de título: {0}</value></data>
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
   <data name="ListView" xml:space="preserve"><value>List</value></data>

@@ -64,6 +64,7 @@
   <data name="ImportMessageAdded" xml:space="preserve"><value>Toegevoegd</value></data>
   <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve"><value>Overgeslagen, boek al aanwezig</value></data>
   <data name="ImportMessagePossibleDuplicate" xml:space="preserve"><value>Dit boek staat waarschijnlijk al in de bibliotheek</value></data>
+  <data name="ImportMessagePossibleTitleMatch" xml:space="preserve"><value>Mogelijke titelmatch: {0}</value></data>
   <data name="ImportMessageManagedCopyFailed" xml:space="preserve"><value>Het boek kon niet naar de Saga bibliotheekmap worden gekopieerd</value></data>
   <data name="ImportMessageMetadataReadFailed" xml:space="preserve"><value>De metadata kon niet uit dit bestand worden gelezen</value></data>
   <data name="ImportMessageSourceUnreadable" xml:space="preserve"><value>Het bronbestand kon niet worden gelezen; controleer of het bestand lokaal beschikbaar is</value></data>
