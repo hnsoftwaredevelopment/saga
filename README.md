@@ -9,6 +9,7 @@ Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-qu
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
 - multi-format import that attaches different file formats to the same book when title and author match
+- details pane shows the available formats for the selected book
 - EPUB metadata and cover extraction
 - EPUB subject/tag and Calibre-style series metadata extraction
 - Calibre `metadata.opf` sidecar import

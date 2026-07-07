@@ -21,6 +21,9 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
     private string authorsText = string.Empty;
 
     [ObservableProperty]
+    private string formatsText = string.Empty;
+
+    [ObservableProperty]
     private string? description;
 
     [ObservableProperty]
@@ -105,6 +108,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         BookId = null;
         Title = string.Empty;
         AuthorsText = string.Empty;
+        FormatsText = string.Empty;
         Description = null;
         Language = null;
         Publisher = null;
@@ -212,6 +216,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
             BookId = book.Id;
             Title = book.Metadata.Title;
             AuthorsText = JoinList(book.Metadata.Authors);
+            FormatsText = FormatFormats(book.Formats);
             Description = book.Metadata.Description;
             Language = book.Metadata.Language;
             Publisher = book.Metadata.Publisher;
@@ -282,6 +287,12 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         };
 
     private static string JoinList(IReadOnlyList<string> values) => string.Join("; ", values);
+
+    private static string FormatFormats(IReadOnlyList<EbookFormat> formats) =>
+        string.Join(", ", formats
+            .Distinct()
+            .OrderBy(format => format)
+            .Select(format => format.ToString().ToUpperInvariant()));
 
     private static IReadOnlyList<string> SplitList(string? value) =>
         (value ?? string.Empty)

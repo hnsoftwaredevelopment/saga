@@ -27,6 +27,7 @@
   <data name="EReader" xml:space="preserve"><value>E-reader</value></data>
   <data name="EReaderUnavailable" xml:space="preserve"><value>Unavailable</value></data>
   <data name="Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="Formats" xml:space="preserve"><value>Formate</value></data>
   <data name="ImportAdded" xml:space="preserve"><value>Added</value></data>
   <data name="ImportExactDuplicate" xml:space="preserve"><value>Exact duplicate</value></data>
   <data name="ImportFailed" xml:space="preserve"><value>Failed</value></data>

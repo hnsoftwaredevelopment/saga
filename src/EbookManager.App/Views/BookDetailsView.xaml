@@ -94,6 +94,10 @@
       <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Authors}" FontWeight="SemiBold" />
       <TextBox Text="{Binding AuthorsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+      <TextBlock Text="{loc:Loc Formats}" FontWeight="SemiBold" />
+      <TextBox Text="{Binding FormatsText}"
+               IsReadOnly="True"
+               Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Description}" FontWeight="SemiBold" />
       <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
                AcceptsReturn="True"

@@ -63,6 +63,18 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public void Loading_a_book_shows_available_formats_without_setting_dirty_state()
+    {
+        var viewModel = CreateViewModel(out _);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Pdf, EbookFormat.Epub]);
+
+        viewModel.Load(book);
+
+        viewModel.FormatsText.Should().Be("EPUB, PDF");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Save_updates_metadata_and_clears_dirty_state()
     {
         var viewModel = CreateViewModel(out var repository);
@@ -124,7 +136,10 @@ public sealed class BookDetailsViewModelTests
         return new BookDetailsViewModel(service);
     }
 
-    private static Book CreateBook(string title, IReadOnlyList<string> authors)
+    private static Book CreateBook(
+        string title,
+        IReadOnlyList<string> authors,
+        IReadOnlyList<EbookFormat>? formats = null)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
@@ -140,7 +155,10 @@ public sealed class BookDetailsViewModelTests
             ReadingStatus.Unread,
             null,
             now,
-            now);
+            now)
+        {
+            Formats = formats ?? []
+        };
     }
 
     private sealed class RecordingBookRepository : IBookRepository

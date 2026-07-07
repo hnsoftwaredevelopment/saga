@@ -30,6 +30,7 @@
   <data name="EReader" xml:space="preserve"><value>E-reader</value></data>
   <data name="EReaderUnavailable" xml:space="preserve"><value>Unavailable</value></data>
   <data name="Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="Formats" xml:space="preserve"><value>Formats</value></data>
   <data name="File" xml:space="preserve"><value>File</value></data>
   <data name="FilterHelp" xml:space="preserve"><value>Filters are based on metadata found during import.</value></data>
   <data name="Filters" xml:space="preserve"><value>Filters</value></data>

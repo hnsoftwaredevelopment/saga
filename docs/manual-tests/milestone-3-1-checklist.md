@@ -22,6 +22,7 @@ Use this checklist for background import testing.
 - Confirm Retry failed is disabled when failed items only have unavailable or display-only source paths.
 - Import the same book in two different formats, for example PDF and MOBI, with matching title and author.
 - Confirm Saga keeps one book in the library and the Type filter contains both formats for that book.
+- Select that book and confirm the details pane shows both available formats.
 - Import the same book again in an already existing format and confirm it is still treated as a possible duplicate or exact duplicate.
 
 ## Cancellation And Closing
