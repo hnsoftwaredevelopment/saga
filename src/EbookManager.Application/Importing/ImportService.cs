@@ -625,11 +625,6 @@ public sealed class ImportService(
             IReadOnlyList<string> authors,
             CancellationToken cancellationToken)
         {
-            if (!HasUnreliableAuthors(authors))
-            {
-                return string.Empty;
-            }
-
             var normalizedTitle = DuplicateKeyNormalizer.NormalizeSqliteText(title);
             if (normalizedTitle.Length == 0)
             {
@@ -657,13 +652,6 @@ public sealed class ImportService(
             }
 
             reference.Formats.Add(format);
-        }
-
-        private static bool HasUnreliableAuthors(IReadOnlyList<string> authors)
-        {
-            return authors.Count == 0 ||
-                authors.All(author => string.IsNullOrWhiteSpace(author) ||
-                    string.Equals(author.Trim(), "Unknown", StringComparison.OrdinalIgnoreCase));
         }
     }
 

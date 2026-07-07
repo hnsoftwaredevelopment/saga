@@ -351,6 +351,54 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Import_async_adds_title_match_suggestion_for_case_only_title_differences()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var existingBook = await fixture.SeedBookAsync(
+            "Pro Git",
+            "Scott Chacon",
+            "Pro Git.epub",
+            Encoding.UTF8.GetBytes("existing-epub"),
+            EbookFormat.Epub);
+        var service = fixture.CreateService();
+        var source = fixture.WriteBytesFile(
+            @"incoming\Pro git.pdf",
+            Encoding.UTF8.GetBytes("pdf-with-case-different-title-only"));
+
+        var result = await service.ImportAsync([source], default);
+
+        var item = result.Items.Should().ContainSingle().Which;
+        item.Outcome.Should().Be(ImportOutcome.Added);
+        item.BookId.Should().NotBe(existingBook.Id);
+        item.Message.Should().Contain("possible title match: Pro Git");
+        (await fixture.BookRepository.ListAsync(default)).Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task Import_async_adds_title_match_suggestion_when_authors_differ()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var existingBook = await fixture.SeedBookAsync(
+            "Pro Git",
+            "Scott Chacon",
+            "Pro Git.epub",
+            Encoding.UTF8.GetBytes("existing-epub"),
+            EbookFormat.Epub);
+        var service = fixture.CreateService();
+        var source = fixture.WriteBytesFile(
+            @"incoming\Pro git - Ben Straub.pdf",
+            Encoding.UTF8.GetBytes("pdf-with-different-author"));
+
+        var result = await service.ImportAsync([source], default);
+
+        var item = result.Items.Should().ContainSingle().Which;
+        item.Outcome.Should().Be(ImportOutcome.Added);
+        item.BookId.Should().NotBe(existingBook.Id);
+        item.Message.Should().Contain("possible title match: Pro Git");
+        (await fixture.BookRepository.ListAsync(default)).Should().HaveCount(2);
+    }
+
+    [Fact]
     public async Task Import_async_reports_possible_duplicates_inside_the_same_batch()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();
