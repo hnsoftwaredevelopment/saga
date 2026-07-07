@@ -56,6 +56,17 @@ public sealed class CurrentLibraryBookRepository(
         CancellationToken cancellationToken) =>
         CreateRepository().HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
 
+    public Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+        string title,
+        IReadOnlyList<string> authors,
+        CancellationToken cancellationToken) =>
+        CreateRepository().FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+    public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+        string title,
+        CancellationToken cancellationToken) =>
+        CreateRepository().FindByNormalizedTitleAsync(title, cancellationToken);
+
     public Task<BookDuplicateSnapshot> CreateDuplicateSnapshotAsync(CancellationToken cancellationToken)
     {
         var repository = TryCreateRepository();
@@ -68,6 +79,9 @@ public sealed class CurrentLibraryBookRepository(
 
     public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>
         CreateRepository().AddAsync(book, file, cancellationToken);
+
+    public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
+        CreateRepository().AddFileAsync(file, cancellationToken);
 
     public Task UpdateAsync(Book book, CancellationToken cancellationToken) =>
         CreateRepository().UpdateAsync(book, cancellationToken);

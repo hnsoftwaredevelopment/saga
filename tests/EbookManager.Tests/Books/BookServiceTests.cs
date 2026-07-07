@@ -346,11 +346,35 @@ public sealed class BookServiceTests : IAsyncLifetime
             CancellationToken cancellationToken) =>
             Task.FromResult(false);
 
+        public Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<Book?>(null);
+
+        public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+            string title,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<Book>>([]);
+
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken)
         {
             books[book.Id] = book;
             filesByBookId[book.Id] = [file];
             StoredFiles.Clear();
+            StoredFiles.Add(file);
+            return Task.CompletedTask;
+        }
+
+        public Task AddFileAsync(BookFile file, CancellationToken cancellationToken)
+        {
+            if (!filesByBookId.TryGetValue(file.BookId, out var files))
+            {
+                files = [];
+                filesByBookId[file.BookId] = files;
+            }
+
+            files.Add(file);
             StoredFiles.Add(file);
             return Task.CompletedTask;
         }

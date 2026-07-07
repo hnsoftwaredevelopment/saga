@@ -864,7 +864,10 @@ public sealed class LibraryViewModelTests
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult(Books.SingleOrDefault(book => book.Id == id));
         public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) => Task.FromResult(false);
         public Task<bool> HasNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) => Task.FromResult(false);
+        public Task<Book?> FindByNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) => Task.FromResult<Book?>(null);
+        public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(string title, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([]);
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) => Task.CompletedTask;
         public virtual Task UpdateAsync(Book book, CancellationToken cancellationToken)
         {
             UpdateCalls++;

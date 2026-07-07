@@ -841,6 +841,17 @@ public sealed class ImportServiceTests
             CancellationToken cancellationToken) =>
             inner.HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
 
+        public Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+        public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+            string title,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAsync(title, cancellationToken);
+
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken)
         {
             var add = inner.AddAsync(book, file, cancellationToken);
@@ -852,6 +863,9 @@ public sealed class ImportServiceTests
 
             return add;
         }
+
+        public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
+            inner.AddFileAsync(file, cancellationToken);
 
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) =>
             inner.UpdateAsync(book, cancellationToken);
@@ -885,6 +899,17 @@ public sealed class ImportServiceTests
             CancellationToken cancellationToken) =>
             inner.HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
 
+        public Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+        public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+            string title,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAsync(title, cancellationToken);
+
         public async Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken)
         {
             if (!thrown)
@@ -895,6 +920,9 @@ public sealed class ImportServiceTests
 
             await inner.AddAsync(book, file, cancellationToken);
         }
+
+        public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
+            inner.AddFileAsync(file, cancellationToken);
 
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
@@ -1015,8 +1043,22 @@ public sealed class ImportServiceTests
         public Task<bool> HasNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) =>
             inner.HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
 
+        public Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+        public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+            string title,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAsync(title, cancellationToken);
+
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>
             throw new InvalidOperationException("throw after copy");
+
+        public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
+            inner.AddFileAsync(file, cancellationToken);
 
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
@@ -1127,8 +1169,22 @@ public sealed class ImportServiceTests
             CancellationToken cancellationToken) =>
             inner.HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
 
+        public Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+        public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+            string title,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAsync(title, cancellationToken);
+
         public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>
             inner.AddAsync(book, file, cancellationToken);
+
+        public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
+            inner.AddFileAsync(file, cancellationToken);
 
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
@@ -1165,6 +1221,17 @@ public sealed class ImportServiceTests
             CancellationToken cancellationToken) =>
             HasNormalizedTitleAndAuthorAsyncCore(title, authors, cancellationToken);
 
+        public Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+        public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+            string title,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAsync(title, cancellationToken);
+
         private async Task<bool> HasNormalizedTitleAndAuthorAsyncCore(
             string title,
             IReadOnlyList<string> authors,
@@ -1185,6 +1252,9 @@ public sealed class ImportServiceTests
 
             await inner.AddAsync(book, file, cancellationToken);
         }
+
+        public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
+            inner.AddFileAsync(file, cancellationToken);
 
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
