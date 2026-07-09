@@ -164,6 +164,38 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Duplicate_candidate_merge_refreshes_when_candidate_no_longer_exists()
+    {
+        var source = CreateBook("De Hobbit", ["J.R.R. Tolkien"], formats: [EbookFormat.Pdf]);
+        var target = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            language: "nl",
+            series: "Midden-aarde",
+            formats: [EbookFormat.Epub]);
+        var repository = new MissingBookOnAttachRepository([source, target], [target]);
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel(
+            [source, target],
+            interaction,
+            repository: repository,
+            currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+        var sourceRow = interaction.DuplicateCandidates!.Rows.Single(row => row.Id == source.Id);
+
+        var merge = () => interaction.DuplicateCandidates.MergeCandidateAsync(sourceRow, CancellationToken.None);
+
+        await merge.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("The duplicate list is outdated. Open the duplicate overview again.");
+        repository.ListCalls.Should().Be(2);
+        VisibleBookTitles(viewModel).Should().Equal("De Hobbit");
+        viewModel.VisibleBooks.Should().ContainSingle()
+            .Which.Id.Should().Be(target.Id);
+    }
+
+    [Fact]
     public async Task Author_filters_are_built_from_books_and_filter_visible_rows()
     {
         var hobbit = CreateBook("The Hobbit", ["Tolkien"]);
@@ -1060,26 +1092,29 @@ public sealed class LibraryViewModelTests
         public void ReleaseBulkUpdate() => release.TrySetResult();
     }
 
-    private sealed class RefreshingBookRepository : StaticBookRepository
+    private class RefreshingBookRepository : StaticBookRepository
     {
-        private readonly IReadOnlyList<Book> firstRefreshBooks;
-        private readonly IReadOnlyList<Book> laterRefreshBooks;
+        private readonly IReadOnlyList<IReadOnlyList<Book>> refreshBooks;
         public int ListCalls { get; private set; }
         public Guid? AttachedSourceBookId { get; private set; }
         public Guid? AttachedTargetBookId { get; private set; }
 
         public RefreshingBookRepository(
             IReadOnlyList<Book> firstRefreshBooks,
-            IReadOnlyList<Book> laterRefreshBooks) : base(firstRefreshBooks)
+            IReadOnlyList<Book> laterRefreshBooks,
+            params IReadOnlyList<Book>[] remainingRefreshBooks) : base(firstRefreshBooks)
         {
-            this.firstRefreshBooks = firstRefreshBooks;
-            this.laterRefreshBooks = laterRefreshBooks;
+            refreshBooks = new[] { firstRefreshBooks, laterRefreshBooks }
+                .Concat(remainingRefreshBooks)
+                .ToList()
+                .AsReadOnly();
         }
 
         public override Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
         {
             ListCalls++;
-            return Task.FromResult<IReadOnlyList<Book>>(ListCalls == 1 ? firstRefreshBooks : laterRefreshBooks);
+            var index = Math.Min(ListCalls - 1, refreshBooks.Count - 1);
+            return Task.FromResult(refreshBooks[index]);
         }
 
         public override Task AttachFilesToBookAsync(
@@ -1091,6 +1126,19 @@ public sealed class LibraryViewModelTests
             AttachedTargetBookId = targetBookId;
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class MissingBookOnAttachRepository(
+        IReadOnlyList<Book> firstRefreshBooks,
+        IReadOnlyList<Book> laterRefreshBooks,
+        params IReadOnlyList<Book>[] remainingRefreshBooks)
+        : RefreshingBookRepository(firstRefreshBooks, laterRefreshBooks, remainingRefreshBooks)
+    {
+        public override Task AttachFilesToBookAsync(
+            Guid sourceBookId,
+            Guid targetBookId,
+            CancellationToken cancellationToken) =>
+            throw new KeyNotFoundException($"Source book '{sourceBookId}' does not exist.");
     }
 
     private sealed class ConflictingBookRepository(

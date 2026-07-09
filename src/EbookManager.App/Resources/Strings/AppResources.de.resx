@@ -72,6 +72,8 @@
   <data name="LoadingLibrary" xml:space="preserve"><value>Bibliothek wird geladen</value></data>
   <data name="Match" xml:space="preserve"><value>Treffer</value></data>
   <data name="Merge" xml:space="preserve"><value>Zusammenfuehren</value></data>
+  <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Zusammenfuehren fehlgeschlagen</value></data>
+  <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>Die Duplikatliste ist veraltet. Saga hat die Bibliothek aktualisiert; oeffnen Sie die Duplikatuebersicht erneut.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Autorenmatch</value></data>
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Nur Titel</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>

@@ -72,6 +72,8 @@
   <data name="LoadingLibrary" xml:space="preserve"><value>Chargement de la bibliotheque</value></data>
   <data name="Match" xml:space="preserve"><value>Correspondance</value></data>
   <data name="Merge" xml:space="preserve"><value>Fusionner</value></data>
+  <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Fusion impossible</value></data>
+  <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>La liste des doublons est obsolete. Saga a actualise la bibliotheque; ouvrez a nouveau la vue des doublons.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteur</value></data>
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Titre seulement</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>

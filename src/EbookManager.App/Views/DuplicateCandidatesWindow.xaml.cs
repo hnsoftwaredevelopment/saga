@@ -1,4 +1,5 @@
 using EbookManager.Presentation.ViewModels;
+using EbookManager.App.Localization;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -95,9 +96,22 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
             return;
         }
 
-        await viewModel.MergeCandidateAsync(row, CancellationToken.None);
-        if (!viewModel.HasGroups)
+        try
         {
+            await viewModel.MergeCandidateAsync(row, CancellationToken.None);
+            if (!viewModel.HasGroups)
+            {
+                Close();
+            }
+        }
+        catch (Exception)
+        {
+            System.Windows.MessageBox.Show(
+                this,
+                LocalizedStrings.Current["DuplicateMergeFailedMessage"],
+                LocalizedStrings.Current["DuplicateMergeFailedTitle"],
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
             Close();
         }
     }

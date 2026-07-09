@@ -107,6 +107,8 @@
   <data name="Message" xml:space="preserve"><value>Message</value></data>
   <data name="Match" xml:space="preserve"><value>Match</value></data>
   <data name="Merge" xml:space="preserve"><value>Merge</value></data>
+  <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Merge failed</value></data>
+  <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>The duplicate list is outdated. Saga refreshed the library; open the duplicate overview again.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Author match</value></data>
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Title only</value></data>
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Updating metadata...</value></data>

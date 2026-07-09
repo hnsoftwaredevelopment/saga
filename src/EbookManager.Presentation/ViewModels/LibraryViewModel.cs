@@ -1139,9 +1139,17 @@ public sealed partial class LibraryViewModel : ObservableObject
         DuplicateCandidateRowViewModel targetRow,
         CancellationToken cancellationToken)
     {
-        await duplicateMergeService.MergeFormatsOnlyAsync(sourceRow.Id, targetRow.Id, cancellationToken);
-        await RefreshAsync(cancellationToken);
-        return true;
+        try
+        {
+            await duplicateMergeService.MergeFormatsOnlyAsync(sourceRow.Id, targetRow.Id, cancellationToken);
+            await RefreshAsync(cancellationToken);
+            return true;
+        }
+        catch (KeyNotFoundException exception)
+        {
+            await RefreshAsync(cancellationToken);
+            throw new InvalidOperationException("The duplicate list is outdated. Open the duplicate overview again.", exception);
+        }
     }
 
     private enum MetadataFilterKind
