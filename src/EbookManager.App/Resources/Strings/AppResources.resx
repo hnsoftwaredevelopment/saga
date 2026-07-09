@@ -33,6 +33,8 @@
   <data name="DetailedView" xml:space="preserve"><value>Detailed</value></data>
   <data name="EReader" xml:space="preserve"><value>E-reader</value></data>
   <data name="EReaderUnavailable" xml:space="preserve"><value>Unavailable</value></data>
+  <data name="ExactMatchesOnly" xml:space="preserve"><value>Exact matches only</value></data>
+  <data name="ExactMatchesOnlyTooltip" xml:space="preserve"><value>Show only duplicates with matching title and author</value></data>
   <data name="Failed" xml:space="preserve"><value>Failed</value></data>
   <data name="Formats" xml:space="preserve"><value>Formats</value></data>
   <data name="File" xml:space="preserve"><value>File</value></data>

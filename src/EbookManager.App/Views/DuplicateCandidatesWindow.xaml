@@ -35,6 +35,12 @@
                 Padding="12,4"
                 MinWidth="190"
                 ToolTip="{loc:Loc DeleteSelectedDuplicatesTooltip}" />
+        <CheckBox DockPanel.Dock="Right"
+                  Content="{loc:Loc ExactMatchesOnly}"
+                  IsChecked="{Binding ExactMatchesOnly, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  VerticalAlignment="Center"
+                  Margin="0,0,16,0"
+                  ToolTip="{loc:Loc ExactMatchesOnlyTooltip}" />
         <TextBlock Foreground="{DynamicResource TextSecondaryBrush}"
                    VerticalAlignment="Center">
           <Run Text="{Binding GroupCount, Mode=OneWay}" />
@@ -89,9 +95,15 @@
                 IsReadOnly="True"
                 GridLinesVisibility="Horizontal"
                 HeadersVisibility="Column"
+                EnableRowVirtualization="True"
+                EnableColumnVirtualization="True"
                 SelectionMode="Extended"
                 SelectionUnit="FullRow"
-                SelectionChanged="DuplicateRowsSelectionChanged">
+                SelectionChanged="DuplicateRowsSelectionChanged"
+                ScrollViewer.CanContentScroll="True"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                VirtualizingPanel.VirtualizationMode="Recycling">
         <DataGrid.Style>
           <Style TargetType="DataGrid">
             <Setter Property="Visibility" Value="Visible" />

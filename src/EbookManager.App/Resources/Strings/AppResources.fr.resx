@@ -30,6 +30,8 @@
   <data name="DetailedView" xml:space="preserve"><value>Detailed</value></data>
   <data name="EReader" xml:space="preserve"><value>E-reader</value></data>
   <data name="EReaderUnavailable" xml:space="preserve"><value>Unavailable</value></data>
+  <data name="ExactMatchesOnly" xml:space="preserve"><value>Correspondances exactes seulement</value></data>
+  <data name="ExactMatchesOnlyTooltip" xml:space="preserve"><value>Afficher uniquement les doublons avec le meme titre et le meme auteur</value></data>
   <data name="Failed" xml:space="preserve"><value>Failed</value></data>
   <data name="Formats" xml:space="preserve"><value>Formats</value></data>
   <data name="FileType" xml:space="preserve"><value>Type de fichier</value></data>

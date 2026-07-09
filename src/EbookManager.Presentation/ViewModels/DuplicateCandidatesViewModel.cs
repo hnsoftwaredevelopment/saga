@@ -14,6 +14,8 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     private readonly Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync;
     private readonly AsyncRelayCommand deleteSelectedCandidatesCommand;
     private IReadOnlyList<Book> books;
+    private IReadOnlyList<DuplicateCandidateGroup> allGroups;
+    private bool exactMatchesOnly = true;
 
     public DuplicateCandidatesViewModel(
         DuplicateCandidateResult result,
@@ -27,10 +29,11 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             .DistinctBy(book => book.Id)
             .ToList()
             .AsReadOnly();
+        allGroups = result.Groups;
         deleteSelectedCandidatesCommand = new AsyncRelayCommand(
             DeleteSelectedCandidatesAsync,
             () => Rows.Any(row => row.IsSelected));
-        ApplyResult(result);
+        ApplyVisibleGroups();
     }
 
     public ObservableCollection<DuplicateCandidateGroupViewModel> Groups { get; } = [];
@@ -41,6 +44,17 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     public string SummaryText => $"{GroupCount} groups, {BookCount} books";
     public bool HasChanges { get; private set; }
     public IAsyncRelayCommand DeleteSelectedCandidatesCommand => deleteSelectedCandidatesCommand;
+    public bool ExactMatchesOnly
+    {
+        get => exactMatchesOnly;
+        set
+        {
+            if (SetProperty(ref exactMatchesOnly, value))
+            {
+                ApplyVisibleGroups();
+            }
+        }
+    }
 
     public void SetSelectedRows(IEnumerable<DuplicateCandidateRowViewModel> selectedRows)
     {
@@ -118,9 +132,15 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
 
     private void ApplyResult(DuplicateCandidateResult result)
     {
+        allGroups = result.Groups;
+        ApplyVisibleGroups();
+    }
+
+    private void ApplyVisibleGroups()
+    {
         Groups.Clear();
         Rows.Clear();
-        foreach (var group in result.Groups)
+        foreach (var group in FilterGroups(allGroups))
         {
             Groups.Add(new DuplicateCandidateGroupViewModel(group));
             foreach (var book in group.Books)
@@ -141,6 +161,11 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         OnPropertyChanged(nameof(SummaryText));
         deleteSelectedCandidatesCommand.NotifyCanExecuteChanged();
     }
+
+    private IEnumerable<DuplicateCandidateGroup> FilterGroups(IReadOnlyList<DuplicateCandidateGroup> candidateGroups) =>
+        exactMatchesOnly
+            ? candidateGroups.Where(group => group.MatchKind == DuplicateCandidateMatchKind.AuthorOverlap)
+            : candidateGroups;
 
     private void OnRowPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {

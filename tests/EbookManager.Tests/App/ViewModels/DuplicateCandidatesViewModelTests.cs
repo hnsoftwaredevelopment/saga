@@ -53,7 +53,63 @@ public sealed class DuplicateCandidatesViewModelTests
         ]);
 
         var viewModel = new DuplicateCandidatesViewModel(result, "C:/Library");
+        viewModel.ExactMatchesOnly = false;
 
+        viewModel.Rows.Should().HaveCount(2);
+        viewModel.Rows.Should().OnlyContain(row => row.MatchKind == DuplicateCandidateMatchKind.TitleOnly);
+    }
+
+    [Fact]
+    public void ExactMatchesOnly_defaults_to_author_overlap_matches()
+    {
+        var authorMatchFirst = CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var authorMatchSecond = CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var titleOnlyFirst = CreateBook("De Chocoladevilla", ["Maria Nikolai"], series: null, language: null);
+        var titleOnlySecond = CreateBook("De chocoladevilla", ["Unknown"], series: null, language: null);
+        var result = new DuplicateCandidateResult(
+        [
+            new DuplicateCandidateGroup(
+                "de hobbit:0",
+                "De Hobbit",
+                "J.R.R. Tolkien",
+                [authorMatchFirst, authorMatchSecond],
+                DuplicateCandidateMatchKind.AuthorOverlap),
+            new DuplicateCandidateGroup(
+                "de chocoladevilla:title",
+                "De Chocoladevilla",
+                "Maria Nikolai, Unknown",
+                [titleOnlyFirst, titleOnlySecond],
+                DuplicateCandidateMatchKind.TitleOnly)
+        ]);
+
+        var viewModel = new DuplicateCandidatesViewModel(result, "C:/Library");
+
+        viewModel.ExactMatchesOnly.Should().BeTrue();
+        viewModel.GroupCount.Should().Be(1);
+        viewModel.Rows.Select(row => row.Title).Should().BeEquivalentTo("De Hobbit", "de hobbit");
+    }
+
+    [Fact]
+    public void ExactMatchesOnly_can_be_disabled_to_show_title_only_matches()
+    {
+        var first = CreateBook("De Chocoladevilla", ["Maria Nikolai"], series: null, language: null);
+        var second = CreateBook("De chocoladevilla", ["Unknown"], series: null, language: null);
+        var result = new DuplicateCandidateResult(
+        [
+            new DuplicateCandidateGroup(
+                "de chocoladevilla:title",
+                "De Chocoladevilla",
+                "Maria Nikolai, Unknown",
+                [first, second],
+                DuplicateCandidateMatchKind.TitleOnly)
+        ]);
+        var viewModel = new DuplicateCandidatesViewModel(result, "C:/Library");
+
+        viewModel.Rows.Should().BeEmpty();
+
+        viewModel.ExactMatchesOnly = false;
+
+        viewModel.GroupCount.Should().Be(1);
         viewModel.Rows.Should().HaveCount(2);
         viewModel.Rows.Should().OnlyContain(row => row.MatchKind == DuplicateCandidateMatchKind.TitleOnly);
     }
