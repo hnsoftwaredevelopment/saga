@@ -294,13 +294,46 @@ public sealed class DuplicateCandidatesViewModelTests
         preview.Target.Id.Should().Be(target.Id);
     }
 
+    [Fact]
+    public void MergePreview_can_swap_source_and_target_books()
+    {
+        var source = CreateRow(CreateBook("Bron", ["Auteur"], null, null, formats: [EbookFormat.Pdf]));
+        var target = CreateRow(CreateBook("Doel", ["Auteur"], null, null, formats: [EbookFormat.Epub]));
+        var preview = new DuplicateMergePreviewViewModel(source, target);
+
+        preview.SwapDirectionCommand.Execute(null);
+
+        preview.Source.Id.Should().Be(target.Id);
+        preview.Target.Id.Should().Be(source.Id);
+        preview.Rows.Single(row => row.Label == "Title").SourceValue.Should().Be("Doel");
+        preview.Rows.Single(row => row.Label == "Title").TargetValue.Should().Be("Bron");
+    }
+
+    [Fact]
+    public void MergePreview_field_action_cycles_through_no_action_copy_and_merge()
+    {
+        var row = new DuplicateMergeFieldRowViewModel("Title", "Doel", "Bron");
+
+        row.Action.Should().Be(DuplicateMergeFieldAction.NoAction);
+
+        row.CycleActionCommand.Execute(null);
+        row.Action.Should().Be(DuplicateMergeFieldAction.Copy);
+
+        row.CycleActionCommand.Execute(null);
+        row.Action.Should().Be(DuplicateMergeFieldAction.Merge);
+
+        row.CycleActionCommand.Execute(null);
+        row.Action.Should().Be(DuplicateMergeFieldAction.NoAction);
+    }
+
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,
         string? series,
         string? language,
         string? description = null,
-        string? coverRelativePath = null)
+        string? coverRelativePath = null,
+        IReadOnlyList<EbookFormat>? formats = null)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
@@ -311,7 +344,10 @@ public sealed class DuplicateCandidatesViewModelTests
             now,
             now)
         {
-            Formats = [EbookFormat.Epub, EbookFormat.Pdf]
+            Formats = formats ?? [EbookFormat.Epub, EbookFormat.Pdf]
         };
     }
+
+    private static DuplicateCandidateRowViewModel CreateRow(Book book) =>
+        new("group", "group", DuplicateCandidateMatchKind.TitleOnly, book, "C:/Library");
 }

@@ -77,6 +77,10 @@
   <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Verifiez le livre cible et le livre source avant de lier le format source a la cible. Dans cette premiere etape, Saga conserve les metadonnees de la cible.</value></data>
   <data name="MergeTargetBook" xml:space="preserve"><value>Livre cible</value></data>
   <data name="MergeSourceBook" xml:space="preserve"><value>Livre source</value></data>
+  <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Inverser le livre source et le livre cible</value></data>
+  <data name="MergeActionNoAction" xml:space="preserve"><value>Ne rien faire</value></data>
+  <data name="MergeActionCopy" xml:space="preserve"><value>Copier la valeur source vers la cible</value></data>
+  <data name="MergeActionMerge" xml:space="preserve"><value>Ajouter la valeur source a la cible</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Fusion impossible</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>La liste des doublons est obsolete. Saga a actualise la bibliotheque; ouvrez a nouveau la vue des doublons.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteur</value></data>

@@ -77,6 +77,10 @@
   <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Pruefen Sie Zielbuch und Quellbuch, bevor das Quellformat mit dem Zielbuch verknuepft wird. In diesem ersten Schritt bleiben die Metadaten des Zielbuchs unveraendert.</value></data>
   <data name="MergeTargetBook" xml:space="preserve"><value>Zielbuch</value></data>
   <data name="MergeSourceBook" xml:space="preserve"><value>Quellbuch</value></data>
+  <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Quellbuch und Zielbuch tauschen</value></data>
+  <data name="MergeActionNoAction" xml:space="preserve"><value>Nichts tun</value></data>
+  <data name="MergeActionCopy" xml:space="preserve"><value>Wert aus dem Quellbuch in das Zielbuch kopieren</value></data>
+  <data name="MergeActionMerge" xml:space="preserve"><value>Wert aus dem Quellbuch an das Zielbuch anhaengen</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Zusammenfuehren fehlgeschlagen</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>Die Duplikatliste ist veraltet. Saga hat die Bibliothek aktualisiert; oeffnen Sie die Duplikatuebersicht erneut.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Autorenmatch</value></data>

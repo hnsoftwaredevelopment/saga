@@ -3,23 +3,99 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:converters="clr-namespace:EbookManager.App.Converters"
         xmlns:loc="clr-namespace:EbookManager.App.Localization"
+        xmlns:viewModels="clr-namespace:EbookManager.Presentation.ViewModels;assembly=EbookManager.Presentation"
         Title="{loc:Loc DuplicateMergePreviewTitle}"
-        Width="900"
-        Height="640"
+        Width="1080"
+        Height="720"
+        MinWidth="960"
+        MinHeight="620"
         WindowStartupLocation="CenterOwner">
   <Window.Resources>
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
+    <converters:LocalizationKeyToStringConverter x:Key="LocalizationKeyToStringConverter" />
+
+    <Style x:Key="MergePreviewHeaderTextStyle" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="MergePreviewValueTextStyle" TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="MergeActionButtonStyle" TargetType="Button">
+      <Setter Property="Width" Value="34" />
+      <Setter Property="Height" Value="34" />
+      <Setter Property="Padding" Value="6" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="ToolTip" Value="{loc:Loc MergeActionNoAction}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Action}" Value="{x:Static viewModels:DuplicateMergeFieldAction.Copy}">
+          <Setter Property="ToolTip" Value="{loc:Loc MergeActionCopy}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Action}" Value="{x:Static viewModels:DuplicateMergeFieldAction.Merge}">
+          <Setter Property="ToolTip" Value="{loc:Loc MergeActionMerge}" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <Style x:Key="MergeActionIconStyle" TargetType="Path">
+      <Setter Property="Width" Value="18" />
+      <Setter Property="Height" Value="18" />
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="StrokeThickness" Value="3" />
+      <Setter Property="Stroke" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="Fill" Value="Transparent" />
+      <Setter Property="Data" Value="{StaticResource MergePreviewNoActionIconGeometry}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Action}" Value="{x:Static viewModels:DuplicateMergeFieldAction.Copy}">
+          <Setter Property="Width" Value="20" />
+          <Setter Property="Height" Value="20" />
+          <Setter Property="Stroke" Value="Transparent" />
+          <Setter Property="Fill" Value="#AA0000" />
+          <Setter Property="Data" Value="{StaticResource MergePreviewCopyIconGeometry}" />
+        </DataTrigger>
+        <DataTrigger Binding="{Binding Action}" Value="{x:Static viewModels:DuplicateMergeFieldAction.Merge}">
+          <Setter Property="Width" Value="20" />
+          <Setter Property="Height" Value="20" />
+          <Setter Property="Stroke" Value="Transparent" />
+          <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
+          <Setter Property="Data" Value="{StaticResource MergePreviewMergeIconGeometry}" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
   </Window.Resources>
+
   <DockPanel Margin="18">
     <StackPanel DockPanel.Dock="Top" Margin="0,0,0,14">
-      <TextBlock Text="{loc:Loc DuplicateMergePreviewTitle}"
-                 FontSize="20"
-                 FontWeight="SemiBold"
-                 Foreground="{DynamicResource TextPrimaryBrush}" />
-      <TextBlock Text="{loc:Loc DuplicateMergePreviewHelp}"
-                 Margin="0,6,0,0"
-                 Foreground="{DynamicResource TextSecondaryBrush}"
-                 TextWrapping="Wrap" />
+      <DockPanel>
+        <Button DockPanel.Dock="Right"
+                Width="46"
+                Height="38"
+                Command="{Binding SwapDirectionCommand}"
+                ToolTip="{loc:Loc SwapMergeDirectionTooltip}">
+          <Path Width="22"
+                Height="22"
+                Stretch="Uniform"
+                Fill="{DynamicResource AccentBrush}"
+                Data="{StaticResource MergePreviewSwapDirectionIconGeometry}" />
+        </Button>
+        <StackPanel>
+          <TextBlock Text="{loc:Loc DuplicateMergePreviewTitle}"
+                     FontSize="20"
+                     FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Text="{loc:Loc DuplicateMergePreviewHelp}"
+                     Margin="0,6,16,0"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     TextWrapping="Wrap" />
+        </StackPanel>
+      </DockPanel>
     </StackPanel>
 
     <StackPanel DockPanel.Dock="Bottom"
@@ -36,118 +112,124 @@
               Click="LinkFormatClicked" />
     </StackPanel>
 
-    <Grid>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="18" />
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
+    <Border Padding="14"
+            CornerRadius="12"
+            Background="{DynamicResource PanelBackgroundBrush}">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="54" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-      <Border Grid.Column="0"
-              Padding="14"
-              CornerRadius="10"
-              Background="{DynamicResource PanelBackgroundBrush}">
-        <ContentControl Content="{Binding Target}">
-          <ContentControl.ContentTemplate>
-            <DataTemplate>
-              <StackPanel>
-                <TextBlock Text="{loc:Loc MergeTargetBook}"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,10" />
-                <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
-                       Height="180"
-                       Stretch="Uniform"
-                       Margin="0,0,0,12" />
-                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding Authors}" Margin="0,4,0,12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Formats}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding FormatText}" FontWeight="SemiBold" />
-                </StackPanel>
-                <Separator Margin="0,12" />
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Series}" TextWrapping="Wrap" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Language}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Language}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Publisher}" TextWrapping="Wrap" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc PublicationDate}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding PublicationDate}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Isbn}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Isbn}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Tags}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Tags}" TextWrapping="Wrap" />
-                </StackPanel>
-              </StackPanel>
-            </DataTemplate>
-          </ContentControl.ContentTemplate>
-        </ContentControl>
-      </Border>
+        <TextBlock Grid.Column="1"
+                   Text="{loc:Loc MergeTargetBook}"
+                   Style="{StaticResource MergePreviewHeaderTextStyle}" />
+        <TextBlock Grid.Column="3"
+                   Text="{loc:Loc MergeSourceBook}"
+                   Style="{StaticResource MergePreviewHeaderTextStyle}" />
 
-      <Border Grid.Column="2"
-              Padding="14"
-              CornerRadius="10"
-              Background="{DynamicResource PanelBackgroundBrush}">
-        <ContentControl Content="{Binding Source}">
-          <ContentControl.ContentTemplate>
-            <DataTemplate>
-              <StackPanel>
-                <TextBlock Text="{loc:Loc MergeSourceBook}"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,10" />
-                <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
-                       Height="180"
-                       Stretch="Uniform"
-                       Margin="0,0,0,12" />
-                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding Authors}" Margin="0,4,0,12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Formats}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding FormatText}" FontWeight="SemiBold" />
-                </StackPanel>
-                <Separator Margin="0,12" />
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Series}" TextWrapping="Wrap" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Language}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Language}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Publisher}" TextWrapping="Wrap" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc PublicationDate}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding PublicationDate}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Isbn}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Isbn}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{loc:Loc Tags}" FontWeight="SemiBold" Margin="0,0,4,0" />
-                  <TextBlock Text="{Binding Tags}" TextWrapping="Wrap" />
-                </StackPanel>
-              </StackPanel>
-            </DataTemplate>
-          </ContentControl.ContentTemplate>
-        </ContentControl>
-      </Border>
-    </Grid>
+        <ScrollViewer Grid.Row="1"
+                      Grid.ColumnSpan="4"
+                      Margin="0,12,0,0"
+                      VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <Grid Margin="0,0,0,10">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="54" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <TextBlock Grid.Column="0"
+                         Text="{loc:Loc Cover}"
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         VerticalAlignment="Top"
+                         Margin="0,8,12,0" />
+              <Border Grid.Column="1"
+                      Width="112"
+                      Height="156"
+                      HorizontalAlignment="Left"
+                      Background="#FFE2E8F0"
+                      CornerRadius="6">
+                <Image Source="{Binding Target.CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
+                       Stretch="UniformToFill" />
+              </Border>
+              <Button Grid.Column="2"
+                      Style="{StaticResource MergeActionButtonStyle}"
+                      IsEnabled="False"
+                      Opacity="0.65">
+                <Path Style="{StaticResource MergeActionIconStyle}" />
+              </Button>
+              <Border Grid.Column="3"
+                      Width="112"
+                      Height="156"
+                      HorizontalAlignment="Left"
+                      Background="#FFE2E8F0"
+                      CornerRadius="6">
+                <Image Source="{Binding Source.CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
+                       Stretch="UniformToFill" />
+              </Border>
+            </Grid>
+
+            <ItemsControl ItemsSource="{Binding Rows}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Grid Margin="0,0,0,8">
+                    <Grid.Style>
+                      <Style TargetType="Grid">
+                        <Setter Property="MinHeight" Value="36" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsLargeText}" Value="True">
+                            <Setter Property="MinHeight" Value="132" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </Grid.Style>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="130" />
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="54" />
+                      <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Label, Converter={StaticResource LocalizationKeyToStringConverter}}"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               VerticalAlignment="Top"
+                               Margin="0,8,12,0" />
+                    <Border Grid.Column="1"
+                            Padding="10,7"
+                            CornerRadius="7"
+                            Background="{DynamicResource AppBackgroundBrush}">
+                      <TextBlock Text="{Binding TargetValue}"
+                                 Style="{StaticResource MergePreviewValueTextStyle}" />
+                    </Border>
+                    <Button Grid.Column="2"
+                            Command="{Binding CycleActionCommand}"
+                            Style="{StaticResource MergeActionButtonStyle}">
+                      <Path Style="{StaticResource MergeActionIconStyle}" />
+                    </Button>
+                    <Border Grid.Column="3"
+                            Padding="10,7"
+                            CornerRadius="7"
+                            Background="{DynamicResource AppBackgroundBrush}">
+                      <TextBlock Text="{Binding SourceValue}"
+                                 Style="{StaticResource MergePreviewValueTextStyle}" />
+                    </Border>
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Border>
   </DockPanel>
 </Window>

@@ -112,6 +112,10 @@
   <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Review the target book and source book before linking the source format to the target. In this first merge step, Saga keeps the target metadata unchanged.</value></data>
   <data name="MergeTargetBook" xml:space="preserve"><value>Target book</value></data>
   <data name="MergeSourceBook" xml:space="preserve"><value>Source book</value></data>
+  <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Swap source and target book</value></data>
+  <data name="MergeActionNoAction" xml:space="preserve"><value>Do nothing</value></data>
+  <data name="MergeActionCopy" xml:space="preserve"><value>Copy source value to target</value></data>
+  <data name="MergeActionMerge" xml:space="preserve"><value>Append source value to target</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Merge failed</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>The duplicate list is outdated. Saga refreshed the library; open the duplicate overview again.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Author match</value></data>

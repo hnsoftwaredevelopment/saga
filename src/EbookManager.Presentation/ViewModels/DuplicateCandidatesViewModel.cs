@@ -238,12 +238,91 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     }
 }
 
-public sealed class DuplicateMergePreviewViewModel(
-    DuplicateCandidateRowViewModel source,
-    DuplicateCandidateRowViewModel target)
+public sealed partial class DuplicateMergePreviewViewModel : ObservableObject
 {
-    public DuplicateCandidateRowViewModel Source { get; } = source;
-    public DuplicateCandidateRowViewModel Target { get; } = target;
+    public DuplicateMergePreviewViewModel(
+        DuplicateCandidateRowViewModel source,
+        DuplicateCandidateRowViewModel target)
+    {
+        Source = source;
+        Target = target;
+        swapDirectionCommand = new RelayCommand(SwapDirection);
+        RefreshRows();
+    }
+
+    private readonly RelayCommand swapDirectionCommand;
+
+    public DuplicateCandidateRowViewModel Source { get; private set; }
+    public DuplicateCandidateRowViewModel Target { get; private set; }
+    public ObservableCollection<DuplicateMergeFieldRowViewModel> Rows { get; } = [];
+    public IRelayCommand SwapDirectionCommand => swapDirectionCommand;
+
+    private void SwapDirection()
+    {
+        (Source, Target) = (Target, Source);
+        OnPropertyChanged(nameof(Source));
+        OnPropertyChanged(nameof(Target));
+        RefreshRows();
+    }
+
+    private void RefreshRows()
+    {
+        Rows.Clear();
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Title", Target.Title, Source.Title));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Authors", Target.Authors, Source.Authors));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Series", Target.Series, Source.Series));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("SeriesNumber", Target.SeriesNumber, Source.SeriesNumber));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Language", Target.Language, Source.Language));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Publisher", Target.Publisher, Source.Publisher));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("PublicationDate", Target.PublicationDate, Source.PublicationDate));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Isbn", Target.Isbn, Source.Isbn));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Tags", Target.Tags, Source.Tags));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Description", Target.Description, Source.Description, isLargeText: true));
+    }
+}
+
+public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
+{
+    public DuplicateMergeFieldRowViewModel(
+        string label,
+        string targetValue,
+        string sourceValue,
+        bool isLargeText = false)
+    {
+        Label = label;
+        TargetValue = targetValue;
+        SourceValue = sourceValue;
+        IsLargeText = isLargeText;
+        cycleActionCommand = new RelayCommand(CycleAction);
+    }
+
+    private readonly RelayCommand cycleActionCommand;
+
+    [ObservableProperty]
+    private DuplicateMergeFieldAction action;
+
+    public string Label { get; }
+    public string TargetValue { get; }
+    public string SourceValue { get; }
+    public bool IsLargeText { get; }
+    public IRelayCommand CycleActionCommand => cycleActionCommand;
+
+    private void CycleAction()
+    {
+        Action = Action switch
+        {
+            DuplicateMergeFieldAction.NoAction => DuplicateMergeFieldAction.Copy,
+            DuplicateMergeFieldAction.Copy => DuplicateMergeFieldAction.Merge,
+            _ => DuplicateMergeFieldAction.NoAction
+        };
+    }
+}
+
+public enum DuplicateMergeFieldAction
+{
+    NoAction,
+    Copy,
+    Merge
 }
 
 public sealed class DuplicateCandidateGroupViewModel(DuplicateCandidateGroup group)

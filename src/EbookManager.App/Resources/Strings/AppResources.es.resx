@@ -77,6 +77,10 @@
   <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Revise el libro destino y el libro origen antes de vincular el formato origen al destino. En este primer paso Saga conserva los metadatos del destino.</value></data>
   <data name="MergeTargetBook" xml:space="preserve"><value>Libro destino</value></data>
   <data name="MergeSourceBook" xml:space="preserve"><value>Libro origen</value></data>
+  <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Intercambiar libro origen y destino</value></data>
+  <data name="MergeActionNoAction" xml:space="preserve"><value>No hacer nada</value></data>
+  <data name="MergeActionCopy" xml:space="preserve"><value>Copiar el valor de origen al destino</value></data>
+  <data name="MergeActionMerge" xml:space="preserve"><value>Anadir el valor de origen al destino</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>No se pudo combinar</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>La lista de duplicados esta desactualizada. Saga actualizo la biblioteca; abra de nuevo la vista de duplicados.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Autor</value></data>

@@ -112,6 +112,10 @@
   <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Controleer het doelboek en bronboek voordat het bronformaat aan het doelboek wordt gekoppeld. In deze eerste samenvoegstap houdt Saga de metadata van het doelboek ongewijzigd.</value></data>
   <data name="MergeTargetBook" xml:space="preserve"><value>Doelboek</value></data>
   <data name="MergeSourceBook" xml:space="preserve"><value>Bronboek</value></data>
+  <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Bronboek en doelboek omwisselen</value></data>
+  <data name="MergeActionNoAction" xml:space="preserve"><value>Niets doen</value></data>
+  <data name="MergeActionCopy" xml:space="preserve"><value>Waarde uit bronboek naar doelboek kopieren</value></data>
+  <data name="MergeActionMerge" xml:space="preserve"><value>Waarde uit bronboek toevoegen aan doelboek</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Samenvoegen mislukt</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>De duplicatenlijst is verouderd. Saga heeft de bibliotheek ververst; open het duplicatenoverzicht opnieuw.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteurmatch</value></data>
