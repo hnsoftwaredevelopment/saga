@@ -11,6 +11,49 @@
   <Window.Resources>
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
     <converters:DuplicateMatchKindToLocalizedStringConverter x:Key="DuplicateMatchKindToLocalizedStringConverter" />
+    <Style x:Key="DuplicateFilterToggleStyle" TargetType="{x:Type ToggleButton}">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="{x:Type ToggleButton}">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{TemplateBinding Content}"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         VerticalAlignment="Center"
+                         Margin="0,0,8,0" />
+              <Border x:Name="Track"
+                      Width="42"
+                      Height="22"
+                      CornerRadius="11"
+                      Background="{DynamicResource TextSecondaryBrush}">
+                <Border x:Name="Thumb"
+                        Width="18"
+                        Height="18"
+                        Margin="2"
+                        CornerRadius="9"
+                        HorizontalAlignment="Left"
+                        Background="{DynamicResource PanelBackgroundBrush}" />
+              </Border>
+            </StackPanel>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="Track" Property="Background" Value="{DynamicResource AccentBrush}" />
+                <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
+              </Trigger>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Opacity" Value="0.88" />
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.55" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
     <CollectionViewSource x:Key="DuplicateRows" Source="{Binding Rows}">
       <CollectionViewSource.GroupDescriptions>
         <PropertyGroupDescription PropertyName="GroupTitle" />
@@ -35,12 +78,13 @@
                 Padding="12,4"
                 MinWidth="190"
                 ToolTip="{loc:Loc DeleteSelectedDuplicatesTooltip}" />
-        <CheckBox DockPanel.Dock="Right"
-                  Content="{loc:Loc ExactMatchesOnly}"
-                  IsChecked="{Binding ExactMatchesOnly, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  VerticalAlignment="Center"
-                  Margin="0,0,16,0"
-                  ToolTip="{loc:Loc ExactMatchesOnlyTooltip}" />
+        <ToggleButton DockPanel.Dock="Right"
+                      Content="{loc:Loc ExactMatchesOnly}"
+                      IsChecked="{Binding ExactMatchesOnly, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      Style="{StaticResource DuplicateFilterToggleStyle}"
+                      VerticalAlignment="Center"
+                      Margin="0,0,16,0"
+                      ToolTip="{loc:Loc ExactMatchesOnlyTooltip}" />
         <TextBlock Foreground="{DynamicResource TextSecondaryBrush}"
                    VerticalAlignment="Center">
           <Run Text="{Binding GroupCount, Mode=OneWay}" />
