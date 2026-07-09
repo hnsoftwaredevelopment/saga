@@ -297,8 +297,8 @@ public sealed class DuplicateCandidatesViewModelTests
     [Fact]
     public void MergePreview_can_swap_source_and_target_books()
     {
-        var source = CreateRow(CreateBook("Bron", ["Auteur"], null, null, formats: [EbookFormat.Pdf]));
-        var target = CreateRow(CreateBook("Doel", ["Auteur"], null, null, formats: [EbookFormat.Epub]));
+        var source = CreateRow(CreateBook("Bron", ["Auteur"], null, null, coverRelativePath: "books/source/cover.jpg", formats: [EbookFormat.Pdf]));
+        var target = CreateRow(CreateBook("Doel", ["Auteur"], null, null, coverRelativePath: "books/target/cover.jpg", formats: [EbookFormat.Epub]));
         var preview = new DuplicateMergePreviewViewModel(source, target);
 
         preview.SwapDirectionCommand.Execute(null);
@@ -307,6 +307,8 @@ public sealed class DuplicateCandidatesViewModelTests
         preview.Target.Id.Should().Be(source.Id);
         preview.Rows.Single(row => row.Label == "Title").SourceValue.Should().Be("Doel");
         preview.Rows.Single(row => row.Label == "Title").TargetValue.Should().Be("Bron");
+        preview.Rows.Single(row => row.Label == "Cover").SourceImagePath.Should().Be(target.CoverPath);
+        preview.Rows.Single(row => row.Label == "Cover").TargetImagePath.Should().Be(source.CoverPath);
     }
 
     [Fact]
@@ -324,6 +326,47 @@ public sealed class DuplicateCandidatesViewModelTests
 
         row.CycleActionCommand.Execute(null);
         row.Action.Should().Be(DuplicateMergeFieldAction.NoAction);
+    }
+
+    [Fact]
+    public void MergePreview_cover_action_cycles_through_no_action_and_copy_only()
+    {
+        var row = DuplicateMergeFieldRowViewModel.CreateCover("C:/target/cover.jpg", "C:/source/cover.jpg");
+
+        row.Action.Should().Be(DuplicateMergeFieldAction.NoAction);
+
+        row.CycleActionCommand.Execute(null);
+        row.Action.Should().Be(DuplicateMergeFieldAction.Copy);
+
+        row.CycleActionCommand.Execute(null);
+        row.Action.Should().Be(DuplicateMergeFieldAction.NoAction);
+    }
+
+    [Fact]
+    public void MergePreview_disables_action_when_target_and_source_values_are_equal()
+    {
+        var row = new DuplicateMergeFieldRowViewModel("Title", "De Hobbit", "De Hobbit");
+
+        row.IsActionEnabled.Should().BeFalse();
+
+        row.CycleActionCommand.Execute(null);
+
+        row.Action.Should().Be(DuplicateMergeFieldAction.NoAction);
+    }
+
+    [Fact]
+    public void MergePreview_includes_cover_and_formats_as_merge_fields()
+    {
+        var source = CreateRow(CreateBook("Pro Git", ["Unknown"], null, null, coverRelativePath: "books/source/cover.jpg", formats: [EbookFormat.Pdf]));
+        var target = CreateRow(CreateBook("Pro Git", ["Scott Chacon"], null, null, coverRelativePath: "books/target/cover.jpg", formats: [EbookFormat.Epub]));
+
+        var preview = new DuplicateMergePreviewViewModel(source, target);
+
+        preview.Rows.Select(row => row.Label).Should().ContainInOrder("Cover", "Title", "Authors", "Formats");
+        preview.Rows.Single(row => row.Label == "Cover").IsCover.Should().BeTrue();
+        preview.Rows.Single(row => row.Label == "Cover").IsActionEnabled.Should().BeTrue();
+        preview.Rows.Single(row => row.Label == "Formats").TargetValue.Should().Be("EPUB");
+        preview.Rows.Single(row => row.Label == "Formats").SourceValue.Should().Be("PDF");
     }
 
     private static Book CreateBook(

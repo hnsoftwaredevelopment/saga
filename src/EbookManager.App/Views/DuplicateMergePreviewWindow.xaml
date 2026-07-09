@@ -139,45 +139,6 @@
                       Margin="0,12,0,0"
                       VerticalScrollBarVisibility="Auto">
           <StackPanel>
-            <Grid Margin="0,0,0,10">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="130" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="54" />
-                <ColumnDefinition Width="*" />
-              </Grid.ColumnDefinitions>
-              <TextBlock Grid.Column="0"
-                         Text="{loc:Loc Cover}"
-                         FontWeight="SemiBold"
-                         Foreground="{DynamicResource TextSecondaryBrush}"
-                         VerticalAlignment="Top"
-                         Margin="0,8,12,0" />
-              <Border Grid.Column="1"
-                      Width="112"
-                      Height="156"
-                      HorizontalAlignment="Left"
-                      Background="#FFE2E8F0"
-                      CornerRadius="6">
-                <Image Source="{Binding Target.CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
-                       Stretch="UniformToFill" />
-              </Border>
-              <Button Grid.Column="2"
-                      Style="{StaticResource MergeActionButtonStyle}"
-                      IsEnabled="False"
-                      Opacity="0.65">
-                <Path Style="{StaticResource MergeActionIconStyle}" />
-              </Button>
-              <Border Grid.Column="3"
-                      Width="112"
-                      Height="156"
-                      HorizontalAlignment="Left"
-                      Background="#FFE2E8F0"
-                      CornerRadius="6">
-                <Image Source="{Binding Source.CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
-                       Stretch="UniformToFill" />
-              </Border>
-            </Grid>
-
             <ItemsControl ItemsSource="{Binding Rows}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -188,6 +149,9 @@
                         <Style.Triggers>
                           <DataTrigger Binding="{Binding IsLargeText}" Value="True">
                             <Setter Property="MinHeight" Value="132" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding IsCover}" Value="True">
+                            <Setter Property="MinHeight" Value="166" />
                           </DataTrigger>
                         </Style.Triggers>
                       </Style>
@@ -208,8 +172,35 @@
                             Padding="10,7"
                             CornerRadius="7"
                             Background="{DynamicResource AppBackgroundBrush}">
-                      <TextBlock Text="{Binding TargetValue}"
-                                 Style="{StaticResource MergePreviewValueTextStyle}" />
+                      <Grid>
+                        <TextBlock Text="{Binding TargetValue}">
+                          <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource MergePreviewValueTextStyle}">
+                              <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCover}" Value="True">
+                                  <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                              </Style.Triggers>
+                            </Style>
+                          </TextBlock.Style>
+                        </TextBlock>
+                        <Image Width="112"
+                               Height="156"
+                               HorizontalAlignment="Left"
+                               Source="{Binding TargetImagePath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
+                               Stretch="UniformToFill">
+                          <Image.Style>
+                            <Style TargetType="Image">
+                              <Setter Property="Visibility" Value="Collapsed" />
+                              <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCover}" Value="True">
+                                  <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                              </Style.Triggers>
+                            </Style>
+                          </Image.Style>
+                        </Image>
+                      </Grid>
                     </Border>
                     <Button Grid.Column="2"
                             Command="{Binding CycleActionCommand}"
@@ -220,8 +211,35 @@
                             Padding="10,7"
                             CornerRadius="7"
                             Background="{DynamicResource AppBackgroundBrush}">
-                      <TextBlock Text="{Binding SourceValue}"
-                                 Style="{StaticResource MergePreviewValueTextStyle}" />
+                      <Grid>
+                        <TextBlock Text="{Binding SourceValue}">
+                          <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource MergePreviewValueTextStyle}">
+                              <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCover}" Value="True">
+                                  <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                              </Style.Triggers>
+                            </Style>
+                          </TextBlock.Style>
+                        </TextBlock>
+                        <Image Width="112"
+                               Height="156"
+                               HorizontalAlignment="Left"
+                               Source="{Binding SourceImagePath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
+                               Stretch="UniformToFill">
+                          <Image.Style>
+                            <Style TargetType="Image">
+                              <Setter Property="Visibility" Value="Collapsed" />
+                              <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsCover}" Value="True">
+                                  <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                              </Style.Triggers>
+                            </Style>
+                          </Image.Style>
+                        </Image>
+                      </Grid>
                     </Border>
                   </Grid>
                 </DataTemplate>

@@ -268,8 +268,10 @@ public sealed partial class DuplicateMergePreviewViewModel : ObservableObject
     private void RefreshRows()
     {
         Rows.Clear();
+        Rows.Add(DuplicateMergeFieldRowViewModel.CreateCover(Target.CoverPath, Source.CoverPath));
         Rows.Add(new DuplicateMergeFieldRowViewModel("Title", Target.Title, Source.Title));
         Rows.Add(new DuplicateMergeFieldRowViewModel("Authors", Target.Authors, Source.Authors));
+        Rows.Add(new DuplicateMergeFieldRowViewModel("Formats", Target.FormatText, Source.FormatText));
         Rows.Add(new DuplicateMergeFieldRowViewModel("Series", Target.Series, Source.Series));
         Rows.Add(new DuplicateMergeFieldRowViewModel("SeriesNumber", Target.SeriesNumber, Source.SeriesNumber));
         Rows.Add(new DuplicateMergeFieldRowViewModel("Language", Target.Language, Source.Language));
@@ -287,13 +289,22 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
         string label,
         string targetValue,
         string sourceValue,
-        bool isLargeText = false)
+        bool isLargeText = false,
+        bool canMerge = true,
+        bool isCover = false,
+        string? targetImagePath = null,
+        string? sourceImagePath = null)
     {
         Label = label;
         TargetValue = targetValue;
         SourceValue = sourceValue;
         IsLargeText = isLargeText;
-        cycleActionCommand = new RelayCommand(CycleAction);
+        CanMerge = canMerge;
+        IsCover = isCover;
+        TargetImagePath = targetImagePath;
+        SourceImagePath = sourceImagePath;
+        IsActionEnabled = !ValuesAreEqual(targetValue, sourceValue);
+        cycleActionCommand = new RelayCommand(CycleAction, () => IsActionEnabled);
     }
 
     private readonly RelayCommand cycleActionCommand;
@@ -305,17 +316,48 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
     public string TargetValue { get; }
     public string SourceValue { get; }
     public bool IsLargeText { get; }
+    public bool CanMerge { get; }
+    public bool IsCover { get; }
+    public bool IsActionEnabled { get; }
+    public string? TargetImagePath { get; }
+    public string? SourceImagePath { get; }
     public IRelayCommand CycleActionCommand => cycleActionCommand;
+
+    public static DuplicateMergeFieldRowViewModel CreateCover(string? targetImagePath, string? sourceImagePath) =>
+        new(
+            "Cover",
+            targetImagePath ?? string.Empty,
+            sourceImagePath ?? string.Empty,
+            canMerge: false,
+            isCover: true,
+            targetImagePath: targetImagePath,
+            sourceImagePath: sourceImagePath);
 
     private void CycleAction()
     {
+        if (!IsActionEnabled)
+        {
+            return;
+        }
+
         Action = Action switch
         {
             DuplicateMergeFieldAction.NoAction => DuplicateMergeFieldAction.Copy,
-            DuplicateMergeFieldAction.Copy => DuplicateMergeFieldAction.Merge,
+            DuplicateMergeFieldAction.Copy when CanMerge => DuplicateMergeFieldAction.Merge,
             _ => DuplicateMergeFieldAction.NoAction
         };
     }
+
+    private static bool ValuesAreEqual(string targetValue, string sourceValue) =>
+        string.Equals(
+            NormalizeForComparison(targetValue),
+            NormalizeForComparison(sourceValue),
+            StringComparison.Ordinal);
+
+    private static string NormalizeForComparison(string value) =>
+        string.Join(
+            ' ',
+            value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
 }
 
 public enum DuplicateMergeFieldAction
