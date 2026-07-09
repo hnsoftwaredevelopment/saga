@@ -183,6 +183,85 @@ public sealed class DuplicateCandidatesViewModelTests
         viewModel.Rows.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task MergeCandidate_merges_row_into_best_metadata_target_in_the_same_group()
+    {
+        var source = CreateBook("De Hobbit", ["Unknown"], series: null, language: null);
+        var target = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            series: "Midden-aarde",
+            language: "nl",
+            description: "Een rijker gevuld basisboek.",
+            coverRelativePath: "books/cover.jpg");
+        var result = new DuplicateCandidateResult(
+        [
+            new DuplicateCandidateGroup(
+                "de hobbit:title",
+                "De Hobbit",
+                "J.R.R. Tolkien, Unknown",
+                [source, target],
+                DuplicateCandidateMatchKind.TitleOnly)
+        ]);
+        (Guid SourceBookId, Guid TargetBookId)? merged = null;
+        var viewModel = new DuplicateCandidatesViewModel(
+            result,
+            "C:/Library",
+            mergeCandidateAsync: (sourceRow, targetRow, _) =>
+            {
+                merged = (sourceRow.Id, targetRow.Id);
+                return Task.FromResult(true);
+            })
+        {
+            ExactMatchesOnly = false
+        };
+
+        await viewModel.MergeCandidateAsync(viewModel.Rows.Single(row => row.Id == source.Id), CancellationToken.None);
+
+        merged.Should().Be((source.Id, target.Id));
+        viewModel.HasChanges.Should().BeTrue();
+        viewModel.HasGroups.Should().BeFalse();
+        viewModel.Rows.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task MergeCandidate_keeps_best_metadata_book_as_target_when_clicked()
+    {
+        var source = CreateBook("De Hobbit", ["Unknown"], series: null, language: null);
+        var target = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            series: "Midden-aarde",
+            language: "nl",
+            description: "Een rijker gevuld basisboek.",
+            coverRelativePath: "books/cover.jpg");
+        var result = new DuplicateCandidateResult(
+        [
+            new DuplicateCandidateGroup(
+                "de hobbit:title",
+                "De Hobbit",
+                "J.R.R. Tolkien, Unknown",
+                [source, target],
+                DuplicateCandidateMatchKind.TitleOnly)
+        ]);
+        (Guid SourceBookId, Guid TargetBookId)? merged = null;
+        var viewModel = new DuplicateCandidatesViewModel(
+            result,
+            "C:/Library",
+            mergeCandidateAsync: (sourceRow, targetRow, _) =>
+            {
+                merged = (sourceRow.Id, targetRow.Id);
+                return Task.FromResult(true);
+            })
+        {
+            ExactMatchesOnly = false
+        };
+
+        await viewModel.MergeCandidateAsync(viewModel.Rows.Single(row => row.Id == target.Id), CancellationToken.None);
+
+        merged.Should().Be((source.Id, target.Id));
+    }
+
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,

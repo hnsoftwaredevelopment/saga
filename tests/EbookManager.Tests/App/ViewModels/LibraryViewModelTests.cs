@@ -129,6 +129,41 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Duplicate_candidate_merge_attaches_source_to_best_target_and_refreshes_library()
+    {
+        var sourceBookId = Guid.NewGuid();
+        var targetBookId = Guid.NewGuid();
+        var source = CreateBook("De Hobbit", ["J.R.R. Tolkien"], id: sourceBookId, formats: [EbookFormat.Pdf]);
+        var targetBefore = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            language: "nl",
+            series: "Midden-aarde",
+            id: targetBookId,
+            formats: [EbookFormat.Epub]);
+        var targetAfter = targetBefore with { Formats = [EbookFormat.Epub, EbookFormat.Pdf] };
+        var repository = new RefreshingBookRepository([source, targetBefore], [targetAfter]);
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel(
+            [source, targetBefore],
+            interaction,
+            repository: repository,
+            currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+        var sourceRow = interaction.DuplicateCandidates!.Rows.Single(row => row.Id == sourceBookId);
+
+        await interaction.DuplicateCandidates.MergeCandidateAsync(sourceRow, CancellationToken.None);
+
+        repository.AttachedSourceBookId.Should().Be(sourceBookId);
+        repository.AttachedTargetBookId.Should().Be(targetBookId);
+        VisibleBookTitles(viewModel).Should().Equal("De Hobbit");
+        viewModel.VisibleBooks.Should().ContainSingle()
+            .Which.Book.Formats.Should().BeEquivalentTo([EbookFormat.Epub, EbookFormat.Pdf]);
+    }
+
+    [Fact]
     public async Task Author_filters_are_built_from_books_and_filter_visible_rows()
     {
         var hobbit = CreateBook("The Hobbit", ["Tolkien"]);

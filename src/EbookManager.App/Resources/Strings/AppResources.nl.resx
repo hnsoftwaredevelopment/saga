@@ -106,6 +106,7 @@
   <data name="LoadingLibrary" xml:space="preserve"><value>Inlezen bibliotheek</value></data>
   <data name="Message" xml:space="preserve"><value>Melding</value></data>
   <data name="Match" xml:space="preserve"><value>Match</value></data>
+  <data name="Merge" xml:space="preserve"><value>Samenvoegen</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteurmatch</value></data>
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Alleen titel</value></data>
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Metadata wordt bijgewerkt...</value></data>

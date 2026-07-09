@@ -21,6 +21,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IBookRepository bookRepository;
     private readonly BookSearchService searchService;
     private readonly DuplicateCandidateService duplicateCandidateService;
+    private readonly DuplicateMergeService duplicateMergeService;
     private readonly IUserInteractionService userInteraction;
     private readonly BookService? bookService;
     private readonly ImportService? importService;
@@ -41,6 +42,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         BookDetailsViewModel details,
         IUserInteractionService userInteraction,
         DuplicateCandidateService? duplicateCandidateService = null,
+        DuplicateMergeService? duplicateMergeService = null,
         BookService? bookService = null,
         ImportService? importService = null,
         IImportAgent? importAgent = null,
@@ -54,6 +56,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.bookRepository = bookRepository;
         this.searchService = searchService;
         this.duplicateCandidateService = duplicateCandidateService ?? new DuplicateCandidateService();
+        this.duplicateMergeService = duplicateMergeService ?? new DuplicateMergeService(bookRepository);
         Details = details;
         this.userInteraction = userInteraction;
         this.bookService = bookService;
@@ -1102,7 +1105,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         var candidates = new DuplicateCandidatesViewModel(
             result,
             CurrentLibraryPath,
-            DeleteDuplicateCandidateAsync);
+            DeleteDuplicateCandidateAsync,
+            MergeDuplicateCandidateAsync);
         await userInteraction.ShowDuplicateCandidatesAsync(
             candidates,
             cancellationToken);
@@ -1128,6 +1132,16 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         var result = await bookService.DeleteAsync(row.Id, cancellationToken);
         return result.Status == BookDeleteStatus.Deleted;
+    }
+
+    private async Task<bool> MergeDuplicateCandidateAsync(
+        DuplicateCandidateRowViewModel sourceRow,
+        DuplicateCandidateRowViewModel targetRow,
+        CancellationToken cancellationToken)
+    {
+        await duplicateMergeService.MergeFormatsOnlyAsync(sourceRow.Id, targetRow.Id, cancellationToken);
+        await RefreshAsync(cancellationToken);
+        return true;
     }
 
     private enum MetadataFilterKind

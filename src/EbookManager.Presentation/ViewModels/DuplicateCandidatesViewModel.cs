@@ -12,6 +12,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     private readonly DuplicateCandidateService duplicateCandidateService = new();
     private readonly string? libraryPath;
     private readonly Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync;
+    private readonly Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? mergeCandidateAsync;
     private readonly AsyncRelayCommand deleteSelectedCandidatesCommand;
     private IReadOnlyList<Book> books;
     private IReadOnlyList<DuplicateCandidateGroup> allGroups;
@@ -20,10 +21,12 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     public DuplicateCandidatesViewModel(
         DuplicateCandidateResult result,
         string? libraryPath = null,
-        Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync = null)
+        Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync = null,
+        Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? mergeCandidateAsync = null)
     {
         this.libraryPath = libraryPath;
         this.deleteCandidateAsync = deleteCandidateAsync;
+        this.mergeCandidateAsync = mergeCandidateAsync;
         books = result.Groups
             .SelectMany(group => group.Books)
             .DistinctBy(book => book.Id)
@@ -91,6 +94,36 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         ApplyResult(duplicateCandidateService.FindCandidates(books));
     }
 
+    public async Task MergeCandidateAsync(
+        DuplicateCandidateRowViewModel sourceRow,
+        CancellationToken cancellationToken)
+    {
+        if (mergeCandidateAsync is null)
+        {
+            return;
+        }
+
+        var mergePair = SelectMergePair(sourceRow);
+        if (mergePair is null)
+        {
+            return;
+        }
+
+        var merged = await mergeCandidateAsync(mergePair.Value.Source, mergePair.Value.Target, cancellationToken);
+        if (!merged)
+        {
+            return;
+        }
+
+        books = books
+            .Where(book => book.Id != mergePair.Value.Source.Id)
+            .ToList()
+            .AsReadOnly();
+        HasChanges = true;
+        OnPropertyChanged(nameof(HasChanges));
+        ApplyResult(duplicateCandidateService.FindCandidates(books));
+    }
+
     private async Task DeleteSelectedCandidatesAsync(CancellationToken cancellationToken)
     {
         var selectedRows = Rows
@@ -146,6 +179,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             foreach (var book in group.Books)
             {
                 var row = new DuplicateCandidateRowViewModel(
+                    group.MatchKey,
                     BuildGroupTitle(group),
                     group.MatchKind,
                     book,
@@ -166,6 +200,26 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         exactMatchesOnly
             ? candidateGroups.Where(group => group.MatchKind == DuplicateCandidateMatchKind.AuthorOverlap)
             : candidateGroups;
+
+    private (DuplicateCandidateRowViewModel Source, DuplicateCandidateRowViewModel Target)? SelectMergePair(
+        DuplicateCandidateRowViewModel clickedRow)
+    {
+        var groupRows = Rows
+            .Where(row => row.MatchKey == clickedRow.MatchKey)
+            .OrderByDescending(row => row.MetadataScore)
+            .ThenBy(row => row.Title, StringComparer.CurrentCultureIgnoreCase)
+            .ToList();
+        if (groupRows.Count < 2)
+        {
+            return null;
+        }
+
+        var target = groupRows[0];
+        var source = clickedRow.Id == target.Id
+            ? groupRows[1]
+            : clickedRow;
+        return (source, target);
+    }
 
     private void OnRowPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -205,12 +259,14 @@ public sealed class DuplicateCandidateBookViewModel(EbookManager.Domain.Books.Bo
 public sealed partial class DuplicateCandidateRowViewModel : ObservableObject
 {
     public DuplicateCandidateRowViewModel(
+        string matchKey,
         string groupTitle,
         DuplicateCandidateMatchKind matchKind,
         EbookManager.Domain.Books.Book book,
         string? libraryPath = null)
     {
         Id = book.Id;
+        MatchKey = matchKey;
         GroupTitle = groupTitle;
         MatchKind = matchKind;
         Title = book.Metadata.Title;
@@ -234,6 +290,7 @@ public sealed partial class DuplicateCandidateRowViewModel : ObservableObject
     private bool isSelected;
 
     public Guid Id { get; }
+    public string MatchKey { get; }
     public string GroupTitle { get; }
     public DuplicateCandidateMatchKind MatchKind { get; }
     public string Title { get; }
@@ -249,9 +306,29 @@ public sealed partial class DuplicateCandidateRowViewModel : ObservableObject
     public string Description { get; }
     public string Status { get; }
     public string? CoverPath { get; }
+    public int MetadataScore =>
+        CountIfPresent(Title) +
+        CountUsefulAuthors(Authors) +
+        CountIfPresent(Series) +
+        CountIfPresent(Language) +
+        CountIfPresent(Publisher) +
+        CountIfPresent(PublicationDate) +
+        CountIfPresent(Isbn) +
+        CountIfPresent(Tags) +
+        CountIfPresent(Description) +
+        (CoverPath is null ? 0 : 1);
 
     private static string FormatFormats(IReadOnlyList<EbookFormat> formats) =>
         formats.Count == 0
             ? string.Empty
             : string.Join(", ", formats.Select(format => format.ToString().ToUpperInvariant()));
+
+    private static int CountIfPresent(string value) =>
+        string.IsNullOrWhiteSpace(value) ? 0 : 1;
+
+    private static int CountUsefulAuthors(string authors) =>
+        string.IsNullOrWhiteSpace(authors) ||
+        string.Equals(authors.Trim(), "Unknown", StringComparison.OrdinalIgnoreCase)
+            ? 0
+            : 1;
 }

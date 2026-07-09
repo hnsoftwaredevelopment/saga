@@ -71,6 +71,7 @@
   <data name="EmptyStateLibraryFolderMissing" xml:space="preserve"><value>Le dossier de la bibliothèque active n'existe plus. Créez ou ouvrez une bibliothèque pour continuer.</value></data>
   <data name="LoadingLibrary" xml:space="preserve"><value>Chargement de la bibliotheque</value></data>
   <data name="Match" xml:space="preserve"><value>Correspondance</value></data>
+  <data name="Merge" xml:space="preserve"><value>Fusionner</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteur</value></data>
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Titre seulement</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>

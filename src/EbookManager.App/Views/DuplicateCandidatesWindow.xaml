@@ -218,6 +218,15 @@
           <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" Width="1.4*" />
           <DataGridTextColumn Header="{loc:Loc Language}" Binding="{Binding Language}" Width="90" />
           <DataGridTextColumn Header="{loc:Loc Status}" Binding="{Binding Status}" Width="110" />
+          <DataGridTemplateColumn Header="{loc:Loc Merge}" Width="120">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Button Content="{loc:Loc Merge}"
+                        Padding="8,2"
+                        Click="MergeCandidateButtonClicked" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
           <DataGridTemplateColumn Header="{loc:Loc Action}" Width="160">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>

@@ -54,6 +54,15 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         }
     }
 
+    private async void MergeCandidateButtonClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: DuplicateCandidateRowViewModel row })
+        {
+            e.Handled = true;
+            await MergeCandidateAsync(row);
+        }
+    }
+
     private async void DeleteCandidateClicked(object sender, System.Windows.RoutedEventArgs e)
     {
         if (DuplicateRowsGrid.SelectedItem is not DuplicateCandidateRowViewModel row)
@@ -73,6 +82,20 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         }
 
         await viewModel.DeleteCandidateAsync(row, CancellationToken.None);
+        if (!viewModel.HasGroups)
+        {
+            Close();
+        }
+    }
+
+    private async Task MergeCandidateAsync(DuplicateCandidateRowViewModel row)
+    {
+        if (DataContext is not DuplicateCandidatesViewModel viewModel)
+        {
+            return;
+        }
+
+        await viewModel.MergeCandidateAsync(row, CancellationToken.None);
         if (!viewModel.HasGroups)
         {
             Close();

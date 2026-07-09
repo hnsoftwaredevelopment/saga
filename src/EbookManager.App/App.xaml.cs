@@ -105,6 +105,7 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<BookDetailsViewModel>(),
             provider.GetRequiredService<IUserInteractionService>(),
             provider.GetRequiredService<DuplicateCandidateService>(),
+            provider.GetRequiredService<DuplicateMergeService>(),
             provider.GetRequiredService<BookService>(),
             provider.GetService<ImportService>(),
             provider.GetService<IImportAgent>(),
