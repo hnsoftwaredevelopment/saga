@@ -1,13 +1,19 @@
 using EbookManager.Presentation.ViewModels;
 using EbookManager.App.Localization;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace EbookManager.App.Views;
 
 public partial class DuplicateCandidatesWindow : System.Windows.Window
 {
+    private bool isMergingCandidate;
+
     public DuplicateCandidatesWindow(DuplicateCandidatesViewModel viewModel)
     {
         InitializeComponent();
@@ -21,6 +27,12 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
 
     private void DuplicateRowDoubleClicked(object sender, MouseButtonEventArgs e)
     {
+        if (IsInsideButton(e.OriginalSource as System.Windows.DependencyObject))
+        {
+            e.Handled = true;
+            return;
+        }
+
         if (sender is DataGridRow { DataContext: DuplicateCandidateRowViewModel row })
         {
             e.Handled = true;
@@ -57,10 +69,25 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
 
     private async void MergeCandidateButtonClicked(object sender, System.Windows.RoutedEventArgs e)
     {
-        if (sender is Button { DataContext: DuplicateCandidateRowViewModel row })
+        if (sender is Button { DataContext: DuplicateCandidateRowViewModel row } button)
         {
             e.Handled = true;
-            await MergeCandidateAsync(row);
+            if (isMergingCandidate)
+            {
+                return;
+            }
+
+            isMergingCandidate = true;
+            button.IsEnabled = false;
+            try
+            {
+                await MergeCandidateAsync(row);
+            }
+            finally
+            {
+                isMergingCandidate = false;
+                button.IsEnabled = true;
+            }
         }
     }
 
@@ -96,9 +123,24 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
             return;
         }
 
+        var preview = viewModel.CreateMergePreview(row);
+        if (preview is null)
+        {
+            return;
+        }
+
+        var previewWindow = new DuplicateMergePreviewWindow(preview)
+        {
+            Owner = this
+        };
+        if (previewWindow.ShowDialog() != true)
+        {
+            return;
+        }
+
         try
         {
-            await viewModel.MergeCandidateAsync(row, CancellationToken.None);
+            await viewModel.MergeCandidateAsync(preview.Source, CancellationToken.None);
             if (!viewModel.HasGroups)
             {
                 Close();
@@ -115,6 +157,29 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
             Close();
         }
     }
+
+    private static bool IsInsideButton(System.Windows.DependencyObject? source)
+    {
+        for (var current = source; current is not null; current = GetParent(current))
+        {
+            if (current is ButtonBase)
+            {
+                return true;
+            }
+
+            if (current is DataGridRow)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private static DependencyObject? GetParent(DependencyObject current) =>
+        current is Visual or Visual3D
+            ? VisualTreeHelper.GetParent(current)
+            : LogicalTreeHelper.GetParent(current);
 
     private void DuplicateRowsSelectionChanged(object sender, SelectionChangedEventArgs e)
     {

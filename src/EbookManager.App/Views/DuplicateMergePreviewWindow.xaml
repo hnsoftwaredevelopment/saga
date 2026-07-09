@@ -1,0 +1,153 @@
+<Window x:Class="EbookManager.App.Views.DuplicateMergePreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:EbookManager.App.Converters"
+        xmlns:loc="clr-namespace:EbookManager.App.Localization"
+        Title="{loc:Loc DuplicateMergePreviewTitle}"
+        Width="900"
+        Height="640"
+        WindowStartupLocation="CenterOwner">
+  <Window.Resources>
+    <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
+  </Window.Resources>
+  <DockPanel Margin="18">
+    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,14">
+      <TextBlock Text="{loc:Loc DuplicateMergePreviewTitle}"
+                 FontSize="20"
+                 FontWeight="SemiBold"
+                 Foreground="{DynamicResource TextPrimaryBrush}" />
+      <TextBlock Text="{loc:Loc DuplicateMergePreviewHelp}"
+                 Margin="0,6,0,0"
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 TextWrapping="Wrap" />
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="0,14,0,0">
+      <Button Content="{loc:Loc Cancel}"
+              MinWidth="100"
+              Margin="0,0,8,0"
+              IsCancel="True" />
+      <Button Content="{loc:Loc LinkFormat}"
+              MinWidth="150"
+              IsDefault="True"
+              Click="LinkFormatClicked" />
+    </StackPanel>
+
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="18" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0"
+              Padding="14"
+              CornerRadius="10"
+              Background="{DynamicResource PanelBackgroundBrush}">
+        <ContentControl Content="{Binding Target}">
+          <ContentControl.ContentTemplate>
+            <DataTemplate>
+              <StackPanel>
+                <TextBlock Text="{loc:Loc MergeTargetBook}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,10" />
+                <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
+                       Height="180"
+                       Stretch="Uniform"
+                       Margin="0,0,0,12" />
+                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding Authors}" Margin="0,4,0,12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Formats}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding FormatText}" FontWeight="SemiBold" />
+                </StackPanel>
+                <Separator Margin="0,12" />
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Series}" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Language}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Language}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Publisher}" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc PublicationDate}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding PublicationDate}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Isbn}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Isbn}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Tags}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Tags}" TextWrapping="Wrap" />
+                </StackPanel>
+              </StackPanel>
+            </DataTemplate>
+          </ContentControl.ContentTemplate>
+        </ContentControl>
+      </Border>
+
+      <Border Grid.Column="2"
+              Padding="14"
+              CornerRadius="10"
+              Background="{DynamicResource PanelBackgroundBrush}">
+        <ContentControl Content="{Binding Source}">
+          <ContentControl.ContentTemplate>
+            <DataTemplate>
+              <StackPanel>
+                <TextBlock Text="{loc:Loc MergeSourceBook}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,10" />
+                <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=180}"
+                       Height="180"
+                       Stretch="Uniform"
+                       Margin="0,0,0,12" />
+                <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding Authors}" Margin="0,4,0,12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Formats}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding FormatText}" FontWeight="SemiBold" />
+                </StackPanel>
+                <Separator Margin="0,12" />
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Series}" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Language}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Language}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Publisher}" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc PublicationDate}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding PublicationDate}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Isbn}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Isbn}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{loc:Loc Tags}" FontWeight="SemiBold" Margin="0,0,4,0" />
+                  <TextBlock Text="{Binding Tags}" TextWrapping="Wrap" />
+                </StackPanel>
+              </StackPanel>
+            </DataTemplate>
+          </ContentControl.ContentTemplate>
+        </ContentControl>
+      </Border>
+    </Grid>
+  </DockPanel>
+</Window>

@@ -124,6 +124,14 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         ApplyResult(duplicateCandidateService.FindCandidates(books));
     }
 
+    public DuplicateMergePreviewViewModel? CreateMergePreview(DuplicateCandidateRowViewModel clickedRow)
+    {
+        var mergePair = SelectMergePair(clickedRow);
+        return mergePair is null
+            ? null
+            : new DuplicateMergePreviewViewModel(mergePair.Value.Source, mergePair.Value.Target);
+    }
+
     private async Task DeleteSelectedCandidatesAsync(CancellationToken cancellationToken)
     {
         var selectedRows = Rows
@@ -228,6 +236,14 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             deleteSelectedCandidatesCommand.NotifyCanExecuteChanged();
         }
     }
+}
+
+public sealed class DuplicateMergePreviewViewModel(
+    DuplicateCandidateRowViewModel source,
+    DuplicateCandidateRowViewModel target)
+{
+    public DuplicateCandidateRowViewModel Source { get; } = source;
+    public DuplicateCandidateRowViewModel Target { get; } = target;
 }
 
 public sealed class DuplicateCandidateGroupViewModel(DuplicateCandidateGroup group)

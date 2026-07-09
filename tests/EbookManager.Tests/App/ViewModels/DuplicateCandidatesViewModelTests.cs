@@ -262,6 +262,38 @@ public sealed class DuplicateCandidatesViewModelTests
         merged.Should().Be((source.Id, target.Id));
     }
 
+    [Fact]
+    public void CreateMergePreview_shows_source_and_best_metadata_target()
+    {
+        var source = CreateBook("De Hobbit", ["Unknown"], series: null, language: null);
+        var target = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            series: "Midden-aarde",
+            language: "nl",
+            description: "Een rijker gevuld basisboek.",
+            coverRelativePath: "books/cover.jpg");
+        var result = new DuplicateCandidateResult(
+        [
+            new DuplicateCandidateGroup(
+                "de hobbit:title",
+                "De Hobbit",
+                "J.R.R. Tolkien, Unknown",
+                [source, target],
+                DuplicateCandidateMatchKind.TitleOnly)
+        ]);
+        var viewModel = new DuplicateCandidatesViewModel(result, "C:/Library")
+        {
+            ExactMatchesOnly = false
+        };
+
+        var preview = viewModel.CreateMergePreview(viewModel.Rows.Single(row => row.Id == source.Id));
+
+        preview.Should().NotBeNull();
+        preview!.Source.Id.Should().Be(source.Id);
+        preview.Target.Id.Should().Be(target.Id);
+    }
+
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,

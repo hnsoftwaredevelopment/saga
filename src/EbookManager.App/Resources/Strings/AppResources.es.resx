@@ -72,6 +72,11 @@
   <data name="LoadingLibrary" xml:space="preserve"><value>Cargando biblioteca</value></data>
   <data name="Match" xml:space="preserve"><value>Coincidencia</value></data>
   <data name="Merge" xml:space="preserve"><value>Combinar</value></data>
+  <data name="LinkFormat" xml:space="preserve"><value>Vincular formato</value></data>
+  <data name="DuplicateMergePreviewTitle" xml:space="preserve"><value>Combinar duplicado</value></data>
+  <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Revise el libro destino y el libro origen antes de vincular el formato origen al destino. En este primer paso Saga conserva los metadatos del destino.</value></data>
+  <data name="MergeTargetBook" xml:space="preserve"><value>Libro destino</value></data>
+  <data name="MergeSourceBook" xml:space="preserve"><value>Libro origen</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>No se pudo combinar</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>La lista de duplicados esta desactualizada. Saga actualizo la biblioteca; abra de nuevo la vista de duplicados.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Autor</value></data>
