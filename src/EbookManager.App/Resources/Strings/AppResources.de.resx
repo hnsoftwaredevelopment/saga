@@ -72,9 +72,9 @@
   <data name="LoadingLibrary" xml:space="preserve"><value>Bibliothek wird geladen</value></data>
   <data name="Match" xml:space="preserve"><value>Treffer</value></data>
   <data name="Merge" xml:space="preserve"><value>Zusammenfuehren</value></data>
-  <data name="LinkFormat" xml:space="preserve"><value>Format verknuepfen</value></data>
+  <data name="LinkFormat" xml:space="preserve"><value>Zusammenfuehren</value></data>
   <data name="DuplicateMergePreviewTitle" xml:space="preserve"><value>Duplikat zusammenfuehren</value></data>
-  <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Pruefen Sie Zielbuch und Quellbuch, bevor das Quellformat mit dem Zielbuch verknuepft wird. In diesem ersten Schritt bleiben die Metadaten des Zielbuchs unveraendert.</value></data>
+  <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Pruefen Sie Zielbuch und Quellbuch. Saga verknuepft die Quellformate mit dem Zielbuch und wendet nur die ausgewaehlten Metadatenaktionen an.</value></data>
   <data name="MergeTargetBook" xml:space="preserve"><value>Zielbuch</value></data>
   <data name="MergeSourceBook" xml:space="preserve"><value>Quellbuch</value></data>
   <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Quellbuch und Zielbuch tauschen</value></data>

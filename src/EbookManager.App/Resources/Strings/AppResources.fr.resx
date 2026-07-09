@@ -72,9 +72,9 @@
   <data name="LoadingLibrary" xml:space="preserve"><value>Chargement de la bibliotheque</value></data>
   <data name="Match" xml:space="preserve"><value>Correspondance</value></data>
   <data name="Merge" xml:space="preserve"><value>Fusionner</value></data>
-  <data name="LinkFormat" xml:space="preserve"><value>Lier le format</value></data>
+  <data name="LinkFormat" xml:space="preserve"><value>Fusionner</value></data>
   <data name="DuplicateMergePreviewTitle" xml:space="preserve"><value>Fusionner le doublon</value></data>
-  <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Verifiez le livre cible et le livre source avant de lier le format source a la cible. Dans cette premiere etape, Saga conserve les metadonnees de la cible.</value></data>
+  <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Verifiez le livre cible et le livre source. Saga lie les formats source a la cible et applique uniquement les actions de metadonnees selectionnees.</value></data>
   <data name="MergeTargetBook" xml:space="preserve"><value>Livre cible</value></data>
   <data name="MergeSourceBook" xml:space="preserve"><value>Livre source</value></data>
   <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Inverser le livre source et le livre cible</value></data>

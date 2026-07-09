@@ -207,7 +207,7 @@ public sealed class DuplicateCandidatesViewModelTests
         var viewModel = new DuplicateCandidatesViewModel(
             result,
             "C:/Library",
-            mergeCandidateAsync: (sourceRow, targetRow, _) =>
+            mergeCandidateAsync: (sourceRow, targetRow, _, _) =>
             {
                 merged = (sourceRow.Id, targetRow.Id);
                 return Task.FromResult(true);
@@ -248,7 +248,7 @@ public sealed class DuplicateCandidatesViewModelTests
         var viewModel = new DuplicateCandidatesViewModel(
             result,
             "C:/Library",
-            mergeCandidateAsync: (sourceRow, targetRow, _) =>
+            mergeCandidateAsync: (sourceRow, targetRow, _, _) =>
             {
                 merged = (sourceRow.Id, targetRow.Id);
                 return Task.FromResult(true);
@@ -314,7 +314,7 @@ public sealed class DuplicateCandidatesViewModelTests
     [Fact]
     public void MergePreview_field_action_cycles_through_no_action_copy_and_merge()
     {
-        var row = new DuplicateMergeFieldRowViewModel("Title", "Doel", "Bron");
+        var row = new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Title, "Title", "Doel", "Bron");
 
         row.Action.Should().Be(DuplicateMergeFieldAction.NoAction);
 
@@ -345,7 +345,7 @@ public sealed class DuplicateCandidatesViewModelTests
     [Fact]
     public void MergePreview_disables_action_when_target_and_source_values_are_equal()
     {
-        var row = new DuplicateMergeFieldRowViewModel("Title", "De Hobbit", "De Hobbit");
+        var row = new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Title, "Title", "De Hobbit", "De Hobbit");
 
         row.IsActionEnabled.Should().BeFalse();
 

@@ -72,9 +72,9 @@
   <data name="LoadingLibrary" xml:space="preserve"><value>Cargando biblioteca</value></data>
   <data name="Match" xml:space="preserve"><value>Coincidencia</value></data>
   <data name="Merge" xml:space="preserve"><value>Combinar</value></data>
-  <data name="LinkFormat" xml:space="preserve"><value>Vincular formato</value></data>
+  <data name="LinkFormat" xml:space="preserve"><value>Combinar</value></data>
   <data name="DuplicateMergePreviewTitle" xml:space="preserve"><value>Combinar duplicado</value></data>
-  <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Revise el libro destino y el libro origen antes de vincular el formato origen al destino. En este primer paso Saga conserva los metadatos del destino.</value></data>
+  <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Revise el libro destino y el libro origen. Saga vincula los formatos origen al destino y aplica solo las acciones de metadatos seleccionadas.</value></data>
   <data name="MergeTargetBook" xml:space="preserve"><value>Libro destino</value></data>
   <data name="MergeSourceBook" xml:space="preserve"><value>Libro origen</value></data>
   <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Intercambiar libro origen y destino</value></data>

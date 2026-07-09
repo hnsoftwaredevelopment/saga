@@ -1137,11 +1137,12 @@ public sealed partial class LibraryViewModel : ObservableObject
     private async Task<bool> MergeDuplicateCandidateAsync(
         DuplicateCandidateRowViewModel sourceRow,
         DuplicateCandidateRowViewModel targetRow,
+        IReadOnlyList<DuplicateMergeFieldSelection> selections,
         CancellationToken cancellationToken)
     {
         try
         {
-            await duplicateMergeService.MergeFormatsOnlyAsync(sourceRow.Id, targetRow.Id, cancellationToken);
+            await duplicateMergeService.MergeAsync(sourceRow.Id, targetRow.Id, selections, cancellationToken);
             await RefreshAsync(cancellationToken);
             return true;
         }

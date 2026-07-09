@@ -140,7 +140,7 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
 
         try
         {
-            await viewModel.MergeCandidateAsync(preview.Source, CancellationToken.None);
+            await viewModel.MergeCandidateAsync(preview, CancellationToken.None);
             if (!viewModel.HasGroups)
             {
                 Close();

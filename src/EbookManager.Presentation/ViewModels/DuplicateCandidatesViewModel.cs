@@ -12,7 +12,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     private readonly DuplicateCandidateService duplicateCandidateService = new();
     private readonly string? libraryPath;
     private readonly Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync;
-    private readonly Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? mergeCandidateAsync;
+    private readonly Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync;
     private readonly AsyncRelayCommand deleteSelectedCandidatesCommand;
     private IReadOnlyList<Book> books;
     private IReadOnlyList<DuplicateCandidateGroup> allGroups;
@@ -22,7 +22,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         DuplicateCandidateResult result,
         string? libraryPath = null,
         Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync = null,
-        Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? mergeCandidateAsync = null)
+        Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync = null)
     {
         this.libraryPath = libraryPath;
         this.deleteCandidateAsync = deleteCandidateAsync;
@@ -98,25 +98,36 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         DuplicateCandidateRowViewModel sourceRow,
         CancellationToken cancellationToken)
     {
+        var preview = CreateMergePreview(sourceRow);
+        if (preview is null)
+        {
+            return;
+        }
+
+        await MergeCandidateAsync(preview, cancellationToken);
+    }
+
+    public async Task MergeCandidateAsync(
+        DuplicateMergePreviewViewModel preview,
+        CancellationToken cancellationToken)
+    {
         if (mergeCandidateAsync is null)
         {
             return;
         }
 
-        var mergePair = SelectMergePair(sourceRow);
-        if (mergePair is null)
-        {
-            return;
-        }
-
-        var merged = await mergeCandidateAsync(mergePair.Value.Source, mergePair.Value.Target, cancellationToken);
+        var merged = await mergeCandidateAsync(
+            preview.Source,
+            preview.Target,
+            preview.BuildSelections(),
+            cancellationToken);
         if (!merged)
         {
             return;
         }
 
         books = books
-            .Where(book => book.Id != mergePair.Value.Source.Id)
+            .Where(book => book.Id != preview.Source.Id)
             .ToList()
             .AsReadOnly();
         HasChanges = true;
@@ -269,23 +280,34 @@ public sealed partial class DuplicateMergePreviewViewModel : ObservableObject
     {
         Rows.Clear();
         Rows.Add(DuplicateMergeFieldRowViewModel.CreateCover(Target.CoverPath, Source.CoverPath));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Title", Target.Title, Source.Title));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Authors", Target.Authors, Source.Authors));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Formats", Target.FormatText, Source.FormatText));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Series", Target.Series, Source.Series));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("SeriesNumber", Target.SeriesNumber, Source.SeriesNumber));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Language", Target.Language, Source.Language));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Publisher", Target.Publisher, Source.Publisher));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("PublicationDate", Target.PublicationDate, Source.PublicationDate));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Isbn", Target.Isbn, Source.Isbn));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Tags", Target.Tags, Source.Tags));
-        Rows.Add(new DuplicateMergeFieldRowViewModel("Description", Target.Description, Source.Description, isLargeText: true));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Title, "Title", Target.Title, Source.Title));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Authors, "Authors", Target.Authors, Source.Authors));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Formats, "Formats", Target.FormatText, Source.FormatText));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Series, "Series", Target.Series, Source.Series));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.SeriesNumber, "SeriesNumber", Target.SeriesNumber, Source.SeriesNumber));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Language, "Language", Target.Language, Source.Language));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Publisher, "Publisher", Target.Publisher, Source.Publisher));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.PublicationDate, "PublicationDate", Target.PublicationDate, Source.PublicationDate));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Isbn, "Isbn", Target.Isbn, Source.Isbn));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Tags, "Tags", Target.Tags, Source.Tags));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Description, "Description", Target.Description, Source.Description, isLargeText: true));
     }
+
+    public IReadOnlyList<DuplicateMergeFieldSelection> BuildSelections() =>
+        Rows
+            .Select(row => new DuplicateMergeFieldSelection(row.Field, row.Action switch
+            {
+                DuplicateMergeFieldAction.Copy => DuplicateMergeAction.Copy,
+                DuplicateMergeFieldAction.Merge => DuplicateMergeAction.Merge,
+                _ => DuplicateMergeAction.NoAction
+            }))
+            .ToArray();
 }
 
 public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
 {
     public DuplicateMergeFieldRowViewModel(
+        DuplicateMergeMetadataField field,
         string label,
         string targetValue,
         string sourceValue,
@@ -295,6 +317,7 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
         string? targetImagePath = null,
         string? sourceImagePath = null)
     {
+        Field = field;
         Label = label;
         TargetValue = targetValue;
         SourceValue = sourceValue;
@@ -313,6 +336,7 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
     private DuplicateMergeFieldAction action;
 
     public string Label { get; }
+    public DuplicateMergeMetadataField Field { get; }
     public string TargetValue { get; }
     public string SourceValue { get; }
     public bool IsLargeText { get; }
@@ -325,6 +349,7 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
 
     public static DuplicateMergeFieldRowViewModel CreateCover(string? targetImagePath, string? sourceImagePath) =>
         new(
+            DuplicateMergeMetadataField.Cover,
             "Cover",
             targetImagePath ?? string.Empty,
             sourceImagePath ?? string.Empty,
