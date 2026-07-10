@@ -1,3 +1,4 @@
+using EbookManager.Application.Books;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Importing;
@@ -378,6 +379,39 @@ public sealed class LibraryDbContextTests
         await using var context = factory.Create(libraryPath);
         (await context.BookFiles.AnyAsync(file => file.BookId == importedBook.Id)).Should().BeFalse();
         (await context.Authors.AnyAsync(author => author.Name == "Unknown")).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Duplicate_merge_service_removes_merged_pair_from_duplicate_candidates()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var service = new DuplicateMergeService(repository);
+        var duplicateService = new DuplicateCandidateService();
+        var sourceBook = CreateBook("De Hobbit", ["Unknown"]) with
+        {
+            CoverRelativePath = null
+        };
+        var targetBook = CreateBook("De Hobbit", ["J.R.R. Tolkien"]) with
+        {
+            CoverRelativePath = null
+        };
+        await repository.AddAsync(sourceBook, CreateFile(sourceBook.Id, Hash('A')), default);
+        await repository.AddAsync(targetBook, CreateFile(targetBook.Id, Hash('B')), default);
+        duplicateService.FindCandidates(await repository.ListAsync(default))
+            .Groups.Should().ContainSingle();
+
+        await service.MergeAsync(
+            sourceBook.Id,
+            targetBook.Id,
+            [new DuplicateMergeFieldSelection(DuplicateMergeMetadataField.Formats, DuplicateMergeAction.Merge)],
+            default);
+
+        var books = await repository.ListAsync(default);
+        books.Should().ContainSingle().Which.Id.Should().Be(targetBook.Id);
+        duplicateService.FindCandidates(books).Groups.Should().BeEmpty();
     }
 
     [Fact]

@@ -137,7 +137,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         OnPropertyChanged(nameof(HasChanges));
         if (reloadCandidatesAsync is not null)
         {
-            ApplyResult(await reloadCandidatesAsync(cancellationToken));
+            ApplyResult(RemoveMergedSource(await reloadCandidatesAsync(cancellationToken), preview.Source.Id));
             return;
         }
 
@@ -195,6 +195,18 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     {
         allGroups = result.Groups;
         ApplyVisibleGroups();
+    }
+
+    private DuplicateCandidateResult RemoveMergedSource(
+        DuplicateCandidateResult result,
+        Guid sourceBookId)
+    {
+        var remainingBooks = result.Groups
+            .SelectMany(group => group.Books)
+            .Where(book => book.Id != sourceBookId)
+            .DistinctBy(book => book.Id)
+            .ToList();
+        return duplicateCandidateService.FindCandidates(remainingBooks);
     }
 
     private void ApplyVisibleGroups()
