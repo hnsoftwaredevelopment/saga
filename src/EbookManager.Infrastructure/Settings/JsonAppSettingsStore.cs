@@ -2,12 +2,20 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Libraries;
+using EbookManager.Domain.Settings;
 
 namespace EbookManager.Infrastructure.Settings;
 
 public sealed class JsonAppSettingsStore : IAppSettingsStore
 {
-    private static readonly AppSettings DefaultSettings = new(null, "en-US", "Light", "Detailed", true, true);
+    private static readonly AppSettings DefaultSettings = new(
+        null,
+        "en-US",
+        "Light",
+        "Detailed",
+        true,
+        true,
+        AuthorSortStrategy.DisplayName);
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         WriteIndented = true

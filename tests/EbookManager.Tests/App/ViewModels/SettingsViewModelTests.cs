@@ -1,4 +1,5 @@
 using EbookManager.Domain.Abstractions;
+using EbookManager.Domain.Settings;
 using EbookManager.Presentation.ViewModels;
 using EbookManager.Tests.TestSupport;
 using FluentAssertions;
@@ -13,6 +14,17 @@ public sealed class SettingsViewModelTests
         var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore());
 
         viewModel.SelectableThemes.Should().Equal("Light", "Dark", "Sepia", "Blue", "Red");
+    }
+
+    [Fact]
+    public void SelectableAuthorSortStrategies_include_display_and_last_name_options()
+    {
+        var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore());
+
+        viewModel.SelectableAuthorSortStrategies
+            .Select(option => option.Value)
+            .Should()
+            .Equal(AuthorSortStrategy.DisplayName, AuthorSortStrategy.LastNameFirst, AuthorSortStrategy.LastNameFirstDutchPrefixes);
     }
 
     [Fact]
@@ -32,5 +44,29 @@ public sealed class SettingsViewModelTests
 
         var settings = await store.LoadAsync(default);
         settings.Should().Be(new AppSettings("C:\\ELibrary", "nl-NL", "Dark", "List", false, false));
+    }
+
+    [Fact]
+    public async Task Save_preserves_last_library_path_while_updating_author_sort_strategy()
+    {
+        var store = new InMemoryAppSettingsStore();
+        await store.SaveAsync(new AppSettings(
+            "C:\\ELibrary",
+            "en-US",
+            "Light",
+            "Detailed",
+            true,
+            true,
+            AuthorSortStrategy.DisplayName), default);
+        var viewModel = new SettingsViewModel(store);
+        await viewModel.LoadAsync();
+
+        viewModel.AuthorSortStrategy = AuthorSortStrategy.LastNameFirst;
+
+        await viewModel.SaveAsync();
+
+        var settings = await store.LoadAsync(default);
+        settings.AuthorSortStrategy.Should().Be(AuthorSortStrategy.LastNameFirst);
+        settings.LastLibraryPath.Should().Be("C:\\ELibrary");
     }
 }

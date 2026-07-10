@@ -1,11 +1,19 @@
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Libraries;
+using EbookManager.Domain.Settings;
 
 namespace EbookManager.Tests.TestSupport;
 
 public sealed class InMemoryAppSettingsStore : IAppSettingsStore
 {
-    public AppSettings Settings { get; private set; } = new(null, "en-US", "Light", "Detailed", true, true);
+    public AppSettings Settings { get; private set; } = new(
+        null,
+        "en-US",
+        "Light",
+        "Detailed",
+        true,
+        true,
+        AuthorSortStrategy.DisplayName);
 
     public List<LibraryDescriptor> Libraries { get; private set; } = [];
 

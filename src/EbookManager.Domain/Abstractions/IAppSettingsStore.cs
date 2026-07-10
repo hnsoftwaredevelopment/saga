@@ -1,4 +1,5 @@
 using EbookManager.Domain.Libraries;
+using EbookManager.Domain.Settings;
 
 namespace EbookManager.Domain.Abstractions;
 
@@ -8,7 +9,8 @@ public sealed record AppSettings(
     string Theme,
     string DefaultView,
     bool ConfirmDelete,
-    bool IncludeScanSubdirectories = true);
+    bool IncludeScanSubdirectories = true,
+    AuthorSortStrategy AuthorSortStrategy = AuthorSortStrategy.DisplayName);
 
 public interface IAppSettingsStore
 {
