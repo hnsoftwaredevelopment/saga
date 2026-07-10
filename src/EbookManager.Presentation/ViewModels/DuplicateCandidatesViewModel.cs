@@ -46,6 +46,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     public bool HasGroups => Groups.Count > 0;
     public string SummaryText => $"{GroupCount} groups, {BookCount} books";
     public bool HasChanges { get; private set; }
+    public bool HasMergeSuccessMessage { get; private set; }
     public IAsyncRelayCommand DeleteSelectedCandidatesCommand => deleteSelectedCandidatesCommand;
     public bool ExactMatchesOnly
     {
@@ -90,7 +91,9 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             .ToList()
             .AsReadOnly();
         HasChanges = true;
+        HasMergeSuccessMessage = false;
         OnPropertyChanged(nameof(HasChanges));
+        OnPropertyChanged(nameof(HasMergeSuccessMessage));
         ApplyResult(duplicateCandidateService.FindCandidates(books));
     }
 
@@ -131,7 +134,9 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             .ToList()
             .AsReadOnly();
         HasChanges = true;
+        HasMergeSuccessMessage = true;
         OnPropertyChanged(nameof(HasChanges));
+        OnPropertyChanged(nameof(HasMergeSuccessMessage));
         ApplyResult(duplicateCandidateService.FindCandidates(books));
     }
 
@@ -171,9 +176,11 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
                 .ToList()
                 .AsReadOnly();
             HasChanges = true;
+            HasMergeSuccessMessage = false;
         }
 
         OnPropertyChanged(nameof(HasChanges));
+        OnPropertyChanged(nameof(HasMergeSuccessMessage));
         ApplyResult(duplicateCandidateService.FindCandidates(books));
     }
 

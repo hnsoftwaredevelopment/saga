@@ -81,6 +81,8 @@
   <data name="MergeActionNoAction" xml:space="preserve"><value>Nichts tun</value></data>
   <data name="MergeActionCopy" xml:space="preserve"><value>Wert aus dem Quellbuch in das Zielbuch kopieren</value></data>
   <data name="MergeActionMerge" xml:space="preserve"><value>Wert aus dem Quellbuch an das Zielbuch anhaengen</value></data>
+  <data name="MergeActionDisabledSameValue" xml:space="preserve"><value>Beide Buecher haben fuer dieses Feld bereits denselben Wert.</value></data>
+  <data name="DuplicateMergeSucceededMessage" xml:space="preserve"><value>Buch zusammengefuehrt.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Zusammenfuehren fehlgeschlagen</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>Die Duplikatliste ist veraltet. Saga hat die Bibliothek aktualisiert; oeffnen Sie die Duplikatuebersicht erneut.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Autorenmatch</value></data>

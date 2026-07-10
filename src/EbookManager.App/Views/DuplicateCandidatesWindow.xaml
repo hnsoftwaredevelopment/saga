@@ -105,6 +105,27 @@
                    FontSize="12"
                    TextWrapping="Wrap" />
       </Border>
+      <Border Margin="0,8,0,0"
+              Padding="10,7"
+              Background="{DynamicResource PanelBackgroundBrush}"
+              BorderBrush="{DynamicResource AccentBrush}"
+              BorderThickness="1"
+              CornerRadius="8">
+        <Border.Style>
+          <Style TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding HasMergeSuccessMessage}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Text="{loc:Loc DuplicateMergeSucceededMessage}"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   FontSize="12"
+                   TextWrapping="Wrap" />
+      </Border>
     </StackPanel>
 
     <StackPanel DockPanel.Dock="Bottom"

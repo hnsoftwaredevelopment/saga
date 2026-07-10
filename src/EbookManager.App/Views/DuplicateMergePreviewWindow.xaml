@@ -34,7 +34,11 @@
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="ToolTip" Value="{loc:Loc MergeActionNoAction}" />
+      <Setter Property="ToolTipService.ShowOnDisabled" Value="True" />
       <Style.Triggers>
+        <DataTrigger Binding="{Binding IsActionEnabled}" Value="False">
+          <Setter Property="ToolTip" Value="{loc:Loc MergeActionDisabledSameValue}" />
+        </DataTrigger>
         <DataTrigger Binding="{Binding Action}" Value="{x:Static viewModels:DuplicateMergeFieldAction.Copy}">
           <Setter Property="ToolTip" Value="{loc:Loc MergeActionCopy}" />
         </DataTrigger>
