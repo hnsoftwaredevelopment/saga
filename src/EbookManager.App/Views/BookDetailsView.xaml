@@ -108,6 +108,8 @@
       <TextBox Text="{Binding Language, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" />
       <TextBox Text="{Binding Publisher, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+      <TextBlock Text="{loc:Loc PublicationDate}" FontWeight="SemiBold" />
+      <TextBox Text="{Binding PublicationDate, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Tags}" FontWeight="SemiBold" />
       <TextBox Text="{Binding TagsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" />

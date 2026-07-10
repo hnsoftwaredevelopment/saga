@@ -75,6 +75,48 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public void Load_exposes_standard_metadata_fields()
+    {
+        var viewModel = CreateViewModel(out _);
+        var now = DateTimeOffset.UtcNow;
+        var book = new Book(
+            Guid.NewGuid(),
+            new BookMetadata(
+                "Title",
+                ["Author"],
+                "Description",
+                "nl",
+                "Publisher",
+                new DateOnly(2020, 1, 2),
+                ["Tag"],
+                "Series",
+                1,
+                "9780000000000"),
+            ReadingStatus.Read,
+            null,
+            now,
+            now)
+        {
+            Formats = [EbookFormat.Epub, EbookFormat.Pdf]
+        };
+
+        viewModel.Load(book);
+
+        viewModel.Title.Should().Be("Title");
+        viewModel.AuthorsText.Should().Be("Author");
+        viewModel.Description.Should().Be("Description");
+        viewModel.Language.Should().Be("nl");
+        viewModel.Publisher.Should().Be("Publisher");
+        viewModel.PublicationDate.Should().Be(new DateOnly(2020, 1, 2));
+        viewModel.TagsText.Should().Be("Tag");
+        viewModel.Series.Should().Be("Series");
+        viewModel.SeriesNumber.Should().Be(1);
+        viewModel.Isbn.Should().Be("9780000000000");
+        viewModel.FormatsText.Should().Be("EPUB, PDF");
+        viewModel.ReadingStatus.Should().Be(ReadingStatus.Read);
+    }
+
+    [Fact]
     public async Task Save_updates_metadata_and_clears_dirty_state()
     {
         var viewModel = CreateViewModel(out var repository);
