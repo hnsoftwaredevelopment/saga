@@ -1155,10 +1155,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private async Task<DuplicateCandidateResult> ReloadDuplicateCandidatesAsync(CancellationToken cancellationToken)
     {
-        books = await LoadBooksAsync(cancellationToken);
-        RefreshFacetFilters();
-        ApplyFilter();
-        return duplicateCandidateService.FindCandidates(books);
+        var currentBooks = await LoadBooksAsync(cancellationToken);
+        return duplicateCandidateService.FindCandidates(currentBooks);
     }
 
     private enum MetadataFilterKind

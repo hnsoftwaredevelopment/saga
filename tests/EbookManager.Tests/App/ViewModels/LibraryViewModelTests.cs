@@ -129,7 +129,7 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
-    public async Task Duplicate_candidate_merge_attaches_source_to_best_target_and_refreshes_library()
+    public async Task Duplicate_candidate_merge_refreshes_duplicate_window_without_refreshing_main_library()
     {
         var sourceBookId = Guid.NewGuid();
         var targetBookId = Guid.NewGuid();
@@ -158,6 +158,48 @@ public sealed class LibraryViewModelTests
 
         repository.AttachedSourceBookId.Should().Be(sourceBookId);
         repository.AttachedTargetBookId.Should().Be(targetBookId);
+        repository.ListCalls.Should().Be(2);
+        interaction.DuplicateCandidates.HasGroups.Should().BeFalse();
+        VisibleBookTitles(viewModel).Should().Equal("De Hobbit", "De Hobbit");
+        viewModel.VisibleBooks.Single(row => row.Id == targetBookId).Book.Formats
+            .Should().BeEquivalentTo([EbookFormat.Epub]);
+    }
+
+    [Fact]
+    public async Task Duplicate_candidate_window_refreshes_main_library_once_after_closing_with_changes()
+    {
+        var sourceBookId = Guid.NewGuid();
+        var targetBookId = Guid.NewGuid();
+        var source = CreateBook("De Hobbit", ["J.R.R. Tolkien"], id: sourceBookId, formats: [EbookFormat.Pdf]);
+        var targetBefore = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            language: "nl",
+            series: "Midden-aarde",
+            id: targetBookId,
+            formats: [EbookFormat.Epub]);
+        var targetAfter = targetBefore with { Formats = [EbookFormat.Epub, EbookFormat.Pdf] };
+        var repository = new RefreshingBookRepository([source, targetBefore], [targetAfter], [targetAfter]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            OnShowDuplicateCandidatesAsync = async (candidates, cancellationToken) =>
+            {
+                var sourceRow = candidates.Rows.Single(row => row.Id == sourceBookId);
+                await candidates.MergeCandidateAsync(sourceRow, cancellationToken);
+            }
+        };
+        var viewModel = CreateViewModel(
+            [source, targetBefore],
+            interaction,
+            repository: repository,
+            currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+
+        repository.AttachedSourceBookId.Should().Be(sourceBookId);
+        repository.AttachedTargetBookId.Should().Be(targetBookId);
+        repository.ListCalls.Should().Be(3);
         VisibleBookTitles(viewModel).Should().Equal("De Hobbit");
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Book.Formats.Should().BeEquivalentTo([EbookFormat.Epub, EbookFormat.Pdf]);
@@ -1264,6 +1306,7 @@ public sealed class LibraryViewModelTests
         public string? PromptTextResult { get; init; }
         public bool ConfirmMetadataValueRemovalResult { get; init; }
         public Guid? SelectedImportRunId { get; init; }
+        public Func<DuplicateCandidatesViewModel, CancellationToken, Task>? OnShowDuplicateCandidatesAsync { get; init; }
         public int PickBookFilesCalls { get; private set; }
         public int PickScanFolderCalls { get; private set; }
         public DuplicateCandidatesViewModel? DuplicateCandidates { get; private set; }
@@ -1307,10 +1350,13 @@ public sealed class LibraryViewModelTests
             return Task.FromResult(SelectedImportRunId);
         }
 
-        public Task ShowDuplicateCandidatesAsync(DuplicateCandidatesViewModel candidates, CancellationToken cancellationToken)
+        public async Task ShowDuplicateCandidatesAsync(DuplicateCandidatesViewModel candidates, CancellationToken cancellationToken)
         {
             DuplicateCandidates = candidates;
-            return Task.CompletedTask;
+            if (OnShowDuplicateCandidatesAsync is not null)
+            {
+                await OnShowDuplicateCandidatesAsync(candidates, cancellationToken);
+            }
         }
 
         private IReadOnlyList<string> RecordPickBookFiles()
