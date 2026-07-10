@@ -1,131 +1,384 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Spanish resources are prepared for future selection; Milestone 1 intentionally ships English fallback values. -->
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
-  <resheader name="version"><value>2.0</value></resheader>
-  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <data name="AddBooks" xml:space="preserve"><value>Add books</value></data>
-  <data name="Action" xml:space="preserve"><value>Acción</value></data>
-  <data name="All" xml:space="preserve"><value>All</value></data>
-  <data name="AppVersion" xml:space="preserve"><value>Version</value></data>
-  <data name="Authors" xml:space="preserve"><value>Authors</value></data>
-  <data name="BookCount" xml:space="preserve"><value>Books</value></data>
-  <data name="BookSaveConflict" xml:space="preserve"><value>Ya existe un libro con el mismo título y autor.</value></data>
-  <data name="BookSaveFailed" xml:space="preserve"><value>No se pudieron guardar los cambios.</value></data>
-  <data name="BookshelfView" xml:space="preserve"><value>Bookshelf</value></data>
-  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
-  <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Ask before deleting books</value></data>
-  <data name="CreateLibrary" xml:space="preserve"><value>New library</value></data>
-  <data name="Culture" xml:space="preserve"><value>Language</value></data>
-  <data name="DefaultView" xml:space="preserve"><value>Default view</value></data>
-  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
-  <data name="DeleteConfirmationMessage" xml:space="preserve"><value>Do you really want to delete "{0}" from the library?</value></data>
-  <data name="DeleteConfirmationTitle" xml:space="preserve"><value>Delete book</value></data>
-  <data name="DeleteDuplicate" xml:space="preserve"><value>Eliminar duplicado</value></data>
-  <data name="DeleteSelectedDuplicates" xml:space="preserve"><value>Eliminar duplicados seleccionados</value></data>
-  <data name="DeleteSelectedDuplicatesTooltip" xml:space="preserve"><value>Eliminar los libros duplicados seleccionados</value></data>
-  <data name="Description" xml:space="preserve"><value>Description</value></data>
-  <data name="Details" xml:space="preserve"><value>Detalles</value></data>
-  <data name="DetailedView" xml:space="preserve"><value>Detailed</value></data>
-  <data name="EReader" xml:space="preserve"><value>E-reader</value></data>
-  <data name="EReaderUnavailable" xml:space="preserve"><value>Unavailable</value></data>
-  <data name="ExactMatchesOnly" xml:space="preserve"><value>Solo coincidencias exactas</value></data>
-  <data name="ExactMatchesOnlyTooltip" xml:space="preserve"><value>Mostrar solo duplicados con el mismo titulo y autor</value></data>
-  <data name="Failed" xml:space="preserve"><value>Failed</value></data>
-  <data name="Formats" xml:space="preserve"><value>Formatos</value></data>
-  <data name="FileType" xml:space="preserve"><value>Tipo de archivo</value></data>
-  <data name="ImportAdded" xml:space="preserve"><value>Added</value></data>
-  <data name="ImportExactDuplicate" xml:space="preserve"><value>Duplicado exacto</value></data>
-  <data name="ImportFailed" xml:space="preserve"><value>Failed</value></data>
-  <data name="ImportHistory" xml:space="preserve"><value>Import history</value></data>
-  <data name="ImportHistoryShort" xml:space="preserve"><value>History</value></data>
-  <data name="ImportHistoryTooltip" xml:space="preserve"><value>Show recent import and scan results</value></data>
-  <data name="DuplicateCandidates" xml:space="preserve"><value>Posibles duplicados</value></data>
-  <data name="DuplicateCandidatesShort" xml:space="preserve"><value>Duplicados</value></data>
-  <data name="DuplicateCandidatesTooltip" xml:space="preserve"><value>Buscar posibles duplicados en la biblioteca actual</value></data>
-  <data name="DuplicateCandidatesNone" xml:space="preserve"><value>No se encontraron posibles duplicados.</value></data>
-  <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> grupos</value></data>
-  <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> libros</value></data>
-  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Consejo: mantenga pulsada la tecla Ctrl mientras selecciona otro libro para seleccionar varios duplicados.</value></data>
-  <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>Hay una importación en curso. ¿Cerrar la aplicación y cancelar la importación?</value></data>
-  <data name="ImportInProgressTitle" xml:space="preserve"><value>Importación en curso</value></data>
-  <data name="ImportOutcomeExactDuplicate" xml:space="preserve"><value>Omitido, el mismo archivo exacto ya existe</value></data>
-  <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve"><value>Omitido, el mismo archivo exacto ya existe</value></data>
-  <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>
-  <data name="ImportResults" xml:space="preserve"><value>Import results</value></data>
-  <data name="ImportMessageSourceUnreadablePrefix" xml:space="preserve"><value>No se pudo leer el archivo de origen</value></data>
-  <data name="ImportMessageSourceUnreadableAdvice" xml:space="preserve"><value>asegúrese de que el archivo esté disponible localmente</value></data>
-  <data name="ImportMessagePossibleTitleMatch" xml:space="preserve"><value>Posible coincidencia de título: {0}</value></data>
-  <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
-  <data name="Language" xml:space="preserve"><value>Language</value></data>
-  <data name="LinkSuggestion" xml:space="preserve"><value>Vincular</value></data>
-  <data name="LinkSuggestionLinked" xml:space="preserve"><value>Vinculado</value></data>
-  <data name="LinkSuggestionTooltip" xml:space="preserve"><value>Vincular este formato importado al libro existente sugerido</value></data>
-  <data name="ListView" xml:space="preserve"><value>List</value></data>
-  <data name="EmptyStateLoadingLibrary" xml:space="preserve"><value>Cargando biblioteca...</value></data>
-  <data name="EmptyStateCreateOrOpenLibrary" xml:space="preserve"><value>Cree o abra una biblioteca para empezar.</value></data>
-  <data name="EmptyStateCreateOrOpenBeforeAdding" xml:space="preserve"><value>Cree o abra primero una biblioteca antes de añadir libros.</value></data>
-  <data name="EmptyStateCreateOrOpenBeforeScanning" xml:space="preserve"><value>Cree o abra primero una biblioteca antes de escanear carpetas.</value></data>
-  <data name="EmptyStateLibraryEmpty" xml:space="preserve"><value>Esta biblioteca está vacía. Añada libros o escanee una carpeta para empezar.</value></data>
-  <data name="EmptyStateLibraryFolderMissing" xml:space="preserve"><value>La carpeta de la biblioteca activa ya no existe. Cree o abra una biblioteca para continuar.</value></data>
-  <data name="LoadingLibrary" xml:space="preserve"><value>Cargando biblioteca</value></data>
-  <data name="Match" xml:space="preserve"><value>Coincidencia</value></data>
-  <data name="Merge" xml:space="preserve"><value>Combinar</value></data>
-  <data name="LinkFormat" xml:space="preserve"><value>Combinar</value></data>
-  <data name="DuplicateMergePreviewTitle" xml:space="preserve"><value>Combinar duplicado</value></data>
-  <data name="DuplicateMergePreviewHelp" xml:space="preserve"><value>Revise el libro destino y el libro origen. Saga vincula los formatos origen al destino y aplica solo las acciones de metadatos seleccionadas.</value></data>
-  <data name="MergeTargetBook" xml:space="preserve"><value>Libro destino</value></data>
-  <data name="MergeSourceBook" xml:space="preserve"><value>Libro origen</value></data>
-  <data name="SwapMergeDirectionTooltip" xml:space="preserve"><value>Intercambiar libro origen y destino</value></data>
-  <data name="MergeActionNoAction" xml:space="preserve"><value>No hacer nada</value></data>
-  <data name="MergeActionCopy" xml:space="preserve"><value>Copiar el valor de origen al destino</value></data>
-  <data name="MergeActionMerge" xml:space="preserve"><value>Anadir el valor de origen al destino</value></data>
-  <data name="MergeActionDisabledSameValue" xml:space="preserve"><value>Ambos libros ya tienen el mismo valor para este campo.</value></data>
-  <data name="DuplicateMergeSucceededMessage" xml:space="preserve"><value>Libro combinado.</value></data>
-  <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> se ha combinado.</value></data>
-  <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>No se pudo combinar</value></data>
-  <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>La lista de duplicados esta desactualizada. Saga actualizo la biblioteca; abra de nuevo la vista de duplicados.</value></data>
-  <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Autor</value></data>
-  <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Solo titulo</value></data>
-  <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>
-  <data name="PublicationDate" xml:space="preserve"><value>Publication date</value></data>
-  <data name="Publisher" xml:space="preserve"><value>Publisher</value></data>
-  <data name="Reading" xml:space="preserve"><value>Reading</value></data>
-  <data name="Read" xml:space="preserve"><value>Read</value></data>
-  <data name="RememberAnswer" xml:space="preserve"><value>Remember my answer</value></data>
-  <data name="RetryFailedImports" xml:space="preserve"><value>Reintentar fallidos</value></data>
-  <data name="RetryFailedImportsTooltip" xml:space="preserve"><value>Reintentar importaciones fallidas cuyos archivos de origen siguen disponibles</value></data>
-  <data name="Save" xml:space="preserve"><value>Save</value></data>
-  <data name="ScanFolder" xml:space="preserve"><value>Scan folder</value></data>
-  <data name="ScanSubdirectories" xml:space="preserve"><value>Include subdirectories</value></data>
-  <data name="SearchPlaceholder" xml:space="preserve"><value>Search all fields...</value></data>
-  <data name="Series" xml:space="preserve"><value>Series</value></data>
-  <data name="SeriesNumber" xml:space="preserve"><value>Series number</value></data>
-  <data name="Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="SettingsGeneralSection" xml:space="preserve"><value>General</value></data>
-  <data name="SettingsAppearanceSection" xml:space="preserve"><value>Appearance</value></data>
-  <data name="SettingsImportSection" xml:space="preserve"><value>Import</value></data>
-  <data name="SettingsMetadataSection" xml:space="preserve"><value>Metadata</value></data>
-  <data name="SettingsDuplicatesSection" xml:space="preserve"><value>Duplicates</value></data>
-  <data name="SettingsConfirmationsSection" xml:space="preserve"><value>Confirmations</value></data>
-  <data name="SettingsDiagnosticsSection" xml:space="preserve"><value>Diagnostics</value></data>
-  <data name="AuthorSortStrategy" xml:space="preserve"><value>Author sorting</value></data>
-  <data name="AuthorSortDisplayName" xml:space="preserve"><value>As entered</value></data>
-  <data name="AuthorSortLastNameFirst" xml:space="preserve"><value>Last name, first name</value></data>
-  <data name="AuthorSortLastNameFirstDutchPrefixes" xml:space="preserve"><value>Last name with prefixes, first name</value></data>
-  <data name="Started" xml:space="preserve"><value>Started</value></data>
-  <data name="Completed" xml:space="preserve"><value>Completed</value></data>
-  <data name="Status" xml:space="preserve"><value>Status</value></data>
-  <data name="Source" xml:space="preserve"><value>Source</value></data>
-  <data name="SuggestedBook" xml:space="preserve"><value>Libro sugerido</value></data>
-  <data name="Duration" xml:space="preserve"><value>Duration</value></data>
-  <data name="Size" xml:space="preserve"><value>Size</value></data>
-  <data name="Tags" xml:space="preserve"><value>Tags</value></data>
-  <data name="Theme" xml:space="preserve"><value>Theme</value></data>
-  <data name="Title" xml:space="preserve"><value>Title</value></data>
-  <data name="Type" xml:space="preserve"><value>Type</value></data>
-  <data name="Undo" xml:space="preserve"><value>Undo</value></data>
-  <data name="Unread" xml:space="preserve"><value>Unread</value></data>
-  <data name="UnsavedChanges" xml:space="preserve"><value>There are unsaved changes.</value></data>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddBooks" xml:space="preserve">
+    <value>Agregar libros</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Accion</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="AppVersion" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Authors" xml:space="preserve">
+    <value>Autores</value>
+  </data>
+  <data name="BookCount" xml:space="preserve">
+    <value>Libros</value>
+  </data>
+  <data name="BookSaveConflict" xml:space="preserve">
+    <value>Ya existe un libro con el mismo titulo y autor.</value>
+  </data>
+  <data name="BookSaveFailed" xml:space="preserve">
+    <value>No se pudieron guardar los cambios.</value>
+  </data>
+  <data name="BookshelfView" xml:space="preserve">
+    <value>Estanteria</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="ConfirmDeleteSetting" xml:space="preserve">
+    <value>Preguntar antes de eliminar libros</value>
+  </data>
+  <data name="CreateLibrary" xml:space="preserve">
+    <value>Nueva biblioteca</value>
+  </data>
+  <data name="Culture" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="DefaultView" xml:space="preserve">
+    <value>Vista predeterminada</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="DeleteConfirmationMessage" xml:space="preserve">
+    <value>¿Seguro que desea eliminar "{0}" de la biblioteca?</value>
+  </data>
+  <data name="DeleteConfirmationTitle" xml:space="preserve">
+    <value>Eliminar libro</value>
+  </data>
+  <data name="DeleteDuplicate" xml:space="preserve">
+    <value>Eliminar duplicado</value>
+  </data>
+  <data name="DeleteSelectedDuplicates" xml:space="preserve">
+    <value>Eliminar duplicados seleccionados</value>
+  </data>
+  <data name="DeleteSelectedDuplicatesTooltip" xml:space="preserve">
+    <value>Eliminar los libros duplicados seleccionados</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descripcion</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Detalles</value>
+  </data>
+  <data name="DetailedView" xml:space="preserve">
+    <value>Detallada</value>
+  </data>
+  <data name="EReader" xml:space="preserve">
+    <value>Lector electronico</value>
+  </data>
+  <data name="EReaderUnavailable" xml:space="preserve">
+    <value>No disponible</value>
+  </data>
+  <data name="ExactMatchesOnly" xml:space="preserve">
+    <value>Solo coincidencias exactas</value>
+  </data>
+  <data name="ExactMatchesOnlyTooltip" xml:space="preserve">
+    <value>Mostrar solo duplicados con el mismo titulo y autor</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Formats" xml:space="preserve">
+    <value>Formatos</value>
+  </data>
+  <data name="FileType" xml:space="preserve">
+    <value>Tipo de archivo</value>
+  </data>
+  <data name="ImportAdded" xml:space="preserve">
+    <value>Agregado</value>
+  </data>
+  <data name="ImportExactDuplicate" xml:space="preserve">
+    <value>Duplicado exacto</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ImportHistory" xml:space="preserve">
+    <value>Historial de importacion</value>
+  </data>
+  <data name="ImportHistoryShort" xml:space="preserve">
+    <value>Historial</value>
+  </data>
+  <data name="ImportHistoryTooltip" xml:space="preserve">
+    <value>Mostrar resultados recientes de importacion y escaneo</value>
+  </data>
+  <data name="DuplicateCandidates" xml:space="preserve">
+    <value>Posibles duplicados</value>
+  </data>
+  <data name="DuplicateCandidatesShort" xml:space="preserve">
+    <value>Duplicados</value>
+  </data>
+  <data name="DuplicateCandidatesTooltip" xml:space="preserve">
+    <value>Buscar posibles duplicados en la biblioteca actual</value>
+  </data>
+  <data name="DuplicateCandidatesNone" xml:space="preserve">
+    <value>No se encontraron posibles duplicados.</value>
+  </data>
+  <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve">
+    <value> grupos</value>
+  </data>
+  <data name="DuplicateCandidateBooksSuffix" xml:space="preserve">
+    <value> libros</value>
+  </data>
+  <data name="DuplicateSelectionHelp" xml:space="preserve">
+    <value>Consejo: mantenga Ctrl mientras selecciona otro libro para seleccionar varios duplicados.</value>
+  </data>
+  <data name="ImportInProgressCloseMessage" xml:space="preserve">
+    <value>Aun hay una importacion en curso. ¿Cerrar la aplicacion y cancelar la importacion?</value>
+  </data>
+  <data name="ImportInProgressTitle" xml:space="preserve">
+    <value>Importacion en curso</value>
+  </data>
+  <data name="ImportOutcomeExactDuplicate" xml:space="preserve">
+    <value>Omitido, el mismo archivo ya existe</value>
+  </data>
+  <data name="ImportMessageExactDuplicateSkipped" xml:space="preserve">
+    <value>Omitido, el mismo archivo ya existe</value>
+  </data>
+  <data name="ImportPossibleDuplicate" xml:space="preserve">
+    <value>Posible duplicado</value>
+  </data>
+  <data name="ImportResults" xml:space="preserve">
+    <value>Resultados de importacion</value>
+  </data>
+  <data name="ImportMessageSourceUnreadablePrefix" xml:space="preserve">
+    <value>No se pudo leer el archivo de origen</value>
+  </data>
+  <data name="ImportMessageSourceUnreadableAdvice" xml:space="preserve">
+    <value>asegurese de que este disponible localmente</value>
+  </data>
+  <data name="ImportMessagePossibleTitleMatch" xml:space="preserve">
+    <value>Posible coincidencia de titulo: {0}</value>
+  </data>
+  <data name="Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="LinkSuggestion" xml:space="preserve">
+    <value>Vincular</value>
+  </data>
+  <data name="LinkSuggestionLinked" xml:space="preserve">
+    <value>Vinculado</value>
+  </data>
+  <data name="LinkSuggestionTooltip" xml:space="preserve">
+    <value>Adjuntar este formato importado al libro existente sugerido</value>
+  </data>
+  <data name="ListView" xml:space="preserve">
+    <value>Lista</value>
+  </data>
+  <data name="EmptyStateLoadingLibrary" xml:space="preserve">
+    <value>Cargando biblioteca...</value>
+  </data>
+  <data name="EmptyStateCreateOrOpenLibrary" xml:space="preserve">
+    <value>Cree o abra una biblioteca para comenzar.</value>
+  </data>
+  <data name="EmptyStateCreateOrOpenBeforeAdding" xml:space="preserve">
+    <value>Cree o abra una biblioteca antes de agregar libros.</value>
+  </data>
+  <data name="EmptyStateCreateOrOpenBeforeScanning" xml:space="preserve">
+    <value>Cree o abra una biblioteca antes de escanear carpetas.</value>
+  </data>
+  <data name="EmptyStateLibraryEmpty" xml:space="preserve">
+    <value>Esta biblioteca esta vacia. Agregue libros o escanee una carpeta para comenzar.</value>
+  </data>
+  <data name="EmptyStateLibraryFolderMissing" xml:space="preserve">
+    <value>La carpeta de la biblioteca activa ya no existe. Cree o abra una biblioteca para continuar.</value>
+  </data>
+  <data name="LoadingLibrary" xml:space="preserve">
+    <value>Cargando biblioteca</value>
+  </data>
+  <data name="Match" xml:space="preserve">
+    <value>Coincidencia</value>
+  </data>
+  <data name="Merge" xml:space="preserve">
+    <value>Fusionar</value>
+  </data>
+  <data name="LinkFormat" xml:space="preserve">
+    <value>Fusionar</value>
+  </data>
+  <data name="DuplicateMergePreviewTitle" xml:space="preserve">
+    <value>Fusionar duplicado</value>
+  </data>
+  <data name="DuplicateMergePreviewHelp" xml:space="preserve">
+    <value>Revise el libro de destino y el libro de origen. Saga vincula los formatos de origen al destino y aplica solo las acciones de metadatos que seleccione.</value>
+  </data>
+  <data name="MergeTargetBook" xml:space="preserve">
+    <value>Libro de destino</value>
+  </data>
+  <data name="MergeSourceBook" xml:space="preserve">
+    <value>Libro de origen</value>
+  </data>
+  <data name="SwapMergeDirectionTooltip" xml:space="preserve">
+    <value>Intercambiar libro de origen y destino</value>
+  </data>
+  <data name="MergeActionNoAction" xml:space="preserve">
+    <value>No hacer nada</value>
+  </data>
+  <data name="MergeActionCopy" xml:space="preserve">
+    <value>Copiar valor de origen al destino</value>
+  </data>
+  <data name="MergeActionMerge" xml:space="preserve">
+    <value>Agregar valor de origen al destino</value>
+  </data>
+  <data name="MergeActionDisabledSameValue" xml:space="preserve">
+    <value>Ambos libros ya tienen el mismo valor para este campo.</value>
+  </data>
+  <data name="DuplicateMergeSucceededMessage" xml:space="preserve">
+    <value>Libro fusionado.</value>
+  </data>
+  <data name="DuplicateMergeSucceededSuffix" xml:space="preserve">
+    <value> se ha fusionado.</value>
+  </data>
+  <data name="DuplicateMergeFailedTitle" xml:space="preserve">
+    <value>Error al fusionar</value>
+  </data>
+  <data name="DuplicateMergeFailedMessage" xml:space="preserve">
+    <value>La lista de duplicados esta obsoleta. Saga actualizo la biblioteca; abra de nuevo la vista de duplicados.</value>
+  </data>
+  <data name="DuplicateMatchAuthorOverlap" xml:space="preserve">
+    <value>Autor coincidente</value>
+  </data>
+  <data name="DuplicateMatchTitleOnly" xml:space="preserve">
+    <value>Solo titulo</value>
+  </data>
+  <data name="OpenLibrary" xml:space="preserve">
+    <value>Abrir biblioteca</value>
+  </data>
+  <data name="PublicationDate" xml:space="preserve">
+    <value>Fecha de publicacion</value>
+  </data>
+  <data name="Publisher" xml:space="preserve">
+    <value>Editorial</value>
+  </data>
+  <data name="Reading" xml:space="preserve">
+    <value>Leyendo</value>
+  </data>
+  <data name="Read" xml:space="preserve">
+    <value>Leido</value>
+  </data>
+  <data name="RememberAnswer" xml:space="preserve">
+    <value>Recordar mi respuesta</value>
+  </data>
+  <data name="RetryFailedImports" xml:space="preserve">
+    <value>Reintentar fallidos</value>
+  </data>
+  <data name="RetryFailedImportsTooltip" xml:space="preserve">
+    <value>Reintentar importaciones fallidas cuyos archivos de origen aun esten disponibles</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="ScanFolder" xml:space="preserve">
+    <value>Escanear carpeta</value>
+  </data>
+  <data name="ScanSubdirectories" xml:space="preserve">
+    <value>Incluir subcarpetas</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Buscar en todos los campos...</value>
+  </data>
+  <data name="Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="SeriesNumber" xml:space="preserve">
+    <value>Numero de serie</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configuracion</value>
+  </data>
+  <data name="SettingsGeneralSection" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="SettingsAppearanceSection" xml:space="preserve">
+    <value>Apariencia</value>
+  </data>
+  <data name="SettingsImportSection" xml:space="preserve">
+    <value>Importacion</value>
+  </data>
+  <data name="SettingsMetadataSection" xml:space="preserve">
+    <value>Metadatos</value>
+  </data>
+  <data name="SettingsDuplicatesSection" xml:space="preserve">
+    <value>Duplicados</value>
+  </data>
+  <data name="SettingsConfirmationsSection" xml:space="preserve">
+    <value>Confirmaciones</value>
+  </data>
+  <data name="SettingsDiagnosticsSection" xml:space="preserve">
+    <value>Diagnostico</value>
+  </data>
+  <data name="AuthorSortStrategy" xml:space="preserve">
+    <value>Orden de autores</value>
+  </data>
+  <data name="AuthorSortDisplayName" xml:space="preserve">
+    <value>Como se ingreso</value>
+  </data>
+  <data name="AuthorSortLastNameFirst" xml:space="preserve">
+    <value>Apellido, nombre</value>
+  </data>
+  <data name="AuthorSortLastNameFirstDutchPrefixes" xml:space="preserve">
+    <value>Apellido con prefijos, nombre</value>
+  </data>
+  <data name="Started" xml:space="preserve">
+    <value>Iniciado</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Completado</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Origen</value>
+  </data>
+  <data name="SuggestedBook" xml:space="preserve">
+    <value>Libro sugerido</value>
+  </data>
+  <data name="Duration" xml:space="preserve">
+    <value>Duracion</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Tamano</value>
+  </data>
+  <data name="Tags" xml:space="preserve">
+    <value>Etiquetas</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Titulo</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Deshacer</value>
+  </data>
+  <data name="Unread" xml:space="preserve">
+    <value>No leido</value>
+  </data>
+  <data name="UnsavedChanges" xml:space="preserve">
+    <value>Hay cambios sin guardar.</value>
+  </data>
 </root>

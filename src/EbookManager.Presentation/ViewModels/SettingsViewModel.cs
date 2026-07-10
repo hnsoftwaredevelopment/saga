@@ -5,10 +5,21 @@ using EbookManager.Domain.Settings;
 namespace EbookManager.Presentation.ViewModels;
 
 public sealed record AuthorSortStrategyOption(AuthorSortStrategy Value, string ResourceKey);
+public sealed record CultureOption(string Value, string DisplayName);
 
 public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) : ObservableObject
 {
     private readonly IAppSettingsStore settingsStore = settingsStore;
+
+    public IReadOnlyList<CultureOption> SelectableCultures { get; } =
+    [
+        new("en-US", "English (US)"),
+        new("nl-NL", "Nederlands"),
+        new("de-DE", "Deutsch"),
+        new("fr-FR", "Français"),
+        new("es-ES", "Español"),
+        new("it-IT", "Italiano")
+    ];
 
     public IReadOnlyList<string> SelectableThemes { get; } = ["Light", "Dark", "Sepia", "Blue", "Red"];
     public IReadOnlyList<AuthorSortStrategyOption> SelectableAuthorSortStrategies { get; } =

@@ -17,6 +17,17 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
+    public void SelectableCultures_include_all_supported_application_languages()
+    {
+        var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore());
+
+        viewModel.SelectableCultures
+            .Select(culture => culture.Value)
+            .Should()
+            .Equal("en-US", "nl-NL", "de-DE", "fr-FR", "es-ES", "it-IT");
+    }
+
+    [Fact]
     public void SelectableAuthorSortStrategies_include_display_and_last_name_options()
     {
         var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore());

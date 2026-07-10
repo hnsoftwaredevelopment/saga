@@ -14,7 +14,11 @@ public sealed class LocalizationService(IAppSettingsStore settingsStore)
     private static readonly IReadOnlySet<string> SupportedCultures = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "en-US",
-        "nl-NL"
+        "nl-NL",
+        "de-DE",
+        "fr-FR",
+        "es-ES",
+        "it-IT"
     };
 
     private readonly IAppSettingsStore settingsStore = settingsStore;
@@ -22,7 +26,11 @@ public sealed class LocalizationService(IAppSettingsStore settingsStore)
     public IReadOnlyList<CultureInfo> SelectableCultures { get; } =
     [
         CultureInfo.GetCultureInfo("en-US"),
-        CultureInfo.GetCultureInfo("nl-NL")
+        CultureInfo.GetCultureInfo("nl-NL"),
+        CultureInfo.GetCultureInfo("de-DE"),
+        CultureInfo.GetCultureInfo("fr-FR"),
+        CultureInfo.GetCultureInfo("es-ES"),
+        CultureInfo.GetCultureInfo("it-IT")
     ];
 
     public async Task ApplySavedCultureAsync(CancellationToken cancellationToken)

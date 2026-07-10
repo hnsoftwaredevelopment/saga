@@ -25,10 +25,13 @@
           </Grid.ColumnDefinitions>
 
           <TextBlock Text="{loc:Loc Culture}" Grid.Row="0" FontWeight="SemiBold" Margin="0,0,12,12" />
-          <ComboBox Grid.Row="0" Grid.Column="1" SelectedValue="{Binding Culture}" SelectedValuePath="Tag" Margin="0,0,0,12">
-            <ComboBoxItem Content="English (US)" Tag="en-US" />
-            <ComboBoxItem Content="Nederlands" Tag="nl-NL" />
-          </ComboBox>
+          <ComboBox Grid.Row="0"
+                    Grid.Column="1"
+                    ItemsSource="{Binding SelectableCultures}"
+                    DisplayMemberPath="DisplayName"
+                    SelectedValue="{Binding Culture}"
+                    SelectedValuePath="Value"
+                    Margin="0,0,0,12" />
         </Grid>
       </TabItem>
 
