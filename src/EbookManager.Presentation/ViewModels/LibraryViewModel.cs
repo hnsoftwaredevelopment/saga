@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
@@ -470,7 +469,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 (Filters: SeriesFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(book.Metadata.Series))),
                 (Filters: StatusFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => [book.ReadingStatus.ToString()])),
                 (Filters: EReaderFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => [new BookRowViewModel(book).EReader])),
-                (Filters: LanguageFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(LanguageFilterKey(book.Metadata.Language)))),
+                (Filters: LanguageFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => SingleOptionalValue(LanguageDisplayService.FilterKey(book.Metadata.Language)))),
                 (Filters: FormatFilters, ValueSelector: (Func<Book, IEnumerable<string>>)(book => book.Formats.Select(format => format.ToString())))
             }
             .Select(group => (
@@ -510,8 +509,8 @@ public sealed partial class LibraryViewModel : ObservableObject
             books.Select(book => new BookRowViewModel(book).EReader));
         RefreshFilters(
             LanguageFilters,
-            books.SelectMany(book => SingleOptionalValue(LanguageFilterKey(book.Metadata.Language))),
-            LanguageDisplayName);
+            books.SelectMany(book => SingleOptionalValue(LanguageDisplayService.FilterKey(book.Metadata.Language))),
+            LanguageDisplayService.DisplayName);
         RefreshFilters(
             FormatFilters,
             books.SelectMany(book => book.Formats.Select(format => format.ToString())),
@@ -579,49 +578,6 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private static IEnumerable<string> SingleOptionalValue(string? value) =>
         string.IsNullOrWhiteSpace(value) ? [] : [value];
-
-    private static string LanguageDisplayName(string value)
-    {
-        var normalized = LanguageFilterKey(value) ?? value.Trim();
-        if (normalized.Length == 0)
-        {
-            return normalized;
-        }
-
-        try
-        {
-            var culture = CultureInfo.GetCultureInfo(normalized);
-            var languageOnly = CultureInfo.GetCultureInfo(culture.TwoLetterISOLanguageName);
-            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(languageOnly.DisplayName);
-        }
-        catch (CultureNotFoundException)
-        {
-            return value;
-        }
-    }
-
-    private static string? LanguageFilterKey(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return null;
-        }
-
-        var normalized = value.Trim();
-        if (normalized.Equals("eng", StringComparison.OrdinalIgnoreCase))
-        {
-            return "en";
-        }
-
-        try
-        {
-            return CultureInfo.GetCultureInfo(normalized).TwoLetterISOLanguageName;
-        }
-        catch (CultureNotFoundException)
-        {
-            return normalized;
-        }
-    }
 
     private static string FormatDisplayName(string value) => value.ToUpperInvariant();
 
@@ -793,7 +749,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             MetadataFilterKind.Tag => (metadata.Tags ?? []).Any(value =>
                 string.Equals(value, oldValue, StringComparison.OrdinalIgnoreCase)),
             MetadataFilterKind.Series => ScalarValueMatches(metadata.Series, oldValue),
-            MetadataFilterKind.Language => ScalarValueMatches(metadata.Language, oldValue, LanguageFilterKey),
+            MetadataFilterKind.Language => ScalarValueMatches(metadata.Language, oldValue, LanguageDisplayService.FilterKey),
             _ => false
         };
     }
@@ -853,7 +809,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     replacementValue,
                     remove,
                     out var language,
-                    LanguageFilterKey)
+                    LanguageDisplayService.FilterKey)
                 ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, metadata.Series, language) }
                 : book,
             _ => book
