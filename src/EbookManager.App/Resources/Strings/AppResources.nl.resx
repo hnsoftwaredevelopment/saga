@@ -146,6 +146,17 @@
   <data name="Series" xml:space="preserve"><value>Serie</value></data>
   <data name="SeriesNumber" xml:space="preserve"><value>Serienummer</value></data>
   <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
+  <data name="SettingsGeneralSection" xml:space="preserve"><value>Algemeen</value></data>
+  <data name="SettingsAppearanceSection" xml:space="preserve"><value>Weergave</value></data>
+  <data name="SettingsImportSection" xml:space="preserve"><value>Import</value></data>
+  <data name="SettingsMetadataSection" xml:space="preserve"><value>Metadata</value></data>
+  <data name="SettingsDuplicatesSection" xml:space="preserve"><value>Duplicaten</value></data>
+  <data name="SettingsConfirmationsSection" xml:space="preserve"><value>Bevestigingen</value></data>
+  <data name="SettingsDiagnosticsSection" xml:space="preserve"><value>Diagnostiek</value></data>
+  <data name="AuthorSortStrategy" xml:space="preserve"><value>Auteurs sorteren</value></data>
+  <data name="AuthorSortDisplayName" xml:space="preserve"><value>Zoals ingevoerd</value></data>
+  <data name="AuthorSortLastNameFirst" xml:space="preserve"><value>Achternaam, voornaam</value></data>
+  <data name="AuthorSortLastNameFirstDutchPrefixes" xml:space="preserve"><value>Achternaam met tussenvoegsel, voornaam</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sorteren op</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sorteer de huidige bibliotheekweergave</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Opstarten van Saga mislukt</value></data>

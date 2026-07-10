@@ -146,6 +146,17 @@
   <data name="Series" xml:space="preserve"><value>Series</value></data>
   <data name="SeriesNumber" xml:space="preserve"><value>Series number</value></data>
   <data name="Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="SettingsGeneralSection" xml:space="preserve"><value>General</value></data>
+  <data name="SettingsAppearanceSection" xml:space="preserve"><value>Appearance</value></data>
+  <data name="SettingsImportSection" xml:space="preserve"><value>Import</value></data>
+  <data name="SettingsMetadataSection" xml:space="preserve"><value>Metadata</value></data>
+  <data name="SettingsDuplicatesSection" xml:space="preserve"><value>Duplicates</value></data>
+  <data name="SettingsConfirmationsSection" xml:space="preserve"><value>Confirmations</value></data>
+  <data name="SettingsDiagnosticsSection" xml:space="preserve"><value>Diagnostics</value></data>
+  <data name="AuthorSortStrategy" xml:space="preserve"><value>Author sorting</value></data>
+  <data name="AuthorSortDisplayName" xml:space="preserve"><value>As entered</value></data>
+  <data name="AuthorSortLastNameFirst" xml:space="preserve"><value>Last name, first name</value></data>
+  <data name="AuthorSortLastNameFirstDutchPrefixes" xml:space="preserve"><value>Last name with prefixes, first name</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Saga startup failed</value></data>
