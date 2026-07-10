@@ -263,6 +263,36 @@ public sealed class DuplicateCandidatesViewModelTests
     }
 
     [Fact]
+    public async Task MergeCandidate_refreshes_duplicate_list_from_updated_snapshot_when_available()
+    {
+        var source = CreateBook("De Hobbit", ["Unknown"], series: null, language: null);
+        var target = CreateBook("De Hobbit", ["Unknown"], series: null, language: null);
+        var result = new DuplicateCandidateResult(
+        [
+            new DuplicateCandidateGroup(
+                "de hobbit:title",
+                "De Hobbit",
+                "Unknown",
+                [source, target],
+                DuplicateCandidateMatchKind.TitleOnly)
+        ]);
+        var viewModel = new DuplicateCandidatesViewModel(
+            result,
+            "C:/Library",
+            mergeCandidateAsync: (_, _, _, _) => Task.FromResult(true),
+            reloadCandidatesAsync: _ => Task.FromResult(new DuplicateCandidateResult([])))
+        {
+            ExactMatchesOnly = false
+        };
+
+        await viewModel.MergeCandidateAsync(viewModel.Rows.Single(row => row.Id == source.Id), CancellationToken.None);
+
+        viewModel.HasChanges.Should().BeTrue();
+        viewModel.HasGroups.Should().BeFalse();
+        viewModel.Rows.Should().BeEmpty();
+    }
+
+    [Fact]
     public void CreateMergePreview_shows_source_and_best_metadata_target()
     {
         var source = CreateBook("De Hobbit", ["Unknown"], series: null, language: null);

@@ -13,6 +13,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     private readonly string? libraryPath;
     private readonly Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync;
     private readonly Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync;
+    private readonly Func<CancellationToken, Task<DuplicateCandidateResult>>? reloadCandidatesAsync;
     private readonly AsyncRelayCommand deleteSelectedCandidatesCommand;
     private IReadOnlyList<Book> books;
     private IReadOnlyList<DuplicateCandidateGroup> allGroups;
@@ -22,11 +23,13 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         DuplicateCandidateResult result,
         string? libraryPath = null,
         Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync = null,
-        Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync = null)
+        Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync = null,
+        Func<CancellationToken, Task<DuplicateCandidateResult>>? reloadCandidatesAsync = null)
     {
         this.libraryPath = libraryPath;
         this.deleteCandidateAsync = deleteCandidateAsync;
         this.mergeCandidateAsync = mergeCandidateAsync;
+        this.reloadCandidatesAsync = reloadCandidatesAsync;
         books = result.Groups
             .SelectMany(group => group.Books)
             .DistinctBy(book => book.Id)
@@ -132,6 +135,12 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             .AsReadOnly();
         HasChanges = true;
         OnPropertyChanged(nameof(HasChanges));
+        if (reloadCandidatesAsync is not null)
+        {
+            ApplyResult(await reloadCandidatesAsync(cancellationToken));
+            return;
+        }
+
         ApplyResult(duplicateCandidateService.FindCandidates(books));
     }
 
