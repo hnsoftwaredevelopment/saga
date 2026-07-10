@@ -1,0 +1,28 @@
+# Milestone 4 Manual Test Checklist
+
+## Settings
+
+- [ ] Open Settings and confirm sections are understandable.
+- [ ] Change theme and confirm it still applies after Save.
+- [ ] Change default view and confirm it still applies after restart.
+- [ ] Change include-subdirectories setting and confirm scan uses it.
+- [ ] Change author sort strategy and confirm it persists after reopening Settings.
+
+## Author Sorting
+
+- [ ] Select author sort "Zoals ingevoerd" and confirm author filter order follows visible names.
+- [ ] Select author sort "Achternaam, voornaam" and confirm authors sort by last name.
+- [ ] Select author sort with Dutch prefixes and confirm names like "Vincent van Gogh" sort under "van Gogh".
+- [ ] Confirm author names themselves are not rewritten.
+
+## Language Display
+
+- [ ] Confirm language filter shows friendly display for `nl`, `nl-NL`, `eng`, and `en-US`.
+- [ ] Confirm selecting a normalized language filter still filters the expected books.
+- [ ] Confirm unusual valid codes such as `lv` do not crash.
+
+## Standard Metadata
+
+- [ ] Select a book and verify publisher, publication date, ISBN, tags, series, formats, and description are visible where expected.
+- [ ] Edit publisher, publication date, ISBN, and tags; save; confirm grid/filter/details refresh correctly.
+- [ ] Merge duplicates and confirm the existing metadata merge screen still works.

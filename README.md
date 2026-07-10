@@ -32,6 +32,9 @@ Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-qu
 - portable `metadata.json` sidecar metadata
 - searchable library viewmodels
 - editable metadata details with save, undo, and delete services
+- structured settings foundation for metadata preferences
+- settings-driven author sorting without per-book author-sort metadata
+- reusable language display normalization
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
 - light, dark, sepia, blue, and red themes
@@ -107,6 +110,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)
 - [docs/manual-tests/milestone-3-checklist.md](docs/manual-tests/milestone-3-checklist.md)
 - [docs/manual-tests/milestone-3-1-checklist.md](docs/manual-tests/milestone-3-1-checklist.md)
+- [docs/manual-tests/milestone-4-checklist.md](docs/manual-tests/milestone-4-checklist.md)
 
 ## Later-Version Candidates
 
