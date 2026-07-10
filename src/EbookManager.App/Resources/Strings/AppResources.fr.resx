@@ -83,6 +83,7 @@
   <data name="MergeActionMerge" xml:space="preserve"><value>Ajouter la valeur source a la cible</value></data>
   <data name="MergeActionDisabledSameValue" xml:space="preserve"><value>Les deux livres ont deja la meme valeur pour ce champ.</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve"><value>Livre fusionne.</value></data>
+  <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> a ete fusionne.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Fusion impossible</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>La liste des doublons est obsolete. Saga a actualise la bibliotheque; ouvrez a nouveau la vue des doublons.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteur</value></data>

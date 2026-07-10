@@ -46,7 +46,8 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     public bool HasGroups => Groups.Count > 0;
     public string SummaryText => $"{GroupCount} groups, {BookCount} books";
     public bool HasChanges { get; private set; }
-    public bool HasMergeSuccessMessage { get; private set; }
+    public bool HasMergeSuccessMessage => !string.IsNullOrWhiteSpace(MergeSuccessBookTitle);
+    public string MergeSuccessBookTitle { get; private set; } = string.Empty;
     public IAsyncRelayCommand DeleteSelectedCandidatesCommand => deleteSelectedCandidatesCommand;
     public bool ExactMatchesOnly
     {
@@ -91,9 +92,8 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             .ToList()
             .AsReadOnly();
         HasChanges = true;
-        HasMergeSuccessMessage = false;
+        ClearMergeSuccessMessage();
         OnPropertyChanged(nameof(HasChanges));
-        OnPropertyChanged(nameof(HasMergeSuccessMessage));
         ApplyResult(duplicateCandidateService.FindCandidates(books));
     }
 
@@ -134,10 +134,21 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             .ToList()
             .AsReadOnly();
         HasChanges = true;
-        HasMergeSuccessMessage = true;
+        SetMergeSuccessMessage(preview.Target.Title);
         OnPropertyChanged(nameof(HasChanges));
-        OnPropertyChanged(nameof(HasMergeSuccessMessage));
         ApplyResult(duplicateCandidateService.FindCandidates(books));
+    }
+
+    public void ClearMergeSuccessMessage()
+    {
+        if (string.IsNullOrWhiteSpace(MergeSuccessBookTitle))
+        {
+            return;
+        }
+
+        MergeSuccessBookTitle = string.Empty;
+        OnPropertyChanged(nameof(MergeSuccessBookTitle));
+        OnPropertyChanged(nameof(HasMergeSuccessMessage));
     }
 
     public DuplicateMergePreviewViewModel? CreateMergePreview(DuplicateCandidateRowViewModel clickedRow)
@@ -176,12 +187,18 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
                 .ToList()
                 .AsReadOnly();
             HasChanges = true;
-            HasMergeSuccessMessage = false;
+            ClearMergeSuccessMessage();
         }
 
         OnPropertyChanged(nameof(HasChanges));
-        OnPropertyChanged(nameof(HasMergeSuccessMessage));
         ApplyResult(duplicateCandidateService.FindCandidates(books));
+    }
+
+    private void SetMergeSuccessMessage(string bookTitle)
+    {
+        MergeSuccessBookTitle = bookTitle;
+        OnPropertyChanged(nameof(MergeSuccessBookTitle));
+        OnPropertyChanged(nameof(HasMergeSuccessMessage));
     }
 
     public static string BuildGroupTitle(DuplicateCandidateGroup group) =>

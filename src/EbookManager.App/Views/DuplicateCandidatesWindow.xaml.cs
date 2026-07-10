@@ -7,17 +7,27 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
 
 namespace EbookManager.App.Views;
 
 public partial class DuplicateCandidatesWindow : System.Windows.Window
 {
+    private static readonly TimeSpan MergeSuccessMessageDuration = TimeSpan.FromSeconds(4);
+    private readonly DispatcherTimer mergeSuccessMessageTimer;
     private bool isMergingCandidate;
 
     public DuplicateCandidatesWindow(DuplicateCandidatesViewModel viewModel)
     {
         InitializeComponent();
         DataContext = viewModel;
+        mergeSuccessMessageTimer = new DispatcherTimer
+        {
+            Interval = MergeSuccessMessageDuration
+        };
+        mergeSuccessMessageTimer.Tick += MergeSuccessMessageTimerTick;
+        viewModel.PropertyChanged += ViewModelPropertyChanged;
+        Closed += DuplicateCandidatesWindowClosed;
     }
 
     private void CloseClicked(object sender, System.Windows.RoutedEventArgs e)
@@ -186,6 +196,40 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         if (DataContext is DuplicateCandidatesViewModel viewModel)
         {
             viewModel.SetSelectedRows(DuplicateRowsGrid.SelectedItems.OfType<DuplicateCandidateRowViewModel>());
+        }
+    }
+
+    private void ViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(DuplicateCandidatesViewModel.HasMergeSuccessMessage) ||
+            sender is not DuplicateCandidatesViewModel viewModel)
+        {
+            return;
+        }
+
+        mergeSuccessMessageTimer.Stop();
+        if (viewModel.HasMergeSuccessMessage)
+        {
+            mergeSuccessMessageTimer.Start();
+        }
+    }
+
+    private void MergeSuccessMessageTimerTick(object? sender, EventArgs e)
+    {
+        mergeSuccessMessageTimer.Stop();
+        if (DataContext is DuplicateCandidatesViewModel viewModel)
+        {
+            viewModel.ClearMergeSuccessMessage();
+        }
+    }
+
+    private void DuplicateCandidatesWindowClosed(object? sender, EventArgs e)
+    {
+        mergeSuccessMessageTimer.Stop();
+        mergeSuccessMessageTimer.Tick -= MergeSuccessMessageTimerTick;
+        if (DataContext is DuplicateCandidatesViewModel viewModel)
+        {
+            viewModel.PropertyChanged -= ViewModelPropertyChanged;
         }
     }
 }

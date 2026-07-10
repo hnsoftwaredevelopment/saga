@@ -118,6 +118,7 @@
   <data name="MergeActionMerge" xml:space="preserve"><value>Waarde uit bronboek toevoegen aan doelboek</value></data>
   <data name="MergeActionDisabledSameValue" xml:space="preserve"><value>Beide boeken hebben al dezelfde waarde voor dit veld.</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve"><value>Boek samengevoegd.</value></data>
+  <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is samengevoegd.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Samenvoegen mislukt</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>De duplicatenlijst is verouderd. Saga heeft de bibliotheek ververst; open het duplicatenoverzicht opnieuw.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteurmatch</value></data>

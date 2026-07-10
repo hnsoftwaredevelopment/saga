@@ -83,6 +83,7 @@
   <data name="MergeActionMerge" xml:space="preserve"><value>Aggiungi il valore sorgente alla destinazione</value></data>
   <data name="MergeActionDisabledSameValue" xml:space="preserve"><value>Entrambi i libri hanno gia lo stesso valore per questo campo.</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve"><value>Libro unito.</value></data>
+  <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> e stato unito.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Unione non riuscita</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>L'elenco dei duplicati non e aggiornato. Saga ha aggiornato la biblioteca; apra di nuovo la vista dei duplicati.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Autore</value></data>

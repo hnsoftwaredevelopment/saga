@@ -118,6 +118,7 @@
   <data name="MergeActionMerge" xml:space="preserve"><value>Append source value to target</value></data>
   <data name="MergeActionDisabledSameValue" xml:space="preserve"><value>Both books already have the same value for this field.</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve"><value>Book merged.</value></data>
+  <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is merged.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Merge failed</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>The duplicate list is outdated. Saga refreshed the library; open the duplicate overview again.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Author match</value></data>

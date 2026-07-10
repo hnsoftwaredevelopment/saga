@@ -121,10 +121,12 @@
             </Style.Triggers>
           </Style>
         </Border.Style>
-        <TextBlock Text="{loc:Loc DuplicateMergeSucceededMessage}"
-                   Foreground="{DynamicResource TextPrimaryBrush}"
+        <TextBlock Foreground="{DynamicResource TextPrimaryBrush}"
                    FontSize="12"
-                   TextWrapping="Wrap" />
+                   TextWrapping="Wrap">
+          <Run Text="{Binding MergeSuccessBookTitle, Mode=OneWay}" />
+          <Run Text="{loc:Loc DuplicateMergeSucceededSuffix}" />
+        </TextBlock>
       </Border>
     </StackPanel>
 

@@ -217,12 +217,14 @@ public sealed class DuplicateCandidatesViewModelTests
         };
 
         viewModel.HasMergeSuccessMessage.Should().BeFalse();
+        viewModel.MergeSuccessBookTitle.Should().BeEmpty();
 
         await viewModel.MergeCandidateAsync(viewModel.Rows.Single(row => row.Id == source.Id), CancellationToken.None);
 
         merged.Should().Be((source.Id, target.Id));
         viewModel.HasChanges.Should().BeTrue();
         viewModel.HasMergeSuccessMessage.Should().BeTrue();
+        viewModel.MergeSuccessBookTitle.Should().Be("De Hobbit");
         viewModel.HasGroups.Should().BeFalse();
         viewModel.Rows.Should().BeEmpty();
     }
@@ -246,6 +248,27 @@ public sealed class DuplicateCandidatesViewModelTests
         await viewModel.DeleteCandidateAsync(viewModel.Rows[0], CancellationToken.None);
 
         viewModel.HasMergeSuccessMessage.Should().BeFalse();
+        viewModel.MergeSuccessBookTitle.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ClearMergeSuccessMessage_hides_last_merge_feedback()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var second = CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null);
+        var result = new DuplicateCandidateService().FindCandidates([first, second]);
+        var viewModel = new DuplicateCandidatesViewModel(
+            result,
+            mergeCandidateAsync: (_, _, _, _) => Task.FromResult(true));
+
+        await viewModel.MergeCandidateAsync(viewModel.Rows[0], CancellationToken.None);
+
+        viewModel.HasMergeSuccessMessage.Should().BeTrue();
+
+        viewModel.ClearMergeSuccessMessage();
+
+        viewModel.HasMergeSuccessMessage.Should().BeFalse();
+        viewModel.MergeSuccessBookTitle.Should().BeEmpty();
     }
 
     [Fact]
