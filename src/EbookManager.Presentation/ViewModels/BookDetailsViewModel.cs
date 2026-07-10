@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
+using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
 
 namespace EbookManager.Presentation.ViewModels;
@@ -28,6 +29,10 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
 
     [ObservableProperty]
     private string? language;
+
+    public string LanguageDisplayName => string.IsNullOrWhiteSpace(Language)
+        ? string.Empty
+        : LanguageDisplayService.DisplayName(Language);
 
     [ObservableProperty]
     private string? publisher;
@@ -199,7 +204,11 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
     partial void OnTitleChanged(string value) => RefreshDirtyState();
     partial void OnAuthorsTextChanged(string value) => RefreshDirtyState();
     partial void OnDescriptionChanged(string? value) => RefreshDirtyState();
-    partial void OnLanguageChanged(string? value) => RefreshDirtyState();
+    partial void OnLanguageChanged(string? value)
+    {
+        OnPropertyChanged(nameof(LanguageDisplayName));
+        RefreshDirtyState();
+    }
     partial void OnPublisherChanged(string? value) => RefreshDirtyState();
     partial void OnPublicationDateChanged(DateOnly? value) => RefreshDirtyState();
     partial void OnTagsTextChanged(string? value) => RefreshDirtyState();

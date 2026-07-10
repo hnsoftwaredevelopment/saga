@@ -4,6 +4,7 @@ using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
 using EbookManager.Presentation.ViewModels;
 using FluentAssertions;
+using System.Globalization;
 
 namespace EbookManager.Tests.App.ViewModels;
 
@@ -117,6 +118,34 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public void Load_exposes_friendly_language_display_without_changing_stored_value()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("nl-NL");
+        try
+        {
+            var viewModel = CreateViewModel(out _);
+            var book = CreateBook("Original", ["First Author"], language: "eng");
+
+            viewModel.Load(book);
+
+            viewModel.Language.Should().Be("eng");
+            viewModel.LanguageDisplayName.Should().Be("Engels");
+            viewModel.HasUnsavedChanges.Should().BeFalse();
+
+            viewModel.Language = "nl-NL";
+
+            viewModel.Language.Should().Be("nl-NL");
+            viewModel.LanguageDisplayName.Should().Be("Nederlands");
+            viewModel.HasUnsavedChanges.Should().BeTrue();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+    }
+
+    [Fact]
     public async Task Save_updates_metadata_and_clears_dirty_state()
     {
         var viewModel = CreateViewModel(out var repository);
@@ -181,7 +210,8 @@ public sealed class BookDetailsViewModelTests
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,
-        IReadOnlyList<EbookFormat>? formats = null)
+        IReadOnlyList<EbookFormat>? formats = null,
+        string? language = "en")
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
@@ -190,7 +220,7 @@ public sealed class BookDetailsViewModelTests
                 title,
                 authors,
                 Description: "Description",
-                Language: "en",
+                Language: language,
                 Publisher: "Publisher",
                 Tags: ["Tag"],
                 Isbn: "9780000000000"),

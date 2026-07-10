@@ -105,7 +105,11 @@
                TextWrapping="Wrap"
                Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Language}" FontWeight="SemiBold" />
-      <TextBox Text="{Binding Language, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+      <TextBox Text="{Binding Language, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,4" />
+      <TextBlock Text="{Binding LanguageDisplayName}"
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 FontSize="12"
+                 Margin="0,0,0,10" />
       <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" />
       <TextBox Text="{Binding Publisher, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc PublicationDate}" FontWeight="SemiBold" />
