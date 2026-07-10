@@ -5,6 +5,7 @@ using EbookManager.Domain.Books;
 using EbookManager.Domain.Importing;
 using EbookManager.Domain.Libraries;
 using EbookManager.Domain.Metadata;
+using EbookManager.Domain.Settings;
 using EbookManager.Libraries;
 using EbookManager.Presentation.Abstractions;
 using EbookManager.Presentation.ViewModels;
@@ -254,6 +255,29 @@ public sealed class LibraryViewModelTests
 
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Title.Should().Be("Dune");
+    }
+
+    [Fact]
+    public async Task Author_filter_order_uses_author_sort_strategy()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(settingsStore.Settings with
+        {
+            AuthorSortStrategy = AuthorSortStrategy.LastNameFirst
+        }, default);
+        var viewModel = CreateViewModel(
+            [
+                CreateBook("Book A", ["Karin Slaughter"]),
+                CreateBook("Book B", ["Lee Child"]),
+                CreateBook("Book C", ["J.R.R. Tolkien"])
+            ],
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.AuthorFilters.Select(filter => filter.Name)
+            .Should()
+            .Equal("Lee Child", "Karin Slaughter", "J.R.R. Tolkien");
     }
 
     [Fact]
@@ -547,6 +571,29 @@ public sealed class LibraryViewModelTests
         viewModel.SelectedSortOption = LibrarySortOption.Category;
         viewModel.VisibleBooks.Select(book => book.Title)
             .Should().Equal("The Hobbit", "Alpha", "Dune");
+    }
+
+    [Fact]
+    public async Task Author_sort_option_uses_author_sort_strategy()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(settingsStore.Settings with
+        {
+            AuthorSortStrategy = AuthorSortStrategy.LastNameFirst
+        }, default);
+        var viewModel = CreateViewModel(
+            [
+                CreateBook("C", ["J.R.R. Tolkien"]),
+                CreateBook("A", ["Karin Slaughter"]),
+                CreateBook("B", ["Lee Child"])
+            ],
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("B", "A", "C");
     }
 
     [Fact]

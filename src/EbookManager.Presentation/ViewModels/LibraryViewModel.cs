@@ -4,9 +4,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
 using EbookManager.Application.Importing;
+using EbookManager.Application.Metadata;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Importing;
+using EbookManager.Domain.Settings;
 using EbookManager.Libraries;
 using EbookManager.Presentation.Abstractions;
 
@@ -35,6 +37,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private IReadOnlyList<Book> books = [];
     private bool hasAppliedDefaultView;
     private int selectionVersion;
+    private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
 
     public LibraryViewModel(
         IBookRepository bookRepository,
@@ -439,7 +442,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         var filteredBooks = ApplyFacetFilters(searchService.Filter(books, SearchText));
         var rows = ApplySort(
                 filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath)),
-                SelectedSortOption)
+                SelectedSortOption,
+                authorSortStrategy)
             .ToList();
 
         VisibleBooks.Clear();
@@ -492,7 +496,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         RefreshFilters(
             AuthorFilters,
-            books.SelectMany(book => book.Metadata.Authors));
+            books.SelectMany(book => book.Metadata.Authors),
+            sortKeySelector: author => AuthorSortKeyBuilder.BuildSortKey(author, authorSortStrategy));
         RefreshFilters(
             CategoryFilters,
             books.SelectMany(book => book.Metadata.Tags ?? []));
@@ -516,7 +521,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     private void RefreshFilters(
         ObservableCollection<FacetFilterViewModel> filters,
         IEnumerable<string> values,
-        Func<string, string>? displayNameSelector = null)
+        Func<string, string>? displayNameSelector = null,
+        Func<string, string>? sortKeySelector = null)
     {
         var existingSelections = filters.ToDictionary(
             filter => filter.Name,
@@ -530,7 +536,8 @@ public sealed partial class LibraryViewModel : ObservableObject
                 Name = group.First(),
                 Count = group.Count()
             })
-            .OrderBy(value => value.Name, StringComparer.CurrentCultureIgnoreCase)
+            .OrderBy(value => sortKeySelector?.Invoke(value.Name) ?? value.Name, StringComparer.CurrentCultureIgnoreCase)
+            .ThenBy(value => value.Name, StringComparer.CurrentCultureIgnoreCase)
             .ToList();
 
         filters.Clear();
@@ -932,7 +939,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private static IEnumerable<BookRowViewModel> ApplySort(
         IEnumerable<BookRowViewModel> rows,
-        LibrarySortOption sortOption)
+        LibrarySortOption sortOption,
+        AuthorSortStrategy authorSortStrategy)
     {
         return sortOption switch
         {
@@ -940,7 +948,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 .OrderBy(row => row.Title, StringComparer.CurrentCultureIgnoreCase)
                 .ThenBy(row => row.Authors, StringComparer.CurrentCultureIgnoreCase),
             LibrarySortOption.Author => rows
-                .OrderBy(row => row.Authors, StringComparer.CurrentCultureIgnoreCase)
+                .OrderBy(row => AuthorSortKeyBuilder.BuildSortKey(row.Authors, authorSortStrategy), StringComparer.CurrentCultureIgnoreCase)
                 .ThenBy(row => row.Title, StringComparer.CurrentCultureIgnoreCase),
             LibrarySortOption.EReader => rows
                 .OrderBy(row => row.EReader, StringComparer.CurrentCultureIgnoreCase)
@@ -963,6 +971,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         hasAppliedDefaultView = true;
         var settings = await settingsStore.LoadAsync(cancellationToken);
+        authorSortStrategy = settings.AuthorSortStrategy;
         if (Enum.TryParse<LibraryView>(settings.DefaultView, ignoreCase: true, out var defaultView))
         {
             SelectedView = defaultView;
