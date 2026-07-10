@@ -1106,8 +1106,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             result,
             CurrentLibraryPath,
             DeleteDuplicateCandidateAsync,
-            MergeDuplicateCandidateAsync,
-            ReloadDuplicateCandidatesAsync);
+            MergeDuplicateCandidateAsync);
         await userInteraction.ShowDuplicateCandidatesAsync(
             candidates,
             cancellationToken);
@@ -1151,12 +1150,6 @@ public sealed partial class LibraryViewModel : ObservableObject
             await RefreshAsync(cancellationToken);
             throw new InvalidOperationException("The duplicate list is outdated. Open the duplicate overview again.", exception);
         }
-    }
-
-    private async Task<DuplicateCandidateResult> ReloadDuplicateCandidatesAsync(CancellationToken cancellationToken)
-    {
-        var currentBooks = await LoadBooksAsync(cancellationToken);
-        return duplicateCandidateService.FindCandidates(currentBooks);
     }
 
     private enum MetadataFilterKind

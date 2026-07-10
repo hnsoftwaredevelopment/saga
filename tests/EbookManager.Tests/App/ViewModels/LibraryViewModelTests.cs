@@ -158,7 +158,7 @@ public sealed class LibraryViewModelTests
 
         repository.AttachedSourceBookId.Should().Be(sourceBookId);
         repository.AttachedTargetBookId.Should().Be(targetBookId);
-        repository.ListCalls.Should().Be(2);
+        repository.ListCalls.Should().Be(1);
         interaction.DuplicateCandidates.HasGroups.Should().BeFalse();
         VisibleBookTitles(viewModel).Should().Equal("De Hobbit", "De Hobbit");
         viewModel.VisibleBooks.Single(row => row.Id == targetBookId).Book.Formats
@@ -199,7 +199,7 @@ public sealed class LibraryViewModelTests
 
         repository.AttachedSourceBookId.Should().Be(sourceBookId);
         repository.AttachedTargetBookId.Should().Be(targetBookId);
-        repository.ListCalls.Should().Be(3);
+        repository.ListCalls.Should().Be(2);
         VisibleBookTitles(viewModel).Should().Equal("De Hobbit");
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Book.Formats.Should().BeEquivalentTo([EbookFormat.Epub, EbookFormat.Pdf]);
