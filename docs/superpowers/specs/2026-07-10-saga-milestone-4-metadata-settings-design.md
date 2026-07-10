@@ -68,7 +68,7 @@ The inventory table should contain:
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Title | title | Supported | EPUB, OPF, metadata.json, filename | Keep | Grid, details, search, duplicates | Yes | Core identity field. |
 | Authors | authors | Supported | EPUB, OPF, metadata.json, filename | Keep | Grid, details, filter, search, duplicates | Yes | Multi-value. |
-| Author sort | author_sort | Not supported | Calibre OPF/DB, derived | Candidate | Details, sorting later | Later | Useful, but needs careful rules. |
+| Author sort strategy | author_sort | Not supported | Derived from authors, settings rule | Improve | Sorting, author filter ordering, settings | No per book | Implement as a strategy, not as stored metadata on every book. |
 | Series | series | Supported | EPUB, OPF, metadata.json, filename cleanup | Keep | Details, filter, search, duplicates | Yes | Multi-book organization. |
 | Series number | series_index | Supported | OPF, metadata.json, title cleanup | Keep | Details, sorting later | Yes | Must remain numeric. |
 | Tags | tags | Supported | OPF subjects, metadata.json | Keep | Details, filter, search | Yes | Multi-value cleanup needed. |
@@ -125,14 +125,13 @@ System metadata helps the user understand the library without turning metadata e
 
 These are useful but should be implemented only after the foundation is stable:
 
-- Author sort
 - Identifiers as scheme/value pairs
 - Rating
 - Reading dates
 - Original publication date
 - Data files or supplemental files
 
-Author sort is especially useful, but it needs careful behavior around names such as `van Gogh`, `J.R.R. Tolkien`, organizations, and already comma-separated names.
+Author sorting is especially useful, but it should be implemented as a configurable strategy rather than a per-book metadata field. The rules need careful behavior around names such as `van Gogh`, `J.R.R. Tolkien`, organizations, and already comma-separated names.
 
 ## 7. Custom Columns Are A Separate Milestone
 
@@ -210,6 +209,7 @@ Metadata settings contain:
 
 - language normalization behavior;
 - author cleanup behavior;
+- author sort strategy;
 - title cleanup behavior;
 - sidecar behavior;
 - metadata write-back behavior later.
@@ -251,6 +251,7 @@ Milestone 4 should focus on low-risk cleanup:
 - clean obvious HTML wrappers in descriptions for display while preserving meaningful line breaks;
 - keep numeric series numbers numeric;
 - keep author comma inversion conservative;
+- calculate author sort keys from the selected strategy instead of storing author-sort values per book;
 - avoid merging or splitting author names unless the pattern is unambiguous.
 
 Language behavior should distinguish:
@@ -284,7 +285,7 @@ Schema changes should be minimal:
 - keep migrations backward compatible for existing libraries;
 - avoid storing custom metadata in Milestone 4.
 
-If author sort, identifiers, or rating are selected later, they should get explicit schema design before implementation.
+If identifiers or rating are selected later, they should get explicit schema design before implementation. Author sorting should start as a settings-driven strategy and should not require a schema change unless a later author-management milestone proves stored author sort values are necessary.
 
 ## 12. Testing Strategy
 
@@ -325,7 +326,7 @@ Merge defaults should be implemented only after the settings structure has lande
 
 Before code work starts, decide:
 
-- whether `AuthorSort` enters Milestone 4 or remains later;
+- which author sort strategy should be the default;
 - whether `Rating` enters Milestone 4 or remains later;
 - whether identifiers remain a single ISBN field for now;
 - whether system metadata such as date added and file size appears in the details pane;
@@ -335,5 +336,6 @@ My recommendation is to keep Milestone 4 implementation conservative:
 
 - include language normalization;
 - expose and polish existing fields;
-- document author sort, rating, and identifiers as candidates;
+- include author sort as a settings-driven strategy;
+- document rating and identifiers as candidates;
 - postpone schema-heavy changes until after testing the refined metadata workflow.

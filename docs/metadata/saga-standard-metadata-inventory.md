@@ -20,7 +20,7 @@ Custom columns are intentionally excluded from this inventory. They belong to a 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Title | `title` | Supported | EPUB/KEPUB OPF, Calibre `metadata.opf`, Saga `metadata.json`, filename fallback | Keep | Bookshelf, grid, list, details, search, duplicate detection, duplicate merge | Yes | Core identity field. |
 | Authors | `authors` | Supported | EPUB/KEPUB OPF, Calibre `metadata.opf`, Saga `metadata.json`, filename fallback | Keep | Grid, list, details, author filter, search, duplicate detection, duplicate merge | Yes | Multi-value. Needs careful cleanup and bulk rename/remove. |
-| Author sort | `author_sort`, author sort values | Not supported | Calibre DB, possible OPF metadata, derived from authors | Candidate | Sorting, details later, author management later | Later | Useful for large libraries, but name rules are tricky. Do not rush. |
+| Author sort strategy | `author_sort`, author sort values | Not supported | Derived from authors, optional settings rule | Improve | Sorting, author filter ordering, settings | No per book | Implement as a library/application sorting strategy instead of storing an author-sort value on every book. |
 | Series | `series` | Supported | Calibre `metadata.opf`, Saga `metadata.json`, EPUB Calibre-style metadata, bracketed title cleanup | Keep | Details, series filter, search, duplicate merge | Yes | Important for real libraries. |
 | Series number | `series_index` | Supported | Calibre `metadata.opf`, Saga `metadata.json`, EPUB Calibre-style metadata, bracketed title cleanup | Keep | Details, sorting later, duplicate merge | Yes | Must remain numeric. Ignore non-numeric source values. |
 | Tags | `tags` | Supported | Calibre `metadata.opf` subjects, EPUB subjects, Saga `metadata.json` | Improve | Details, tags filter, search, duplicate merge | Yes | Needs better bulk cleanup and consistent display. |
@@ -63,14 +63,34 @@ Milestone 4 should implement or refine only the low-risk standard metadata decis
 3. Improve description cleanup for common HTML wrappers and excessive whitespace.
 4. Make existing publisher, publication date, and ISBN behavior visible and consistent in details, search, duplicate merge, and sidecar persistence.
 5. Keep identifiers as a single ISBN field for now.
-6. Keep rating, author sort, title sort, file size, date added, and last modified as candidates unless explicitly selected after review.
-7. Keep custom columns out of Milestone 4.
+6. Add an author sort strategy setting, but do not store author-sort values per book in Milestone 4.
+7. Keep rating, title sort, file size, date added, and last modified as candidates unless explicitly selected after review.
+8. Keep custom columns out of Milestone 4.
+
+## Author Sort Strategy
+
+Saga should support author sorting as a preference instead of requiring each book to store a separate author-sort value. This keeps the metadata model lighter and avoids forcing users to maintain an extra field for every book.
+
+Initial strategy options:
+
+- **Display name**: sort authors as entered, for example `Karin Slaughter`.
+- **Last name first**: sort by a derived value like `Slaughter, Karin`.
+- **Last name, first name, prefixes**: sort names with Dutch-style prefixes more deliberately, for example `Gogh, Vincent van` or `Velde, Peter van de`, once the rule is designed carefully.
+
+The first implementation should be conservative:
+
+- keep the stored author value unchanged;
+- calculate the sort key at display/filter/sort time;
+- use the selected strategy for author filter ordering and author-based sorting;
+- avoid changing author text during import unless the existing cleanup rule is unambiguous.
+
+This gives users useful sorting behavior without making AuthorSort a per-book editing burden.
 
 ## Open Review Questions
 
 These questions should be answered before the Milestone 4 implementation plan is written:
 
-1. Should `Author sort` be included in Milestone 4 as a stored standard field, or remain a later candidate?
+1. Which author sort strategy should be the default for Dutch users?
 2. Should `Rating` be included in Milestone 4, or remain later until the details pane and filters are more mature?
 3. Should `Date added` and `Last modified` be shown in the details pane as read-only system metadata?
 4. Should `File size` be shown per available format in the details pane?
