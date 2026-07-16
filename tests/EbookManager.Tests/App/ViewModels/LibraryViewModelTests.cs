@@ -676,6 +676,32 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Refresh_settings_dependent_display_applies_changed_author_sort_strategy_without_restart()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel(
+            [
+                CreateBook("C", ["J.R.R. Tolkien"]),
+                CreateBook("A", ["Karin Slaughter"]),
+                CreateBook("B", ["Lee Child"])
+            ],
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("C", "A", "B");
+
+        await settingsStore.SaveAsync(settingsStore.Settings with
+        {
+            AuthorSortStrategy = AuthorSortStrategy.LastNameFirst
+        }, default);
+        await viewModel.RefreshSettingsDependentDisplayAsync();
+
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("B", "A", "C");
+        viewModel.AuthorFilters.Select(filter => filter.Name).Should().Equal("Lee Child", "Karin Slaughter", "J.R.R. Tolkien");
+    }
+
+    [Fact]
     public async Task Selecting_a_book_loads_details()
     {
         var book = CreateBook("Selected", ["Author"]);

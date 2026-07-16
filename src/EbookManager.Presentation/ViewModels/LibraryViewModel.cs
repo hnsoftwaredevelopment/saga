@@ -237,6 +237,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         Details.RefreshLocalizedDisplayNames();
     }
 
+    public async Task RefreshSettingsDependentDisplayAsync(CancellationToken cancellationToken = default)
+    {
+        if (settingsStore is not null)
+        {
+            var settings = await settingsStore.LoadAsync(cancellationToken);
+            authorSortStrategy = settings.AuthorSortStrategy;
+        }
+
+        RefreshFacetFilters();
+        RefreshLocalizedFilterDisplayNames();
+        ApplyFilter();
+    }
+
     partial void OnLoadingLibraryTotalCountChanged(int value)
     {
         OnPropertyChanged(nameof(LoadingLibraryProgressValue));

@@ -47,7 +47,7 @@ public partial class SettingsWindow : System.Windows.Window
     {
         await viewModel.SaveAsync();
         localizationService.ApplyCulture(viewModel.Culture);
-        libraryViewModel.RefreshLocalizedFilterDisplayNames();
+        await libraryViewModel.RefreshSettingsDependentDisplayAsync();
         themeService.ApplyTheme(viewModel.Theme);
         DialogResult = true;
     }
