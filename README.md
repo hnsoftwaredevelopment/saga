@@ -41,6 +41,7 @@ Milestone 5 builds on version `0.1` with standard metadata enrichment, system me
 - per-format details rows with managed file sizes
 - per-format open-folder action from the details pane
 - description cleanup for common HTML-like metadata
+- standard metadata search across language display names, dates, series numbers, formats, and system dates
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
 - light, dark, sepia, blue, and red themes

@@ -25,6 +25,15 @@
 - [ ] Confirm loading a cleaned description does not immediately mark the book as having unsaved changes.
 - [ ] Edit and save a description and confirm the saved value stays readable.
 
+## Standard Metadata Search
+
+- [ ] Search by publisher, ISBN, tag, series, and reading status to confirm existing metadata search still works.
+- [ ] Search by a publication year or ISO date, for example `2020` or `2020-01-02`, and confirm matching books are shown.
+- [ ] Search by series number, for example `1.5`, and confirm matching books are shown.
+- [ ] Search by format, for example `epub` or `pdf`, and confirm books with that managed file type are shown.
+- [ ] Search by localized language display name, for example `Nederlands` in the Dutch UI, and confirm matching books are shown.
+- [ ] Search by date added or last modified using a visible details-pane date/year and confirm matching books are shown.
+
 ## Metadata Enrichment Baseline
 
 - [ ] Import an EPUB with rich metadata and confirm publisher, publication date, ISBN, tags, series, language, description, cover, formats, date added, and last modified are visible in Details.
