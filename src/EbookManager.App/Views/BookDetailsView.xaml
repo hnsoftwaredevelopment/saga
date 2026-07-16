@@ -103,8 +103,9 @@
                     BorderBrush="{DynamicResource AccentBrush}"
                     BorderThickness="1"
                     CornerRadius="8"
-                    Padding="8"
-                    Margin="0,0,0,6">
+                    Padding="6,3"
+                    Margin="0,0,0,6"
+                    HorizontalAlignment="Left">
               <DockPanel LastChildFill="True">
                 <TextBlock Text="{Binding DisplayText}"
                            VerticalAlignment="Center"
