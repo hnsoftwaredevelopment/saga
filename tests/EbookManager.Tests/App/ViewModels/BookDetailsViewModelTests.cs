@@ -72,7 +72,39 @@ public sealed class BookDetailsViewModelTests
         viewModel.Load(book);
 
         viewModel.FormatsText.Should().Be("EPUB, PDF");
+        viewModel.FormatDetails.Select(format => format.DisplayText).Should().Equal("EPUB", "PDF");
         viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Loading_format_details_shows_file_sizes_per_available_format()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            var viewModel = CreateViewModel(out var repository);
+            var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub, EbookFormat.Pdf]);
+            repository.SeedFiles(
+                book.Id,
+                [
+                    CreateBookFile(book.Id, EbookFormat.Pdf, "books/book/original.pdf", 4_404_019),
+                    CreateBookFile(book.Id, EbookFormat.Epub, "books/book/original.epub", 1_887_436)
+                ]);
+
+            viewModel.Load(book);
+            await viewModel.LoadFormatDetailsAsync(book.Id);
+
+            viewModel.FormatDetails.Select(format => format.DisplayText)
+                .Should()
+                .Equal("EPUB - 1.8 MB", "PDF - 4.2 MB");
+            viewModel.FormatDetails.Should().AllSatisfy(format => format.FileId.Should().NotBeNull());
+            viewModel.HasUnsavedChanges.Should().BeFalse();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 
     [Fact]
@@ -273,11 +305,32 @@ public sealed class BookDetailsViewModelTests
         };
     }
 
+    private static BookFile CreateBookFile(
+        Guid bookId,
+        EbookFormat format,
+        string relativePath,
+        long sizeBytes) =>
+        new(
+            Guid.NewGuid(),
+            bookId,
+            format,
+            relativePath,
+            new string('a', 64),
+            sizeBytes,
+            MetadataWriteBackStatus.Unsupported,
+            null);
+
     private sealed class RecordingBookRepository : IBookRepository
     {
+        private readonly Dictionary<Guid, IReadOnlyList<BookFile>> filesByBookId = [];
         public Book? UpdatedBook { get; private set; }
         public Guid? DeletedBookId { get; private set; }
         public bool ThrowConflictOnUpdate { get; set; }
+
+        public void SeedFiles(Guid bookId, IReadOnlyList<BookFile> files)
+        {
+            filesByBookId[bookId] = files;
+        }
 
         public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([]);
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult<Book?>(null);
@@ -307,7 +360,9 @@ public sealed class BookDetailsViewModelTests
         }
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<BookFile>>([]);
+            Task.FromResult(filesByBookId.TryGetValue(bookId, out var files)
+                ? files
+                : (IReadOnlyList<BookFile>)[]);
 
         public Task UpdateFileWriteBackAsync(Guid fileId, MetadataWriteResult result, CancellationToken cancellationToken) =>
             Task.CompletedTask;

@@ -38,6 +38,7 @@ Milestone 5 builds on version `0.1` with standard metadata enrichment, system me
 - explicit language-code normalization for supported Saga languages
 - localized language filter and details display while preserving stable stored language codes
 - read-only details display for date added and last modified system metadata
+- per-format details rows with managed file sizes
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
 - light, dark, sepia, blue, and red themes

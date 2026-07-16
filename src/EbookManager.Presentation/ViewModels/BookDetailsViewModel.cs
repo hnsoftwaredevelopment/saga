@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
 using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
+using System.Collections.ObjectModel;
 
 namespace EbookManager.Presentation.ViewModels;
 
@@ -23,6 +24,8 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
 
     [ObservableProperty]
     private string formatsText = string.Empty;
+
+    public ObservableCollection<BookFormatDetailsViewModel> FormatDetails { get; } = [];
 
     [ObservableProperty]
     private string? description;
@@ -126,6 +129,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         Title = string.Empty;
         AuthorsText = string.Empty;
         FormatsText = string.Empty;
+        FormatDetails.Clear();
         Description = null;
         Language = null;
         Publisher = null;
@@ -240,6 +244,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
             Title = book.Metadata.Title;
             AuthorsText = JoinList(book.Metadata.Authors);
             FormatsText = FormatFormats(book.Formats);
+            ApplyFormatFallback(book.Formats);
             Description = book.Metadata.Description;
             Language = book.Metadata.Language;
             Publisher = book.Metadata.Publisher;
@@ -317,6 +322,42 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
             .OrderBy(format => format)
             .Select(format => format.ToString().ToUpperInvariant()));
 
+    public async Task LoadFormatDetailsAsync(Guid bookId, CancellationToken cancellationToken = default)
+    {
+        if (BookId != bookId)
+        {
+            return;
+        }
+
+        var files = await bookService.ListFilesAsync(bookId, cancellationToken);
+        if (BookId != bookId)
+        {
+            return;
+        }
+
+        FormatDetails.Clear();
+        foreach (var file in files
+            .OrderBy(file => file.Format)
+            .ThenBy(file => file.RelativePath, StringComparer.CurrentCultureIgnoreCase))
+        {
+            FormatDetails.Add(BookFormatDetailsViewModel.FromFile(file));
+        }
+
+        if (files.Count > 0)
+        {
+            FormatsText = FormatFormats(files.Select(file => file.Format).Distinct().ToArray());
+        }
+    }
+
+    private void ApplyFormatFallback(IReadOnlyList<EbookFormat> formats)
+    {
+        FormatDetails.Clear();
+        foreach (var format in formats.Distinct().OrderBy(format => format))
+        {
+            FormatDetails.Add(BookFormatDetailsViewModel.FromFormat(format));
+        }
+    }
+
     private static IReadOnlyList<string> SplitList(string? value) =>
         (value ?? string.Empty)
             .Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
@@ -335,4 +376,51 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
 
     private static string FormatDateTime(DateTimeOffset value) =>
         value.ToLocalTime().ToString("g", System.Globalization.CultureInfo.CurrentCulture);
+}
+
+public sealed class BookFormatDetailsViewModel
+{
+    private BookFormatDetailsViewModel(
+        Guid? fileId,
+        EbookFormat format,
+        string? relativePath,
+        long? sizeBytes)
+    {
+        FileId = fileId;
+        Format = format;
+        RelativePath = relativePath;
+        SizeBytes = sizeBytes;
+    }
+
+    public Guid? FileId { get; }
+    public EbookFormat Format { get; }
+    public string? RelativePath { get; }
+    public long? SizeBytes { get; }
+    public string FormatText => Format.ToString().ToUpperInvariant();
+    public string SizeText => SizeBytes is null ? string.Empty : FormatSize(SizeBytes.Value);
+    public string DisplayText => string.IsNullOrWhiteSpace(SizeText)
+        ? FormatText
+        : $"{FormatText} - {SizeText}";
+
+    public static BookFormatDetailsViewModel FromFormat(EbookFormat format) =>
+        new(null, format, null, null);
+
+    public static BookFormatDetailsViewModel FromFile(BookFile file) =>
+        new(file.Id, file.Format, file.RelativePath, file.SizeBytes);
+
+    private static string FormatSize(long bytes)
+    {
+        string[] units = ["B", "KB", "MB", "GB", "TB"];
+        var value = (double)bytes;
+        var unitIndex = 0;
+        while (value >= 1024 && unitIndex < units.Length - 1)
+        {
+            value /= 1024;
+            unitIndex++;
+        }
+
+        return unitIndex == 0
+            ? $"{bytes} {units[unitIndex]}"
+            : $"{value:0.#} {units[unitIndex]}";
+    }
 }

@@ -281,6 +281,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         if (version == selectionVersion && fullBook is not null)
         {
             Details.Load(fullBook);
+            await Details.LoadFormatDetailsAsync(fullBook.Id, CancellationToken.None);
         }
     }
 

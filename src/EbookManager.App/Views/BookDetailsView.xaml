@@ -95,9 +95,25 @@
       <TextBlock Text="{loc:Loc Authors}" FontWeight="SemiBold" />
       <TextBox Text="{Binding AuthorsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Formats}" FontWeight="SemiBold" />
-      <TextBox Text="{Binding FormatsText}"
-               IsReadOnly="True"
-               Margin="0,4,0,10" />
+      <ItemsControl ItemsSource="{Binding FormatDetails}"
+                    Margin="0,4,0,10">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Background="{DynamicResource AppBackgroundBrush}"
+                    BorderBrush="{DynamicResource AccentBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="8"
+                    Margin="0,0,0,6">
+              <DockPanel LastChildFill="True">
+                <TextBlock Text="{Binding DisplayText}"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </DockPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
       <TextBlock Text="{loc:Loc Description}" FontWeight="SemiBold" />
       <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
                AcceptsReturn="True"

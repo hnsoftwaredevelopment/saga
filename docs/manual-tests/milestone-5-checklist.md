@@ -9,6 +9,14 @@
 - [ ] Edit normal metadata, save, and confirm Last modified updates after the save.
 - [ ] Confirm loading a book does not show unsaved changes.
 
+## Format Details
+
+- [ ] Select a book with one format and confirm the details pane shows that format.
+- [ ] Select a book with multiple formats and confirm each format is shown on its own row.
+- [ ] Confirm file sizes are shown per format when Saga has managed file information.
+- [ ] Confirm the format list remains read-only for now.
+- [ ] Confirm the layout leaves room for future per-format actions such as Download.
+
 ## Metadata Enrichment Baseline
 
 - [ ] Import an EPUB with rich metadata and confirm publisher, publication date, ISBN, tags, series, language, description, cover, formats, date added, and last modified are visible in Details.
