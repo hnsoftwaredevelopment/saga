@@ -88,6 +88,8 @@ The first implementation should be conservative:
 
 This gives users useful sorting behavior without making AuthorSort a per-book editing burden.
 
+Milestone 4 applies the author sort strategy to Saga-owned sorting surfaces such as the author filter and the Sort by Author dropdown. Native DataGrid column-header sorting remains a separate UI behavior for now. Saga-aware grid header sorting, multi-column sorting refinements, and grouping belong to the future DataGrid makeover: `docs/feature-requests/datagrid-makeover.md`.
+
 ## Open Review Questions
 
 These questions should be answered before the Milestone 4 implementation plan is written:

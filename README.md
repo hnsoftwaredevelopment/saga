@@ -124,6 +124,7 @@ The following remain later-version candidates:
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - optional cloud-file hydration for OneDrive files that are not available locally
 - richer metadata cleanup tools, including duplicate-aware merge flows and more bulk-edit diagnostics
+- DataGrid makeover with Saga-aware column sorting, grouping, and view-specific grid behavior
 - user-defined views
 - ebook conversion
 - full-text search inside book contents
