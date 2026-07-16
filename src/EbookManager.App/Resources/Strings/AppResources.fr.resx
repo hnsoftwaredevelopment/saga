@@ -426,6 +426,7 @@
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Mise à jour des métadonnées...</value></data>
   <data name="NoSort" xml:space="preserve"><value>Aucun</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Ouvrir une bibliothèque existante</value></data>
+  <data name="OpenFolder" xml:space="preserve"><value>Ouvrir le dossier</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Ouvrir les paramètres</value></data>
   <data name="Outcome" xml:space="preserve"><value>Résultat</value></data>
   <data name="Scan" xml:space="preserve"><value>Analyser</value></data>

@@ -3,13 +3,17 @@ using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
 using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
+using EbookManager.Presentation.Abstractions;
 using System.Collections.ObjectModel;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed partial class BookDetailsViewModel(BookService bookService) : ObservableObject
+public sealed partial class BookDetailsViewModel(
+    BookService bookService,
+    IBookFileInteractionService? fileInteraction = null) : ObservableObject
 {
     private readonly BookService bookService = bookService;
+    private readonly IBookFileInteractionService? fileInteraction = fileInteraction;
     private Book? originalBook;
     private bool isApplyingBook;
 
@@ -159,7 +163,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
             Metadata = new BookMetadata(
                 Title.Trim(),
                 SplitList(AuthorsText),
-                NormalizeBlank(Description),
+                CleanDescription(Description),
                 NormalizeBlank(Language),
                 NormalizeBlank(Publisher),
                 PublicationDate,
@@ -245,7 +249,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
             AuthorsText = JoinList(book.Metadata.Authors);
             FormatsText = FormatFormats(book.Formats);
             ApplyFormatFallback(book.Formats);
-            Description = book.Metadata.Description;
+            Description = CleanDescription(book.Metadata.Description);
             Language = book.Metadata.Language;
             Publisher = book.Metadata.Publisher;
             PublicationDate = book.Metadata.PublicationDate;
@@ -303,7 +307,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
             Metadata = new BookMetadata(
                 book.Metadata.Title.Trim(),
                 SplitList(JoinList(book.Metadata.Authors)),
-                NormalizeBlank(book.Metadata.Description),
+                CleanDescription(book.Metadata.Description),
                 NormalizeBlank(book.Metadata.Language),
                 NormalizeBlank(book.Metadata.Publisher),
                 book.Metadata.PublicationDate,
@@ -340,7 +344,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
             .OrderBy(file => file.Format)
             .ThenBy(file => file.RelativePath, StringComparer.CurrentCultureIgnoreCase))
         {
-            FormatDetails.Add(BookFormatDetailsViewModel.FromFile(file));
+            FormatDetails.Add(BookFormatDetailsViewModel.FromFile(file, fileInteraction));
         }
 
         if (files.Count > 0)
@@ -374,22 +378,32 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         return string.IsNullOrEmpty(normalized) ? null : normalized;
     }
 
+    private static string? CleanDescription(string? value) =>
+        DescriptionTextCleaner.Clean(value);
+
     private static string FormatDateTime(DateTimeOffset value) =>
         value.ToLocalTime().ToString("g", System.Globalization.CultureInfo.CurrentCulture);
 }
 
 public sealed class BookFormatDetailsViewModel
 {
+    private readonly IBookFileInteractionService? fileInteraction;
+
     private BookFormatDetailsViewModel(
         Guid? fileId,
         EbookFormat format,
         string? relativePath,
-        long? sizeBytes)
+        long? sizeBytes,
+        IBookFileInteractionService? fileInteraction)
     {
         FileId = fileId;
         Format = format;
         RelativePath = relativePath;
         SizeBytes = sizeBytes;
+        this.fileInteraction = fileInteraction;
+        OpenContainingFolderCommand = new AsyncRelayCommand(
+            OpenContainingFolderAsync,
+            () => CanOpenContainingFolder);
     }
 
     public Guid? FileId { get; }
@@ -401,12 +415,22 @@ public sealed class BookFormatDetailsViewModel
     public string DisplayText => string.IsNullOrWhiteSpace(SizeText)
         ? FormatText
         : $"{FormatText} - {SizeText}";
+    public bool CanOpenContainingFolder =>
+        fileInteraction is not null && !string.IsNullOrWhiteSpace(RelativePath);
+    public IAsyncRelayCommand OpenContainingFolderCommand { get; }
 
     public static BookFormatDetailsViewModel FromFormat(EbookFormat format) =>
-        new(null, format, null, null);
+        new(null, format, null, null, null);
 
-    public static BookFormatDetailsViewModel FromFile(BookFile file) =>
-        new(file.Id, file.Format, file.RelativePath, file.SizeBytes);
+    public static BookFormatDetailsViewModel FromFile(
+        BookFile file,
+        IBookFileInteractionService? fileInteraction = null) =>
+        new(file.Id, file.Format, file.RelativePath, file.SizeBytes, fileInteraction);
+
+    private Task OpenContainingFolderAsync(CancellationToken cancellationToken) =>
+        fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath)
+            ? Task.CompletedTask
+            : fileInteraction.OpenContainingFolderAsync(RelativePath, cancellationToken);
 
     private static string FormatSize(long bytes)
     {

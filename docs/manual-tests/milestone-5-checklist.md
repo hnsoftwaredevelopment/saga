@@ -14,8 +14,16 @@
 - [ ] Select a book with one format and confirm the details pane shows that format.
 - [ ] Select a book with multiple formats and confirm each format is shown on its own row.
 - [ ] Confirm file sizes are shown per format when Saga has managed file information.
-- [ ] Confirm the format list remains read-only for now.
+- [ ] Click Open folder for a format and confirm Windows Explorer opens at the managed book file.
+- [ ] Confirm the format list remains read-only for now, except for the Open folder action.
 - [ ] Confirm the layout leaves room for future per-format actions such as Download.
+
+## Description Cleanup
+
+- [ ] Select a book with HTML-like description metadata and confirm the details pane shows readable plain text.
+- [ ] Confirm common wrappers such as `<p class="description">`, `<br>`, and HTML entities are cleaned up.
+- [ ] Confirm loading a cleaned description does not immediately mark the book as having unsaved changes.
+- [ ] Edit and save a description and confirm the saved value stays readable.
 
 ## Metadata Enrichment Baseline
 

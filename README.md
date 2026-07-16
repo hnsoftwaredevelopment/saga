@@ -39,6 +39,8 @@ Milestone 5 builds on version `0.1` with standard metadata enrichment, system me
 - localized language filter and details display while preserving stable stored language codes
 - read-only details display for date added and last modified system metadata
 - per-format details rows with managed file sizes
+- per-format open-folder action from the details pane
+- description cleanup for common HTML-like metadata
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
 - light, dark, sepia, blue, and red themes
@@ -126,6 +128,7 @@ The following remain later-version candidates:
 - duplicate finder for possible duplicates, with options to delete one copy or merge metadata
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - optional cloud-file hydration for OneDrive files that are not available locally
+- per-format download/export action from the details pane
 - richer metadata cleanup tools, including duplicate-aware merge flows and more bulk-edit diagnostics
 - DataGrid makeover with Saga-aware column sorting, grouping, and view-specific grid behavior
 - user-defined views

@@ -1,6 +1,6 @@
 using System.Globalization;
-using System.Net;
 using System.Text.RegularExpressions;
+using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
 
 namespace EbookManager.Infrastructure.Metadata;
@@ -100,49 +100,9 @@ public static partial class BookMetadataCleaner
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     public static string? CleanDescription(string? value)
-    {
-        var trimmed = NormalizeBlank(value);
-        if (trimmed is null)
-        {
-            return null;
-        }
-
-        if (!LooksLikeHtml(trimmed))
-        {
-            return trimmed;
-        }
-
-        var text = BreakRegex().Replace(trimmed, "\n");
-        text = ParagraphBoundaryRegex().Replace(text, "\n\n");
-        text = HtmlTagRegex().Replace(text, string.Empty);
-        text = WebUtility.HtmlDecode(text);
-        text = HorizontalWhitespaceRegex().Replace(text, " ");
-        text = LineWhitespaceRegex().Replace(text, "\n");
-        text = ExcessiveNewlineRegex().Replace(text, "\n\n");
-        return NormalizeBlank(text);
-    }
-
-    private static bool LooksLikeHtml(string value) =>
-        HtmlTagRegex().IsMatch(value) || value.Contains("&amp;", StringComparison.OrdinalIgnoreCase);
+        => DescriptionTextCleaner.Clean(value);
 
     [GeneratedRegex(@"^\[(?<series>.+?)\s+(?<number>\d+(?:\.\d+)?)\]\s*[-:\s]\s*(?<title>.+)$", RegexOptions.CultureInvariant)]
     private static partial Regex BracketedTitleRegex();
 
-    [GeneratedRegex(@"<\s*br\s*/?\s*>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
-    private static partial Regex BreakRegex();
-
-    [GeneratedRegex(@"</\s*p\s*>|</\s*div\s*>|</\s*section\s*>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
-    private static partial Regex ParagraphBoundaryRegex();
-
-    [GeneratedRegex(@"<[^>]+>", RegexOptions.CultureInvariant)]
-    private static partial Regex HtmlTagRegex();
-
-    [GeneratedRegex(@"[^\S\r\n]+", RegexOptions.CultureInvariant)]
-    private static partial Regex HorizontalWhitespaceRegex();
-
-    [GeneratedRegex(@"[ \t]*\r?\n[ \t]*", RegexOptions.CultureInvariant)]
-    private static partial Regex LineWhitespaceRegex();
-
-    [GeneratedRegex(@"\n{3,}", RegexOptions.CultureInvariant)]
-    private static partial Regex ExcessiveNewlineRegex();
 }

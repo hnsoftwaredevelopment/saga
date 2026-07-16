@@ -130,6 +130,7 @@
   <data name="NoLibrarySelected" xml:space="preserve"><value>Geen bibliotheek geselecteerd</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Open een bestaande bibliotheek</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Bibliotheek openen</value></data>
+  <data name="OpenFolder" xml:space="preserve"><value>Map openen</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Open instellingen</value></data>
   <data name="Outcome" xml:space="preserve"><value>Resultaat</value></data>
   <data name="PublicationDate" xml:space="preserve"><value>Publicatiedatum</value></data>

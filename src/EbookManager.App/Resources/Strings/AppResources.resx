@@ -130,6 +130,7 @@
   <data name="NoLibrarySelected" xml:space="preserve"><value>No library selected</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Open an existing library</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>
+  <data name="OpenFolder" xml:space="preserve"><value>Open folder</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Open settings</value></data>
   <data name="Outcome" xml:space="preserve"><value>Outcome</value></data>
   <data name="PublicationDate" xml:space="preserve"><value>Publication date</value></data>

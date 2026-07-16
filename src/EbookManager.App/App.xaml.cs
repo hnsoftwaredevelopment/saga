@@ -91,6 +91,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<DuplicateCandidateService>();
         services.AddSingleton<DuplicateMergeService>();
         services.AddSingleton<ILibraryFileStore, CurrentLibraryFileStore>();
+        services.AddSingleton<IBookFileInteractionService, BookFileInteractionService>();
         services.AddSingleton<IBookRepository, CurrentLibraryBookRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();
         services.AddTransient<BookService>();

@@ -2,6 +2,7 @@ using EbookManager.Application.Books;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
+using EbookManager.Presentation.Abstractions;
 using EbookManager.Presentation.ViewModels;
 using FluentAssertions;
 using System.Globalization;
@@ -77,13 +78,34 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public void Loading_a_book_cleans_html_description_without_setting_dirty_state()
+    {
+        var viewModel = CreateViewModel(out _);
+        var book = CreateBook("Original", ["First Author"]) with
+        {
+            Metadata = new BookMetadata(
+                "Original",
+                ["First Author"],
+                Description: "<p class=\"description\">First line.<br><br>Second &amp; final line.</p>",
+                Language: "en")
+        };
+
+        viewModel.Load(book);
+
+        viewModel.Description.Should().Be("First line.\n\nSecond & final line.");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+        viewModel.ToBook()!.Metadata.Description.Should().Be("First line.\n\nSecond & final line.");
+    }
+
+    [Fact]
     public async Task Loading_format_details_shows_file_sizes_per_available_format()
     {
         var originalCulture = CultureInfo.CurrentCulture;
         try
         {
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
-            var viewModel = CreateViewModel(out var repository);
+            var fileInteraction = new RecordingBookFileInteractionService();
+            var viewModel = CreateViewModel(out var repository, fileInteraction);
             var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub, EbookFormat.Pdf]);
             repository.SeedFiles(
                 book.Id,
@@ -99,6 +121,8 @@ public sealed class BookDetailsViewModelTests
                 .Should()
                 .Equal("EPUB - 1.8 MB", "PDF - 4.2 MB");
             viewModel.FormatDetails.Should().AllSatisfy(format => format.FileId.Should().NotBeNull());
+            await viewModel.FormatDetails[0].OpenContainingFolderCommand.ExecuteAsync(null);
+            fileInteraction.OpenedRelativePaths.Should().Equal("books/book/original.epub");
             viewModel.HasUnsavedChanges.Should().BeFalse();
         }
         finally
@@ -269,14 +293,16 @@ public sealed class BookDetailsViewModelTests
         viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 
-    private static BookDetailsViewModel CreateViewModel(out RecordingBookRepository repository)
+    private static BookDetailsViewModel CreateViewModel(
+        out RecordingBookRepository repository,
+        IBookFileInteractionService? fileInteraction = null)
     {
         repository = new RecordingBookRepository();
         var service = new BookService(
             repository,
             new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver());
-        return new BookDetailsViewModel(service);
+        return new BookDetailsViewModel(service, fileInteraction);
     }
 
     private static Book CreateBook(
@@ -399,5 +425,16 @@ public sealed class BookDetailsViewModelTests
             BookMetadata metadata,
             CancellationToken cancellationToken) =>
             Task.FromResult(new MetadataWriteResult(MetadataWriteBackStatus.Unsupported));
+    }
+
+    private sealed class RecordingBookFileInteractionService : IBookFileInteractionService
+    {
+        public List<string> OpenedRelativePaths { get; } = [];
+
+        public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
+        {
+            OpenedRelativePaths.Add(relativePath);
+            return Task.CompletedTask;
+        }
     }
 }
