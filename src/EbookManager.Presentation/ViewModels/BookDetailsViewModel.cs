@@ -34,9 +34,15 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         ? string.Empty
         : LanguageDisplayService.DisplayName(Language);
 
+    public string CreatedUtcText => originalBook is null ? string.Empty : FormatDateTime(originalBook.CreatedUtc);
+
+    public string UpdatedUtcText => originalBook is null ? string.Empty : FormatDateTime(originalBook.UpdatedUtc);
+
     public void RefreshLocalizedDisplayNames()
     {
         OnPropertyChanged(nameof(LanguageDisplayName));
+        OnPropertyChanged(nameof(CreatedUtcText));
+        OnPropertyChanged(nameof(UpdatedUtcText));
     }
 
     [ObservableProperty]
@@ -108,6 +114,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         Apply(book);
         LastSaveResult = null;
         LastDeleteResult = null;
+        RefreshLocalizedDisplayNames();
         RefreshDirtyState();
         NotifyCommandState();
     }
@@ -131,6 +138,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         CoverBytes = null;
         LastSaveResult = null;
         LastDeleteResult = null;
+        RefreshLocalizedDisplayNames();
         RefreshDirtyState();
         NotifyCommandState();
     }
@@ -173,6 +181,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         if (LastSaveResult.Status == BookSaveStatus.Succeeded)
         {
             originalBook = book;
+            RefreshLocalizedDisplayNames();
             RefreshDirtyState();
             BookSaved?.Invoke(this, book);
         }
@@ -323,4 +332,7 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         var normalized = value?.Trim();
         return string.IsNullOrEmpty(normalized) ? null : normalized;
     }
+
+    private static string FormatDateTime(DateTimeOffset value) =>
+        value.ToLocalTime().ToString("g", System.Globalization.CultureInfo.CurrentCulture);
 }

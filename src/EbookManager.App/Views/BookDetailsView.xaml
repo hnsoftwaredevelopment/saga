@@ -130,6 +130,14 @@
         <ComboBoxItem Content="{loc:Loc Reading}" Tag="{x:Static books:ReadingStatus.Reading}" />
         <ComboBoxItem Content="{loc:Loc Read}" Tag="{x:Static books:ReadingStatus.Read}" />
       </ComboBox>
+      <TextBlock Text="{loc:Loc DateAdded}" FontWeight="SemiBold" />
+      <TextBox Text="{Binding CreatedUtcText}"
+               IsReadOnly="True"
+               Margin="0,4,0,10" />
+      <TextBlock Text="{loc:Loc LastModified}" FontWeight="SemiBold" />
+      <TextBox Text="{Binding UpdatedUtcText}"
+               IsReadOnly="True"
+               Margin="0,4,0,10" />
       </StackPanel>
     </ScrollViewer>
   </DockPanel>

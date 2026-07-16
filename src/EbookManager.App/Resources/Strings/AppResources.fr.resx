@@ -357,6 +357,12 @@
   <data name="Duration" xml:space="preserve">
     <value>Duree</value>
   </data>
+  <data name="DateAdded" xml:space="preserve">
+    <value>Date d'ajout</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>Derniere modification</value>
+  </data>
   <data name="Size" xml:space="preserve">
     <value>Taille</value>
   </data>

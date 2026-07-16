@@ -35,8 +35,8 @@ Custom columns are intentionally excluded from this inventory. They belong to a 
 | Formats | `formats` | Supported | Managed library files | Keep | Grid/list optional, details, format filter, duplicate merge | No direct edit | Managed through import, link format, duplicate merge, delete format later. |
 | File path | format path | Supported internally | Managed library files | Improve | Details later, diagnostics, open folder action later | No | Useful as system metadata, not normal editable metadata. |
 | File size | format size | Import diagnostics only | Managed library files, source files | Candidate | Details/diagnostics later, duplicate comparison later | No | Useful for duplicate decisions and storage overview. |
-| Date added | `timestamp` | Partly supported as `CreatedAt` | Saga import timestamp, Calibre DB if imported later | Candidate | Details/system info later, sort later | No | Should be system-owned. |
-| Last modified | `last_modified` | Partly supported as `UpdatedAt` | Saga updates, Calibre DB if imported later | Candidate | Details/system info later, sort later | No | Should update when Saga changes metadata. |
+| Date added | `timestamp` | Supported as `CreatedAt` | Saga import timestamp, Calibre DB if imported later | Improve | Details/system info, sort later | No | System-owned and shown read-only in details. |
+| Last modified | `last_modified` | Supported as `UpdatedAt` | Saga updates, Calibre DB if imported later | Improve | Details/system info, sort later | No | System-owned and shown read-only in details. |
 | Reading status | Calibre custom/status-like workflows vary | Supported | Saga user edits | Keep | Grid, list, details, status filter | Yes | Saga-owned field. Not a direct Calibre standard field. |
 | E-reader state | Device view/state | Basic column/filter concept exists | Future device scan | Later | Grid, list, filter | No direct edit | Belongs to e-reader milestone. |
 | Author links | author link map | Not supported | Calibre DB | Later | Author management later | Later | Nice but not needed yet. |

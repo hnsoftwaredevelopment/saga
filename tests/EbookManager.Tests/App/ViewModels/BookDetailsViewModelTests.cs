@@ -79,7 +79,8 @@ public sealed class BookDetailsViewModelTests
     public void Load_exposes_standard_metadata_fields()
     {
         var viewModel = CreateViewModel(out _);
-        var now = DateTimeOffset.UtcNow;
+        var created = new DateTimeOffset(2026, 7, 15, 10, 30, 0, TimeSpan.Zero);
+        var updated = new DateTimeOffset(2026, 7, 16, 11, 45, 0, TimeSpan.Zero);
         var book = new Book(
             Guid.NewGuid(),
             new BookMetadata(
@@ -95,8 +96,8 @@ public sealed class BookDetailsViewModelTests
                 "9780000000000"),
             ReadingStatus.Read,
             null,
-            now,
-            now)
+            created,
+            updated)
         {
             Formats = [EbookFormat.Epub, EbookFormat.Pdf]
         };
@@ -115,6 +116,8 @@ public sealed class BookDetailsViewModelTests
         viewModel.Isbn.Should().Be("9780000000000");
         viewModel.FormatsText.Should().Be("EPUB, PDF");
         viewModel.ReadingStatus.Should().Be(ReadingStatus.Read);
+        viewModel.CreatedUtcText.Should().Be(created.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
+        viewModel.UpdatedUtcText.Should().Be(updated.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
     }
 
     [Fact]
@@ -155,9 +158,15 @@ public sealed class BookDetailsViewModelTests
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("nl-NL");
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("nl-NL");
             var viewModel = CreateViewModel(out _);
-            viewModel.Load(CreateBook("Original", ["First Author"], language: "nl"));
+            var book = CreateBook("Original", ["First Author"], language: "nl") with
+            {
+                CreatedUtc = new DateTimeOffset(2026, 7, 15, 10, 30, 0, TimeSpan.Zero),
+                UpdatedUtc = new DateTimeOffset(2026, 7, 16, 11, 45, 0, TimeSpan.Zero)
+            };
+            viewModel.Load(book);
 
             viewModel.LanguageDisplayName.Should().Be("Nederlands");
+            var originalCreatedText = viewModel.CreatedUtcText;
             viewModel.HasUnsavedChanges.Should().BeFalse();
 
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
@@ -166,6 +175,7 @@ public sealed class BookDetailsViewModelTests
 
             viewModel.Language.Should().Be("nl");
             viewModel.LanguageDisplayName.Should().Be("Dutch");
+            viewModel.CreatedUtcText.Should().NotBe(originalCreatedText);
             viewModel.HasUnsavedChanges.Should().BeFalse();
         }
         finally

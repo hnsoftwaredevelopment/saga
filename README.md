@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 4 builds on version `0.1` with a structured metadata-settings foundation, language normalization, and metadata-quality improvements.
+Milestone 5 builds on version `0.1` with standard metadata enrichment, system metadata visibility, and the completed metadata-settings foundation from Milestone 4.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -37,6 +37,7 @@ Milestone 4 builds on version `0.1` with a structured metadata-settings foundati
 - reusable language display normalization
 - explicit language-code normalization for supported Saga languages
 - localized language filter and details display while preserving stable stored language codes
+- read-only details display for date added and last modified system metadata
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
 - light, dark, sepia, blue, and red themes
@@ -112,6 +113,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-3-checklist.md](docs/manual-tests/milestone-3-checklist.md)
 - [docs/manual-tests/milestone-3-1-checklist.md](docs/manual-tests/milestone-3-1-checklist.md)
 - [docs/manual-tests/milestone-4-checklist.md](docs/manual-tests/milestone-4-checklist.md)
+- [docs/manual-tests/milestone-5-checklist.md](docs/manual-tests/milestone-5-checklist.md)
 
 ## Later-Version Candidates
 
