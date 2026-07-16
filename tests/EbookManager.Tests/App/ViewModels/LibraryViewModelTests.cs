@@ -490,24 +490,26 @@ public sealed class LibraryViewModelTests
         var englishLegacy = CreateBook("Legacy English", ["Author"], language: "eng");
         var englishRegional = CreateBook("Regional English", ["Author"], language: "en-US");
         var dutchRegional = CreateBook("Regional Dutch", ["Author"], language: "nl-NL");
+        var dutchName = CreateBook("Named Dutch", ["Author"], language: "Nederlands");
         var unknown = CreateBook("Unknown", ["Author"], language: "fictional-language");
-        var repository = new BulkScalarMetadataRepository([englishLegacy, englishRegional, dutchRegional, unknown]);
+        var latin = CreateBook("Latin", ["Author"], language: "Latin");
+        var repository = new BulkScalarMetadataRepository([englishLegacy, englishRegional, dutchRegional, dutchName, unknown, latin]);
         var interaction = new ScriptedUserInteractionService { ConfirmLanguageNormalizationResult = true };
         var viewModel = CreateViewModel(
-            [englishLegacy, englishRegional, dutchRegional, unknown],
+            [englishLegacy, englishRegional, dutchRegional, dutchName, unknown, latin],
             interaction,
             repository: repository);
 
         await viewModel.RefreshAsync();
         await viewModel.NormalizeLanguageMetadataCommand.ExecuteAsync(null);
 
-        interaction.ConfirmLanguageNormalizationAffectedCount.Should().Be(3);
+        interaction.ConfirmLanguageNormalizationAffectedCount.Should().Be(4);
         repository.BulkUpdateCalls.Should().Be(2);
         repository.UpdateCalls.Should().Be(0);
         repository.BooksSnapshot.Select(book => book.Metadata.Language)
-            .Should().Equal("en", "en", "nl", "fictional-language");
+            .Should().Equal("en", "en", "nl", "nl", "fictional-language", "Latin");
         viewModel.LanguageFilters.Select(filter => filter.Name)
-            .Should().Contain(["en", "nl", "fictional-language"]);
+            .Should().Contain(["en", "nl", "fictional-language", "Latin"]);
         viewModel.IsCleaningMetadata.Should().BeFalse();
     }
 
