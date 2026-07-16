@@ -485,6 +485,48 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Normalize_language_metadata_updates_known_codes_after_confirmation()
+    {
+        var englishLegacy = CreateBook("Legacy English", ["Author"], language: "eng");
+        var englishRegional = CreateBook("Regional English", ["Author"], language: "en-US");
+        var dutchRegional = CreateBook("Regional Dutch", ["Author"], language: "nl-NL");
+        var unknown = CreateBook("Unknown", ["Author"], language: "fictional-language");
+        var repository = new BulkScalarMetadataRepository([englishLegacy, englishRegional, dutchRegional, unknown]);
+        var interaction = new ScriptedUserInteractionService { ConfirmLanguageNormalizationResult = true };
+        var viewModel = CreateViewModel(
+            [englishLegacy, englishRegional, dutchRegional, unknown],
+            interaction,
+            repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.NormalizeLanguageMetadataCommand.ExecuteAsync(null);
+
+        interaction.ConfirmLanguageNormalizationAffectedCount.Should().Be(3);
+        repository.BulkUpdateCalls.Should().Be(2);
+        repository.UpdateCalls.Should().Be(0);
+        repository.BooksSnapshot.Select(book => book.Metadata.Language)
+            .Should().Equal("en", "en", "nl", "fictional-language");
+        viewModel.LanguageFilters.Select(filter => filter.Name)
+            .Should().Contain(["en", "nl", "fictional-language"]);
+        viewModel.IsCleaningMetadata.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Normalize_language_metadata_does_not_update_without_confirmation()
+    {
+        var book = CreateBook("Legacy English", ["Author"], language: "eng");
+        var repository = new BulkScalarMetadataRepository([book]);
+        var interaction = new ScriptedUserInteractionService { ConfirmLanguageNormalizationResult = false };
+        var viewModel = CreateViewModel([book], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.NormalizeLanguageMetadataCommand.ExecuteAsync(null);
+
+        repository.BulkUpdateCalls.Should().Be(0);
+        repository.BooksSnapshot.Single().Metadata.Language.Should().Be("eng");
+    }
+
+    [Fact]
     public async Task Rename_filter_shows_metadata_cleanup_busy_state_until_update_completes()
     {
         var first = CreateBook("First", ["Author"], language: "eng");
@@ -1352,6 +1394,8 @@ public sealed class LibraryViewModelTests
         public string? ScanFolder { get; init; }
         public string? PromptTextResult { get; init; }
         public bool ConfirmMetadataValueRemovalResult { get; init; }
+        public bool ConfirmLanguageNormalizationResult { get; init; }
+        public int? ConfirmLanguageNormalizationAffectedCount { get; private set; }
         public Guid? SelectedImportRunId { get; init; }
         public Func<DuplicateCandidatesViewModel, CancellationToken, Task>? OnShowDuplicateCandidatesAsync { get; init; }
         public int PickBookFilesCalls { get; private set; }
@@ -1384,6 +1428,14 @@ public sealed class LibraryViewModelTests
             int affectedBookCount,
             CancellationToken cancellationToken) =>
             Task.FromResult(ConfirmMetadataValueRemovalResult);
+
+        public Task<bool> ConfirmLanguageNormalizationAsync(
+            int affectedBookCount,
+            CancellationToken cancellationToken)
+        {
+            ConfirmLanguageNormalizationAffectedCount = affectedBookCount;
+            return Task.FromResult(ConfirmLanguageNormalizationResult);
+        }
 
         public Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken)
         {

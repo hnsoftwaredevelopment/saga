@@ -82,6 +82,23 @@ public sealed class UserInteractionService(DeleteConfirmationService deleteConfi
         return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
     }
 
+    public Task<bool> ConfirmLanguageNormalizationAsync(
+        int affectedBookCount,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var message = string.Format(
+            System.Globalization.CultureInfo.InvariantCulture,
+            EbookManager.App.Localization.LocalizedStrings.Current["NormalizeLanguageMetadataConfirmMessage"],
+            affectedBookCount);
+        var result = System.Windows.MessageBox.Show(
+            message,
+            EbookManager.App.Localization.LocalizedStrings.Current["NormalizeLanguageMetadataConfirmTitle"],
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Information);
+        return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
+    }
+
     public Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

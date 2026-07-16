@@ -425,6 +425,10 @@
   <data name="Scan" xml:space="preserve"><value>Scansiona</value></data>
   <data name="ScanFolderTooltip" xml:space="preserve"><value>Scansiona una cartella</value></data>
   <data name="SearchAllFields" xml:space="preserve"><value>Cerca in tutti i campi</value></data>
+  <data name="NormalizeLanguageMetadata" xml:space="preserve"><value>Normalizza codici lingua</value></data>
+  <data name="NormalizeLanguageMetadataDescription" xml:space="preserve"><value>Converte valori lingua noti come eng e it-IT in codici lingua Saga coerenti. I valori sconosciuti restano invariati.</value></data>
+  <data name="NormalizeLanguageMetadataConfirmTitle" xml:space="preserve"><value>Normalizza codici lingua</value></data>
+  <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>Normalizzare i codici lingua per {0} libro/i? Verranno modificati solo codici lingua noti.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordina per</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordina la visualizzazione corrente della biblioteca</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Avvio di Saga non riuscito</value></data>

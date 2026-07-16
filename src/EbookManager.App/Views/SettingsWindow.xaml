@@ -75,6 +75,7 @@
         <Grid Margin="12">
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="170" />
@@ -87,6 +88,21 @@
             <ComboBoxItem Content="{loc:Loc AuthorSortLastNameFirst}" Tag="{x:Static settings:AuthorSortStrategy.LastNameFirst}" />
             <ComboBoxItem Content="{loc:Loc AuthorSortLastNameFirstDutchPrefixes}" Tag="{x:Static settings:AuthorSortStrategy.LastNameFirstDutchPrefixes}" />
           </ComboBox>
+
+          <TextBlock Text="{loc:Loc NormalizeLanguageMetadata}"
+                     Grid.Row="1"
+                     FontWeight="SemiBold"
+                     Margin="0,0,12,12" />
+          <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,12">
+            <TextBlock Text="{loc:Loc NormalizeLanguageMetadataDescription}"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="0,0,0,8" />
+            <Button Content="{loc:Loc NormalizeLanguageMetadata}"
+                    MinWidth="150"
+                    HorizontalAlignment="Left"
+                    Click="NormalizeLanguageMetadataClicked" />
+          </StackPanel>
         </Grid>
       </TabItem>
 
