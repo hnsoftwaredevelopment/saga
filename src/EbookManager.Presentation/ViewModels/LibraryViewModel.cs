@@ -70,7 +70,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.databaseInitializer = databaseInitializer;
         this.directoryScanner = directoryScanner;
         this.settingsStore = settingsStore;
-        currentLibraryName = currentLibrary?.Current?.Name ?? "No library selected";
+        currentLibraryName = currentLibrary?.Current?.Name;
         currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
 
         details.BookSaved += OnDetailsBookSaved;
@@ -110,7 +110,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private ImportResultViewModel? lastImportResult;
 
     [ObservableProperty]
-    private string currentLibraryName = "No library selected";
+    private string? currentLibraryName;
 
     [ObservableProperty]
     private string? currentLibraryPath;
@@ -177,6 +177,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         renameLanguageFilterCommand ??= new AsyncRelayCommand<FacetFilterViewModel>(filter => RenameFilterValueAsync(filter, MetadataFilterKind.Language));
     public IAsyncRelayCommand<FacetFilterViewModel> RemoveLanguageFilterCommand =>
         removeLanguageFilterCommand ??= new AsyncRelayCommand<FacetFilterViewModel>(filter => RemoveFilterValueAsync(filter, MetadataFilterKind.Language));
+    public IAsyncRelayCommand NormalizeLanguageMetadataCommand =>
+        normalizeLanguageMetadataCommand ??= new AsyncRelayCommand(NormalizeLanguageMetadataAsync);
 
     private AsyncRelayCommand? refreshCommand;
     private AsyncRelayCommand? addBooksCommand;
@@ -196,6 +198,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand<FacetFilterViewModel>? removeTagFilterCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? renameLanguageFilterCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? removeLanguageFilterCommand;
+    private AsyncRelayCommand? normalizeLanguageMetadataCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -222,6 +225,29 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             IsLoadingLibrary = false;
         }
+    }
+
+    public void RefreshLocalizedFilterDisplayNames()
+    {
+        foreach (var filter in LanguageFilters)
+        {
+            filter.DisplayText = LanguageDisplayService.DisplayName(filter.Name);
+        }
+
+        Details.RefreshLocalizedDisplayNames();
+    }
+
+    public async Task RefreshSettingsDependentDisplayAsync(CancellationToken cancellationToken = default)
+    {
+        if (settingsStore is not null)
+        {
+            var settings = await settingsStore.LoadAsync(cancellationToken);
+            authorSortStrategy = settings.AuthorSortStrategy;
+        }
+
+        RefreshFacetFilters();
+        RefreshLocalizedFilterDisplayNames();
+        ApplyFilter();
     }
 
     partial void OnLoadingLibraryTotalCountChanged(int value)
@@ -707,6 +733,81 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
+    private async Task NormalizeLanguageMetadataAsync(CancellationToken cancellationToken)
+    {
+        var changedBooks = books
+            .Select(book => (Original: book, NormalizedLanguage: NormalizeStoredLanguageCode(book.Metadata.Language)))
+            .Where(change => change.NormalizedLanguage is not null)
+            .Select(change => change.Original with
+            {
+                Metadata = CopyMetadata(
+                    change.Original.Metadata,
+                    change.Original.Metadata.Authors,
+                    change.Original.Metadata.Tags,
+                    change.Original.Metadata.Series,
+                    change.NormalizedLanguage)
+            })
+            .ToArray();
+
+        if (changedBooks.Length == 0)
+        {
+            return;
+        }
+
+        if (!await userInteraction.ConfirmLanguageNormalizationAsync(changedBooks.Length, cancellationToken))
+        {
+            return;
+        }
+
+        IsCleaningMetadata = true;
+        MetadataCleanupStatusText = "Updating metadata...";
+        await Task.Yield();
+        try
+        {
+            var persistedBooks = new List<Book>(changedBooks.Length);
+            if (bookRepository is IBookBulkMetadataRepository bulkRepository)
+            {
+                foreach (var group in changedBooks.GroupBy(book => book.Metadata.Language, StringComparer.OrdinalIgnoreCase))
+                {
+                    var groupBooks = group.ToArray();
+                    var affectedCount = await bulkRepository.UpdateScalarMetadataAsync(
+                        groupBooks.Select(book => book.Id).ToArray(),
+                        BookScalarMetadataField.Language,
+                        group.Key,
+                        cancellationToken);
+                    if (affectedCount > 0)
+                    {
+                        persistedBooks.AddRange(groupBooks);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var changedBook in changedBooks)
+                {
+                    try
+                    {
+                        await bookRepository.UpdateAsync(changedBook, cancellationToken);
+                        persistedBooks.Add(changedBook);
+                    }
+                    catch (BookConflictException)
+                    {
+                        // Keep the original book unchanged when cleanup would create a duplicate.
+                    }
+                }
+            }
+
+            if (persistedBooks.Count > 0)
+            {
+                ApplyPersistedMetadataChanges(persistedBooks);
+            }
+        }
+        finally
+        {
+            IsCleaningMetadata = false;
+        }
+    }
+
     private void ApplyPersistedMetadataChanges(IReadOnlyList<Book> persistedBooks)
     {
         var persistedById = persistedBooks.ToDictionary(book => book.Id);
@@ -893,6 +994,21 @@ public sealed partial class LibraryViewModel : ObservableObject
             metadata.Isbn,
             metadata.CoverBytes);
 
+    private static string? NormalizeStoredLanguageCode(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var trimmed = value.Trim();
+        var normalized = LanguageDisplayService.FilterKey(trimmed);
+        return string.IsNullOrWhiteSpace(normalized) ||
+            string.Equals(trimmed, normalized, StringComparison.OrdinalIgnoreCase)
+            ? null
+            : normalized;
+    }
+
     private static IEnumerable<BookRowViewModel> ApplySort(
         IEnumerable<BookRowViewModel> rows,
         LibrarySortOption sortOption,
@@ -936,7 +1052,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void RefreshLibraryDisplay()
     {
-        CurrentLibraryName = currentLibrary?.Current?.Name ?? "No library selected";
+        CurrentLibraryName = currentLibrary?.Current?.Name;
         CurrentLibraryPath = currentLibrary?.Current?.DirectoryPath;
     }
 

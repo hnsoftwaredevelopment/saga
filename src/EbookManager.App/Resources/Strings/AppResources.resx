@@ -125,6 +125,7 @@
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Title only</value></data>
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Updating metadata...</value></data>
   <data name="NoSort" xml:space="preserve"><value>None</value></data>
+  <data name="NoLibrarySelected" xml:space="preserve"><value>No library selected</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Open an existing library</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Open settings</value></data>
@@ -157,6 +158,10 @@
   <data name="AuthorSortDisplayName" xml:space="preserve"><value>As entered</value></data>
   <data name="AuthorSortLastNameFirst" xml:space="preserve"><value>Last name, first name</value></data>
   <data name="AuthorSortLastNameFirstDutchPrefixes" xml:space="preserve"><value>Last name with prefixes, first name</value></data>
+  <data name="NormalizeLanguageMetadata" xml:space="preserve"><value>Normalize language codes</value></data>
+  <data name="NormalizeLanguageMetadataDescription" xml:space="preserve"><value>Convert known language values such as eng and en-US to consistent Saga language codes. Unknown values are left unchanged.</value></data>
+  <data name="NormalizeLanguageMetadataConfirmTitle" xml:space="preserve"><value>Normalize language codes</value></data>
+  <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>Normalize language codes for {0} book(s)? This only changes known language codes.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Saga startup failed</value></data>

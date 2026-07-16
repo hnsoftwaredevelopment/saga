@@ -11,7 +11,18 @@ public sealed class LanguageDisplayServiceTests
     [InlineData("en-US", "en")]
     [InlineData("nl-NL", "nl")]
     [InlineData("nl", "nl")]
+    [InlineData("Nederlands", "nl")]
+    [InlineData("Dutch", "nl")]
+    [InlineData("Niederländisch", "nl")]
+    [InlineData("néerlandais", "nl")]
+    [InlineData("English", "en")]
+    [InlineData("Engels", "en")]
+    [InlineData("Deutsch", "de")]
+    [InlineData("Français", "fr")]
+    [InlineData("Español", "es")]
+    [InlineData("Italiano", "it")]
     [InlineData("lv", "lv")]
+    [InlineData("Latin", "Latin")]
     public void FilterKey_normalizes_common_language_values(string value, string expected)
     {
         LanguageDisplayService.FilterKey(value).Should().Be(expected);

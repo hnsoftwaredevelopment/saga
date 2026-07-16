@@ -11,6 +11,7 @@ using EbookManager.Presentation.Abstractions;
 using EbookManager.Presentation.ViewModels;
 using EbookManager.Tests.TestSupport;
 using FluentAssertions;
+using System.Globalization;
 
 namespace EbookManager.Tests.App.ViewModels;
 
@@ -336,6 +337,40 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Refresh_localized_filter_display_names_updates_language_filters_for_current_culture()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("nl-NL");
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("nl-NL");
+            var english = CreateBook("English Book", ["Author"], language: "en", tags: ["Nederlands"]);
+            var dutch = CreateBook("Dutch Book", ["Author"], language: "nl", tags: ["User Tag"]);
+            var viewModel = CreateViewModel([english, dutch]);
+
+            await viewModel.RefreshAsync();
+            viewModel.LanguageFilters.Select(filter => filter.DisplayName)
+                .Should().Equal("Engels (1)", "Nederlands (1)");
+            viewModel.CategoryFilters.Select(filter => filter.DisplayName)
+                .Should().Contain("Nederlands (1)");
+
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+            viewModel.RefreshLocalizedFilterDisplayNames();
+
+            viewModel.LanguageFilters.Select(filter => filter.DisplayName)
+                .Should().Equal("English (1)", "Dutch (1)");
+            viewModel.CategoryFilters.Select(filter => filter.DisplayName)
+                .Should().Contain("Nederlands (1)");
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+            CultureInfo.CurrentUICulture = originalCulture;
+        }
+    }
+
+    [Fact]
     public async Task Latvian_language_filter_can_be_selected_without_crashing()
     {
         var latvian = CreateBook("Latvian Book", ["Author"], language: "lv");
@@ -485,6 +520,50 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Normalize_language_metadata_updates_known_codes_after_confirmation()
+    {
+        var englishLegacy = CreateBook("Legacy English", ["Author"], language: "eng");
+        var englishRegional = CreateBook("Regional English", ["Author"], language: "en-US");
+        var dutchRegional = CreateBook("Regional Dutch", ["Author"], language: "nl-NL");
+        var dutchName = CreateBook("Named Dutch", ["Author"], language: "Nederlands");
+        var unknown = CreateBook("Unknown", ["Author"], language: "fictional-language");
+        var latin = CreateBook("Latin", ["Author"], language: "Latin");
+        var repository = new BulkScalarMetadataRepository([englishLegacy, englishRegional, dutchRegional, dutchName, unknown, latin]);
+        var interaction = new ScriptedUserInteractionService { ConfirmLanguageNormalizationResult = true };
+        var viewModel = CreateViewModel(
+            [englishLegacy, englishRegional, dutchRegional, dutchName, unknown, latin],
+            interaction,
+            repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.NormalizeLanguageMetadataCommand.ExecuteAsync(null);
+
+        interaction.ConfirmLanguageNormalizationAffectedCount.Should().Be(4);
+        repository.BulkUpdateCalls.Should().Be(2);
+        repository.UpdateCalls.Should().Be(0);
+        repository.BooksSnapshot.Select(book => book.Metadata.Language)
+            .Should().Equal("en", "en", "nl", "nl", "fictional-language", "Latin");
+        viewModel.LanguageFilters.Select(filter => filter.Name)
+            .Should().Contain(["en", "nl", "fictional-language", "Latin"]);
+        viewModel.IsCleaningMetadata.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Normalize_language_metadata_does_not_update_without_confirmation()
+    {
+        var book = CreateBook("Legacy English", ["Author"], language: "eng");
+        var repository = new BulkScalarMetadataRepository([book]);
+        var interaction = new ScriptedUserInteractionService { ConfirmLanguageNormalizationResult = false };
+        var viewModel = CreateViewModel([book], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.NormalizeLanguageMetadataCommand.ExecuteAsync(null);
+
+        repository.BulkUpdateCalls.Should().Be(0);
+        repository.BooksSnapshot.Single().Metadata.Language.Should().Be("eng");
+    }
+
+    [Fact]
     public async Task Rename_filter_shows_metadata_cleanup_busy_state_until_update_completes()
     {
         var first = CreateBook("First", ["Author"], language: "eng");
@@ -597,6 +676,32 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Refresh_settings_dependent_display_applies_changed_author_sort_strategy_without_restart()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel(
+            [
+                CreateBook("C", ["J.R.R. Tolkien"]),
+                CreateBook("A", ["Karin Slaughter"]),
+                CreateBook("B", ["Lee Child"])
+            ],
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("C", "A", "B");
+
+        await settingsStore.SaveAsync(settingsStore.Settings with
+        {
+            AuthorSortStrategy = AuthorSortStrategy.LastNameFirst
+        }, default);
+        await viewModel.RefreshSettingsDependentDisplayAsync();
+
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("B", "A", "C");
+        viewModel.AuthorFilters.Select(filter => filter.Name).Should().Equal("Lee Child", "Karin Slaughter", "J.R.R. Tolkien");
+    }
+
+    [Fact]
     public async Task Selecting_a_book_loads_details()
     {
         var book = CreateBook("Selected", ["Author"]);
@@ -695,7 +800,7 @@ public sealed class LibraryViewModelTests
         currentLibrary.Current.Should().BeNull();
         viewModel.HasActiveLibrary.Should().BeFalse();
         viewModel.CurrentLibraryPath.Should().BeNull();
-        viewModel.CurrentLibraryName.Should().Be("No library selected");
+        viewModel.CurrentLibraryName.Should().BeNull();
         viewModel.VisibleBooks.Should().BeEmpty();
         viewModel.EmptyStateMessage.Should().Be(
             "The active library folder no longer exists. Create or open a library to continue.");
@@ -1352,6 +1457,8 @@ public sealed class LibraryViewModelTests
         public string? ScanFolder { get; init; }
         public string? PromptTextResult { get; init; }
         public bool ConfirmMetadataValueRemovalResult { get; init; }
+        public bool ConfirmLanguageNormalizationResult { get; init; }
+        public int? ConfirmLanguageNormalizationAffectedCount { get; private set; }
         public Guid? SelectedImportRunId { get; init; }
         public Func<DuplicateCandidatesViewModel, CancellationToken, Task>? OnShowDuplicateCandidatesAsync { get; init; }
         public int PickBookFilesCalls { get; private set; }
@@ -1384,6 +1491,14 @@ public sealed class LibraryViewModelTests
             int affectedBookCount,
             CancellationToken cancellationToken) =>
             Task.FromResult(ConfirmMetadataValueRemovalResult);
+
+        public Task<bool> ConfirmLanguageNormalizationAsync(
+            int affectedBookCount,
+            CancellationToken cancellationToken)
+        {
+            ConfirmLanguageNormalizationAffectedCount = affectedBookCount;
+            return Task.FromResult(ConfirmLanguageNormalizationResult);
+        }
 
         public Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken)
         {

@@ -381,4 +381,56 @@
   <data name="UnsavedChanges" xml:space="preserve">
     <value>Hay cambios sin guardar.</value>
   </data>
+  <data name="AppName" xml:space="preserve"><value>Saga</value></data>
+  <data name="Close" xml:space="preserve"><value>Cerrar</value></data>
+  <data name="Cover" xml:space="preserve"><value>Portada</value></data>
+  <data name="CreateLibraryTooltip" xml:space="preserve"><value>Crear una biblioteca nueva</value></data>
+  <data name="File" xml:space="preserve"><value>Archivo</value></data>
+  <data name="FilterHelp" xml:space="preserve"><value>Los filtros se basan en los metadatos encontrados durante la importación.</value></data>
+  <data name="Filters" xml:space="preserve"><value>Filtros</value></data>
+  <data name="FilterRenameTitle" xml:space="preserve"><value>Renombrar valor de metadatos</value></data>
+  <data name="FilterRenameMessage" xml:space="preserve"><value>Renombrar «{0}» como:</value></data>
+  <data name="FilterRemoveConfirmationTitle" xml:space="preserve"><value>Eliminar valor de metadatos</value></data>
+  <data name="FilterRemoveConfirmationMessage" xml:space="preserve"><value>¿Eliminar «{0}» de {1} libro(s)?</value></data>
+  <data name="Rename" xml:space="preserve"><value>Renombrar</value></data>
+  <data name="ImportDuplicates" xml:space="preserve"><value>Duplicados</value></data>
+  <data name="ImportPossibleShort" xml:space="preserve"><value>Posible</value></data>
+  <data name="ImportOutcomeAdded" xml:space="preserve"><value>Añadido</value></data>
+  <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Probablemente ya existe</value></data>
+  <data name="ImportOutcomeFailed" xml:space="preserve"><value>Error</value></data>
+  <data name="ImportMessageAdded" xml:space="preserve"><value>Añadido</value></data>
+  <data name="ImportMessagePossibleDuplicate" xml:space="preserve"><value>Este libro probablemente ya está en la biblioteca</value></data>
+  <data name="ImportMessageManagedCopyFailed" xml:space="preserve"><value>No se pudo copiar el libro a la carpeta de biblioteca de Saga</value></data>
+  <data name="ImportMessageMetadataReadFailed" xml:space="preserve"><value>No se pudieron leer los metadatos de este archivo</value></data>
+  <data name="ImportMessageSourceUnreadable" xml:space="preserve"><value>No se pudo leer el archivo de origen; asegúrate de que esté disponible localmente</value></data>
+  <data name="ImportMessageUnsupportedFormat" xml:space="preserve"><value>Formato de archivo no compatible</value></data>
+  <data name="ImportMessageInvalidSourcePath" xml:space="preserve"><value>Ruta de origen no válida</value></data>
+  <data name="ImportMessageImportFailed" xml:space="preserve"><value>Error de importación</value></data>
+  <data name="ImportMessageCannotPersistResult" xml:space="preserve"><value>No se pudo guardar el resultado de la importación</value></data>
+  <data name="ImportMessageCleanupIncomplete" xml:space="preserve"><value>La limpieza no se completó por completo</value></data>
+  <data name="ImportMessageMetadataWarning" xml:space="preserve"><value>Advertencia de metadatos</value></data>
+  <data name="ImportMetadataSourceCalibreOpf" xml:space="preserve"><value>Metadatos cargados desde Calibre metadata.opf</value></data>
+  <data name="ImportMetadataSourceJson" xml:space="preserve"><value>Metadatos cargados desde Saga metadata.json</value></data>
+  <data name="ImportMalformedEpubMetadataPrefix" xml:space="preserve"><value>Metadatos EPUB incorrectos:</value></data>
+  <data name="ImportMalformedCbzArchivePrefix" xml:space="preserve"><value>Archivo CBZ incorrecto:</value></data>
+  <data name="ImportCalibreOpfIgnoredPrefix" xml:space="preserve"><value>Calibre metadata.opf ignorado:</value></data>
+  <data name="ImportTotal" xml:space="preserve"><value>Total</value></data>
+  <data name="IncludeScanSubdirectoriesSetting" xml:space="preserve"><value>Incluir subcarpetas al escanear</value></data>
+  <data name="Message" xml:space="preserve"><value>Mensaje</value></data>
+  <data name="MetadataCleanupStatus" xml:space="preserve"><value>Actualizando metadatos...</value></data>
+  <data name="NoSort" xml:space="preserve"><value>Ninguno</value></data>
+  <data name="OpenLibraryTooltip" xml:space="preserve"><value>Abrir una biblioteca existente</value></data>
+  <data name="OpenSettingsTooltip" xml:space="preserve"><value>Abrir configuración</value></data>
+  <data name="Outcome" xml:space="preserve"><value>Resultado</value></data>
+  <data name="Scan" xml:space="preserve"><value>Escanear</value></data>
+  <data name="ScanFolderTooltip" xml:space="preserve"><value>Escanear una carpeta</value></data>
+  <data name="SearchAllFields" xml:space="preserve"><value>Buscar en todos los campos</value></data>
+  <data name="NormalizeLanguageMetadata" xml:space="preserve"><value>Normalizar códigos de idioma</value></data>
+  <data name="NormalizeLanguageMetadataDescription" xml:space="preserve"><value>Convierte valores de idioma conocidos como eng y es-ES en códigos de idioma coherentes de Saga. Los valores desconocidos no cambian.</value></data>
+  <data name="NormalizeLanguageMetadataConfirmTitle" xml:space="preserve"><value>Normalizar códigos de idioma</value></data>
+  <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>¿Normalizar códigos de idioma para {0} libro(s)? Solo se cambiarán códigos de idioma conocidos.</value></data>
+  <data name="SortBy" xml:space="preserve"><value>Ordenar por</value></data>
+  <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordenar la vista actual de la biblioteca</value></data>
+  <data name="StartupFailedTitle" xml:space="preserve"><value>Error al iniciar Saga</value></data>
+  <data name="NoLibrarySelected" xml:space="preserve"><value>No hay ninguna biblioteca seleccionada</value></data>
 </root>

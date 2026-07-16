@@ -146,6 +146,36 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public void Refresh_localized_display_names_updates_language_display_without_dirtying_book()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        var originalUiCulture = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("nl-NL");
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("nl-NL");
+            var viewModel = CreateViewModel(out _);
+            viewModel.Load(CreateBook("Original", ["First Author"], language: "nl"));
+
+            viewModel.LanguageDisplayName.Should().Be("Nederlands");
+            viewModel.HasUnsavedChanges.Should().BeFalse();
+
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+            viewModel.RefreshLocalizedDisplayNames();
+
+            viewModel.Language.Should().Be("nl");
+            viewModel.LanguageDisplayName.Should().Be("Dutch");
+            viewModel.HasUnsavedChanges.Should().BeFalse();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+            CultureInfo.CurrentUICulture = originalUiCulture;
+        }
+    }
+
+    [Fact]
     public async Task Save_updates_metadata_and_clears_dirty_state()
     {
         var viewModel = CreateViewModel(out var repository);

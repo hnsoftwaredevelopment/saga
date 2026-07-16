@@ -15,6 +15,7 @@
   <Grid Background="{DynamicResource AppBackgroundBrush}">
     <Grid.Resources>
       <converters:EmptyStateMessageToLocalizedStringConverter x:Key="EmptyStateMessageToLocalizedStringConverter" />
+      <converters:NullOrWhiteSpaceFallbackConverter x:Key="NullOrWhiteSpaceFallbackConverter" />
       <Style x:Key="ToolbarIconButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="42" />
         <Setter Property="Height" Value="40" />
@@ -60,9 +61,15 @@
         <StackPanel DockPanel.Dock="Left"
                     Margin="18,0,0,0"
                     VerticalAlignment="Center">
-          <TextBlock Text="{Binding CurrentLibraryName}"
-                     FontWeight="SemiBold"
-                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}">
+            <TextBlock.Text>
+              <MultiBinding Converter="{StaticResource NullOrWhiteSpaceFallbackConverter}">
+                <Binding Path="CurrentLibraryName" />
+                <Binding Source="{x:Static loc:LocalizedStrings.Current}" Path="[NoLibrarySelected]" />
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
           <TextBlock Text="{Binding CurrentLibraryPath}"
                      FontSize="11"
                      Foreground="{DynamicResource TextSecondaryBrush}" />

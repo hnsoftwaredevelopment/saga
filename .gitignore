@@ -4,6 +4,7 @@
 bin/
 obj/
 artifacts/
+Builds/
 TestResults/
 
 # Visual Studio local state

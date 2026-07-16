@@ -37,7 +37,7 @@ public partial class MainWindow : System.Windows.Window
 
     private void OpenSettingsClicked(object sender, System.Windows.RoutedEventArgs e)
     {
-        var window = new SettingsWindow(settingsViewModel, localizationService, themeService)
+        var window = new SettingsWindow(settingsViewModel, viewModel, localizationService, themeService)
         {
             Owner = this
         };
