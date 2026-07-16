@@ -40,12 +40,14 @@ public partial class SettingsWindow : System.Windows.Window
         }
 
         localizationService.ApplyCulture(viewModel.Culture);
+        libraryViewModel.RefreshLocalizedFilterDisplayNames();
     }
 
     private async void SaveClicked(object sender, System.Windows.RoutedEventArgs e)
     {
         await viewModel.SaveAsync();
         localizationService.ApplyCulture(viewModel.Culture);
+        libraryViewModel.RefreshLocalizedFilterDisplayNames();
         themeService.ApplyTheme(viewModel.Theme);
         DialogResult = true;
     }

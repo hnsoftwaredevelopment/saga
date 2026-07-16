@@ -227,6 +227,14 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
+    public void RefreshLocalizedFilterDisplayNames()
+    {
+        foreach (var filter in LanguageFilters)
+        {
+            filter.DisplayText = LanguageDisplayService.DisplayName(filter.Name);
+        }
+    }
+
     partial void OnLoadingLibraryTotalCountChanged(int value)
     {
         OnPropertyChanged(nameof(LoadingLibraryProgressValue));

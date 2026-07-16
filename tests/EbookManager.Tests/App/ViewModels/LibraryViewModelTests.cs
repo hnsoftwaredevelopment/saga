@@ -11,6 +11,7 @@ using EbookManager.Presentation.Abstractions;
 using EbookManager.Presentation.ViewModels;
 using EbookManager.Tests.TestSupport;
 using FluentAssertions;
+using System.Globalization;
 
 namespace EbookManager.Tests.App.ViewModels;
 
@@ -333,6 +334,40 @@ public sealed class LibraryViewModelTests
         viewModel.SeriesFilters.Single(filter => filter.Name == "Dune").IsSelected = true;
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Title.Should().Be("Dune");
+    }
+
+    [Fact]
+    public async Task Refresh_localized_filter_display_names_updates_language_filters_for_current_culture()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("nl-NL");
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("nl-NL");
+            var english = CreateBook("English Book", ["Author"], language: "en", tags: ["Nederlands"]);
+            var dutch = CreateBook("Dutch Book", ["Author"], language: "nl", tags: ["User Tag"]);
+            var viewModel = CreateViewModel([english, dutch]);
+
+            await viewModel.RefreshAsync();
+            viewModel.LanguageFilters.Select(filter => filter.DisplayName)
+                .Should().Equal("Engels (1)", "Nederlands (1)");
+            viewModel.CategoryFilters.Select(filter => filter.DisplayName)
+                .Should().Contain("Nederlands (1)");
+
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+            viewModel.RefreshLocalizedFilterDisplayNames();
+
+            viewModel.LanguageFilters.Select(filter => filter.DisplayName)
+                .Should().Equal("English (1)", "Dutch (1)");
+            viewModel.CategoryFilters.Select(filter => filter.DisplayName)
+                .Should().Contain("Nederlands (1)");
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+            CultureInfo.CurrentUICulture = originalCulture;
+        }
     }
 
     [Fact]

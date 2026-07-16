@@ -14,7 +14,11 @@ public sealed partial class FacetFilterViewModel(
 
     public string Name { get; } = name;
     public int Count { get; } = count;
-    public string DisplayName => $"{displayName ?? Name} ({Count})";
+    public string DisplayName => $"{DisplayText} ({Count})";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DisplayName))]
+    private string displayText = displayName ?? name;
 
     [ObservableProperty]
     private bool isSelected = isSelected;
