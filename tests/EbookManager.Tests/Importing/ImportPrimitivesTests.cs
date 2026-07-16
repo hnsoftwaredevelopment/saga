@@ -493,14 +493,8 @@ public sealed class ImportPrimitivesTests : IDisposable
 
         var cleaned = BookMetadataCleaner.Clean(metadata);
 
-        cleaned.Description.Should().Be("""
-            Een verhaal over vriendschap.
-
-            Recensie(s)
-            NBD|Biblion recensie
-
-            Bushman's Hole & trimix-duiken.
-            """);
+        cleaned.Description.Should().Be(
+            "Een verhaal over vriendschap.\n\nRecensie(s)\nNBD|Biblion recensie\n\nBushman's Hole & trimix-duiken.");
     }
 
     [Theory]

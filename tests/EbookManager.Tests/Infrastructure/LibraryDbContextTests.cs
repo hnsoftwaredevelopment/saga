@@ -153,11 +153,7 @@ public sealed class LibraryDbContextTests
         var listed = (await repository.ListAsync(default)).Should().ContainSingle().Which;
         var full = await repository.GetAsync(book.Id, default);
 
-        listed.Metadata.Description.Should().Be("""
-            First line.
-
-            Second & final line.
-            """);
+        listed.Metadata.Description.Should().Be("First line.\n\nSecond & final line.");
         full!.Metadata.Description.Should().Be(listed.Metadata.Description);
     }
 
