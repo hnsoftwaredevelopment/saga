@@ -60,7 +60,7 @@
         <StackPanel DockPanel.Dock="Left"
                     Margin="18,0,0,0"
                     VerticalAlignment="Center">
-          <TextBlock Text="{Binding CurrentLibraryName}"
+          <TextBlock Text="{Binding CurrentLibraryName, TargetNullValue={loc:Loc NoLibrarySelected}}"
                      FontWeight="SemiBold"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
           <TextBlock Text="{Binding CurrentLibraryPath}"

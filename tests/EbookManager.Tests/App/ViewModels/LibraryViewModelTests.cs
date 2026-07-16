@@ -695,7 +695,7 @@ public sealed class LibraryViewModelTests
         currentLibrary.Current.Should().BeNull();
         viewModel.HasActiveLibrary.Should().BeFalse();
         viewModel.CurrentLibraryPath.Should().BeNull();
-        viewModel.CurrentLibraryName.Should().Be("No library selected");
+        viewModel.CurrentLibraryName.Should().BeNull();
         viewModel.VisibleBooks.Should().BeEmpty();
         viewModel.EmptyStateMessage.Should().Be(
             "The active library folder no longer exists. Create or open a library to continue.");

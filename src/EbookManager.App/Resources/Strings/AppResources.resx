@@ -125,6 +125,7 @@
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Title only</value></data>
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Updating metadata...</value></data>
   <data name="NoSort" xml:space="preserve"><value>None</value></data>
+  <data name="NoLibrarySelected" xml:space="preserve"><value>No library selected</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Open an existing library</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Open settings</value></data>

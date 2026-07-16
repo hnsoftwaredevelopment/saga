@@ -70,7 +70,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.databaseInitializer = databaseInitializer;
         this.directoryScanner = directoryScanner;
         this.settingsStore = settingsStore;
-        currentLibraryName = currentLibrary?.Current?.Name ?? "No library selected";
+        currentLibraryName = currentLibrary?.Current?.Name;
         currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
 
         details.BookSaved += OnDetailsBookSaved;
@@ -110,7 +110,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private ImportResultViewModel? lastImportResult;
 
     [ObservableProperty]
-    private string currentLibraryName = "No library selected";
+    private string? currentLibraryName;
 
     [ObservableProperty]
     private string? currentLibraryPath;
@@ -936,7 +936,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void RefreshLibraryDisplay()
     {
-        CurrentLibraryName = currentLibrary?.Current?.Name ?? "No library selected";
+        CurrentLibraryName = currentLibrary?.Current?.Name;
         CurrentLibraryPath = currentLibrary?.Current?.DirectoryPath;
     }
 
