@@ -67,6 +67,8 @@ Milestone 4 should implement or refine only the low-risk standard metadata decis
 7. Keep rating, title sort, file size, date added, and last modified as candidates unless explicitly selected after review.
 8. Keep custom columns out of Milestone 4.
 
+Milestone 4 implementation note: language display is localized for filters and the details pane. Saga keeps stable stored language values for filtering, and offers an explicit user action to normalize only known supported language codes and names. Unsupported language names remain unchanged.
+
 ## Author Sort Strategy
 
 Saga should support author sorting as a preference instead of requiring each book to store a separate author-sort value. This keeps the metadata model lighter and avoids forcing users to maintain an extra field for every book.
@@ -94,4 +96,4 @@ These questions should be answered before the Milestone 4 implementation plan is
 2. Should `Rating` be included in Milestone 4, or remain later until the details pane and filters are more mature?
 3. Should `Date added` and `Last modified` be shown in the details pane as read-only system metadata?
 4. Should `File size` be shown per available format in the details pane?
-5. Should language normalization change only display/filter behavior, or should Saga also offer a bulk action to rewrite stored language values?
+5. Resolved for Milestone 4: language normalization uses localized display/filter behavior by default, plus an explicit confirmation-based bulk action that rewrites only known supported language values.

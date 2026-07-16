@@ -34,6 +34,11 @@ public sealed partial class BookDetailsViewModel(BookService bookService) : Obse
         ? string.Empty
         : LanguageDisplayService.DisplayName(Language);
 
+    public void RefreshLocalizedDisplayNames()
+    {
+        OnPropertyChanged(nameof(LanguageDisplayName));
+    }
+
     [ObservableProperty]
     private string? publisher;
 

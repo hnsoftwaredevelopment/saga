@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-quality improvements.
+Milestone 4 builds on version `0.1` with a structured metadata-settings foundation, language normalization, and metadata-quality improvements.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -35,12 +35,13 @@ Milestone 3 builds on version `0.1` with Calibre metadata import and metadata-qu
 - structured settings foundation for metadata preferences
 - settings-driven author sorting without per-book author-sort metadata
 - reusable language display normalization
+- explicit language-code normalization for supported Saga languages
+- localized language filter and details display while preserving stable stored language codes
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
 - light, dark, sepia, blue, and red themes
-- English and Dutch selectable UI localization
+- English, Dutch, German, French, Spanish, and Italian selectable UI localization
 - toolbar and details action icons with localized tooltips
-- prepared fallback resource files for German, French, Spanish, and Italian
 
 ## Prerequisites
 

@@ -233,6 +233,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             filter.DisplayText = LanguageDisplayService.DisplayName(filter.Name);
         }
+
+        Details.RefreshLocalizedDisplayNames();
     }
 
     partial void OnLoadingLibraryTotalCountChanged(int value)

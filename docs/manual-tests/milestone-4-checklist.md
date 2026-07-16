@@ -3,10 +3,12 @@
 ## Settings
 
 - [ ] Open Settings and confirm sections are understandable.
+- [ ] Change application language and confirm Settings, toolbar, filters, sort options, and details labels update immediately.
 - [ ] Change theme and confirm it still applies after Save.
 - [ ] Change default view and confirm it still applies after restart.
 - [ ] Change include-subdirectories setting and confirm scan uses it.
 - [ ] Change author sort strategy and confirm it persists after reopening Settings.
+- [ ] Use the metadata action "Normalize language codes" / "Taalcodes normaliseren" and confirm Saga asks for confirmation before rewriting stored language values.
 
 ## Author Sorting
 
@@ -18,6 +20,11 @@
 ## Language Display
 
 - [ ] Confirm language filter shows friendly display for `nl`, `nl-NL`, `eng`, and `en-US`.
+- [ ] Confirm supported language names such as `Nederlands`, `Dutch`, `Deutsch`, `Français`, `Español`, and `Italiano` normalize to Saga language codes.
+- [ ] Confirm unsupported language names such as `Latin` stay unchanged.
+- [ ] Confirm language filter labels translate when switching UI language, for example `Nederlands` becomes `Dutch` in English.
+- [ ] Confirm user tags are not translated when switching UI language.
+- [ ] Confirm the details pane shows a localized friendly language name while preserving the editable stored value.
 - [ ] Confirm selecting a normalized language filter still filters the expected books.
 - [ ] Confirm unusual valid codes such as `lv` do not crash.
 
