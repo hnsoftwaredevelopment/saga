@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Xml;
 using System.Xml.Linq;
+using EbookManager.Application.Metadata;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
@@ -57,6 +58,8 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
             var description = FirstElementValue(metadataElement, "description") ?? fallbackResult.Metadata.Description;
             var language = FirstElementValue(metadataElement, "language") ?? fallbackResult.Metadata.Language;
             var publisher = FirstElementValue(metadataElement, "publisher") ?? fallbackResult.Metadata.Publisher;
+            var publicationDate = MetadataDateParser.ParseDate(FirstElementValue(metadataElement, "date"))
+                ?? fallbackResult.Metadata.PublicationDate;
             var isbn = FirstIsbn(metadataElement) ?? fallbackResult.Metadata.Isbn;
             var tags = ElementValues(metadataElement, "subject")
                 .Distinct(StringComparer.Ordinal)
@@ -74,7 +77,7 @@ public sealed class EpubMetadataAdapter : IMetadataAdapter
                     description,
                     language,
                     publisher,
-                    fallbackResult.Metadata.PublicationDate,
+                    publicationDate,
                     tags.Length > 0 ? tags : fallbackResult.Metadata.Tags,
                     series,
                     seriesNumber,

@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Xml;
 using System.Xml.Linq;
+using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
 
@@ -72,7 +73,7 @@ public sealed class CalibreOpfMetadataSidecarStore
                     FirstElementValue(metadataElement, "description"),
                     FirstElementValue(metadataElement, "language"),
                     FirstElementValue(metadataElement, "publisher"),
-                    ParseDate(FirstElementValue(metadataElement, "date")),
+                    MetadataDateParser.ParseDate(FirstElementValue(metadataElement, "date")),
                     tags.Length > 0 ? tags : null,
                     MetaContent(metadataElement, "calibre:series"),
                     ParseSeriesNumber(MetaContent(metadataElement, "calibre:series_index")),
@@ -138,18 +139,6 @@ public sealed class CalibreOpfMetadataSidecarStore
             .Trim() is { Length: > 0 } value
                 ? value
                 : null;
-
-    private static DateOnly? ParseDate(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return null;
-        }
-
-        return DateOnly.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
-            ? date
-            : null;
-    }
 
     private static decimal? ParseSeriesNumber(string? value) =>
         decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed)

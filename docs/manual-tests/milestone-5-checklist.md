@@ -37,5 +37,7 @@
 ## Metadata Enrichment Baseline
 
 - [ ] Import an EPUB with rich metadata and confirm publisher, publication date, ISBN, tags, series, language, description, cover, formats, date added, and last modified are visible in Details.
+- [ ] Import an EPUB with a `dc:date` value and confirm the publication date is visible in Details.
 - [ ] Import from a Calibre folder with `metadata.opf` and confirm the existing standard fields still load correctly.
+- [ ] Import from a Calibre folder with a date/time value in `metadata.opf` and confirm Saga keeps the date portion.
 - [ ] Confirm unsupported or future metadata fields are not shown as editable fields yet.
