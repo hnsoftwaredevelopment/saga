@@ -31,6 +31,7 @@
                     DisplayMemberPath="DisplayName"
                     SelectedValue="{Binding Culture}"
                     SelectedValuePath="Value"
+                    SelectionChanged="CultureSelectionChanged"
                     Margin="0,0,0,12" />
         </Grid>
       </TabItem>

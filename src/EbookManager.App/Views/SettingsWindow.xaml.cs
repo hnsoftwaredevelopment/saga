@@ -26,6 +26,17 @@ public partial class SettingsWindow : System.Windows.Window
     {
         Loaded -= OnLoaded;
         await viewModel.LoadAsync();
+        localizationService.ApplyCulture(viewModel.Culture);
+    }
+
+    private void CultureSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        localizationService.ApplyCulture(viewModel.Culture);
     }
 
     private async void SaveClicked(object sender, System.Windows.RoutedEventArgs e)

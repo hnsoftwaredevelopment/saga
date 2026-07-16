@@ -283,73 +283,72 @@ public sealed class ImportService(
                         ImportOutcome.ExactDuplicate,
                         SafeImportMessages.ExactDuplicate);
                     shouldCleanup = true;
-                    return await RecordAsync(result);
                 }
-
-                if (isPossibleDuplicate)
+                else if (isPossibleDuplicate)
                 {
                     result = CreateSuccessResult(
                         sourcePath,
                         ImportOutcome.PossibleDuplicate,
                         SafeImportMessages.PossibleDuplicate);
                     shouldCleanup = true;
-                    return await RecordAsync(result);
                 }
-
-                var now = DateTimeOffset.UtcNow;
-                var book = new Book(
-                    targetBookId,
-                    metadata.Metadata,
-                    ReadingStatus.Unread,
-                    copy.RelativeCoverPath,
-                    now,
-                    now);
-                var file = new BookFile(
-                    Guid.NewGuid(),
-                    targetBookId,
-                    format,
-                    copy.RelativeBookPath,
-                    sha256!,
-                    sourceLength.Value,
-                    MetadataWriteBackStatus.NotAttempted,
-                    null);
-
-                try
+                else
                 {
-                    if (addFileToExistingBook)
-                    {
-                        await bookRepository.AddFileAsync(file, cancellationToken);
-                    }
-                    else
-                    {
-                        await bookRepository.AddAsync(book, file, cancellationToken);
-                    }
-
-                    bookPersisted = true;
-                    cleanupBookId = addFileToExistingBook ? null : targetBookId;
-                    result = CreateAddedResult(
-                        sourcePath,
-                        metadata.Warning,
+                    var now = DateTimeOffset.UtcNow;
+                    var book = new Book(
                         targetBookId,
-                        possibleTitleMatch);
-                    duplicateTracker.Add(sha256!, duplicateKey, targetBookId, format);
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch (Exception exception) when (exceptionClassifier.IsDuplicateKeyViolation(exception))
-                {
-                    result = CreateSuccessResult(
-                        sourcePath,
-                        ImportOutcome.PossibleDuplicate,
-                        SafeImportMessages.PossibleDuplicate);
-                    shouldCleanup = true;
-                }
-                catch
-                {
-                    result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.ImportFailed);
-                    shouldCleanup = true;
+                        metadata.Metadata,
+                        ReadingStatus.Unread,
+                        copy.RelativeCoverPath,
+                        now,
+                        now);
+                    var file = new BookFile(
+                        Guid.NewGuid(),
+                        targetBookId,
+                        format,
+                        copy.RelativeBookPath,
+                        sha256!,
+                        sourceLength.Value,
+                        MetadataWriteBackStatus.NotAttempted,
+                        null);
+
+                    try
+                    {
+                        if (addFileToExistingBook)
+                        {
+                            await bookRepository.AddFileAsync(file, cancellationToken);
+                        }
+                        else
+                        {
+                            await bookRepository.AddAsync(book, file, cancellationToken);
+                        }
+
+                        bookPersisted = true;
+                        cleanupBookId = addFileToExistingBook ? null : targetBookId;
+                        result = CreateAddedResult(
+                            sourcePath,
+                            metadata.Warning,
+                            targetBookId,
+                            possibleTitleMatch);
+                        duplicateTracker.Add(sha256!, duplicateKey, targetBookId, format);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception exception) when (exceptionClassifier.IsDuplicateKeyViolation(exception))
+                    {
+                        result = CreateSuccessResult(
+                            sourcePath,
+                            ImportOutcome.PossibleDuplicate,
+                            SafeImportMessages.PossibleDuplicate);
+                        shouldCleanup = true;
+                    }
+                    catch
+                    {
+                        result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.ImportFailed);
+                        shouldCleanup = true;
+                    }
                 }
             }
             finally

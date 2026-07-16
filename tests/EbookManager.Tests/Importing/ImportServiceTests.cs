@@ -653,28 +653,25 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
-    public async Task Import_async_appends_cleanup_incomplete_to_possible_duplicate_race_outcomes_when_cleanup_fails()
+    public async Task Import_async_appends_cleanup_incomplete_to_duplicate_key_outcomes_when_cleanup_fails()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();
-        var first = fixture.WriteBytesFile(@"incoming\shared\First.pdf", Encoding.UTF8.GetBytes("one"));
-        var second = fixture.WriteBytesFile(@"incoming\shared\Second.pdf", Encoding.UTF8.GetBytes("two"));
-        var racingRepository = new RacingDuplicateBookRepository(fixture.BookRepository);
-        var trackingRepository = new TrackingDeleteBookRepository(racingRepository);
+        var source = fixture.WriteBytesFile(@"incoming\Duplicate - Author.pdf", Encoding.UTF8.GetBytes("duplicate"));
+        var duplicateRepository = new ThrowingDuplicateKeyBookRepository(fixture.BookRepository);
+        var trackingRepository = new TrackingDeleteBookRepository(duplicateRepository);
         var cleanupStore = new TrackingCleanupStore(fixture.FileStore);
         var service = CreateImportService(
             trackingRepository,
             fixture.ImportRepository,
             cleanupStore,
             fixture.FileHasher,
-            new DirectoryTitleMetadataAdapterResolver(),
+            fixture.MetadataAdapterResolver,
             new DuplicateKeyRaceClassifier());
 
-        var results = await Task.WhenAll(
-            service.ImportAsync([first], default),
-            service.ImportAsync([second], default));
+        var result = await service.ImportAsync([source], default);
 
-        var possibleDuplicate = results.SelectMany(result => result.Items)
-            .Single(item => item.Outcome == ImportOutcome.PossibleDuplicate);
+        var possibleDuplicate = result.Items.Single();
+        possibleDuplicate.Outcome.Should().Be(ImportOutcome.PossibleDuplicate);
         possibleDuplicate.Message.Should().Be("possible duplicate; cleanup incomplete");
         trackingRepository.DeleteAsyncCalled.Should().BeTrue();
         cleanupStore.DeleteBookDirectoryCalled.Should().BeTrue();
@@ -1225,10 +1222,15 @@ public sealed class ImportServiceTests
 
     private sealed class RacingDuplicateBookRepository(IBookRepository inner) : IBookRepository
     {
+        private readonly Barrier snapshotBarrier = new(2);
         private readonly Barrier checkBarrier = new(2);
         private int addCount;
 
-        public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => inner.ListAsync(cancellationToken);
+        public async Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
+        {
+            snapshotBarrier.SignalAndWait(cancellationToken);
+            return await inner.ListAsync(cancellationToken);
+        }
 
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => inner.GetAsync(id, cancellationToken);
 
@@ -1271,6 +1273,54 @@ public sealed class ImportServiceTests
 
             await inner.AddAsync(book, file, cancellationToken);
         }
+
+        public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
+            inner.AddFileAsync(file, cancellationToken);
+
+        public Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken) =>
+            inner.AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
+
+        public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
+
+        public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
+
+        public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
+            inner.ListFilesAsync(bookId, cancellationToken);
+
+        public Task UpdateFileWriteBackAsync(
+            Guid fileId,
+            MetadataWriteResult result,
+            CancellationToken cancellationToken) =>
+            inner.UpdateFileWriteBackAsync(fileId, result, cancellationToken);
+    }
+
+    private sealed class ThrowingDuplicateKeyBookRepository(IBookRepository inner) : IBookRepository
+    {
+        public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => inner.ListAsync(cancellationToken);
+
+        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => inner.GetAsync(id, cancellationToken);
+
+        public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) => inner.HasHashAsync(sha256, cancellationToken);
+
+        public Task<bool> HasNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            inner.HasNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+        public Task<Book?> FindByNormalizedTitleAndAuthorAsync(
+            string title,
+            IReadOnlyList<string> authors,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAndAuthorAsync(title, authors, cancellationToken);
+
+        public Task<IReadOnlyList<Book>> FindByNormalizedTitleAsync(
+            string title,
+            CancellationToken cancellationToken) =>
+            inner.FindByNormalizedTitleAsync(title, cancellationToken);
+
+        public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>
+            throw new DuplicateKeyRaceException();
 
         public Task AddFileAsync(BookFile file, CancellationToken cancellationToken) =>
             inner.AddFileAsync(file, cancellationToken);
