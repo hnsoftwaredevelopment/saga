@@ -2,10 +2,11 @@
 
 ## Per-Format Export
 
-- [ ] Select a book with one available format and confirm the format row shows an export action.
-- [ ] Export the format to the default Downloads folder and confirm the file is copied there.
+- [ ] Select a book with one available format and confirm the format is shown as a compact file-type button.
+- [ ] Right-click the file-type button and confirm the context menu shows Open folder, Save, and Save to.
+- [ ] Use Save and confirm the file is copied to the default Downloads folder.
 - [ ] Export the same format twice and confirm Saga creates a unique filename instead of overwriting the first export.
-- [ ] Export a format to a user-selected folder and confirm the file is copied there.
+- [ ] Use Save to and confirm the file is copied to a user-selected folder.
 - [ ] Confirm exported filenames are based on book metadata and do not contain invalid Windows filename characters.
 - [ ] Confirm exporting a missing managed file shows a clear failure message.
 

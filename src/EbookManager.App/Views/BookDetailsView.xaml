@@ -100,24 +100,33 @@
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <StackPanel>
-              <Border Background="{DynamicResource AppBackgroundBrush}"
+              <Button Content="{Binding DisplayText}"
+                      Padding="8,4"
+                      MinHeight="0"
+                      HorizontalAlignment="Left"
+                      Background="{DynamicResource AppBackgroundBrush}"
                       BorderBrush="{DynamicResource AccentBrush}"
-                      BorderThickness="1"
-                      CornerRadius="8"
-                      Padding="6,3"
-                      Margin="0,0,0,6"
-                      HorizontalAlignment="Left">
-                <DockPanel LastChildFill="True">
-                  <StackPanel Orientation="Horizontal"
-                              DockPanel.Dock="Right"
-                              Margin="8,0,0,0">
-                    <Button Content="{loc:Loc ExportToDownloads}"
-                            Command="{Binding ExportToDownloadsCommand}"
-                            Padding="6,1"
-                            MinHeight="0"
-                            Margin="0,0,6,0">
-                      <Button.Style>
-                        <Style TargetType="Button">
+                      Foreground="{DynamicResource TextPrimaryBrush}">
+                <Button.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="{loc:Loc OpenFolder}"
+                              Command="{Binding OpenContainingFolderCommand}">
+                      <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                          <Setter Property="Visibility" Value="Visible" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding CanOpenContainingFolder}" Value="False">
+                              <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </MenuItem.Style>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="{loc:Loc SaveFile}"
+                              Command="{Binding ExportToDownloadsCommand}">
+                      <MenuItem.Style>
+                        <Style TargetType="MenuItem">
                           <Setter Property="Visibility" Value="Visible" />
                           <Style.Triggers>
                             <DataTrigger Binding="{Binding CanExport}" Value="False">
@@ -125,15 +134,12 @@
                             </DataTrigger>
                           </Style.Triggers>
                         </Style>
-                      </Button.Style>
-                    </Button>
-                    <Button Content="{loc:Loc ExportToFolder}"
-                            Command="{Binding ExportToFolderCommand}"
-                            Padding="6,1"
-                            MinHeight="0"
-                            Margin="0,0,6,0">
-                      <Button.Style>
-                        <Style TargetType="Button">
+                      </MenuItem.Style>
+                    </MenuItem>
+                    <MenuItem Header="{loc:Loc SaveFileTo}"
+                              Command="{Binding ExportToFolderCommand}">
+                      <MenuItem.Style>
+                        <Style TargetType="MenuItem">
                           <Setter Property="Visibility" Value="Visible" />
                           <Style.Triggers>
                             <DataTrigger Binding="{Binding CanExport}" Value="False">
@@ -141,36 +147,16 @@
                             </DataTrigger>
                           </Style.Triggers>
                         </Style>
-                      </Button.Style>
-                    </Button>
-                  </StackPanel>
-                  <Button Content="{loc:Loc OpenFolder}"
-                          Command="{Binding OpenContainingFolderCommand}"
-                          DockPanel.Dock="Right"
-                          Padding="6,1"
-                          MinHeight="0"
-                          Margin="8,0,0,0">
-                    <Button.Style>
-                      <Style TargetType="Button">
-                        <Setter Property="Visibility" Value="Visible" />
-                        <Style.Triggers>
-                          <DataTrigger Binding="{Binding CanOpenContainingFolder}" Value="False">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                          </DataTrigger>
-                        </Style.Triggers>
-                      </Style>
-                    </Button.Style>
-                  </Button>
-                  <TextBlock Text="{Binding DisplayText}"
-                             VerticalAlignment="Center"
-                             Foreground="{DynamicResource TextPrimaryBrush}" />
-                </DockPanel>
-              </Border>
+                      </MenuItem.Style>
+                    </MenuItem>
+                  </ContextMenu>
+                </Button.ContextMenu>
+              </Button>
               <TextBlock Text="{Binding ExportStatusMessage}"
                          FontSize="11"
                          Foreground="{DynamicResource TextSecondaryBrush}"
                          TextWrapping="Wrap"
-                         Margin="6,-4,0,6" />
+                         Margin="6,3,0,6" />
             </StackPanel>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
