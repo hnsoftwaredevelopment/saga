@@ -1,5 +1,6 @@
 using EbookManager.Application.Books;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.ComponentModel;
@@ -16,6 +17,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     private readonly AsyncRelayCommand deleteSelectedCandidatesCommand;
     private IReadOnlyList<Book> books;
     private IReadOnlyList<DuplicateCandidateGroup> allGroups;
+    private DuplicateMergeDefaultSettings mergeDefaults = new();
     private bool exactMatchesOnly = true;
 
     public DuplicateCandidatesViewModel(
@@ -59,6 +61,12 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
                 ApplyVisibleGroups();
             }
         }
+    }
+
+    public DuplicateMergeDefaultSettings MergeDefaults
+    {
+        get => mergeDefaults;
+        set => mergeDefaults = value ?? new DuplicateMergeDefaultSettings();
     }
 
     public void SetSelectedRows(IEnumerable<DuplicateCandidateRowViewModel> selectedRows)
@@ -156,7 +164,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         var mergePair = SelectMergePair(clickedRow);
         return mergePair is null
             ? null
-            : new DuplicateMergePreviewViewModel(mergePair.Value.Source, mergePair.Value.Target);
+            : new DuplicateMergePreviewViewModel(mergePair.Value.Source, mergePair.Value.Target, MergeDefaults);
     }
 
     private async Task DeleteSelectedCandidatesAsync(CancellationToken cancellationToken)
@@ -275,17 +283,20 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
 
 public sealed partial class DuplicateMergePreviewViewModel : ObservableObject
 {
+    private readonly DuplicateMergeDefaultSettings mergeDefaults;
+    private readonly RelayCommand swapDirectionCommand;
+
     public DuplicateMergePreviewViewModel(
         DuplicateCandidateRowViewModel source,
-        DuplicateCandidateRowViewModel target)
+        DuplicateCandidateRowViewModel target,
+        DuplicateMergeDefaultSettings? mergeDefaults = null)
     {
         Source = source;
         Target = target;
+        this.mergeDefaults = mergeDefaults ?? new DuplicateMergeDefaultSettings();
         swapDirectionCommand = new RelayCommand(SwapDirection);
         RefreshRows();
     }
-
-    private readonly RelayCommand swapDirectionCommand;
 
     public DuplicateCandidateRowViewModel Source { get; private set; }
     public DuplicateCandidateRowViewModel Target { get; private set; }
@@ -303,18 +314,18 @@ public sealed partial class DuplicateMergePreviewViewModel : ObservableObject
     private void RefreshRows()
     {
         Rows.Clear();
-        Rows.Add(DuplicateMergeFieldRowViewModel.CreateCover(Target.CoverPath, Source.CoverPath));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Title, "Title", Target.Title, Source.Title));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Authors, "Authors", Target.Authors, Source.Authors));
+        Rows.Add(DuplicateMergeFieldRowViewModel.CreateCover(Target.CoverPath, Source.CoverPath, mergeDefaults.Cover));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Title, "Title", Target.Title, Source.Title, defaultAction: mergeDefaults.Title));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Authors, "Authors", Target.Authors, Source.Authors, defaultAction: mergeDefaults.Authors));
         Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Formats, "Formats", Target.FormatText, Source.FormatText));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Series, "Series", Target.Series, Source.Series));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.SeriesNumber, "SeriesNumber", Target.SeriesNumber, Source.SeriesNumber));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Language, "Language", Target.Language, Source.Language));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Publisher, "Publisher", Target.Publisher, Source.Publisher));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.PublicationDate, "PublicationDate", Target.PublicationDate, Source.PublicationDate));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Isbn, "Isbn", Target.Isbn, Source.Isbn));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Tags, "Tags", Target.Tags, Source.Tags));
-        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Description, "Description", Target.Description, Source.Description, isLargeText: true));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Series, "Series", Target.Series, Source.Series, defaultAction: mergeDefaults.Series));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.SeriesNumber, "SeriesNumber", Target.SeriesNumber, Source.SeriesNumber, defaultAction: mergeDefaults.SeriesNumber));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Language, "Language", Target.Language, Source.Language, defaultAction: mergeDefaults.Language));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Publisher, "Publisher", Target.Publisher, Source.Publisher, defaultAction: mergeDefaults.Publisher));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.PublicationDate, "PublicationDate", Target.PublicationDate, Source.PublicationDate, defaultAction: mergeDefaults.PublicationDate));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Isbn, "Isbn", Target.Isbn, Source.Isbn, defaultAction: mergeDefaults.Isbn));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Tags, "Tags", Target.Tags, Source.Tags, defaultAction: mergeDefaults.Tags));
+        Rows.Add(new DuplicateMergeFieldRowViewModel(DuplicateMergeMetadataField.Description, "Description", Target.Description, Source.Description, isLargeText: true, defaultAction: mergeDefaults.Description));
     }
 
     public IReadOnlyList<DuplicateMergeFieldSelection> BuildSelections() =>
@@ -339,7 +350,8 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
         bool canMerge = true,
         bool isCover = false,
         string? targetImagePath = null,
-        string? sourceImagePath = null)
+        string? sourceImagePath = null,
+        DuplicateMergeDefaultAction defaultAction = DuplicateMergeDefaultAction.NoAction)
     {
         Field = field;
         Label = label;
@@ -351,6 +363,7 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
         TargetImagePath = targetImagePath;
         SourceImagePath = sourceImagePath;
         IsActionEnabled = !ValuesAreEqual(targetValue, sourceValue);
+        Action = MapDefaultAction(defaultAction, CanMerge, IsActionEnabled);
         cycleActionCommand = new RelayCommand(CycleAction, () => IsActionEnabled);
     }
 
@@ -371,7 +384,10 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
     public string? SourceImagePath { get; }
     public IRelayCommand CycleActionCommand => cycleActionCommand;
 
-    public static DuplicateMergeFieldRowViewModel CreateCover(string? targetImagePath, string? sourceImagePath) =>
+    public static DuplicateMergeFieldRowViewModel CreateCover(
+        string? targetImagePath,
+        string? sourceImagePath,
+        DuplicateMergeDefaultAction defaultAction = DuplicateMergeDefaultAction.NoAction) =>
         new(
             DuplicateMergeMetadataField.Cover,
             "Cover",
@@ -380,7 +396,8 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
             canMerge: false,
             isCover: true,
             targetImagePath: targetImagePath,
-            sourceImagePath: sourceImagePath);
+            sourceImagePath: sourceImagePath,
+            defaultAction: defaultAction);
 
     private void CycleAction()
     {
@@ -407,6 +424,19 @@ public sealed partial class DuplicateMergeFieldRowViewModel : ObservableObject
         string.Join(
             ' ',
             value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+
+    private static DuplicateMergeFieldAction MapDefaultAction(
+        DuplicateMergeDefaultAction defaultAction,
+        bool canMerge,
+        bool isActionEnabled) =>
+        isActionEnabled
+            ? defaultAction switch
+            {
+                DuplicateMergeDefaultAction.Copy => DuplicateMergeFieldAction.Copy,
+                DuplicateMergeDefaultAction.Merge when canMerge => DuplicateMergeFieldAction.Merge,
+                _ => DuplicateMergeFieldAction.NoAction
+            }
+            : DuplicateMergeFieldAction.NoAction;
 }
 
 public enum DuplicateMergeFieldAction

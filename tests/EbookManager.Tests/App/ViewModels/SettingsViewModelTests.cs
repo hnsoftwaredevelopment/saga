@@ -65,7 +65,8 @@ public sealed class SettingsViewModelTests
             false,
             AuthorSortStrategy.DisplayName,
             false,
-            false));
+            false,
+            new DuplicateMergeDefaultSettings()));
     }
 
     [Fact]
@@ -107,5 +108,30 @@ public sealed class SettingsViewModelTests
 
         viewModel.DuplicateExactMatchesOnly.Should().BeFalse();
         viewModel.EnableDiagnosticDetails.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Save_persists_duplicate_merge_defaults()
+    {
+        var store = new InMemoryAppSettingsStore();
+        var viewModel = new SettingsViewModel(store);
+        await viewModel.LoadAsync();
+        viewModel.MergeDefaultCover = DuplicateMergeDefaultAction.Copy;
+        viewModel.MergeDefaultAuthors = DuplicateMergeDefaultAction.Merge;
+        viewModel.MergeDefaultTags = DuplicateMergeDefaultAction.NoAction;
+        viewModel.MergeDefaultDescription = DuplicateMergeDefaultAction.Merge;
+        viewModel.MergeDefaultPublisher = DuplicateMergeDefaultAction.Copy;
+        viewModel.MergeDefaultLanguage = DuplicateMergeDefaultAction.Copy;
+
+        await viewModel.SaveAsync();
+
+        var settings = await store.LoadAsync(default);
+        settings.DuplicateMergeDefaults.Should().Be(new DuplicateMergeDefaultSettings(
+            Cover: DuplicateMergeDefaultAction.Copy,
+            Authors: DuplicateMergeDefaultAction.Merge,
+            Tags: DuplicateMergeDefaultAction.NoAction,
+            Description: DuplicateMergeDefaultAction.Merge,
+            Publisher: DuplicateMergeDefaultAction.Copy,
+            Language: DuplicateMergeDefaultAction.Copy));
     }
 }

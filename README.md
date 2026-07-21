@@ -44,6 +44,7 @@ Milestone 6 focuses on completing the settings structure and user preferences fo
 - description cleanup for common HTML-like metadata
 - standard metadata search across language display names, dates, series numbers, formats, and system dates
 - sectioned settings foundation for duplicates and diagnostics preferences
+- duplicate merge default actions prepared in Settings and applied to merge previews
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
 - light, dark, sepia, blue, and red themes

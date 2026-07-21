@@ -12,7 +12,8 @@ public sealed record AppSettings(
     bool IncludeScanSubdirectories = true,
     AuthorSortStrategy AuthorSortStrategy = AuthorSortStrategy.DisplayName,
     bool DuplicateExactMatchesOnly = true,
-    bool EnableDiagnosticDetails = true);
+    bool EnableDiagnosticDetails = true,
+    DuplicateMergeDefaultSettings? DuplicateMergeDefaults = null);
 
 public interface IAppSettingsStore
 {

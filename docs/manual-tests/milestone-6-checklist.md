@@ -27,6 +27,9 @@
 - [ ] Open the duplicate overview and confirm title-only matches are visible immediately.
 - [ ] Re-enable the setting and confirm the duplicate overview starts with stricter title and author matches.
 - [ ] Confirm the in-window duplicate toggle can still be changed manually.
+- [ ] Change duplicate merge defaults for authors, tags, description, cover, publisher, and language.
+- [ ] Open a duplicate merge preview and confirm the configured initial actions are selected where the field values differ.
+- [ ] Confirm fields with equal values still start as "Do nothing" even when a default action is configured.
 
 ## Diagnostics Preferences
 

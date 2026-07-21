@@ -167,6 +167,8 @@
   <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>Taalcodes normaliseren voor {0} boek(en)? Alleen bekende taalcodes worden gewijzigd.</value></data>
   <data name="DuplicateExactMatchesOnlySetting" xml:space="preserve"><value>Standaard alleen exacte duplicaatmatches tonen</value></data>
   <data name="DuplicateExactMatchesOnlyDescription" xml:space="preserve"><value>Open het duplicatenoverzicht met strengere titel- en auteurmatches. In het duplicatenvenster kun je nog steeds wisselen naar matches op alleen titel.</value></data>
+  <data name="DuplicateMergeDefaults" xml:space="preserve"><value>Standaardacties bij samenvoegen</value></data>
+  <data name="DuplicateMergeDefaultsDescription" xml:space="preserve"><value>Kies de actie waarmee Saga de samenvoegpreview opent. De gebruiker kan elk veld nog steeds aanpassen voordat de boeken worden samengevoegd.</value></data>
   <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Gedetailleerde diagnostiek beschikbaar houden</value></data>
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Deze instelling reserveert een vaste plek voor importgeschiedenis, foutrapportage en probleemdiagnose. De huidige diagnostiek blijft beschikbaar terwijl deze basis wordt afgerond.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sorteren op</value></data>

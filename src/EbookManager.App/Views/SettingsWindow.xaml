@@ -121,14 +121,71 @@
       </TabItem>
 
       <TabItem Header="{loc:Loc SettingsDuplicatesSection}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="12">
           <CheckBox Content="{loc:Loc DuplicateExactMatchesOnlySetting}"
                     IsChecked="{Binding DuplicateExactMatchesOnly}"
                     Margin="0,0,0,8" />
           <TextBlock Text="{loc:Loc DuplicateExactMatchesOnlyDescription}"
                      TextWrapping="Wrap"
-                     Foreground="{DynamicResource TextSecondaryBrush}" />
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Margin="0,0,0,16" />
+          <TextBlock Text="{loc:Loc DuplicateMergeDefaults}"
+                     FontWeight="SemiBold"
+                     Margin="0,0,0,6" />
+          <TextBlock Text="{loc:Loc DuplicateMergeDefaultsDescription}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Margin="0,0,0,12" />
+          <UniformGrid Columns="2" Margin="0,0,0,8">
+            <StackPanel Margin="0,0,12,10">
+              <TextBlock Text="{loc:Loc Cover}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultCover}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock Text="{loc:Loc Authors}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultAuthors}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionMerge}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Merge}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,12,10">
+              <TextBlock Text="{loc:Loc Tags}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultTags}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionMerge}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Merge}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock Text="{loc:Loc Description}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultDescription}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionMerge}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Merge}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,12,10">
+              <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultPublisher}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock Text="{loc:Loc Language}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultLanguage}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+              </ComboBox>
+            </StackPanel>
+          </UniformGrid>
         </StackPanel>
+        </ScrollViewer>
       </TabItem>
 
       <TabItem Header="{loc:Loc SettingsDiagnosticsSection}">

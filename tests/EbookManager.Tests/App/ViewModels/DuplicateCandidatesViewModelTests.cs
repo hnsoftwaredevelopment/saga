@@ -1,5 +1,6 @@
 using EbookManager.Application.Books;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.Settings;
 using EbookManager.Presentation.ViewModels;
 using FluentAssertions;
 
@@ -443,6 +444,37 @@ public sealed class DuplicateCandidatesViewModelTests
         preview.Rows.Single(row => row.Label == "Cover").IsActionEnabled.Should().BeTrue();
         preview.Rows.Single(row => row.Label == "Formats").TargetValue.Should().Be("EPUB");
         preview.Rows.Single(row => row.Label == "Formats").SourceValue.Should().Be("PDF");
+    }
+
+    [Fact]
+    public void MergePreview_applies_configured_default_actions()
+    {
+        var source = CreateRow(CreateBook("Pro Git", ["Unknown"], null, "en", description: "Source", formats: [EbookFormat.Pdf]));
+        var target = CreateRow(CreateBook("Pro Git", ["Scott Chacon"], null, "nl", description: "Target", formats: [EbookFormat.Epub]));
+        var defaults = new DuplicateMergeDefaultSettings(
+            Authors: DuplicateMergeDefaultAction.Merge,
+            Language: DuplicateMergeDefaultAction.Copy,
+            Tags: DuplicateMergeDefaultAction.NoAction,
+            Description: DuplicateMergeDefaultAction.Merge);
+
+        var preview = new DuplicateMergePreviewViewModel(source, target, defaults);
+
+        preview.Rows.Single(row => row.Label == "Authors").Action.Should().Be(DuplicateMergeFieldAction.Merge);
+        preview.Rows.Single(row => row.Label == "Language").Action.Should().Be(DuplicateMergeFieldAction.Copy);
+        preview.Rows.Single(row => row.Label == "Description").Action.Should().Be(DuplicateMergeFieldAction.Merge);
+        preview.Rows.Single(row => row.Label == "Tags").Action.Should().Be(DuplicateMergeFieldAction.NoAction);
+    }
+
+    [Fact]
+    public void MergePreview_ignores_default_action_when_values_are_equal()
+    {
+        var source = CreateRow(CreateBook("Pro Git", ["Scott Chacon"], null, "en"));
+        var target = CreateRow(CreateBook("Pro Git", ["Scott Chacon"], null, "en"));
+        var defaults = new DuplicateMergeDefaultSettings(Authors: DuplicateMergeDefaultAction.Merge);
+
+        var preview = new DuplicateMergePreviewViewModel(source, target, defaults);
+
+        preview.Rows.Single(row => row.Label == "Authors").Action.Should().Be(DuplicateMergeFieldAction.NoAction);
     }
 
     private static Book CreateBook(

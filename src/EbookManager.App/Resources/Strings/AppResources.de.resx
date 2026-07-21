@@ -438,6 +438,8 @@
   <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>Sprachcodes für {0} Buch/Bücher normalisieren? Es werden nur bekannte Sprachcodes geändert.</value></data>
   <data name="DuplicateExactMatchesOnlySetting" xml:space="preserve"><value>Standardmäßig nur exakte Duplikat-Treffer anzeigen</value></data>
   <data name="DuplicateExactMatchesOnlyDescription" xml:space="preserve"><value>Die Duplikatübersicht mit strengeren Titel- und Autor-Treffern öffnen. Im Duplikatfenster kann weiterhin auf reine Titel-Treffer umgeschaltet werden.</value></data>
+  <data name="DuplicateMergeDefaults" xml:space="preserve"><value>Standardaktionen beim Zusammenführen</value></data>
+  <data name="DuplicateMergeDefaultsDescription" xml:space="preserve"><value>Wähle die Aktion, mit der Saga die Zusammenführungs-Vorschau öffnet. Der Benutzer kann jedes Feld vor dem Zusammenführen weiterhin ändern.</value></data>
   <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Detaillierte Diagnosen verfügbar halten</value></data>
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Diese Einstellung reserviert einen festen Platz für Importverlauf, Fehlerberichte und Diagnoseinformationen. Aktuelle Diagnosen bleiben verfügbar, während diese Grundlage fertiggestellt wird.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sortieren nach</value></data>

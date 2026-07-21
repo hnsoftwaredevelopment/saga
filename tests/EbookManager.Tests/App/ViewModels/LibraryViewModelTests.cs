@@ -157,6 +157,35 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task ShowDuplicateCandidates_applies_duplicate_merge_default_preferences()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"], language: "nl");
+        var second = CreateBook("De Hobbit", ["Unknown"], language: "en");
+        var interaction = new ScriptedUserInteractionService();
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(settingsStore.Settings with
+        {
+            DuplicateExactMatchesOnly = false,
+            DuplicateMergeDefaults = new DuplicateMergeDefaultSettings(
+                Authors: DuplicateMergeDefaultAction.Merge,
+                Language: DuplicateMergeDefaultAction.Copy)
+        }, default);
+        var viewModel = CreateViewModel(
+            [first, second],
+            userInteraction: interaction,
+            currentLibrary: CreateActiveLibrary(),
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+
+        var preview = interaction.DuplicateCandidates!.CreateMergePreview(interaction.DuplicateCandidates.Rows[0]);
+        preview.Should().NotBeNull();
+        preview!.Rows.Single(row => row.Label == "Authors").Action.Should().Be(DuplicateMergeFieldAction.Merge);
+        preview.Rows.Single(row => row.Label == "Language").Action.Should().Be(DuplicateMergeFieldAction.Copy);
+    }
+
+    [Fact]
     public async Task Duplicate_candidate_merge_refreshes_duplicate_window_without_refreshing_main_library()
     {
         var sourceBookId = Guid.NewGuid();

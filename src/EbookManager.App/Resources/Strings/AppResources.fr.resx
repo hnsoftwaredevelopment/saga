@@ -438,6 +438,8 @@
   <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>Normaliser les codes de langue pour {0} livre(s) ? Seuls les codes de langue connus seront modifiés.</value></data>
   <data name="DuplicateExactMatchesOnlySetting" xml:space="preserve"><value>Afficher par défaut uniquement les doublons exacts</value></data>
   <data name="DuplicateExactMatchesOnlyDescription" xml:space="preserve"><value>Ouvrir la vue des doublons avec des correspondances plus strictes sur le titre et l'auteur. Vous pouvez toujours passer aux correspondances par titre uniquement dans la fenêtre des doublons.</value></data>
+  <data name="DuplicateMergeDefaults" xml:space="preserve"><value>Actions par défaut de fusion</value></data>
+  <data name="DuplicateMergeDefaultsDescription" xml:space="preserve"><value>Choisissez l'action initiale utilisée par Saga dans l'aperçu de fusion des doublons. L'utilisateur peut toujours modifier chaque champ avant la fusion.</value></data>
   <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Conserver les diagnostics détaillés disponibles</value></data>
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Ce réglage réserve un emplacement stable pour l'historique d'import, les rapports d'erreur et les informations de diagnostic. Les diagnostics actuels restent disponibles pendant la finalisation de cette base.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Trier par</value></data>

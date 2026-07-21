@@ -79,7 +79,17 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
 
         var settings = await store.LoadAsync(default);
 
-        settings.Should().Be(new AppSettings(null, "en-US", "Light", "Detailed", true, true));
+        settings.Should().Be(new AppSettings(
+            null,
+            "en-US",
+            "Light",
+            "Detailed",
+            true,
+            true,
+            EbookManager.Domain.Settings.AuthorSortStrategy.DisplayName,
+            true,
+            true,
+            new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings()));
         File.Exists(path).Should().BeFalse();
         Directory.GetFiles(temporaryDirectory.DirectoryPath, "settings.json.*.corrupt").Should().ContainSingle();
     }
@@ -131,6 +141,7 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
 
         settings.DuplicateExactMatchesOnly.Should().BeTrue();
         settings.EnableDiagnosticDetails.Should().BeTrue();
+        settings.DuplicateMergeDefaults.Should().Be(new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings());
     }
 
     [Fact]
@@ -146,7 +157,10 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
             false,
             EbookManager.Domain.Settings.AuthorSortStrategy.LastNameFirst,
             false,
-            false);
+            false,
+            new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings(
+                Authors: EbookManager.Domain.Settings.DuplicateMergeDefaultAction.Copy,
+                Tags: EbookManager.Domain.Settings.DuplicateMergeDefaultAction.NoAction));
 
         await store.SaveAsync(settings, CancellationToken.None);
 

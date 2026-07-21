@@ -6,6 +6,7 @@ namespace EbookManager.Presentation.ViewModels;
 
 public sealed record AuthorSortStrategyOption(AuthorSortStrategy Value, string ResourceKey);
 public sealed record CultureOption(string Value, string DisplayName);
+public sealed record DuplicateMergeDefaultActionOption(DuplicateMergeDefaultAction Value, string ResourceKey);
 
 public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) : ObservableObject
 {
@@ -27,6 +28,12 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
         new(AuthorSortStrategy.DisplayName, "AuthorSortDisplayName"),
         new(AuthorSortStrategy.LastNameFirst, "AuthorSortLastNameFirst"),
         new(AuthorSortStrategy.LastNameFirstDutchPrefixes, "AuthorSortLastNameFirstDutchPrefixes")
+    ];
+    public IReadOnlyList<DuplicateMergeDefaultActionOption> SelectableDuplicateMergeDefaultActions { get; } =
+    [
+        new(DuplicateMergeDefaultAction.NoAction, "MergeActionNoAction"),
+        new(DuplicateMergeDefaultAction.Copy, "MergeActionCopy"),
+        new(DuplicateMergeDefaultAction.Merge, "MergeActionMerge")
     ];
 
     [ObservableProperty]
@@ -53,9 +60,28 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
     [ObservableProperty]
     private bool enableDiagnosticDetails = true;
 
+    [ObservableProperty]
+    private DuplicateMergeDefaultAction mergeDefaultCover = DuplicateMergeDefaultAction.NoAction;
+
+    [ObservableProperty]
+    private DuplicateMergeDefaultAction mergeDefaultAuthors = DuplicateMergeDefaultAction.Merge;
+
+    [ObservableProperty]
+    private DuplicateMergeDefaultAction mergeDefaultTags = DuplicateMergeDefaultAction.Merge;
+
+    [ObservableProperty]
+    private DuplicateMergeDefaultAction mergeDefaultDescription = DuplicateMergeDefaultAction.NoAction;
+
+    [ObservableProperty]
+    private DuplicateMergeDefaultAction mergeDefaultPublisher = DuplicateMergeDefaultAction.NoAction;
+
+    [ObservableProperty]
+    private DuplicateMergeDefaultAction mergeDefaultLanguage = DuplicateMergeDefaultAction.NoAction;
+
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
         var settings = await settingsStore.LoadAsync(cancellationToken);
+        var mergeDefaults = settings.DuplicateMergeDefaults ?? new DuplicateMergeDefaultSettings();
         Culture = settings.Culture;
         Theme = settings.Theme;
         DefaultView = settings.DefaultView;
@@ -64,6 +90,12 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
         AuthorSortStrategy = settings.AuthorSortStrategy;
         DuplicateExactMatchesOnly = settings.DuplicateExactMatchesOnly;
         EnableDiagnosticDetails = settings.EnableDiagnosticDetails;
+        MergeDefaultCover = mergeDefaults.Cover;
+        MergeDefaultAuthors = mergeDefaults.Authors;
+        MergeDefaultTags = mergeDefaults.Tags;
+        MergeDefaultDescription = mergeDefaults.Description;
+        MergeDefaultPublisher = mergeDefaults.Publisher;
+        MergeDefaultLanguage = mergeDefaults.Language;
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
@@ -79,7 +111,14 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
                 IncludeScanSubdirectories = IncludeScanSubdirectories,
                 AuthorSortStrategy = AuthorSortStrategy,
                 DuplicateExactMatchesOnly = DuplicateExactMatchesOnly,
-                EnableDiagnosticDetails = EnableDiagnosticDetails
+                EnableDiagnosticDetails = EnableDiagnosticDetails,
+                DuplicateMergeDefaults = new DuplicateMergeDefaultSettings(
+                    Cover: MergeDefaultCover,
+                    Authors: MergeDefaultAuthors,
+                    Tags: MergeDefaultTags,
+                    Description: MergeDefaultDescription,
+                    Publisher: MergeDefaultPublisher,
+                    Language: MergeDefaultLanguage)
             },
             cancellationToken);
     }

@@ -1201,6 +1201,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             DeleteDuplicateCandidateAsync,
             MergeDuplicateCandidateAsync);
         candidates.ExactMatchesOnly = settings?.DuplicateExactMatchesOnly ?? true;
+        candidates.MergeDefaults = settings?.DuplicateMergeDefaults ?? new DuplicateMergeDefaultSettings();
         await userInteraction.ShowDuplicateCandidatesAsync(
             candidates,
             cancellationToken);

@@ -17,7 +17,8 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
         true,
         AuthorSortStrategy.DisplayName,
         true,
-        true);
+        true,
+        new DuplicateMergeDefaultSettings());
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         WriteIndented = true
