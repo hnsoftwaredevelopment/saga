@@ -114,6 +114,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<DuplicateCandidateService>();
         services.AddSingleton<DuplicateMergeService>();
         services.AddSingleton<ILibraryFileStore, CurrentLibraryFileStore>();
+        services.AddSingleton<BookFileExportService>();
         services.AddSingleton<IBookFileInteractionService, BookFileInteractionService>();
         services.AddSingleton<IBookRepository, CurrentLibraryBookRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();
@@ -122,7 +123,10 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IImportRunner>(provider => provider.GetRequiredService<ImportService>());
         services.AddSingleton<ImportJobViewModel>();
         services.AddSingleton<IImportAgent, ImportAgent>();
-        services.AddTransient<BookDetailsViewModel>();
+        services.AddTransient(provider => new BookDetailsViewModel(
+            provider.GetRequiredService<BookService>(),
+            provider.GetRequiredService<BookFileExportService>(),
+            provider.GetRequiredService<IBookFileInteractionService>()));
         services.AddTransient(provider => new LibraryViewModel(
             provider.GetRequiredService<IBookRepository>(),
             provider.GetRequiredService<BookSearchService>(),

@@ -171,6 +171,8 @@
   <data name="DuplicateMergeDefaultsDescription" xml:space="preserve"><value>Kies de actie waarmee Saga de samenvoegpreview opent. De gebruiker kan elk veld nog steeds aanpassen voordat de boeken worden samengevoegd.</value></data>
   <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Gedetailleerde diagnostiek beschikbaar houden</value></data>
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Deze instelling reserveert een vaste plek voor importgeschiedenis, foutrapportage en probleemdiagnose. De huidige diagnostiek blijft beschikbaar terwijl deze basis wordt afgerond.</value></data>
+  <data name="ExportToDownloads" xml:space="preserve"><value>Downloaden</value></data>
+  <data name="ExportToFolder" xml:space="preserve"><value>Exporteren naar...</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sorteren op</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sorteer de huidige bibliotheekweergave</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>de e-bookmanager</value></data>

@@ -442,6 +442,8 @@
   <data name="DuplicateMergeDefaultsDescription" xml:space="preserve"><value>Scegli l'azione iniziale usata da Saga quando apre l'anteprima di unione dei duplicati. L'utente può ancora modificare ogni campo prima dell'unione.</value></data>
   <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Mantieni disponibili i dettagli diagnostici</value></data>
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Questa impostazione riserva un posto stabile per cronologia importazioni, segnalazioni di errore e informazioni diagnostiche. La diagnostica attuale resta disponibile mentre questa base viene completata.</value></data>
+  <data name="ExportToDownloads" xml:space="preserve"><value>Scarica</value></data>
+  <data name="ExportToFolder" xml:space="preserve"><value>Esporta in...</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordina per</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordina la visualizzazione corrente della biblioteca</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>il gestore di e-book</value></data>
