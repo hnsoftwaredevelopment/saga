@@ -165,6 +165,10 @@
   <data name="NormalizeLanguageMetadataDescription" xml:space="preserve"><value>Convert known language values such as eng and en-US to consistent Saga language codes. Unknown values are left unchanged.</value></data>
   <data name="NormalizeLanguageMetadataConfirmTitle" xml:space="preserve"><value>Normalize language codes</value></data>
   <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>Normalize language codes for {0} book(s)? This only changes known language codes.</value></data>
+  <data name="DuplicateExactMatchesOnlySetting" xml:space="preserve"><value>Show exact duplicate matches by default</value></data>
+  <data name="DuplicateExactMatchesOnlyDescription" xml:space="preserve"><value>When opening the duplicate overview, start with stricter title and author matches. You can still switch to title-only matches in the duplicate window.</value></data>
+  <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Keep detailed diagnostics available</value></data>
+  <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Reserve this setting for import history, error reporting, and troubleshooting details. Current diagnostics stay available while this foundation is completed.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Saga startup failed</value></data>

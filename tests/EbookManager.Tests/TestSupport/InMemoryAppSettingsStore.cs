@@ -13,7 +13,9 @@ public sealed class InMemoryAppSettingsStore : IAppSettingsStore
         "Detailed",
         true,
         true,
-        AuthorSortStrategy.DisplayName);
+        AuthorSortStrategy.DisplayName,
+        true,
+        true);
 
     public List<LibraryDescriptor> Libraries { get; private set; } = [];
 

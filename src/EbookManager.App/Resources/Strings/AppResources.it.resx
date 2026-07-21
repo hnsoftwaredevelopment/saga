@@ -436,6 +436,10 @@
   <data name="NormalizeLanguageMetadataDescription" xml:space="preserve"><value>Converte valori lingua noti come eng e it-IT in codici lingua Saga coerenti. I valori sconosciuti restano invariati.</value></data>
   <data name="NormalizeLanguageMetadataConfirmTitle" xml:space="preserve"><value>Normalizza codici lingua</value></data>
   <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>Normalizzare i codici lingua per {0} libro/i? Verranno modificati solo codici lingua noti.</value></data>
+  <data name="DuplicateExactMatchesOnlySetting" xml:space="preserve"><value>Mostra per impostazione predefinita solo duplicati esatti</value></data>
+  <data name="DuplicateExactMatchesOnlyDescription" xml:space="preserve"><value>Apri la vista duplicati con corrispondenze più rigorose su titolo e autore. Nella finestra dei duplicati puoi comunque passare alle corrispondenze solo per titolo.</value></data>
+  <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Mantieni disponibili i dettagli diagnostici</value></data>
+  <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Questa impostazione riserva un posto stabile per cronologia importazioni, segnalazioni di errore e informazioni diagnostiche. La diagnostica attuale resta disponibile mentre questa base viene completata.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordina per</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordina la visualizzazione corrente della biblioteca</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Avvio di Saga non riuscito</value></data>

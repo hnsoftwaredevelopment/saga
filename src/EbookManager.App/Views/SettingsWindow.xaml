@@ -113,6 +113,28 @@
                     Margin="0,0,0,12" />
         </StackPanel>
       </TabItem>
+
+      <TabItem Header="{loc:Loc SettingsDuplicatesSection}">
+        <StackPanel Margin="12">
+          <CheckBox Content="{loc:Loc DuplicateExactMatchesOnlySetting}"
+                    IsChecked="{Binding DuplicateExactMatchesOnly}"
+                    Margin="0,0,0,8" />
+          <TextBlock Text="{loc:Loc DuplicateExactMatchesOnlyDescription}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
+      </TabItem>
+
+      <TabItem Header="{loc:Loc SettingsDiagnosticsSection}">
+        <StackPanel Margin="12">
+          <CheckBox Content="{loc:Loc EnableDiagnosticDetailsSetting}"
+                    IsChecked="{Binding EnableDiagnosticDetails}"
+                    Margin="0,0,0,8" />
+          <TextBlock Text="{loc:Loc EnableDiagnosticDetailsDescription}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
+      </TabItem>
     </TabControl>
 
     <StackPanel Grid.Row="1"

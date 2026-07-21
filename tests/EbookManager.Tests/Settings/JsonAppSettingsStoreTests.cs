@@ -108,6 +108,53 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task Load_uses_default_duplicate_and_diagnostic_preferences_when_settings_are_missing()
+    {
+        var path = Path.Combine(temporaryDirectory.DirectoryPath, "settings.json");
+        Directory.CreateDirectory(temporaryDirectory.DirectoryPath);
+        await File.WriteAllTextAsync(
+            path,
+            """
+            {
+              "lastLibraryPath": null,
+              "culture": "en-US",
+              "theme": "Light",
+              "defaultView": "Detailed",
+              "confirmDelete": true,
+              "includeScanSubdirectories": true,
+              "authorSortStrategy": "DisplayName"
+            }
+            """);
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+
+        var settings = await store.LoadAsync(default);
+
+        settings.DuplicateExactMatchesOnly.Should().BeTrue();
+        settings.EnableDiagnosticDetails.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Settings_round_trip_duplicate_and_diagnostic_preferences()
+    {
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+        var settings = new AppSettings(
+            "C:\\Books",
+            "nl-NL",
+            "Dark",
+            "List",
+            false,
+            false,
+            EbookManager.Domain.Settings.AuthorSortStrategy.LastNameFirst,
+            false,
+            false);
+
+        await store.SaveAsync(settings, CancellationToken.None);
+
+        var loaded = await new JsonAppSettingsStore(temporaryDirectory.DirectoryPath).LoadAsync(default);
+        loaded.Should().Be(settings);
+    }
+
+    [Fact]
     public async Task ListLibraries_quarantines_malformed_json_and_returns_empty_list()
     {
         var path = Path.Combine(temporaryDirectory.DirectoryPath, "libraries.json");

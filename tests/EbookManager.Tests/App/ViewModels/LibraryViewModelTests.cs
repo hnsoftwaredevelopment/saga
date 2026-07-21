@@ -131,6 +131,32 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task ShowDuplicateCandidates_applies_default_exact_match_preference()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"]);
+        var second = CreateBook("De Hobbit", ["Unknown"]);
+        var interaction = new ScriptedUserInteractionService();
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(settingsStore.Settings with
+        {
+            DuplicateExactMatchesOnly = false
+        }, default);
+        var viewModel = CreateViewModel(
+            [first, second],
+            userInteraction: interaction,
+            currentLibrary: CreateActiveLibrary(),
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+
+        interaction.DuplicateCandidates.Should().NotBeNull();
+        interaction.DuplicateCandidates!.ExactMatchesOnly.Should().BeFalse();
+        interaction.DuplicateCandidates.Rows.Should().Contain(row => row.Id == first.Id);
+        interaction.DuplicateCandidates.Rows.Should().Contain(row => row.Id == second.Id);
+    }
+
+    [Fact]
     public async Task Duplicate_candidate_merge_refreshes_duplicate_window_without_refreshing_main_library()
     {
         var sourceBookId = Guid.NewGuid();

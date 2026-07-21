@@ -47,6 +47,12 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
     [ObservableProperty]
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
 
+    [ObservableProperty]
+    private bool duplicateExactMatchesOnly = true;
+
+    [ObservableProperty]
+    private bool enableDiagnosticDetails = true;
+
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
         var settings = await settingsStore.LoadAsync(cancellationToken);
@@ -56,6 +62,8 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
         ConfirmDelete = settings.ConfirmDelete;
         IncludeScanSubdirectories = settings.IncludeScanSubdirectories;
         AuthorSortStrategy = settings.AuthorSortStrategy;
+        DuplicateExactMatchesOnly = settings.DuplicateExactMatchesOnly;
+        EnableDiagnosticDetails = settings.EnableDiagnosticDetails;
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
@@ -69,7 +77,9 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
                 DefaultView = DefaultView,
                 ConfirmDelete = ConfirmDelete,
                 IncludeScanSubdirectories = IncludeScanSubdirectories,
-                AuthorSortStrategy = AuthorSortStrategy
+                AuthorSortStrategy = AuthorSortStrategy,
+                DuplicateExactMatchesOnly = DuplicateExactMatchesOnly,
+                EnableDiagnosticDetails = EnableDiagnosticDetails
             },
             cancellationToken);
     }

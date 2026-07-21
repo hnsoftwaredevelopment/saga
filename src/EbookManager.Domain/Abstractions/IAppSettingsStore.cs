@@ -10,7 +10,9 @@ public sealed record AppSettings(
     string DefaultView,
     bool ConfirmDelete,
     bool IncludeScanSubdirectories = true,
-    AuthorSortStrategy AuthorSortStrategy = AuthorSortStrategy.DisplayName);
+    AuthorSortStrategy AuthorSortStrategy = AuthorSortStrategy.DisplayName,
+    bool DuplicateExactMatchesOnly = true,
+    bool EnableDiagnosticDetails = true);
 
 public interface IAppSettingsStore
 {

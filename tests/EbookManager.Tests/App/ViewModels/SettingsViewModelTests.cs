@@ -50,11 +50,22 @@ public sealed class SettingsViewModelTests
         viewModel.DefaultView = "List";
         viewModel.ConfirmDelete = false;
         viewModel.IncludeScanSubdirectories = false;
+        viewModel.DuplicateExactMatchesOnly = false;
+        viewModel.EnableDiagnosticDetails = false;
 
         await viewModel.SaveAsync();
 
         var settings = await store.LoadAsync(default);
-        settings.Should().Be(new AppSettings("C:\\ELibrary", "nl-NL", "Dark", "List", false, false));
+        settings.Should().Be(new AppSettings(
+            "C:\\ELibrary",
+            "nl-NL",
+            "Dark",
+            "List",
+            false,
+            false,
+            AuthorSortStrategy.DisplayName,
+            false,
+            false));
     }
 
     [Fact]
@@ -79,5 +90,22 @@ public sealed class SettingsViewModelTests
         var settings = await store.LoadAsync(default);
         settings.AuthorSortStrategy.Should().Be(AuthorSortStrategy.LastNameFirst);
         settings.LastLibraryPath.Should().Be("C:\\ELibrary");
+    }
+
+    [Fact]
+    public async Task Load_exposes_duplicate_and_diagnostic_preferences()
+    {
+        var store = new InMemoryAppSettingsStore();
+        await store.SaveAsync(store.Settings with
+        {
+            DuplicateExactMatchesOnly = false,
+            EnableDiagnosticDetails = false
+        }, default);
+        var viewModel = new SettingsViewModel(store);
+
+        await viewModel.LoadAsync();
+
+        viewModel.DuplicateExactMatchesOnly.Should().BeFalse();
+        viewModel.EnableDiagnosticDetails.Should().BeFalse();
     }
 }

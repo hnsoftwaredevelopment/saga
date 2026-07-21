@@ -1184,11 +1184,15 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var result = duplicateCandidateService.FindCandidates(books);
+        var settings = settingsStore is null
+            ? null
+            : await settingsStore.LoadAsync(cancellationToken);
         var candidates = new DuplicateCandidatesViewModel(
             result,
             CurrentLibraryPath,
             DeleteDuplicateCandidateAsync,
             MergeDuplicateCandidateAsync);
+        candidates.ExactMatchesOnly = settings?.DuplicateExactMatchesOnly ?? true;
         await userInteraction.ShowDuplicateCandidatesAsync(
             candidates,
             cancellationToken);
