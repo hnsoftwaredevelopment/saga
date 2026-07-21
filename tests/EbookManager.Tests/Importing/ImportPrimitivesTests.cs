@@ -497,6 +497,19 @@ public sealed class ImportPrimitivesTests : IDisposable
             "Een verhaal over vriendschap.\n\nRecensie(s)\nNBD|Biblion recensie\n\nBushman's Hole & trimix-duiken.");
     }
 
+    [Fact]
+    public void Metadata_cleaner_preserves_plain_text_angle_brackets()
+    {
+        var metadata = new BookMetadata(
+            "Math Notes",
+            ["Author"],
+            Description: "Keep 2 < 3 > 1 exactly as text.");
+
+        var cleaned = BookMetadataCleaner.Clean(metadata);
+
+        cleaned.Description.Should().Be("Keep 2 < 3 > 1 exactly as text.");
+    }
+
     [Theory]
     [InlineData("[Atlanta XX] - Triptiek")]
     [InlineData("[Atlanta] - Triptiek")]

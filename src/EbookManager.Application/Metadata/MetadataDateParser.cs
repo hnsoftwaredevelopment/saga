@@ -11,7 +11,7 @@ public static class MetadataDateParser
             return null;
         }
 
-        var normalized = value.Trim();
+        var normalized = value.AsSpan().Trim();
         if (normalized.Length >= 10 &&
             DateOnly.TryParseExact(
                 normalized[..10],

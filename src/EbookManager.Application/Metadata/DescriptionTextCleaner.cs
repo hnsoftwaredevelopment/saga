@@ -40,7 +40,9 @@ public static partial class DescriptionTextCleaner
     [GeneratedRegex(@"</\s*p\s*>|</\s*div\s*>|</\s*section\s*>", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex ParagraphBoundaryRegex();
 
-    [GeneratedRegex(@"<[^>]+>", RegexOptions.CultureInvariant)]
+    [GeneratedRegex(
+        @"<!--.*?-->|<![A-Za-z][^>]*>|<\s*/?\s*[A-Za-z][^>]*>",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Singleline)]
     private static partial Regex HtmlTagRegex();
 
     [GeneratedRegex(@"[^\S\r\n]+", RegexOptions.CultureInvariant)]

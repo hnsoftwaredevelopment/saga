@@ -339,6 +339,12 @@ public sealed partial class BookDetailsViewModel(
             return;
         }
 
+        if (files.Count == 0)
+        {
+            ApplyFormatFallback(originalBook?.Formats ?? []);
+            return;
+        }
+
         FormatDetails.Clear();
         foreach (var file in files
             .OrderBy(file => file.Format)
@@ -347,10 +353,7 @@ public sealed partial class BookDetailsViewModel(
             FormatDetails.Add(BookFormatDetailsViewModel.FromFile(file, fileInteraction));
         }
 
-        if (files.Count > 0)
-        {
-            FormatsText = FormatFormats(files.Select(file => file.Format).Distinct().ToArray());
-        }
+        FormatsText = FormatFormats(files.Select(file => file.Format).Distinct().ToArray());
     }
 
     private void ApplyFormatFallback(IReadOnlyList<EbookFormat> formats)

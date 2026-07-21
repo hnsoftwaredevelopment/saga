@@ -132,6 +132,20 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public async Task Loading_format_details_keeps_fallback_formats_when_no_files_are_available()
+    {
+        var viewModel = CreateViewModel(out _);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub, EbookFormat.Pdf]);
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+
+        viewModel.FormatDetails.Select(format => format.DisplayText).Should().Equal("EPUB", "PDF");
+        viewModel.FormatsText.Should().Be("EPUB, PDF");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
     public void Load_exposes_standard_metadata_fields()
     {
         var viewModel = CreateViewModel(out _);

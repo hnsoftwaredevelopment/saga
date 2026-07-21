@@ -93,7 +93,7 @@ public sealed class BookSearchServiceTests
 
     private static IReadOnlyList<Book> CreateBooks()
     {
-        var now = new DateTimeOffset(2026, 7, 10, 12, 0, 0, TimeSpan.Zero);
+        var now = new DateTime(2026, 7, 10, 12, 0, 0, DateTimeKind.Local);
         return
         [
             new(Guid.NewGuid(), new BookMetadata("The Hobbit", ["Bilbo Baggins"]), ReadingStatus.Unread, null, now, now),
@@ -115,7 +115,7 @@ public sealed class BookSearchServiceTests
                 new BookMetadata("Created Date Match", ["Author"]),
                 ReadingStatus.Unread,
                 null,
-                new DateTimeOffset(2026, 7, 15, 10, 30, 0, TimeSpan.Zero),
+                new DateTime(2026, 7, 15, 10, 30, 0, DateTimeKind.Local),
                 now),
             new(
                 Guid.NewGuid(),
@@ -123,7 +123,7 @@ public sealed class BookSearchServiceTests
                 ReadingStatus.Unread,
                 null,
                 now,
-                new DateTimeOffset(2026, 7, 16, 11, 45, 0, TimeSpan.Zero)),
+                new DateTime(2026, 7, 16, 11, 45, 0, DateTimeKind.Local)),
             new(Guid.NewGuid(), new BookMetadata("Status Book", ["Author"]), ReadingStatus.Read, null, now, now)
         ];
     }

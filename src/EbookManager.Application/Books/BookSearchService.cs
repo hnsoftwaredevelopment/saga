@@ -48,14 +48,12 @@ public sealed class BookSearchService
     private static bool MatchesDate(DateOnly? value, string searchText) =>
         value is not null &&
         (Contains(value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), searchText) ||
-         Contains(value.Value.ToString("yyyy", CultureInfo.InvariantCulture), searchText) ||
          Contains(value.Value.ToString("d", CultureInfo.CurrentCulture), searchText));
 
     private static bool MatchesDateTime(DateTimeOffset value, string searchText)
     {
         var local = value.ToLocalTime();
         return Contains(local.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), searchText) ||
-            Contains(local.ToString("yyyy", CultureInfo.InvariantCulture), searchText) ||
             Contains(local.ToString("g", CultureInfo.CurrentCulture), searchText);
     }
 
