@@ -47,7 +47,8 @@
            HorizontalAlignment="Right"
            VerticalAlignment="Bottom"
            Margin="0,0,14,14"
-           Stretch="Uniform" />
+           Stretch="Uniform"
+           Source="/EbookManager;component/Resources/AppIcon/appicon.png" />
 
     <Grid Width="430"
           HorizontalAlignment="Left"
