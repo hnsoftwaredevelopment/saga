@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Resources\AppIcon\appicon.ico" />
+    <Resource Include="Resources\Splash\SplashBase.png" />
   </ItemGroup>
 
   <ItemGroup>

@@ -444,6 +444,9 @@
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Diese Einstellung reserviert einen festen Platz für Importverlauf, Fehlerberichte und Diagnoseinformationen. Aktuelle Diagnosen bleiben verfügbar, während diese Grundlage fertiggestellt wird.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sortieren nach</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Aktuelle Bibliotheksansicht sortieren</value></data>
+  <data name="SplashSubtitle" xml:space="preserve"><value>der E-Book-Manager</value></data>
+  <data name="SplashStarting" xml:space="preserve"><value>Saga wird gestartet</value></data>
+  <data name="SplashVersionFormat" xml:space="preserve"><value>Version {0}</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Start von Saga fehlgeschlagen</value></data>
   <data name="NoLibrarySelected" xml:space="preserve"><value>Keine Bibliothek ausgewählt</value></data>
 </root>
