@@ -360,7 +360,7 @@ public sealed class ImportPrimitivesTests : IDisposable
                 <dc:description>Een Atlanta-thriller.</dc:description>
                 <dc:language>nl</dc:language>
                 <dc:publisher>Cargo</dc:publisher>
-                <dc:date>2006-01-02</dc:date>
+                <dc:date>2006-01-02T00:00:00+00:00</dc:date>
                 <dc:identifier opf:scheme="ISBN" xmlns:opf="http://www.idpf.org/2007/opf">9789023423456</dc:identifier>
                 <dc:subject>Thriller</dc:subject>
                 <dc:subject>Crime</dc:subject>
@@ -497,6 +497,19 @@ public sealed class ImportPrimitivesTests : IDisposable
             "Een verhaal over vriendschap.\n\nRecensie(s)\nNBD|Biblion recensie\n\nBushman's Hole & trimix-duiken.");
     }
 
+    [Fact]
+    public void Metadata_cleaner_preserves_plain_text_angle_brackets()
+    {
+        var metadata = new BookMetadata(
+            "Math Notes",
+            ["Author"],
+            Description: "Keep 2 < 3 > 1 exactly as text.");
+
+        var cleaned = BookMetadataCleaner.Clean(metadata);
+
+        cleaned.Description.Should().Be("Keep 2 < 3 > 1 exactly as text.");
+    }
+
     [Theory]
     [InlineData("[Atlanta XX] - Triptiek")]
     [InlineData("[Atlanta] - Triptiek")]
@@ -565,9 +578,10 @@ public sealed class ImportPrimitivesTests : IDisposable
                   <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
                     <dc:title>The Hobbit</dc:title>
                     <dc:creator>J.R.R. Tolkien</dc:creator>
-                    <dc:language>en</dc:language>
-                    <dc:publisher>Allen &amp; Unwin</dc:publisher>
-                    <dc:description>One ring to rule them all.</dc:description>
+                <dc:language>en</dc:language>
+                <dc:publisher>Allen &amp; Unwin</dc:publisher>
+                <dc:date>1937-09-21</dc:date>
+                <dc:description>One ring to rule them all.</dc:description>
                     <dc:identifier id="bookid">9780000000000</dc:identifier>
                     <meta name="cover" content="cover-image" />
                   </metadata>
@@ -587,6 +601,7 @@ public sealed class ImportPrimitivesTests : IDisposable
         result.Metadata.Authors.Should().Equal("J.R.R. Tolkien");
         result.Metadata.Language.Should().Be("en");
         result.Metadata.Publisher.Should().Be("Allen & Unwin");
+        result.Metadata.PublicationDate.Should().Be(new DateOnly(1937, 9, 21));
         result.Metadata.Description.Should().Be("One ring to rule them all.");
         result.Metadata.Isbn.Should().Be("9780000000000");
         result.Metadata.CoverBytes.Should().Equal(coverBytes);

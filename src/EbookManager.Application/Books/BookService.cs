@@ -15,6 +15,11 @@ public sealed class BookService(
     private readonly IMetadataAdapterResolver metadataAdapterResolver = metadataAdapterResolver;
     private readonly IMetadataSidecarStore? metadataSidecarStore = metadataSidecarStore;
 
+    public Task<IReadOnlyList<BookFile>> ListFilesAsync(
+        Guid bookId,
+        CancellationToken cancellationToken = default) =>
+        bookRepository.ListFilesAsync(bookId, cancellationToken);
+
     public async Task<BookSaveResult> SaveAsync(Book book, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(book);

@@ -2,6 +2,7 @@ using EbookManager.Application.Books;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
+using EbookManager.Presentation.Abstractions;
 using EbookManager.Presentation.ViewModels;
 using FluentAssertions;
 using System.Globalization;
@@ -72,6 +73,75 @@ public sealed class BookDetailsViewModelTests
         viewModel.Load(book);
 
         viewModel.FormatsText.Should().Be("EPUB, PDF");
+        viewModel.FormatDetails.Select(format => format.DisplayText).Should().Equal("EPUB", "PDF");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Loading_a_book_cleans_html_description_without_setting_dirty_state()
+    {
+        var viewModel = CreateViewModel(out _);
+        var book = CreateBook("Original", ["First Author"]) with
+        {
+            Metadata = new BookMetadata(
+                "Original",
+                ["First Author"],
+                Description: "<p class=\"description\">First line.<br><br>Second &amp; final line.</p>",
+                Language: "en")
+        };
+
+        viewModel.Load(book);
+
+        viewModel.Description.Should().Be("First line.\n\nSecond & final line.");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+        viewModel.ToBook()!.Metadata.Description.Should().Be("First line.\n\nSecond & final line.");
+    }
+
+    [Fact]
+    public async Task Loading_format_details_shows_file_sizes_per_available_format()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            var fileInteraction = new RecordingBookFileInteractionService();
+            var viewModel = CreateViewModel(out var repository, fileInteraction);
+            var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub, EbookFormat.Pdf]);
+            repository.SeedFiles(
+                book.Id,
+                [
+                    CreateBookFile(book.Id, EbookFormat.Pdf, "books/book/original.pdf", 4_404_019),
+                    CreateBookFile(book.Id, EbookFormat.Epub, "books/book/original.epub", 1_887_436)
+                ]);
+
+            viewModel.Load(book);
+            await viewModel.LoadFormatDetailsAsync(book.Id);
+
+            viewModel.FormatDetails.Select(format => format.DisplayText)
+                .Should()
+                .Equal("EPUB - 1.8 MB", "PDF - 4.2 MB");
+            viewModel.FormatDetails.Should().AllSatisfy(format => format.FileId.Should().NotBeNull());
+            await viewModel.FormatDetails[0].OpenContainingFolderCommand.ExecuteAsync(null);
+            fileInteraction.OpenedRelativePaths.Should().Equal("books/book/original.epub");
+            viewModel.HasUnsavedChanges.Should().BeFalse();
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+    }
+
+    [Fact]
+    public async Task Loading_format_details_keeps_fallback_formats_when_no_files_are_available()
+    {
+        var viewModel = CreateViewModel(out _);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub, EbookFormat.Pdf]);
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+
+        viewModel.FormatDetails.Select(format => format.DisplayText).Should().Equal("EPUB", "PDF");
+        viewModel.FormatsText.Should().Be("EPUB, PDF");
         viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 
@@ -79,7 +149,8 @@ public sealed class BookDetailsViewModelTests
     public void Load_exposes_standard_metadata_fields()
     {
         var viewModel = CreateViewModel(out _);
-        var now = DateTimeOffset.UtcNow;
+        var created = new DateTimeOffset(2026, 7, 15, 10, 30, 0, TimeSpan.Zero);
+        var updated = new DateTimeOffset(2026, 7, 16, 11, 45, 0, TimeSpan.Zero);
         var book = new Book(
             Guid.NewGuid(),
             new BookMetadata(
@@ -95,8 +166,8 @@ public sealed class BookDetailsViewModelTests
                 "9780000000000"),
             ReadingStatus.Read,
             null,
-            now,
-            now)
+            created,
+            updated)
         {
             Formats = [EbookFormat.Epub, EbookFormat.Pdf]
         };
@@ -115,6 +186,8 @@ public sealed class BookDetailsViewModelTests
         viewModel.Isbn.Should().Be("9780000000000");
         viewModel.FormatsText.Should().Be("EPUB, PDF");
         viewModel.ReadingStatus.Should().Be(ReadingStatus.Read);
+        viewModel.CreatedUtcText.Should().Be(created.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
+        viewModel.UpdatedUtcText.Should().Be(updated.ToLocalTime().ToString("g", CultureInfo.CurrentCulture));
     }
 
     [Fact]
@@ -155,9 +228,15 @@ public sealed class BookDetailsViewModelTests
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("nl-NL");
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("nl-NL");
             var viewModel = CreateViewModel(out _);
-            viewModel.Load(CreateBook("Original", ["First Author"], language: "nl"));
+            var book = CreateBook("Original", ["First Author"], language: "nl") with
+            {
+                CreatedUtc = new DateTimeOffset(2026, 7, 15, 10, 30, 0, TimeSpan.Zero),
+                UpdatedUtc = new DateTimeOffset(2026, 7, 16, 11, 45, 0, TimeSpan.Zero)
+            };
+            viewModel.Load(book);
 
             viewModel.LanguageDisplayName.Should().Be("Nederlands");
+            var originalCreatedText = viewModel.CreatedUtcText;
             viewModel.HasUnsavedChanges.Should().BeFalse();
 
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
@@ -166,6 +245,7 @@ public sealed class BookDetailsViewModelTests
 
             viewModel.Language.Should().Be("nl");
             viewModel.LanguageDisplayName.Should().Be("Dutch");
+            viewModel.CreatedUtcText.Should().NotBe(originalCreatedText);
             viewModel.HasUnsavedChanges.Should().BeFalse();
         }
         finally
@@ -227,14 +307,16 @@ public sealed class BookDetailsViewModelTests
         viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 
-    private static BookDetailsViewModel CreateViewModel(out RecordingBookRepository repository)
+    private static BookDetailsViewModel CreateViewModel(
+        out RecordingBookRepository repository,
+        IBookFileInteractionService? fileInteraction = null)
     {
         repository = new RecordingBookRepository();
         var service = new BookService(
             repository,
             new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver());
-        return new BookDetailsViewModel(service);
+        return new BookDetailsViewModel(service, fileInteraction);
     }
 
     private static Book CreateBook(
@@ -263,11 +345,32 @@ public sealed class BookDetailsViewModelTests
         };
     }
 
+    private static BookFile CreateBookFile(
+        Guid bookId,
+        EbookFormat format,
+        string relativePath,
+        long sizeBytes) =>
+        new(
+            Guid.NewGuid(),
+            bookId,
+            format,
+            relativePath,
+            new string('a', 64),
+            sizeBytes,
+            MetadataWriteBackStatus.Unsupported,
+            null);
+
     private sealed class RecordingBookRepository : IBookRepository
     {
+        private readonly Dictionary<Guid, IReadOnlyList<BookFile>> filesByBookId = [];
         public Book? UpdatedBook { get; private set; }
         public Guid? DeletedBookId { get; private set; }
         public bool ThrowConflictOnUpdate { get; set; }
+
+        public void SeedFiles(Guid bookId, IReadOnlyList<BookFile> files)
+        {
+            filesByBookId[bookId] = files;
+        }
 
         public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([]);
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult<Book?>(null);
@@ -297,7 +400,9 @@ public sealed class BookDetailsViewModelTests
         }
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<BookFile>>([]);
+            Task.FromResult(filesByBookId.TryGetValue(bookId, out var files)
+                ? files
+                : (IReadOnlyList<BookFile>)[]);
 
         public Task UpdateFileWriteBackAsync(Guid fileId, MetadataWriteResult result, CancellationToken cancellationToken) =>
             Task.CompletedTask;
@@ -334,5 +439,16 @@ public sealed class BookDetailsViewModelTests
             BookMetadata metadata,
             CancellationToken cancellationToken) =>
             Task.FromResult(new MetadataWriteResult(MetadataWriteBackStatus.Unsupported));
+    }
+
+    private sealed class RecordingBookFileInteractionService : IBookFileInteractionService
+    {
+        public List<string> OpenedRelativePaths { get; } = [];
+
+        public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
+        {
+            OpenedRelativePaths.Add(relativePath);
+            return Task.CompletedTask;
+        }
     }
 }

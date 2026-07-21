@@ -95,9 +95,43 @@
       <TextBlock Text="{loc:Loc Authors}" FontWeight="SemiBold" />
       <TextBox Text="{Binding AuthorsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Formats}" FontWeight="SemiBold" />
-      <TextBox Text="{Binding FormatsText}"
-               IsReadOnly="True"
-               Margin="0,4,0,10" />
+      <ItemsControl ItemsSource="{Binding FormatDetails}"
+                    Margin="0,4,0,10">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Background="{DynamicResource AppBackgroundBrush}"
+                    BorderBrush="{DynamicResource AccentBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="6,3"
+                    Margin="0,0,0,6"
+                    HorizontalAlignment="Left">
+              <DockPanel LastChildFill="True">
+                <Button Content="{loc:Loc OpenFolder}"
+                        Command="{Binding OpenContainingFolderCommand}"
+                        DockPanel.Dock="Right"
+                        Padding="6,1"
+                        MinHeight="0"
+                        Margin="8,0,0,0">
+                  <Button.Style>
+                    <Style TargetType="Button">
+                      <Setter Property="Visibility" Value="Visible" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding CanOpenContainingFolder}" Value="False">
+                          <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                </Button>
+                <TextBlock Text="{Binding DisplayText}"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </DockPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
       <TextBlock Text="{loc:Loc Description}" FontWeight="SemiBold" />
       <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
                AcceptsReturn="True"
@@ -130,6 +164,14 @@
         <ComboBoxItem Content="{loc:Loc Reading}" Tag="{x:Static books:ReadingStatus.Reading}" />
         <ComboBoxItem Content="{loc:Loc Read}" Tag="{x:Static books:ReadingStatus.Read}" />
       </ComboBox>
+      <TextBlock Text="{loc:Loc DateAdded}" FontWeight="SemiBold" />
+      <TextBox Text="{Binding CreatedUtcText, Mode=OneWay}"
+               IsReadOnly="True"
+               Margin="0,4,0,10" />
+      <TextBlock Text="{loc:Loc LastModified}" FontWeight="SemiBold" />
+      <TextBox Text="{Binding UpdatedUtcText, Mode=OneWay}"
+               IsReadOnly="True"
+               Margin="0,4,0,10" />
       </StackPanel>
     </ScrollViewer>
   </DockPanel>
