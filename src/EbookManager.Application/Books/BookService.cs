@@ -124,6 +124,7 @@ public sealed class BookService(
     {
         cancellationToken.ThrowIfCancellationRequested();
 
+        string? cleanupWarning = null;
         try
         {
             await fileStore.DeleteBookDirectoryAsync(bookId, cancellationToken);
@@ -134,7 +135,7 @@ public sealed class BookService(
         }
         catch (Exception exception)
         {
-            return new BookDeleteResult(BookDeleteStatus.CleanupWarning, exception.Message);
+            cleanupWarning = exception.Message;
         }
 
         try
@@ -150,7 +151,7 @@ public sealed class BookService(
             return new BookDeleteResult(BookDeleteStatus.CleanupWarning, exception.Message);
         }
 
-        return new BookDeleteResult(BookDeleteStatus.Deleted);
+        return new BookDeleteResult(BookDeleteStatus.Deleted, cleanupWarning);
     }
 }
 

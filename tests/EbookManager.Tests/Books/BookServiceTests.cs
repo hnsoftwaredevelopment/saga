@@ -204,7 +204,7 @@ public sealed class BookServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Delete_returns_a_cleanup_warning_and_leaves_the_record_intact_when_filesystem_deletion_fails()
+    public async Task Delete_removes_database_record_with_warning_when_filesystem_deletion_fails()
     {
         var book = CreateBook();
         var repo = new InMemoryBookRepository(book, [CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub)]);
@@ -215,9 +215,10 @@ public sealed class BookServiceTests : IAsyncLifetime
 
         var result = await service.DeleteAsync(book.Id, default);
 
-        result.Status.Should().Be(BookDeleteStatus.CleanupWarning);
-        repo.DeleteAsyncCalled.Should().BeFalse();
-        repo.ContainsBook(book.Id).Should().BeTrue();
+        result.Status.Should().Be(BookDeleteStatus.Deleted);
+        result.Message.Should().NotBeNullOrWhiteSpace();
+        repo.DeleteAsyncCalled.Should().BeTrue();
+        repo.ContainsBook(book.Id).Should().BeFalse();
     }
 
     [Fact]
