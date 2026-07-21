@@ -806,6 +806,18 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public void ApplyDefaultViewPreference_ignores_undefined_numeric_values()
+    {
+        var viewModel = CreateViewModel([]);
+        viewModel.SelectedView = LibraryView.List;
+
+        var applied = viewModel.ApplyDefaultViewPreference("99");
+
+        applied.Should().BeFalse();
+        viewModel.SelectedView.Should().Be(LibraryView.List);
+    }
+
+    [Fact]
     public async Task CreateLibraryCommand_creates_default_elibrary_sets_current_library_and_refreshes()
     {
         using var temporaryDirectory = new TemporaryDirectory();

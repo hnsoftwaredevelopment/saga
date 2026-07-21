@@ -148,7 +148,7 @@ public sealed class BookService(
         }
         catch (Exception exception)
         {
-            return new BookDeleteResult(BookDeleteStatus.CleanupWarning, exception.Message);
+            return new BookDeleteResult(BookDeleteStatus.Failed, exception.Message);
         }
 
         return new BookDeleteResult(BookDeleteStatus.Deleted, cleanupWarning);
@@ -172,7 +172,8 @@ public sealed record BookSaveResult(
 public enum BookDeleteStatus
 {
     Deleted,
-    CleanupWarning
+    CleanupWarning,
+    Failed
 }
 
 public sealed record BookDeleteResult(BookDeleteStatus Status, string? Message = null);

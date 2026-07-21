@@ -112,13 +112,15 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
                 AuthorSortStrategy = AuthorSortStrategy,
                 DuplicateExactMatchesOnly = DuplicateExactMatchesOnly,
                 EnableDiagnosticDetails = EnableDiagnosticDetails,
-                DuplicateMergeDefaults = new DuplicateMergeDefaultSettings(
-                    Cover: MergeDefaultCover,
-                    Authors: MergeDefaultAuthors,
-                    Tags: MergeDefaultTags,
-                    Description: MergeDefaultDescription,
-                    Publisher: MergeDefaultPublisher,
-                    Language: MergeDefaultLanguage)
+                DuplicateMergeDefaults = (current.DuplicateMergeDefaults ?? new DuplicateMergeDefaultSettings()) with
+                {
+                    Cover = MergeDefaultCover,
+                    Authors = MergeDefaultAuthors,
+                    Tags = MergeDefaultTags,
+                    Description = MergeDefaultDescription,
+                    Publisher = MergeDefaultPublisher,
+                    Language = MergeDefaultLanguage
+                }
             },
             cancellationToken);
     }

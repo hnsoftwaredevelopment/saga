@@ -308,7 +308,7 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
-    public async Task Delete_clears_details_when_file_cleanup_returns_warning()
+    public async Task Delete_clears_details_and_preserves_warning_when_file_cleanup_returns_warning()
     {
         var viewModel = CreateViewModel(out var repository, fileStore: new ThrowingLibraryFileStore());
         var book = CreateBook("Original", ["First Author"]);
@@ -318,7 +318,7 @@ public sealed class BookDetailsViewModelTests
 
         repository.DeletedBookId.Should().Be(book.Id);
         viewModel.BookId.Should().BeNull();
-        viewModel.LastDeleteResult.Should().BeNull();
+        viewModel.LastDeleteResult.Should().Be(new BookDeleteResult(BookDeleteStatus.Deleted, "cleanup failed"));
         viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 

@@ -1037,7 +1037,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool ApplyDefaultViewPreference(string? defaultView)
     {
-        if (!Enum.TryParse<LibraryView>(defaultView, ignoreCase: true, out var parsedView))
+        if (!Enum.TryParse<LibraryView>(defaultView, ignoreCase: true, out var parsedView) ||
+            !Enum.IsDefined(parsedView))
         {
             return false;
         }

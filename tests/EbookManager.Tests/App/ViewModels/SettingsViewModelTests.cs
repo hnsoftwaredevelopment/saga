@@ -39,6 +39,17 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
+    public void SelectableDuplicateMergeDefaultActions_include_supported_merge_actions()
+    {
+        var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore());
+
+        viewModel.SelectableDuplicateMergeDefaultActions
+            .Select(option => option.Value)
+            .Should()
+            .Equal(DuplicateMergeDefaultAction.NoAction, DuplicateMergeDefaultAction.Copy, DuplicateMergeDefaultAction.Merge);
+    }
+
+    [Fact]
     public async Task Save_preserves_last_library_path_while_updating_preferences()
     {
         var store = new InMemoryAppSettingsStore();
@@ -133,5 +144,35 @@ public sealed class SettingsViewModelTests
             Description: DuplicateMergeDefaultAction.Merge,
             Publisher: DuplicateMergeDefaultAction.Copy,
             Language: DuplicateMergeDefaultAction.Copy));
+    }
+
+    [Fact]
+    public async Task Save_preserves_unedited_duplicate_merge_defaults()
+    {
+        var store = new InMemoryAppSettingsStore();
+        await store.SaveAsync(store.Settings with
+        {
+            DuplicateMergeDefaults = new DuplicateMergeDefaultSettings(
+                Title: DuplicateMergeDefaultAction.Copy,
+                Series: DuplicateMergeDefaultAction.Merge,
+                SeriesNumber: DuplicateMergeDefaultAction.Copy,
+                PublicationDate: DuplicateMergeDefaultAction.Copy,
+                Isbn: DuplicateMergeDefaultAction.Copy)
+        }, default);
+        var viewModel = new SettingsViewModel(store);
+        await viewModel.LoadAsync();
+
+        viewModel.MergeDefaultAuthors = DuplicateMergeDefaultAction.Copy;
+
+        await viewModel.SaveAsync();
+
+        var settings = await store.LoadAsync(default);
+        settings.DuplicateMergeDefaults.Should().Be(new DuplicateMergeDefaultSettings(
+            Title: DuplicateMergeDefaultAction.Copy,
+            Authors: DuplicateMergeDefaultAction.Copy,
+            Series: DuplicateMergeDefaultAction.Merge,
+            SeriesNumber: DuplicateMergeDefaultAction.Copy,
+            PublicationDate: DuplicateMergeDefaultAction.Copy,
+            Isbn: DuplicateMergeDefaultAction.Copy));
     }
 }

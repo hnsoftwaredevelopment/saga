@@ -202,11 +202,18 @@ public sealed partial class BookDetailsViewModel(
             return;
         }
 
-        LastDeleteResult = await bookService.DeleteAsync(originalBook.Id, cancellationToken);
-        if (LastDeleteResult.Status == BookDeleteStatus.Deleted)
+        var deleteResult = await bookService.DeleteAsync(originalBook.Id, cancellationToken);
+        LastDeleteResult = deleteResult;
+        if (deleteResult.Status == BookDeleteStatus.Deleted)
         {
             var deletedBookId = originalBook.Id;
+            var shouldPreserveWarning = !string.IsNullOrWhiteSpace(deleteResult.Message);
             Clear();
+            if (shouldPreserveWarning)
+            {
+                LastDeleteResult = deleteResult;
+            }
+
             BookDeleted?.Invoke(this, deletedBookId);
         }
     }

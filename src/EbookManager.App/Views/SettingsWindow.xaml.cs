@@ -11,6 +11,7 @@ public partial class SettingsWindow : System.Windows.Window
     private readonly ThemeService themeService;
     private bool isLoadingSettings;
     private string originalTheme = "Light";
+    private string originalCulture = "en-US";
     private LibraryView originalSelectedView;
 
     public SettingsWindow(
@@ -32,11 +33,18 @@ public partial class SettingsWindow : System.Windows.Window
     {
         Loaded -= OnLoaded;
         isLoadingSettings = true;
-        await viewModel.LoadAsync();
-        originalTheme = viewModel.Theme;
+        originalCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
         originalSelectedView = libraryViewModel.SelectedView;
-        isLoadingSettings = false;
-        localizationService.ApplyCulture(viewModel.Culture);
+        try
+        {
+            await viewModel.LoadAsync();
+            originalTheme = viewModel.Theme;
+            localizationService.ApplyCulture(viewModel.Culture);
+        }
+        finally
+        {
+            isLoadingSettings = false;
+        }
     }
 
     private void CultureSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -81,6 +89,8 @@ public partial class SettingsWindow : System.Windows.Window
 
     private void CancelClicked(object sender, System.Windows.RoutedEventArgs e)
     {
+        localizationService.ApplyCulture(originalCulture);
+        libraryViewModel.RefreshLocalizedFilterDisplayNames();
         themeService.ApplyTheme(originalTheme);
         libraryViewModel.SelectedView = originalSelectedView;
         DialogResult = false;

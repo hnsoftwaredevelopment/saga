@@ -222,6 +222,27 @@ public sealed class BookServiceTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Delete_returns_failed_when_repository_deletion_fails()
+    {
+        var book = CreateBook();
+        var repo = new InMemoryBookRepository(book, [CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub)])
+        {
+            ThrowOnDelete = true
+        };
+        var service = new BookService(
+            repo,
+            new NoopLibraryFileStore(),
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter>()));
+
+        var result = await service.DeleteAsync(book.Id, default);
+
+        result.Status.Should().Be(BookDeleteStatus.Failed);
+        result.Message.Should().Be("delete failed");
+        repo.DeleteAsyncCalled.Should().BeTrue();
+        repo.ContainsBook(book.Id).Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Save_propagates_cancellation_before_work_starts()
     {
         var repo = new InMemoryBookRepository();
@@ -308,6 +329,7 @@ public sealed class BookServiceTests : IAsyncLifetime
         public bool UpdateAsyncCalled { get; private set; }
         public bool ListFilesAsyncCalled { get; private set; }
         public bool DeleteAsyncCalled { get; private set; }
+        public bool ThrowOnDelete { get; set; }
         public List<(Guid FileId, MetadataWriteResult Result)> UpdateFileWriteBackCalls { get; } = [];
         public List<BookFile> StoredFiles { get; } = [];
         public Book? StoredBook => books.Values.SingleOrDefault();
@@ -417,6 +439,11 @@ public sealed class BookServiceTests : IAsyncLifetime
         {
             DeleteAsyncCalled = true;
             onDelete?.Invoke(id);
+            if (ThrowOnDelete)
+            {
+                throw new IOException("delete failed");
+            }
+
             books.Remove(id);
             filesByBookId.Remove(id);
             return Task.CompletedTask;
@@ -495,6 +522,20 @@ public sealed class BookServiceTests : IAsyncLifetime
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
             throw new IOException("cleanup failed");
+    }
+
+    private sealed class NoopLibraryFileStore : ILibraryFileStore
+    {
+        public string GetAbsolutePath(string relativePath) => relativePath;
+
+        public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
+            Guid bookId,
+            string sourcePath,
+            byte[]? coverBytes,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(($"books/{bookId:N}/book.epub", (string?)null));
+
+        public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 
     private sealed class RecordingMetadataSidecarStore : IMetadataSidecarStore

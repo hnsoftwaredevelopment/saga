@@ -45,4 +45,5 @@
 - [ ] Confirm Metadata settings still save author sorting and language normalization still works.
 - [ ] Confirm Confirmations settings still save delete confirmation behavior.
 - [ ] Confirm deleting a book from the details pane removes the book from the library.
+- [ ] Confirm deleting a book where managed file cleanup fails still removes the library entry and displays a warning.
 - [ ] Confirm deleting a duplicate candidate removes it from the duplicate overview.

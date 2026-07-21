@@ -64,11 +64,11 @@ public partial class App : System.Windows.Application
 
             MainWindow = mainWindow;
             MainWindow.Show();
-            splash.Close();
+            splash.CloseSplash();
         }
         catch (Exception exception)
         {
-            splash?.Close();
+            splash?.CloseSplash();
             System.Windows.MessageBox.Show(
                 exception.Message,
                 serviceProvider?.GetService<LocalizationService>()?.GetString("StartupFailedTitle")
