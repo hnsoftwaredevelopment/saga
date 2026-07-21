@@ -5,6 +5,21 @@
 - [ ] Open Settings and confirm these sections are visible: General, Appearance, Import, Metadata, Confirmations, Duplicates, Diagnostics.
 - [ ] Change the application language and confirm the new Duplicates and Diagnostics settings are translated.
 - [ ] Save Settings, close Settings, reopen Settings, and confirm the selected values are preserved.
+- [ ] Confirm settings that can be applied immediately do not require an app restart.
+- [ ] For future settings that cannot be applied immediately, Saga should show a clear restart-required message.
+
+## Appearance Preferences
+
+- [ ] Open Settings > Appearance and change the theme. Confirm the app theme changes immediately before saving.
+- [ ] Click Cancel after changing the theme and confirm the previous theme is restored.
+- [ ] Change the default view and confirm the library view changes immediately before saving.
+- [ ] Click Cancel after changing the default view and confirm the previous active view is restored.
+
+## Bookshelf Layout
+
+- [ ] Switch to Bookshelf view with enough books to fill the screen.
+- [ ] Confirm books wrap across the available width instead of appearing in one horizontal row.
+- [ ] Confirm vertical scrolling is available and horizontal scrolling is not needed.
 
 ## Duplicate Preferences
 

@@ -754,6 +754,29 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public void ApplyDefaultViewPreference_switches_view_when_value_is_valid()
+    {
+        var viewModel = CreateViewModel([]);
+
+        var applied = viewModel.ApplyDefaultViewPreference("Bookshelf");
+
+        applied.Should().BeTrue();
+        viewModel.SelectedView.Should().Be(LibraryView.Bookshelf);
+    }
+
+    [Fact]
+    public void ApplyDefaultViewPreference_ignores_unknown_values()
+    {
+        var viewModel = CreateViewModel([]);
+        viewModel.SelectedView = LibraryView.List;
+
+        var applied = viewModel.ApplyDefaultViewPreference("Unknown");
+
+        applied.Should().BeFalse();
+        viewModel.SelectedView.Should().Be(LibraryView.List);
+    }
+
+    [Fact]
     public async Task CreateLibraryCommand_creates_default_elibrary_sets_current_library_and_refreshes()
     {
         using var temporaryDirectory = new TemporaryDirectory();

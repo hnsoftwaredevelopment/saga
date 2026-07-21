@@ -1035,6 +1035,17 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     partial void OnCurrentLibraryPathChanged(string? value) => OnPropertyChanged(nameof(HasActiveLibrary));
 
+    public bool ApplyDefaultViewPreference(string? defaultView)
+    {
+        if (!Enum.TryParse<LibraryView>(defaultView, ignoreCase: true, out var parsedView))
+        {
+            return false;
+        }
+
+        SelectedView = parsedView;
+        return true;
+    }
+
     private async Task ApplyDefaultViewAsync(CancellationToken cancellationToken)
     {
         if (hasAppliedDefaultView || settingsStore is null)
@@ -1045,10 +1056,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         hasAppliedDefaultView = true;
         var settings = await settingsStore.LoadAsync(cancellationToken);
         authorSortStrategy = settings.AuthorSortStrategy;
-        if (Enum.TryParse<LibraryView>(settings.DefaultView, ignoreCase: true, out var defaultView))
-        {
-            SelectedView = defaultView;
-        }
+        ApplyDefaultViewPreference(settings.DefaultView);
     }
 
     private void RefreshLibraryDisplay()

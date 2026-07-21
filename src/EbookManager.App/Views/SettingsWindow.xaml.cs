@@ -9,6 +9,9 @@ public partial class SettingsWindow : System.Windows.Window
     private readonly LibraryViewModel libraryViewModel;
     private readonly LocalizationService localizationService;
     private readonly ThemeService themeService;
+    private bool isLoadingSettings;
+    private string originalTheme = "Light";
+    private LibraryView originalSelectedView;
 
     public SettingsWindow(
         SettingsViewModel viewModel,
@@ -28,19 +31,43 @@ public partial class SettingsWindow : System.Windows.Window
     private async void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
     {
         Loaded -= OnLoaded;
+        isLoadingSettings = true;
         await viewModel.LoadAsync();
+        originalTheme = viewModel.Theme;
+        originalSelectedView = libraryViewModel.SelectedView;
+        isLoadingSettings = false;
         localizationService.ApplyCulture(viewModel.Culture);
     }
 
     private void CultureSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
-        if (!IsLoaded)
+        if (!IsLoaded || isLoadingSettings)
         {
             return;
         }
 
         localizationService.ApplyCulture(viewModel.Culture);
         libraryViewModel.RefreshLocalizedFilterDisplayNames();
+    }
+
+    private void ThemeSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded || isLoadingSettings)
+        {
+            return;
+        }
+
+        themeService.ApplyTheme(viewModel.Theme);
+    }
+
+    private void DefaultViewSelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded || isLoadingSettings)
+        {
+            return;
+        }
+
+        libraryViewModel.ApplyDefaultViewPreference(viewModel.DefaultView);
     }
 
     private async void SaveClicked(object sender, System.Windows.RoutedEventArgs e)
@@ -54,6 +81,8 @@ public partial class SettingsWindow : System.Windows.Window
 
     private void CancelClicked(object sender, System.Windows.RoutedEventArgs e)
     {
+        themeService.ApplyTheme(originalTheme);
+        libraryViewModel.SelectedView = originalSelectedView;
         DialogResult = false;
     }
 

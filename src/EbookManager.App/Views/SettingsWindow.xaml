@@ -52,10 +52,16 @@
                     Grid.Column="1"
                     ItemsSource="{Binding SelectableThemes}"
                     SelectedItem="{Binding Theme}"
+                    SelectionChanged="ThemeSelectionChanged"
                     Margin="0,0,0,12" />
 
           <TextBlock Text="{loc:Loc DefaultView}" Grid.Row="1" FontWeight="SemiBold" Margin="0,0,12,12" />
-          <ComboBox Grid.Row="1" Grid.Column="1" SelectedValue="{Binding DefaultView}" SelectedValuePath="Tag" Margin="0,0,0,12">
+          <ComboBox Grid.Row="1"
+                    Grid.Column="1"
+                    SelectedValue="{Binding DefaultView}"
+                    SelectedValuePath="Tag"
+                    SelectionChanged="DefaultViewSelectionChanged"
+                    Margin="0,0,0,12">
             <ComboBoxItem Content="{loc:Loc BookshelfView}" Tag="Bookshelf" />
             <ComboBoxItem Content="{loc:Loc DetailedView}" Tag="Detailed" />
             <ComboBoxItem Content="{loc:Loc ListView}" Tag="List" />
