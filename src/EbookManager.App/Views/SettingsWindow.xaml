@@ -52,10 +52,16 @@
                     Grid.Column="1"
                     ItemsSource="{Binding SelectableThemes}"
                     SelectedItem="{Binding Theme}"
+                    SelectionChanged="ThemeSelectionChanged"
                     Margin="0,0,0,12" />
 
           <TextBlock Text="{loc:Loc DefaultView}" Grid.Row="1" FontWeight="SemiBold" Margin="0,0,12,12" />
-          <ComboBox Grid.Row="1" Grid.Column="1" SelectedValue="{Binding DefaultView}" SelectedValuePath="Tag" Margin="0,0,0,12">
+          <ComboBox Grid.Row="1"
+                    Grid.Column="1"
+                    SelectedValue="{Binding DefaultView}"
+                    SelectedValuePath="Tag"
+                    SelectionChanged="DefaultViewSelectionChanged"
+                    Margin="0,0,0,12">
             <ComboBoxItem Content="{loc:Loc BookshelfView}" Tag="Bookshelf" />
             <ComboBoxItem Content="{loc:Loc DetailedView}" Tag="Detailed" />
             <ComboBoxItem Content="{loc:Loc ListView}" Tag="List" />
@@ -111,6 +117,85 @@
           <CheckBox Content="{loc:Loc ConfirmDeleteSetting}"
                     IsChecked="{Binding ConfirmDelete}"
                     Margin="0,0,0,12" />
+        </StackPanel>
+      </TabItem>
+
+      <TabItem Header="{loc:Loc SettingsDuplicatesSection}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="12">
+          <CheckBox Content="{loc:Loc DuplicateExactMatchesOnlySetting}"
+                    IsChecked="{Binding DuplicateExactMatchesOnly}"
+                    Margin="0,0,0,8" />
+          <TextBlock Text="{loc:Loc DuplicateExactMatchesOnlyDescription}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Margin="0,0,0,16" />
+          <TextBlock Text="{loc:Loc DuplicateMergeDefaults}"
+                     FontWeight="SemiBold"
+                     Margin="0,0,0,6" />
+          <TextBlock Text="{loc:Loc DuplicateMergeDefaultsDescription}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Margin="0,0,0,12" />
+          <UniformGrid Columns="2" Margin="0,0,0,8">
+            <StackPanel Margin="0,0,12,10">
+              <TextBlock Text="{loc:Loc Cover}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultCover}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock Text="{loc:Loc Authors}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultAuthors}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionMerge}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Merge}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,12,10">
+              <TextBlock Text="{loc:Loc Tags}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultTags}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionMerge}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Merge}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock Text="{loc:Loc Description}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultDescription}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionMerge}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Merge}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,12,10">
+              <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultPublisher}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+              </ComboBox>
+            </StackPanel>
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock Text="{loc:Loc Language}" FontWeight="SemiBold" Margin="0,0,0,4" />
+              <ComboBox SelectedValue="{Binding MergeDefaultLanguage}" SelectedValuePath="Tag">
+                <ComboBoxItem Content="{loc:Loc MergeActionNoAction}" Tag="{x:Static settings:DuplicateMergeDefaultAction.NoAction}" />
+                <ComboBoxItem Content="{loc:Loc MergeActionCopy}" Tag="{x:Static settings:DuplicateMergeDefaultAction.Copy}" />
+              </ComboBox>
+            </StackPanel>
+          </UniformGrid>
+        </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="{loc:Loc SettingsDiagnosticsSection}">
+        <StackPanel Margin="12">
+          <CheckBox Content="{loc:Loc EnableDiagnosticDetailsSetting}"
+                    IsChecked="{Binding EnableDiagnosticDetails}"
+                    Margin="0,0,0,8" />
+          <TextBlock Text="{loc:Loc EnableDiagnosticDetailsDescription}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
         </StackPanel>
       </TabItem>
     </TabControl>

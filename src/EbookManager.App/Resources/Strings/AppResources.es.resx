@@ -436,8 +436,17 @@
   <data name="NormalizeLanguageMetadataDescription" xml:space="preserve"><value>Convierte valores de idioma conocidos como eng y es-ES en códigos de idioma coherentes de Saga. Los valores desconocidos no cambian.</value></data>
   <data name="NormalizeLanguageMetadataConfirmTitle" xml:space="preserve"><value>Normalizar códigos de idioma</value></data>
   <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>¿Normalizar códigos de idioma para {0} libro(s)? Solo se cambiarán códigos de idioma conocidos.</value></data>
+  <data name="DuplicateExactMatchesOnlySetting" xml:space="preserve"><value>Mostrar por defecto solo duplicados exactos</value></data>
+  <data name="DuplicateExactMatchesOnlyDescription" xml:space="preserve"><value>Abrir la vista de duplicados con coincidencias más estrictas de título y autor. En la ventana de duplicados aún puedes cambiar a coincidencias solo por título.</value></data>
+  <data name="DuplicateMergeDefaults" xml:space="preserve"><value>Acciones predeterminadas de combinación</value></data>
+  <data name="DuplicateMergeDefaultsDescription" xml:space="preserve"><value>Elige la acción inicial que Saga usa al abrir la vista previa de combinación de duplicados. El usuario aún puede cambiar cada campo antes de combinar.</value></data>
+  <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Mantener disponibles los diagnósticos detallados</value></data>
+  <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Esta opción reserva un lugar estable para el historial de importación, informes de error e información de diagnóstico. Los diagnósticos actuales siguen disponibles mientras se completa esta base.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordenar por</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordenar la vista actual de la biblioteca</value></data>
+  <data name="SplashSubtitle" xml:space="preserve"><value>el gestor de e-books</value></data>
+  <data name="SplashStarting" xml:space="preserve"><value>Iniciando Saga</value></data>
+  <data name="SplashVersionFormat" xml:space="preserve"><value>Versión {0}</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Error al iniciar Saga</value></data>
   <data name="NoLibrarySelected" xml:space="preserve"><value>No hay ninguna biblioteca seleccionada</value></data>
 </root>

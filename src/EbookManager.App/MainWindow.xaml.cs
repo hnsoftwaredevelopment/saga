@@ -11,6 +11,7 @@ public partial class MainWindow : System.Windows.Window
     private readonly LocalizationService localizationService;
     private readonly ThemeService themeService;
     private bool isHandlingDrop;
+    private bool initialRefreshCompleted;
 
     public MainWindow(
         LibraryViewModel viewModel,
@@ -29,9 +30,22 @@ public partial class MainWindow : System.Windows.Window
         Closing += OnClosing;
     }
 
+    public LibraryViewModel ViewModel => viewModel;
+
+    public async Task LoadInitialLibraryAsync()
+    {
+        initialRefreshCompleted = true;
+        await viewModel.RefreshAsync();
+    }
+
     private async void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
     {
         Loaded -= OnLoaded;
+        if (initialRefreshCompleted)
+        {
+            return;
+        }
+
         await viewModel.RefreshAsync();
     }
 

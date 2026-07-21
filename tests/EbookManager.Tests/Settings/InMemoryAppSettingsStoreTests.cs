@@ -1,5 +1,6 @@
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Libraries;
+using EbookManager.Domain.Settings;
 using EbookManager.Tests.TestSupport;
 using FluentAssertions;
 
@@ -27,7 +28,17 @@ public sealed class InMemoryAppSettingsStoreTests
         await FluentActions.Awaiting(() => store.SaveLibrariesAsync(changedLibraries, cancellationToken))
             .Should().ThrowAsync<OperationCanceledException>();
 
-        store.Settings.Should().Be(new AppSettings(null, "en-US", "Light", "Detailed", true, true));
+        store.Settings.Should().Be(new AppSettings(
+            null,
+            "en-US",
+            "Light",
+            "Detailed",
+            true,
+            true,
+            AuthorSortStrategy.DisplayName,
+            true,
+            true,
+            new DuplicateMergeDefaultSettings()));
         store.Libraries.Should().BeEmpty();
     }
 }

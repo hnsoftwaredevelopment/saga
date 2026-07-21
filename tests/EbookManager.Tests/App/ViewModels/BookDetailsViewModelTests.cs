@@ -307,14 +307,30 @@ public sealed class BookDetailsViewModelTests
         viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task Delete_clears_details_and_preserves_warning_when_file_cleanup_returns_warning()
+    {
+        var viewModel = CreateViewModel(out var repository, fileStore: new ThrowingLibraryFileStore());
+        var book = CreateBook("Original", ["First Author"]);
+        viewModel.Load(book);
+
+        await viewModel.DeleteCommand.ExecuteAsync(null);
+
+        repository.DeletedBookId.Should().Be(book.Id);
+        viewModel.BookId.Should().BeNull();
+        viewModel.LastDeleteResult.Should().Be(new BookDeleteResult(BookDeleteStatus.Deleted, "cleanup failed"));
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
     private static BookDetailsViewModel CreateViewModel(
         out RecordingBookRepository repository,
-        IBookFileInteractionService? fileInteraction = null)
+        IBookFileInteractionService? fileInteraction = null,
+        ILibraryFileStore? fileStore = null)
     {
         repository = new RecordingBookRepository();
         var service = new BookService(
             repository,
-            new NoopLibraryFileStore(),
+            fileStore ?? new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver());
         return new BookDetailsViewModel(service, fileInteraction);
     }
@@ -418,6 +434,21 @@ public sealed class BookDetailsViewModelTests
             Task.FromResult(($"books/{bookId:N}/book.epub", (string?)null));
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) => Task.CompletedTask;
+        public string GetAbsolutePath(string relativePath) => relativePath;
+    }
+
+    private sealed class ThrowingLibraryFileStore : ILibraryFileStore
+    {
+        public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
+            Guid bookId,
+            string sourcePath,
+            byte[]? coverBytes,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            throw new IOException("cleanup failed");
+
         public string GetAbsolutePath(string relativePath) => relativePath;
     }
 

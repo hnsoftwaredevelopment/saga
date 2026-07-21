@@ -13,7 +13,10 @@ public sealed class InMemoryAppSettingsStore : IAppSettingsStore
         "Detailed",
         true,
         true,
-        AuthorSortStrategy.DisplayName);
+        AuthorSortStrategy.DisplayName,
+        true,
+        true,
+        new DuplicateMergeDefaultSettings());
 
     public List<LibraryDescriptor> Libraries { get; private set; } = [];
 

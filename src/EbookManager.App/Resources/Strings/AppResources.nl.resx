@@ -165,8 +165,17 @@
   <data name="NormalizeLanguageMetadataDescription" xml:space="preserve"><value>Zet bekende taalwaarden zoals eng en nl-NL om naar consistente Saga-taalcodes. Onbekende waarden blijven ongewijzigd.</value></data>
   <data name="NormalizeLanguageMetadataConfirmTitle" xml:space="preserve"><value>Taalcodes normaliseren</value></data>
   <data name="NormalizeLanguageMetadataConfirmMessage" xml:space="preserve"><value>Taalcodes normaliseren voor {0} boek(en)? Alleen bekende taalcodes worden gewijzigd.</value></data>
+  <data name="DuplicateExactMatchesOnlySetting" xml:space="preserve"><value>Standaard alleen exacte duplicaatmatches tonen</value></data>
+  <data name="DuplicateExactMatchesOnlyDescription" xml:space="preserve"><value>Open het duplicatenoverzicht met strengere titel- en auteurmatches. In het duplicatenvenster kun je nog steeds wisselen naar matches op alleen titel.</value></data>
+  <data name="DuplicateMergeDefaults" xml:space="preserve"><value>Standaardacties bij samenvoegen</value></data>
+  <data name="DuplicateMergeDefaultsDescription" xml:space="preserve"><value>Kies de actie waarmee Saga de samenvoegpreview opent. De gebruiker kan elk veld nog steeds aanpassen voordat de boeken worden samengevoegd.</value></data>
+  <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Gedetailleerde diagnostiek beschikbaar houden</value></data>
+  <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Deze instelling reserveert een vaste plek voor importgeschiedenis, foutrapportage en probleemdiagnose. De huidige diagnostiek blijft beschikbaar terwijl deze basis wordt afgerond.</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sorteren op</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sorteer de huidige bibliotheekweergave</value></data>
+  <data name="SplashSubtitle" xml:space="preserve"><value>de e-bookmanager</value></data>
+  <data name="SplashStarting" xml:space="preserve"><value>Saga wordt gestart</value></data>
+  <data name="SplashVersionFormat" xml:space="preserve"><value>Versie {0}</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Opstarten van Saga mislukt</value></data>
   <data name="Started" xml:space="preserve"><value>Gestart</value></data>
   <data name="Completed" xml:space="preserve"><value>Voltooid</value></data>

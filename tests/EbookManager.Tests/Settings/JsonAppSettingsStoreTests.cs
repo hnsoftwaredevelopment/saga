@@ -79,7 +79,17 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
 
         var settings = await store.LoadAsync(default);
 
-        settings.Should().Be(new AppSettings(null, "en-US", "Light", "Detailed", true, true));
+        settings.Should().Be(new AppSettings(
+            null,
+            "en-US",
+            "Light",
+            "Detailed",
+            true,
+            true,
+            EbookManager.Domain.Settings.AuthorSortStrategy.DisplayName,
+            true,
+            true,
+            new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings()));
         File.Exists(path).Should().BeFalse();
         Directory.GetFiles(temporaryDirectory.DirectoryPath, "settings.json.*.corrupt").Should().ContainSingle();
     }
@@ -105,6 +115,57 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
         var settings = await store.LoadAsync(default);
 
         settings.IncludeScanSubdirectories.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Load_uses_default_duplicate_and_diagnostic_preferences_when_settings_are_missing()
+    {
+        var path = Path.Combine(temporaryDirectory.DirectoryPath, "settings.json");
+        Directory.CreateDirectory(temporaryDirectory.DirectoryPath);
+        await File.WriteAllTextAsync(
+            path,
+            """
+            {
+              "lastLibraryPath": null,
+              "culture": "en-US",
+              "theme": "Light",
+              "defaultView": "Detailed",
+              "confirmDelete": true,
+              "includeScanSubdirectories": true,
+              "authorSortStrategy": "DisplayName"
+            }
+            """);
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+
+        var settings = await store.LoadAsync(default);
+
+        settings.DuplicateExactMatchesOnly.Should().BeTrue();
+        settings.EnableDiagnosticDetails.Should().BeTrue();
+        settings.DuplicateMergeDefaults.Should().Be(new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings());
+    }
+
+    [Fact]
+    public async Task Settings_round_trip_duplicate_and_diagnostic_preferences()
+    {
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+        var settings = new AppSettings(
+            "C:\\Books",
+            "nl-NL",
+            "Dark",
+            "List",
+            false,
+            false,
+            EbookManager.Domain.Settings.AuthorSortStrategy.LastNameFirst,
+            false,
+            false,
+            new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings(
+                Authors: EbookManager.Domain.Settings.DuplicateMergeDefaultAction.Copy,
+                Tags: EbookManager.Domain.Settings.DuplicateMergeDefaultAction.NoAction));
+
+        await store.SaveAsync(settings, CancellationToken.None);
+
+        var loaded = await new JsonAppSettingsStore(temporaryDirectory.DirectoryPath).LoadAsync(default);
+        loaded.Should().Be(settings);
     }
 
     [Fact]

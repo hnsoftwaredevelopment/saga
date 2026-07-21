@@ -12,7 +12,9 @@
     <ApplicationIcon>Resources\AppIcon\appicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Resources\AppIcon\appicon.ico" />
+    <Resource Include="Resources\AppIcon\appicon.ico" />
+    <Resource Include="Resources\AppIcon\appicon.png" />
+    <Resource Include="Resources\Splash\SplashBase.png" />
   </ItemGroup>
 
   <ItemGroup>

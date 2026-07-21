@@ -131,6 +131,61 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task ShowDuplicateCandidates_applies_default_exact_match_preference()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"]);
+        var second = CreateBook("De Hobbit", ["Unknown"]);
+        var interaction = new ScriptedUserInteractionService();
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(settingsStore.Settings with
+        {
+            DuplicateExactMatchesOnly = false
+        }, default);
+        var viewModel = CreateViewModel(
+            [first, second],
+            userInteraction: interaction,
+            currentLibrary: CreateActiveLibrary(),
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+
+        interaction.DuplicateCandidates.Should().NotBeNull();
+        interaction.DuplicateCandidates!.ExactMatchesOnly.Should().BeFalse();
+        interaction.DuplicateCandidates.Rows.Should().Contain(row => row.Id == first.Id);
+        interaction.DuplicateCandidates.Rows.Should().Contain(row => row.Id == second.Id);
+    }
+
+    [Fact]
+    public async Task ShowDuplicateCandidates_applies_duplicate_merge_default_preferences()
+    {
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"], language: "nl");
+        var second = CreateBook("De Hobbit", ["Unknown"], language: "en");
+        var interaction = new ScriptedUserInteractionService();
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(settingsStore.Settings with
+        {
+            DuplicateExactMatchesOnly = false,
+            DuplicateMergeDefaults = new DuplicateMergeDefaultSettings(
+                Authors: DuplicateMergeDefaultAction.Merge,
+                Language: DuplicateMergeDefaultAction.Copy)
+        }, default);
+        var viewModel = CreateViewModel(
+            [first, second],
+            userInteraction: interaction,
+            currentLibrary: CreateActiveLibrary(),
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+
+        var preview = interaction.DuplicateCandidates!.CreateMergePreview(interaction.DuplicateCandidates.Rows[0]);
+        preview.Should().NotBeNull();
+        preview!.Rows.Single(row => row.Label == "Authors").Action.Should().Be(DuplicateMergeFieldAction.Merge);
+        preview.Rows.Single(row => row.Label == "Language").Action.Should().Be(DuplicateMergeFieldAction.Copy);
+    }
+
+    [Fact]
     public async Task Duplicate_candidate_merge_refreshes_duplicate_window_without_refreshing_main_library()
     {
         var sourceBookId = Guid.NewGuid();
@@ -725,6 +780,41 @@ public sealed class LibraryViewModelTests
         viewModel.SelectedView = selectedView;
 
         viewModel.SelectedView.Should().Be(selectedView);
+    }
+
+    [Fact]
+    public void ApplyDefaultViewPreference_switches_view_when_value_is_valid()
+    {
+        var viewModel = CreateViewModel([]);
+
+        var applied = viewModel.ApplyDefaultViewPreference("Bookshelf");
+
+        applied.Should().BeTrue();
+        viewModel.SelectedView.Should().Be(LibraryView.Bookshelf);
+    }
+
+    [Fact]
+    public void ApplyDefaultViewPreference_ignores_unknown_values()
+    {
+        var viewModel = CreateViewModel([]);
+        viewModel.SelectedView = LibraryView.List;
+
+        var applied = viewModel.ApplyDefaultViewPreference("Unknown");
+
+        applied.Should().BeFalse();
+        viewModel.SelectedView.Should().Be(LibraryView.List);
+    }
+
+    [Fact]
+    public void ApplyDefaultViewPreference_ignores_undefined_numeric_values()
+    {
+        var viewModel = CreateViewModel([]);
+        viewModel.SelectedView = LibraryView.List;
+
+        var applied = viewModel.ApplyDefaultViewPreference("99");
+
+        applied.Should().BeFalse();
+        viewModel.SelectedView.Should().Be(LibraryView.List);
     }
 
     [Fact]

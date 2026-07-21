@@ -9,56 +9,55 @@
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
   </UserControl.Resources>
-  <ScrollViewer VerticalScrollBarVisibility="Auto"
-                AllowDrop="True">
-    <ListBox ItemsSource="{Binding VisibleBooks}"
-             SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
-             BorderThickness="0"
-             Background="Transparent"
-             AllowDrop="True">
-      <ListBox.ItemsPanel>
-        <ItemsPanelTemplate>
-          <WrapPanel />
-        </ItemsPanelTemplate>
-      </ListBox.ItemsPanel>
-      <ListBox.ItemTemplate>
-        <DataTemplate>
-          <Border Width="150"
-                  Margin="10"
-                  Padding="10"
-                  Background="{DynamicResource PanelBackgroundBrush}"
-                  CornerRadius="14">
-            <StackPanel>
-              <Border Height="190"
-                      Background="#FFE2E8F0"
-                      CornerRadius="10"
-                      Margin="0,0,0,10">
-                <Grid>
-                  <TextBlock Text="{loc:Loc Cover}"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center"
-                             Foreground="{DynamicResource TextSecondaryBrush}" />
-                  <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=220}"
-                         Stretch="UniformToFill" />
-                </Grid>
-              </Border>
-              <controls:HighlightedTextBlock HighlightedText="{Binding Title}"
-                                             SearchText="{Binding SearchText}"
-                                             HighlightBrush="{DynamicResource SearchHighlightBrush}"
-                                             FontWeight="SemiBold"
-                                             TextWrapping="Wrap"
-                                             MaxHeight="40"
-                                             Foreground="{DynamicResource TextPrimaryBrush}" />
-              <controls:HighlightedTextBlock HighlightedText="{Binding Authors}"
-                                             SearchText="{Binding SearchText}"
-                                             HighlightBrush="{DynamicResource SearchHighlightBrush}"
-                                             TextWrapping="Wrap"
-                                             MaxHeight="40"
-                                             Foreground="{DynamicResource TextSecondaryBrush}" />
-            </StackPanel>
-          </Border>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
-  </ScrollViewer>
+  <ListBox ItemsSource="{Binding VisibleBooks}"
+           SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
+           BorderThickness="0"
+           Background="Transparent"
+           AllowDrop="True"
+           ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+           ScrollViewer.VerticalScrollBarVisibility="Auto">
+    <ListBox.ItemsPanel>
+      <ItemsPanelTemplate>
+        <WrapPanel IsItemsHost="True" />
+      </ItemsPanelTemplate>
+    </ListBox.ItemsPanel>
+    <ListBox.ItemTemplate>
+      <DataTemplate>
+        <Border Width="150"
+                Margin="10"
+                Padding="10"
+                Background="{DynamicResource PanelBackgroundBrush}"
+                CornerRadius="14">
+          <StackPanel>
+            <Border Height="190"
+                    Background="#FFE2E8F0"
+                    CornerRadius="10"
+                    Margin="0,0,0,10">
+              <Grid>
+                <TextBlock Text="{loc:Loc Cover}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=220}"
+                       Stretch="UniformToFill" />
+              </Grid>
+            </Border>
+            <controls:HighlightedTextBlock HighlightedText="{Binding Title}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"
+                                           MaxHeight="40"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+            <controls:HighlightedTextBlock HighlightedText="{Binding Authors}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           TextWrapping="Wrap"
+                                           MaxHeight="40"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+          </StackPanel>
+        </Border>
+      </DataTemplate>
+    </ListBox.ItemTemplate>
+  </ListBox>
 </UserControl>

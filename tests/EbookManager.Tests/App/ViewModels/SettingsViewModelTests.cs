@@ -39,6 +39,17 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
+    public void SelectableDuplicateMergeDefaultActions_include_supported_merge_actions()
+    {
+        var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore());
+
+        viewModel.SelectableDuplicateMergeDefaultActions
+            .Select(option => option.Value)
+            .Should()
+            .Equal(DuplicateMergeDefaultAction.NoAction, DuplicateMergeDefaultAction.Copy, DuplicateMergeDefaultAction.Merge);
+    }
+
+    [Fact]
     public async Task Save_preserves_last_library_path_while_updating_preferences()
     {
         var store = new InMemoryAppSettingsStore();
@@ -50,11 +61,23 @@ public sealed class SettingsViewModelTests
         viewModel.DefaultView = "List";
         viewModel.ConfirmDelete = false;
         viewModel.IncludeScanSubdirectories = false;
+        viewModel.DuplicateExactMatchesOnly = false;
+        viewModel.EnableDiagnosticDetails = false;
 
         await viewModel.SaveAsync();
 
         var settings = await store.LoadAsync(default);
-        settings.Should().Be(new AppSettings("C:\\ELibrary", "nl-NL", "Dark", "List", false, false));
+        settings.Should().Be(new AppSettings(
+            "C:\\ELibrary",
+            "nl-NL",
+            "Dark",
+            "List",
+            false,
+            false,
+            AuthorSortStrategy.DisplayName,
+            false,
+            false,
+            new DuplicateMergeDefaultSettings()));
     }
 
     [Fact]
@@ -79,5 +102,77 @@ public sealed class SettingsViewModelTests
         var settings = await store.LoadAsync(default);
         settings.AuthorSortStrategy.Should().Be(AuthorSortStrategy.LastNameFirst);
         settings.LastLibraryPath.Should().Be("C:\\ELibrary");
+    }
+
+    [Fact]
+    public async Task Load_exposes_duplicate_and_diagnostic_preferences()
+    {
+        var store = new InMemoryAppSettingsStore();
+        await store.SaveAsync(store.Settings with
+        {
+            DuplicateExactMatchesOnly = false,
+            EnableDiagnosticDetails = false
+        }, default);
+        var viewModel = new SettingsViewModel(store);
+
+        await viewModel.LoadAsync();
+
+        viewModel.DuplicateExactMatchesOnly.Should().BeFalse();
+        viewModel.EnableDiagnosticDetails.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Save_persists_duplicate_merge_defaults()
+    {
+        var store = new InMemoryAppSettingsStore();
+        var viewModel = new SettingsViewModel(store);
+        await viewModel.LoadAsync();
+        viewModel.MergeDefaultCover = DuplicateMergeDefaultAction.Copy;
+        viewModel.MergeDefaultAuthors = DuplicateMergeDefaultAction.Merge;
+        viewModel.MergeDefaultTags = DuplicateMergeDefaultAction.NoAction;
+        viewModel.MergeDefaultDescription = DuplicateMergeDefaultAction.Merge;
+        viewModel.MergeDefaultPublisher = DuplicateMergeDefaultAction.Copy;
+        viewModel.MergeDefaultLanguage = DuplicateMergeDefaultAction.Copy;
+
+        await viewModel.SaveAsync();
+
+        var settings = await store.LoadAsync(default);
+        settings.DuplicateMergeDefaults.Should().Be(new DuplicateMergeDefaultSettings(
+            Cover: DuplicateMergeDefaultAction.Copy,
+            Authors: DuplicateMergeDefaultAction.Merge,
+            Tags: DuplicateMergeDefaultAction.NoAction,
+            Description: DuplicateMergeDefaultAction.Merge,
+            Publisher: DuplicateMergeDefaultAction.Copy,
+            Language: DuplicateMergeDefaultAction.Copy));
+    }
+
+    [Fact]
+    public async Task Save_preserves_unedited_duplicate_merge_defaults()
+    {
+        var store = new InMemoryAppSettingsStore();
+        await store.SaveAsync(store.Settings with
+        {
+            DuplicateMergeDefaults = new DuplicateMergeDefaultSettings(
+                Title: DuplicateMergeDefaultAction.Copy,
+                Series: DuplicateMergeDefaultAction.Merge,
+                SeriesNumber: DuplicateMergeDefaultAction.Copy,
+                PublicationDate: DuplicateMergeDefaultAction.Copy,
+                Isbn: DuplicateMergeDefaultAction.Copy)
+        }, default);
+        var viewModel = new SettingsViewModel(store);
+        await viewModel.LoadAsync();
+
+        viewModel.MergeDefaultAuthors = DuplicateMergeDefaultAction.Copy;
+
+        await viewModel.SaveAsync();
+
+        var settings = await store.LoadAsync(default);
+        settings.DuplicateMergeDefaults.Should().Be(new DuplicateMergeDefaultSettings(
+            Title: DuplicateMergeDefaultAction.Copy,
+            Authors: DuplicateMergeDefaultAction.Copy,
+            Series: DuplicateMergeDefaultAction.Merge,
+            SeriesNumber: DuplicateMergeDefaultAction.Copy,
+            PublicationDate: DuplicateMergeDefaultAction.Copy,
+            Isbn: DuplicateMergeDefaultAction.Copy));
     }
 }

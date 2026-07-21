@@ -1,6 +1,7 @@
 using EbookManager.Application.Books;
 using EbookManager.Application.Importing;
 using EbookManager.App.Services;
+using EbookManager.App.Views;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Infrastructure.Files;
 using EbookManager.Infrastructure.Metadata;
@@ -13,6 +14,8 @@ using EbookManager.Presentation.Importing;
 using EbookManager.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Syncfusion.Licensing;
+using System.Globalization;
+using System.Reflection;
 
 namespace EbookManager.App;
 
@@ -27,6 +30,7 @@ public partial class App : System.Windows.Application
     protected override async void OnStartup(System.Windows.StartupEventArgs e)
     {
         base.OnStartup(e);
+        Splash? splash = null;
 
         try
         {
@@ -38,14 +42,33 @@ public partial class App : System.Windows.Application
             await serviceProvider.GetRequiredService<ThemeService>()
                 .ApplySavedThemeAsync(CancellationToken.None);
 
+            var localizationService = serviceProvider.GetRequiredService<LocalizationService>();
+            splash = new Splash(
+                localizationService.GetString("SplashSubtitle"),
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    localizationService.GetString("SplashVersionFormat"),
+                    GetVersionNumber()),
+                localizationService.GetString("SplashStarting"));
+            splash.Show();
+            await System.Windows.Threading.Dispatcher.Yield();
+
             var startupService = serviceProvider.GetRequiredService<AppStartupService>();
             await startupService.InitializeAsync(CancellationToken.None);
 
-            MainWindow = serviceProvider.GetRequiredService<MainWindow>();
+            var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
+            splash.BindLibraryProgress(
+                mainWindow.ViewModel,
+                localizationService.GetString("LoadingLibrary"));
+            await mainWindow.LoadInitialLibraryAsync();
+
+            MainWindow = mainWindow;
             MainWindow.Show();
+            splash.CloseSplash();
         }
         catch (Exception exception)
         {
+            splash?.CloseSplash();
             System.Windows.MessageBox.Show(
                 exception.Message,
                 serviceProvider?.GetService<LocalizationService>()?.GetString("StartupFailedTitle")
@@ -136,5 +159,11 @@ public partial class App : System.Windows.Application
         }
 
         SyncfusionLicenseProvider.RegisterLicense(licenseKey);
+    }
+
+    private static string GetVersionNumber()
+    {
+        var version = Assembly.GetExecutingAssembly().GetName().Version;
+        return version?.ToString() ?? "-";
     }
 }
