@@ -11,7 +11,7 @@ public partial class Splash : Window
         string status)
     {
         InitializeComponent();
-        SubtitleText.Text = subtitle;
+        SubtitleText.Content = subtitle;
         VersionText.Text = version;
         StatusText.Text = status;
     }
