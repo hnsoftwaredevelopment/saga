@@ -451,7 +451,7 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
     public bool CanExport =>
         book is not null && file is not null && exportService is not null && fileInteraction is not null;
     [ObservableProperty]
-    private string? exportStatusMessage;
+    private BookFormatExportStatusMessage? exportStatusMessage;
     public IAsyncRelayCommand OpenContainingFolderCommand { get; }
     public IAsyncRelayCommand ExportToDownloadsCommand { get; }
     public IAsyncRelayCommand ExportToFolderCommand { get; }
@@ -502,11 +502,11 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
     {
         var result = await exportService!.ExportAsync(book!, file!, destinationFolder, cancellationToken);
         ExportStatusMessage = result.Status == BookFileExportStatus.Exported
-            ? CreateExportSuccessMessage(result.DestinationPath, destinationFolder)
-            : result.Message;
+            ? CreateExportSuccessMessage(destinationFolder)
+            : BookFormatExportStatusMessage.FromMessage(result.Message);
     }
 
-    private string CreateExportSuccessMessage(string? destinationPath, string destinationFolder)
+    private BookFormatExportStatusMessage CreateExportSuccessMessage(string destinationFolder)
     {
         var folderName = Path.GetFileName(destinationFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
         if (string.IsNullOrWhiteSpace(folderName))
@@ -514,7 +514,7 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
             folderName = destinationFolder;
         }
 
-        return $"{FormatText} opgeslagen in {folderName}";
+        return BookFormatExportStatusMessage.Saved(FormatText, folderName);
     }
 
     private static string FormatSize(long bytes)
@@ -532,4 +532,19 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
             ? $"{bytes} {units[unitIndex]}"
             : $"{value:0.#} {units[unitIndex]}";
     }
+}
+
+public sealed record BookFormatExportStatusMessage(
+    string ResourceKey,
+    string FormatText,
+    string FolderName,
+    string? Message = null)
+{
+    public static BookFormatExportStatusMessage Saved(string formatText, string folderName) =>
+        new("FormatSavedToFolder", formatText, folderName);
+
+    public static BookFormatExportStatusMessage? FromMessage(string? message) =>
+        string.IsNullOrWhiteSpace(message)
+            ? null
+            : new(string.Empty, string.Empty, string.Empty, message);
 }

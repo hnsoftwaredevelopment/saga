@@ -177,7 +177,8 @@ public sealed class BookDetailsViewModelTests
         var exportedPath = Path.Combine(downloads, "First Author - Original.epub");
         File.Exists(exportedPath).Should().BeTrue();
         File.ReadAllText(exportedPath).Should().Be("content");
-        viewModel.FormatDetails[0].ExportStatusMessage.Should().Be("EPUB opgeslagen in Downloads");
+        viewModel.FormatDetails[0].ExportStatusMessage.Should().Be(
+            BookFormatExportStatusMessage.Saved("EPUB", "Downloads"));
     }
 
     [Fact]

@@ -444,6 +444,7 @@
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Questa impostazione riserva un posto stabile per cronologia importazioni, segnalazioni di errore e informazioni diagnostiche. La diagnostica attuale resta disponibile mentre questa base viene completata.</value></data>
   <data name="SaveFile" xml:space="preserve"><value>Salva</value></data>
   <data name="SaveFileTo" xml:space="preserve"><value>Salva in...</value></data>
+  <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} salvato in {1}</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordina per</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordina la visualizzazione corrente della biblioteca</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>il gestore di e-book</value></data>
