@@ -502,8 +502,19 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
     {
         var result = await exportService!.ExportAsync(book!, file!, destinationFolder, cancellationToken);
         ExportStatusMessage = result.Status == BookFileExportStatus.Exported
-            ? result.DestinationPath
+            ? CreateExportSuccessMessage(result.DestinationPath, destinationFolder)
             : result.Message;
+    }
+
+    private string CreateExportSuccessMessage(string? destinationPath, string destinationFolder)
+    {
+        var folderName = Path.GetFileName(destinationFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        if (string.IsNullOrWhiteSpace(folderName))
+        {
+            folderName = destinationFolder;
+        }
+
+        return $"{FormatText} opgeslagen in {folderName}";
     }
 
     private static string FormatSize(long bytes)
