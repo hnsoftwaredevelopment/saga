@@ -4,113 +4,93 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Saga"
-        Width="920"
-        Height="420"
+        Title="Splash"
+        Height="265"
+        Width="800"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        AllowsTransparency="True"
-        Background="Transparent"
         ShowInTaskbar="False">
-  <Border CornerRadius="26"
-          ClipToBounds="True">
-    <Border.Effect>
-      <DropShadowEffect BlurRadius="28"
-                        ShadowDepth="0"
-                        Opacity="0.45" />
-    </Border.Effect>
-    <Grid>
-      <Image Source="/EbookManager;component/Resources/Splash/SplashBase.png"
-             Stretch="UniformToFill" />
-      <Rectangle>
-        <Rectangle.Fill>
-          <LinearGradientBrush StartPoint="0,0"
-                               EndPoint="1,0">
-            <GradientStop Color="#F2071418"
-                          Offset="0" />
-            <GradientStop Color="#D5071418"
-                          Offset="0.42" />
-            <GradientStop Color="#30071418"
-                          Offset="1" />
-          </LinearGradientBrush>
-        </Rectangle.Fill>
-      </Rectangle>
+  <Grid>
+    <Image HorizontalAlignment="Left"
+           Height="265"
+           Margin="0"
+           VerticalAlignment="Top"
+           Width="800"
+           Source="/EbookManager;component/Resources/Splash/SplashBase.png" />
 
-      <Grid Margin="54,44"
-            VerticalAlignment="Stretch">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="*" />
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal"
+                Margin="10,10,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+      <Label Content="Saga"
+             FontSize="62"
+             VerticalAlignment="Bottom"
+             Margin="0,0,15,0"
+             Foreground="AntiqueWhite"
+             FontFamily="Segoe UI Variable Display Bold"
+             Cursor="None"
+             IsEnabled="False" />
+      <Label x:Name="SubtitleText"
+             FontSize="36"
+             VerticalAlignment="Bottom"
+             Margin="0,0,0,5"
+             Foreground="DarkOrange"
+             FontFamily="Segoe UI Variable Display Semibold"
+             Cursor="None"
+             IsEnabled="False" />
+    </StackPanel>
 
-        <StackPanel Width="420"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center">
-          <Border Width="74"
-                  Height="74"
-                  HorizontalAlignment="Left"
-                  CornerRadius="18"
-                  Background="#EAF7FE"
-                  Padding="12"
-                  Margin="0,0,0,22">
-            <Image Source="/EbookManager;component/Resources/AppIcon/appicon.ico"
-                   Stretch="Uniform" />
-          </Border>
+    <Image x:Name="AppLogoImage"
+           Width="96"
+           Height="96"
+           HorizontalAlignment="Right"
+           VerticalAlignment="Bottom"
+           Margin="0,0,14,14"
+           Stretch="Uniform" />
 
-          <TextBlock Text="Saga"
-                     FontSize="58"
-                     FontWeight="SemiBold"
-                     Foreground="#F7FCFF" />
-          <TextBlock x:Name="SubtitleText"
-                     Margin="2,2,0,0"
-                     FontSize="23"
-                     FontWeight="Light"
-                     Foreground="#BEEEF8" />
-        </StackPanel>
+    <Grid Width="430"
+          HorizontalAlignment="Left"
+          VerticalAlignment="Bottom"
+          Margin="14,0,0,16">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="1"
-              Width="430"
-              HorizontalAlignment="Left">
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-          </Grid.RowDefinitions>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-          </Grid.ColumnDefinitions>
+      <TextBlock x:Name="StatusText"
+                 Grid.Column="0"
+                 FontSize="13"
+                 Foreground="AntiqueWhite" />
+      <TextBlock Text="{Binding LoadingLibraryProgressText, Mode=OneWay}"
+                 Grid.Column="1"
+                 Margin="18,0,0,0"
+                 FontSize="13"
+                 Foreground="AntiqueWhite" />
 
-          <TextBlock x:Name="StatusText"
-                     Grid.Column="0"
-                     FontSize="14"
-                     Foreground="#D9F7FC" />
-          <TextBlock Text="{Binding LoadingLibraryProgressText, Mode=OneWay}"
-                     Grid.Column="1"
-                     Margin="18,0,0,0"
-                     FontSize="14"
-                     Foreground="#D9F7FC" />
+      <ProgressBar Grid.Row="1"
+                   Grid.ColumnSpan="2"
+                   Height="6"
+                   Margin="0,7,0,8"
+                   Minimum="0"
+                   Maximum="100"
+                   Value="{Binding LoadingLibraryProgressValue, Mode=OneWay}"
+                   IsIndeterminate="{Binding IsLoadingLibraryProgressIndeterminate, Mode=OneWay}"
+                   Foreground="DarkOrange"
+                   Background="#55FAEBD7"
+                   BorderThickness="0" />
 
-          <ProgressBar Grid.Row="1"
-                       Grid.ColumnSpan="2"
-                       Height="7"
-                       Margin="0,10,0,16"
-                       Minimum="0"
-                       Maximum="100"
-                       Value="{Binding LoadingLibraryProgressValue, Mode=OneWay}"
-                       IsIndeterminate="{Binding IsLoadingLibraryProgressIndeterminate, Mode=OneWay}"
-                       Foreground="#24D7EE"
-                       Background="#3AFFFFFF"
-                       BorderThickness="0" />
-
-          <TextBlock x:Name="VersionText"
-                     Grid.Row="2"
-                     Grid.ColumnSpan="2"
-                     FontSize="12"
-                     Foreground="#91D5DE" />
-        </Grid>
-      </Grid>
+      <TextBlock x:Name="VersionText"
+                 Grid.Row="2"
+                 Grid.ColumnSpan="2"
+                 FontSize="12"
+                 Foreground="AntiqueWhite"
+                 Opacity="0.85" />
     </Grid>
-  </Border>
+  </Grid>
 </Window>
