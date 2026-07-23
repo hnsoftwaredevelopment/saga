@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Threading;
 using EbookManager.App.Localization;
 using EbookManager.Presentation.ViewModels;
 using Syncfusion.Data;
@@ -15,6 +16,7 @@ internal sealed class LibraryGridGroupingProjectionBinder
     private readonly ObservableCollection<BookRowViewModel> projectedRows = [];
     private LibraryViewModel? viewModel;
     private bool isRefreshing;
+    private bool isRefreshQueued;
 
     public LibraryGridGroupingProjectionBinder(FrameworkElement owner, SfDataGrid grid)
     {
@@ -26,7 +28,7 @@ internal sealed class LibraryGridGroupingProjectionBinder
 
         Attach(owner.DataContext as LibraryViewModel);
         RefreshCaptionSummary();
-        RefreshProjection();
+        QueueRefreshProjection();
     }
 
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -60,22 +62,39 @@ internal sealed class LibraryGridGroupingProjectionBinder
         viewModel = null;
     }
 
-    private void OnVisibleBooksChanged(object? sender, NotifyCollectionChangedEventArgs e) => RefreshProjection();
+    private void OnVisibleBooksChanged(object? sender, NotifyCollectionChangedEventArgs e) => QueueRefreshProjection();
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(LibraryViewModel.VisibleBooks))
         {
-            RefreshProjection();
+            QueueRefreshProjection();
         }
     }
 
-    private void OnGroupColumnDescriptionsChanged(object? sender, NotifyCollectionChangedEventArgs e) => RefreshProjection();
+    private void OnGroupColumnDescriptionsChanged(object? sender, NotifyCollectionChangedEventArgs e) => QueueRefreshProjection();
 
     private void OnLocalizedStringsChanged(object? sender, PropertyChangedEventArgs e)
     {
         RefreshCaptionSummary();
         grid.View?.Refresh();
+    }
+
+    private void QueueRefreshProjection()
+    {
+        if (isRefreshQueued)
+        {
+            return;
+        }
+
+        isRefreshQueued = true;
+        grid.Dispatcher.BeginInvoke(
+            new Action(() =>
+            {
+                isRefreshQueued = false;
+                RefreshProjection();
+            }),
+            DispatcherPriority.Background);
     }
 
     private void RefreshProjection()
@@ -125,22 +144,7 @@ internal sealed class LibraryGridGroupingProjectionBinder
 
     private void RefreshCaptionSummary()
     {
-        grid.GroupCaptionTextFormat = "{Key}";
-        grid.CaptionSummaryRow = new GridSummaryRow
-        {
-            ShowSummaryInRow = true,
-            Title = "{Key} - {BookCount}",
-            SummaryColumns =
-            [
-                new GridSummaryColumn
-                {
-                    Name = "BookCount",
-                    MappingName = nameof(BookRowViewModel.Id),
-                    SummaryType = SummaryType.Custom,
-                    CustomAggregate = new LocalizedBookCountAggregate(),
-                    Format = "{Text}"
-                }
-            ]
-        };
+        grid.GroupCaptionTextFormat = "{Key} - {ItemsCount} " + LocalizedStrings.Current["BookCount"];
+        grid.CaptionSummaryRow = null;
     }
 }
