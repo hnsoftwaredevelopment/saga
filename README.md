@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 8 builds on version `0.1` with library management polish around day-to-day book and format actions, keeping common file workflows compact and localized.
+Milestone 9 builds on version `0.1` with a DataGrid makeover, starting with a cleaner Syncfusion-based List view and shared grouping foundations for grid views.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -54,6 +54,7 @@ Milestone 8 builds on version `0.1` with library management polish around day-to
 - light, dark, sepia, blue, and red themes
 - English, Dutch, German, French, Spanish, and Italian selectable UI localization
 - toolbar and details action icons with localized tooltips
+- Syncfusion-based compact List view with real columns, sorting, and grouping surface
 
 ## Prerequisites
 
@@ -128,6 +129,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-6-checklist.md](docs/manual-tests/milestone-6-checklist.md)
 - [docs/manual-tests/milestone-7-checklist.md](docs/manual-tests/milestone-7-checklist.md)
 - [docs/manual-tests/milestone-8-checklist.md](docs/manual-tests/milestone-8-checklist.md)
+- [docs/manual-tests/milestone-9-checklist.md](docs/manual-tests/milestone-9-checklist.md)
 
 ## Later-Version Candidates
 
