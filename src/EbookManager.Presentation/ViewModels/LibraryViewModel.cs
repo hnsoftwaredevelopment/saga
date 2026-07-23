@@ -467,7 +467,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         var selectedId = SelectedBook?.Id;
         var filteredBooks = ApplyFacetFilters(searchService.Filter(books, SearchText));
         var rows = ApplySort(
-                filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath)),
+                filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath, authorSortStrategy)),
                 SelectedSortOption,
                 authorSortStrategy)
             .ToList();

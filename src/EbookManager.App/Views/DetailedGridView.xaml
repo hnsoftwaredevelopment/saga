@@ -53,7 +53,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Authors}"
-                                     MappingName="Authors"
+                                     MappingName="AuthorsSortKey"
                                      Width="220">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>

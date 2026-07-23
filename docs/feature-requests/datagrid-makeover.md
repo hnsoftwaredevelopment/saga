@@ -28,7 +28,7 @@ Because the detailed grid should eventually support richer desktop behavior, thi
 
 ### Sorting
 
-- Author column sorting should use the selected `AuthorSortStrategy`.
+- Author column sorting uses the selected `AuthorSortStrategy` in the grid row sort key while still showing the normal author display text.
 - Language column sorting should use stable language keys while showing localized labels.
 - Format/type sorting should remain based on normalized format names.
 - Series number sorting should use the numeric series index, not the localized display text.

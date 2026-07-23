@@ -1,15 +1,21 @@
 using System.Globalization;
 using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.Settings;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed class BookRowViewModel(Book book, string searchText = "", string? libraryPath = null)
+public sealed class BookRowViewModel(
+    Book book,
+    string searchText = "",
+    string? libraryPath = null,
+    AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName)
 {
     public Book Book { get; } = book;
     public Guid Id => Book.Id;
     public string Title => Book.Metadata.Title;
     public string Authors => string.Join(", ", Book.Metadata.Authors);
+    public string AuthorsSortKey => AuthorSortKeyBuilder.BuildSortKey(Authors, authorSortStrategy);
     public string Description => Book.Metadata.Description ?? string.Empty;
     public string Series => Book.Metadata.Series ?? string.Empty;
     public decimal? SeriesNumber => Book.Metadata.SeriesNumber;
