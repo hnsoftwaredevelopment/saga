@@ -8,7 +8,7 @@
         Title="{loc:Loc AppName}"
         Width="1360"
         Height="820"
-        Icon="/EbookManager;component/Resources/AppIcon/appicon.ico"
+        Icon="Resources/AppIcon/appicon.ico"
         MinWidth="1100"
         MinHeight="680"
         AllowDrop="True"

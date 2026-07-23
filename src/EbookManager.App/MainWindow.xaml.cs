@@ -1,6 +1,7 @@
 using EbookManager.App.Services;
 using EbookManager.App.Views;
 using EbookManager.Presentation.ViewModels;
+using System.Windows.Media.Imaging;
 
 namespace EbookManager.App;
 
@@ -24,6 +25,9 @@ public partial class MainWindow : System.Windows.Window
         this.localizationService = localizationService;
         this.themeService = themeService;
         InitializeComponent();
+        Icon = BitmapFrame.Create(new Uri(
+            "pack://application:,,,/Resources/AppIcon/appicon.ico",
+            UriKind.Absolute));
         DataContext = viewModel;
         RegisterLibraryDragDropHandlers();
         Loaded += OnLoaded;

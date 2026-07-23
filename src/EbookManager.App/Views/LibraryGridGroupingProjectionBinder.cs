@@ -3,9 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
-using EbookManager.App.Localization;
 using EbookManager.Presentation.ViewModels;
-using Syncfusion.Data;
 using Syncfusion.UI.Xaml.Grid;
 
 namespace EbookManager.App.Views;
@@ -23,11 +21,8 @@ internal sealed class LibraryGridGroupingProjectionBinder
     {
         this.grid = grid;
         this.grid.GroupColumnDescriptions.CollectionChanged += OnGroupColumnDescriptionsChanged;
-        this.grid.CellRenderers.Remove("CaptionSummary");
-        this.grid.CellRenderers.Add("CaptionSummary", new SagaGridCaptionSummaryCellRenderer());
 
         owner.DataContextChanged += OnDataContextChanged;
-        LocalizedStrings.Current.PropertyChanged += OnLocalizedStringsChanged;
 
         Attach(owner.DataContext as LibraryViewModel);
         RefreshCaptionSummary();
@@ -81,12 +76,6 @@ internal sealed class LibraryGridGroupingProjectionBinder
         {
             QueueRefreshProjection();
         }
-    }
-
-    private void OnLocalizedStringsChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        RefreshCaptionSummary();
-        grid.View?.Refresh();
     }
 
     private void QueueRefreshProjection()
