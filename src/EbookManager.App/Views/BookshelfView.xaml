@@ -58,7 +58,7 @@
         <Style TargetType="ListBox">
           <Setter Property="Visibility" Value="Visible" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding IsLibraryGrouped}" Value="True">
+            <DataTrigger Binding="{Binding IsBookshelfGrouped}" Value="True">
               <Setter Property="Visibility" Value="Collapsed" />
             </DataTrigger>
           </Style.Triggers>
@@ -77,7 +77,7 @@
         <Style TargetType="ScrollViewer">
           <Setter Property="Visibility" Value="Collapsed" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding IsLibraryGrouped}" Value="True">
+            <DataTrigger Binding="{Binding IsBookshelfGrouped}" Value="True">
               <Setter Property="Visibility" Value="Visible" />
             </DataTrigger>
           </Style.Triggers>

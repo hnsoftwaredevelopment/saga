@@ -12,7 +12,7 @@
                          AllowEditing="False"
                          AllowSorting="True"
                          AllowGrouping="True"
-                         ShowGroupDropArea="False"
+                         ShowGroupDropArea="True"
                          NavigationMode="Row"
                          SelectionMode="Single"
                          HeaderRowHeight="36"

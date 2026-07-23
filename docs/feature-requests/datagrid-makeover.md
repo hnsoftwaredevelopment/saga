@@ -90,12 +90,13 @@ Detailed view should expose all standard metadata fields available in the detail
 - Detailed view exposes the standard details-pane metadata fields as grid columns.
 - Series number sorting uses the numeric series index.
 - Author grid sorting uses the configured author sort strategy while keeping the display name unchanged.
-- Detailed, List, and Bookshelf views have Saga-driven grouping by author, series, tag, language, status, or type.
-- Grouping supports two levels through `Group by` and `Then by`.
-- Multi-value groups are projected by Saga before they reach the view, so a multi-author, multi-tag, or multi-format book can appear under each individual group value while the visible book count remains unique.
+- Bookshelf view has Saga-driven grouping by author, series, tag, language, status, or type.
+- Bookshelf grouping supports two levels through `Group by` and `Then by`.
+- Bookshelf multi-value groups are projected by Saga before they reach the view, so a multi-author, multi-tag, or multi-format book can appear under each individual group value while the visible book count remains unique.
 - Bookshelf grouping shows cover sections with headers above the cover rows.
+- Detailed and List views keep the native Syncfusion group drop area, so the user can interactively group by multiple columns per view.
 
 ## Remaining Slices
 
 - User-defined view settings should eventually remember grouping, sorting, and visible columns per view.
-- Grid group caption text may be polished further after visual testing with large libraries.
+- Detailed/List multi-value grouping, such as one book under each individual author when using the native group drop area, still needs a separate design because native grid grouping works on the current row value.

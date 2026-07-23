@@ -464,16 +464,19 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
-    public async Task Grouping_by_author_projects_multi_author_books_into_separate_groups()
+    public async Task Bookshelf_grouping_by_author_projects_multi_author_books_into_separate_groups()
     {
         var sharedBook = CreateBook("Shared Book", ["Jan Wiersma", "Sonja de Leeuw"]);
         var soloBook = CreateBook("Solo Book", ["Jan Wiersma"]);
         var viewModel = CreateViewModel([sharedBook, soloBook]);
 
         await viewModel.RefreshAsync();
-        viewModel.SelectedGroupOption = LibraryGroupOption.Author;
+        viewModel.BookshelfGroupOption = LibraryGroupOption.Author;
 
-        viewModel.VisibleBooks.Select(row => (row.Title, row.GroupName))
+        viewModel.VisibleBooks.Select(row => row.Title)
+            .Should()
+            .BeEquivalentTo("Shared Book", "Solo Book");
+        viewModel.GroupedBookshelves.SelectMany(group => group.Books.Select(row => (row.Title, group.Header)))
             .Should()
             .BeEquivalentTo(
                 [
@@ -485,7 +488,7 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
-    public async Task Grouping_by_author_then_series_keeps_individual_author_headers()
+    public async Task Bookshelf_grouping_by_author_then_series_keeps_individual_author_headers()
     {
         var book = CreateBook(
             "Shared Series Book",
@@ -494,34 +497,32 @@ public sealed class LibraryViewModelTests
         var viewModel = CreateViewModel([book]);
 
         await viewModel.RefreshAsync();
-        viewModel.SelectedGroupOption = LibraryGroupOption.Author;
-        viewModel.SecondaryGroupOption = LibraryGroupOption.Series;
+        viewModel.BookshelfGroupOption = LibraryGroupOption.Author;
+        viewModel.BookshelfSecondaryGroupOption = LibraryGroupOption.Series;
 
-        viewModel.VisibleBooks.Select(row => (row.Title, row.PrimaryGroupName, row.SecondaryGroupName))
-            .Should()
-            .BeEquivalentTo(
-                [
-                    ("Shared Series Book", "Abby Green", "Bouquet"),
-                    ("Shared Series Book", "Klaartje Kusters", "Bouquet")
-                ]);
+        viewModel.VisibleBooks.Should().ContainSingle()
+            .Which.Authors.Should().Be("Abby Green, Klaartje Kusters");
         viewModel.GroupedBookshelves.Select(group => group.Header)
             .Should()
             .BeEquivalentTo("Abby Green / Bouquet", "Klaartje Kusters / Bouquet");
         viewModel.VisibleBookCount.Should().Be(1);
-        viewModel.IsLibraryGrouped.Should().BeTrue();
+        viewModel.IsBookshelfGrouped.Should().BeTrue();
     }
 
     [Fact]
-    public async Task Grouping_by_tag_projects_multi_tag_books_but_keeps_unique_book_count()
+    public async Task Bookshelf_grouping_by_tag_projects_multi_tag_books_but_keeps_unique_book_count()
     {
         var taggedBook = CreateBook("Tagged Book", ["Author"], tags: ["History", "Space"]);
         var untaggedBook = CreateBook("Untagged Book", ["Author"]);
         var viewModel = CreateViewModel([taggedBook, untaggedBook]);
 
         await viewModel.RefreshAsync();
-        viewModel.SelectedGroupOption = LibraryGroupOption.Tag;
+        viewModel.BookshelfGroupOption = LibraryGroupOption.Tag;
 
-        viewModel.VisibleBooks.Select(row => (row.Title, row.GroupName))
+        viewModel.VisibleBooks.Select(row => row.Title)
+            .Should()
+            .BeEquivalentTo("Tagged Book", "Untagged Book");
+        viewModel.GroupedBookshelves.SelectMany(group => group.Books.Select(row => (row.Title, group.Header)))
             .Should()
             .BeEquivalentTo(
                 [

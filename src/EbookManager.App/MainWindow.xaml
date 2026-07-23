@@ -187,11 +187,32 @@
           </ComboBox>
           <TextBlock Text="{loc:Loc GroupBy}"
                      Foreground="{DynamicResource TextSecondaryBrush}"
-                     Margin="0,0,0,4" />
-          <ComboBox SelectedValue="{Binding SelectedGroupOption}"
+                     Margin="0,0,0,4">
+            <TextBlock.Style>
+              <Style TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding SelectedView}" Value="Bookshelf">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TextBlock.Style>
+          </TextBlock>
+          <ComboBox SelectedValue="{Binding BookshelfGroupOption}"
                     SelectedValuePath="Tag"
                     Margin="0,0,0,8"
                     ToolTip="{loc:Loc GroupLibraryTooltip}">
+            <ComboBox.Style>
+              <Style TargetType="ComboBox">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding SelectedView}" Value="Bookshelf">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </ComboBox.Style>
             <ComboBoxItem Content="{loc:Loc NoGrouping}"
                           Tag="{x:Static viewModels:LibraryGroupOption.None}" />
             <ComboBoxItem Content="{loc:Loc Authors}"
@@ -209,11 +230,32 @@
           </ComboBox>
           <TextBlock Text="{loc:Loc ThenBy}"
                      Foreground="{DynamicResource TextSecondaryBrush}"
-                     Margin="0,0,0,4" />
-          <ComboBox SelectedValue="{Binding SecondaryGroupOption}"
+                     Margin="0,0,0,4">
+            <TextBlock.Style>
+              <Style TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding SelectedView}" Value="Bookshelf">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TextBlock.Style>
+          </TextBlock>
+          <ComboBox SelectedValue="{Binding BookshelfSecondaryGroupOption}"
                     SelectedValuePath="Tag"
                     Margin="0,0,0,12"
                     ToolTip="{loc:Loc GroupLibraryTooltip}">
+            <ComboBox.Style>
+              <Style TargetType="ComboBox">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding SelectedView}" Value="Bookshelf">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </ComboBox.Style>
             <ComboBoxItem Content="{loc:Loc NoGrouping}"
                           Tag="{x:Static viewModels:LibraryGroupOption.None}" />
             <ComboBoxItem Content="{loc:Loc Authors}"
