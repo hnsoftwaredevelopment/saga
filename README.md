@@ -43,6 +43,7 @@ Milestone 8 builds on version `0.1` with library management polish around day-to
 - per-format open-folder action from the details pane
 - per-format save actions from the details pane with localized feedback
 - per-format remove action that never deletes the last remaining book format
+- iconized per-format context menu with warning color for destructive actions
 - description cleanup for common HTML-like metadata
 - standard metadata search across language display names, dates, series numbers, formats, and system dates
 - sectioned settings foundation for duplicates and diagnostics preferences
