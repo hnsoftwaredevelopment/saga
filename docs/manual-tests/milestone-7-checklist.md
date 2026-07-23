@@ -5,6 +5,7 @@
 - [ ] Select a book with one available format and confirm the format is shown as a compact file-type button.
 - [ ] Right-click the file-type button and confirm the context menu shows Open folder, Save, and Save to.
 - [ ] Use Save and confirm the file is copied to the default Downloads folder.
+- [ ] Confirm the short save confirmation follows the selected UI language.
 - [ ] Export the same format twice and confirm Saga creates a unique filename instead of overwriting the first export.
 - [ ] Use Save to and confirm the file is copied to a user-selected folder.
 - [ ] Confirm exported filenames are based on book metadata and do not contain invalid Windows filename characters.
