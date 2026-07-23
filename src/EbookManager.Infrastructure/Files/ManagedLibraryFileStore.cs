@@ -190,6 +190,19 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
         return Task.CompletedTask;
     }
 
+    public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var absolutePath = GetAbsolutePath(relativePath);
+        if (File.Exists(absolutePath))
+        {
+            File.Delete(absolutePath);
+        }
+
+        return Task.CompletedTask;
+    }
+
     private string GetBookDirectory(Guid bookId) => Path.Combine(libraryRoot, "books", bookId.ToString("N"));
 
     private string EnsureContained(string path)

@@ -297,6 +297,20 @@ public sealed class EfBookRepository(
         await transaction.CommitAsync(cancellationToken);
     }
 
+    public async Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var entity = await context.BookFiles
+            .SingleOrDefaultAsync(x => x.Id == fileId, cancellationToken);
+        if (entity is null)
+        {
+            return;
+        }
+
+        context.BookFiles.Remove(entity);
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<BookFile>> ListFilesAsync(
         Guid bookId,
         CancellationToken cancellationToken)

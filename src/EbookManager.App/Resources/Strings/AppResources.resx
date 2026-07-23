@@ -139,6 +139,9 @@
   <data name="Reading" xml:space="preserve"><value>Reading</value></data>
   <data name="Read" xml:space="preserve"><value>Read</value></data>
   <data name="RememberAnswer" xml:space="preserve"><value>Remember my answer</value></data>
+  <data name="RemoveFormat" xml:space="preserve"><value>Remove format</value></data>
+  <data name="RemoveFormatConfirmationTitle" xml:space="preserve"><value>Remove format</value></data>
+  <data name="RemoveFormatConfirmationMessage" xml:space="preserve"><value>Remove the {0} format from this book?</value></data>
   <data name="RetryFailedImports" xml:space="preserve"><value>Retry failed</value></data>
   <data name="RetryFailedImportsTooltip" xml:space="preserve"><value>Retry failed imports whose source files are still available</value></data>
   <data name="Save" xml:space="preserve"><value>Save</value></data>
@@ -178,6 +181,9 @@
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} saved in {1}</value></data>
   <data name="FormatFileMissing" xml:space="preserve"><value>{0} file is missing</value></data>
   <data name="FormatFolderMissing" xml:space="preserve"><value>{0} folder is missing</value></data>
+  <data name="FormatRemovedFromLibrary" xml:space="preserve"><value>{0} removed from this book</value></data>
+  <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} is the last format. Use Delete to remove the book.</value></data>
+  <data name="FormatRemoveFailed" xml:space="preserve"><value>{0} could not be removed</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>the e-book manager</value></data>

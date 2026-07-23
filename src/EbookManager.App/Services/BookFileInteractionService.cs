@@ -55,6 +55,22 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
         return Task.FromResult(true);
     }
 
+    public Task<bool> ConfirmRemoveFormatAsync(string formatText, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var message = string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            LocalizedStrings.Current["RemoveFormatConfirmationMessage"],
+            formatText);
+        var result = System.Windows.MessageBox.Show(
+            message,
+            LocalizedStrings.Current["RemoveFormatConfirmationTitle"],
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+        return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
+    }
+
     public Task<string?> PickExportFolderAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

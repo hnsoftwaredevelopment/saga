@@ -8,6 +8,8 @@
 - [ ] Confirm Open shows a short localized message when the managed file is missing.
 - [ ] Use Open folder and confirm Windows Explorer opens at the managed file location.
 - [ ] Confirm Open folder shows a short localized message when the managed folder is missing.
+- [ ] Select a book with multiple formats and confirm Remove format removes only the selected format after confirmation.
+- [ ] Select a book with one format and confirm Remove format does not delete the book and shows a clear localized message.
 - [ ] Change the UI language and confirm Open and the save-folder dialog title follow the selected language.
 
 ## Regression Checks

@@ -176,6 +176,9 @@ public sealed class DuplicateMergeServiceTests
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
+        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<BookFile>>([]);
 

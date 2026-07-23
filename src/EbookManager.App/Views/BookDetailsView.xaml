@@ -163,6 +163,20 @@
                         </Style>
                       </MenuItem.Style>
                     </MenuItem>
+                    <Separator />
+                    <MenuItem Header="{loc:Loc RemoveFormat}"
+                              Command="{Binding RemoveFormatCommand}">
+                      <MenuItem.Style>
+                        <Style TargetType="MenuItem">
+                          <Setter Property="Visibility" Value="Visible" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding CanRemoveFormat}" Value="False">
+                              <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </MenuItem.Style>
+                    </MenuItem>
                   </ContextMenu>
                 </Button.ContextMenu>
               </Button>

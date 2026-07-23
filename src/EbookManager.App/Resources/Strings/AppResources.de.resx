@@ -279,6 +279,9 @@
   <data name="RememberAnswer" xml:space="preserve">
     <value>Meine Antwort merken</value>
   </data>
+  <data name="RemoveFormat" xml:space="preserve"><value>Format entfernen</value></data>
+  <data name="RemoveFormatConfirmationTitle" xml:space="preserve"><value>Format entfernen</value></data>
+  <data name="RemoveFormatConfirmationMessage" xml:space="preserve"><value>Das Format {0} aus diesem Buch entfernen?</value></data>
   <data name="RetryFailedImports" xml:space="preserve">
     <value>Fehlgeschlagene erneut versuchen</value>
   </data>
@@ -449,6 +452,9 @@
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} in {1} gespeichert</value></data>
   <data name="FormatFileMissing" xml:space="preserve"><value>{0}-Datei fehlt</value></data>
   <data name="FormatFolderMissing" xml:space="preserve"><value>{0}-Ordner fehlt</value></data>
+  <data name="FormatRemovedFromLibrary" xml:space="preserve"><value>{0} aus diesem Buch entfernt</value></data>
+  <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} ist das letzte Format. Verwenden Sie Löschen, um das Buch zu entfernen.</value></data>
+  <data name="FormatRemoveFailed" xml:space="preserve"><value>{0} konnte nicht entfernt werden</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sortieren nach</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Aktuelle Bibliotheksansicht sortieren</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>der E-Book-Manager</value></data>

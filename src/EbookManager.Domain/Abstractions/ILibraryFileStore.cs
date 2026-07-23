@@ -9,5 +9,6 @@ public interface ILibraryFileStore
         string sourcePath,
         byte[]? coverBytes,
         CancellationToken cancellationToken);
+    Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken);
     Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken);
 }

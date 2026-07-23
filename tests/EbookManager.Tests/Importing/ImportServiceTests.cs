@@ -878,6 +878,9 @@ public sealed class ImportServiceTests
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) =>
             inner.DeleteAsync(id, cancellationToken);
 
+        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(fileId, cancellationToken);
+
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
 
@@ -935,6 +938,9 @@ public sealed class ImportServiceTests
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
+
+        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
@@ -1081,6 +1087,9 @@ public sealed class ImportServiceTests
             await inner.DeleteAsync(id, cancellationToken);
         }
 
+        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(fileId, cancellationToken);
+
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
 
@@ -1111,6 +1120,9 @@ public sealed class ImportServiceTests
             DeleteBookDirectoryCalled = true;
             throw new IOException("cleanup store failure");
         }
+
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(relativePath, cancellationToken);
     }
 
     private sealed class ThrowingCopyStore : ILibraryFileStore
@@ -1125,6 +1137,9 @@ public sealed class ImportServiceTests
             throw new IOException("simulated access denied");
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
             Task.CompletedTask;
     }
 
@@ -1157,6 +1172,9 @@ public sealed class ImportServiceTests
         }
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
             Task.CompletedTask;
     }
 
@@ -1209,6 +1227,9 @@ public sealed class ImportServiceTests
             DeleteAsyncCalled = true;
             await inner.DeleteAsync(id, cancellationToken);
         }
+
+        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
@@ -1284,6 +1305,9 @@ public sealed class ImportServiceTests
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
 
+        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(fileId, cancellationToken);
+
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
 
@@ -1331,6 +1355,9 @@ public sealed class ImportServiceTests
         public Task UpdateAsync(Book book, CancellationToken cancellationToken) => inner.UpdateAsync(book, cancellationToken);
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
+
+        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);

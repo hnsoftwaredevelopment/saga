@@ -16,6 +16,9 @@ public sealed class CurrentLibraryFileStore(CurrentLibrary currentLibrary) : IHa
     public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
         CreateStore().DeleteBookDirectoryAsync(bookId, cancellationToken);
 
+    public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
+        CreateStore().DeleteFileAsync(relativePath, cancellationToken);
+
     public Task<(string RelativeBookPath, string? RelativeCoverPath, string Sha256)> CopyIntoLibraryWithHashAsync(
         Guid bookId,
         string sourcePath,
