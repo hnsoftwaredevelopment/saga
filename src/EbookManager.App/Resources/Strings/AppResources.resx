@@ -176,6 +176,7 @@
   <data name="SaveFileTo" xml:space="preserve"><value>Save to...</value></data>
   <data name="SelectExportFolder" xml:space="preserve"><value>Select save folder</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} saved in {1}</value></data>
+  <data name="FormatFileMissing" xml:space="preserve"><value>{0} file is missing</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>the e-book manager</value></data>

@@ -184,6 +184,27 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public async Task Open_file_reports_missing_managed_file()
+    {
+        var fileInteraction = new RecordingBookFileInteractionService
+        {
+            ShouldOpenFile = false
+        };
+        var viewModel = CreateViewModel(out var repository, fileInteraction);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub]);
+        repository.SeedFiles(
+            book.Id,
+            [CreateBookFile(book.Id, EbookFormat.Epub, "books/book/missing.epub", 1_887_436)]);
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+        await viewModel.FormatDetails[0].OpenFileCommand.ExecuteAsync(null);
+
+        viewModel.FormatDetails[0].ExportStatusMessage.Should().Be(
+            BookFormatExportStatusMessage.FileMissing("EPUB"));
+    }
+
+    [Fact]
     public void Load_exposes_standard_metadata_fields()
     {
         var viewModel = CreateViewModel(out _);
@@ -532,11 +553,12 @@ public sealed class BookDetailsViewModelTests
         public List<string> OpenedRelativePaths { get; } = [];
         public string? DownloadsFolder { get; set; }
         public string? ExportFolder { get; set; }
+        public bool ShouldOpenFile { get; set; } = true;
 
-        public Task OpenFileAsync(string relativePath, CancellationToken cancellationToken)
+        public Task<bool> OpenFileAsync(string relativePath, CancellationToken cancellationToken)
         {
             OpenedFiles.Add(relativePath);
-            return Task.CompletedTask;
+            return Task.FromResult(ShouldOpenFile);
         }
 
         public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)

@@ -447,6 +447,7 @@
   <data name="SaveFileTo" xml:space="preserve"><value>Guardar en...</value></data>
   <data name="SelectExportFolder" xml:space="preserve"><value>Seleccionar carpeta de guardado</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} guardado en {1}</value></data>
+  <data name="FormatFileMissing" xml:space="preserve"><value>Falta el archivo {0}</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordenar por</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordenar la vista actual de la biblioteca</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>el gestor de e-books</value></data>

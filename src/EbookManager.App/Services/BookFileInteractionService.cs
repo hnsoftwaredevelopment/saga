@@ -10,14 +10,14 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
 {
     private readonly ILibraryFileStore fileStore = fileStore;
 
-    public Task OpenFileAsync(string relativePath, CancellationToken cancellationToken)
+    public Task<bool> OpenFileAsync(string relativePath, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var absolutePath = fileStore.GetAbsolutePath(relativePath);
         if (!File.Exists(absolutePath))
         {
-            return Task.CompletedTask;
+            return Task.FromResult(false);
         }
 
         Process.Start(new ProcessStartInfo
@@ -26,7 +26,7 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
             UseShellExecute = true
         });
 
-        return Task.CompletedTask;
+        return Task.FromResult(true);
     }
 
     public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)

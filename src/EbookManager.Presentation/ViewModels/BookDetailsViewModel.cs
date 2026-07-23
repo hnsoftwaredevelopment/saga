@@ -472,10 +472,19 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
         IBookFileInteractionService? fileInteraction = null) =>
         new(file.Id, book, file, file.Format, file.RelativePath, file.SizeBytes, exportService, fileInteraction);
 
-    private Task OpenFileAsync(CancellationToken cancellationToken) =>
-        fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath)
-            ? Task.CompletedTask
-            : fileInteraction.OpenFileAsync(RelativePath, cancellationToken);
+    private async Task OpenFileAsync(CancellationToken cancellationToken)
+    {
+        if (fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath))
+        {
+            return;
+        }
+
+        var opened = await fileInteraction.OpenFileAsync(RelativePath, cancellationToken);
+        if (!opened)
+        {
+            ExportStatusMessage = BookFormatExportStatusMessage.FileMissing(FormatText);
+        }
+    }
 
     private Task OpenContainingFolderAsync(CancellationToken cancellationToken) =>
         fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath)
@@ -553,6 +562,9 @@ public sealed record BookFormatExportStatusMessage(
 {
     public static BookFormatExportStatusMessage Saved(string formatText, string folderName) =>
         new("FormatSavedToFolder", formatText, folderName);
+
+    public static BookFormatExportStatusMessage FileMissing(string formatText) =>
+        new("FormatFileMissing", formatText, string.Empty);
 
     public static BookFormatExportStatusMessage? FromMessage(string? message) =>
         string.IsNullOrWhiteSpace(message)

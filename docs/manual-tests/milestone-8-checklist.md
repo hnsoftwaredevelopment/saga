@@ -5,6 +5,7 @@
 - [ ] Select a book with at least one managed format and confirm the format is shown as a compact file-type button.
 - [ ] Right-click the file-type button and confirm the context menu shows Open, Open folder, Save, and Save to.
 - [ ] Use Open and confirm Windows opens the selected ebook file with the default app for that file type.
+- [ ] Confirm Open shows a short localized message when the managed file is missing.
 - [ ] Use Open folder and confirm Windows Explorer opens at the managed file location.
 - [ ] Change the UI language and confirm Open and the save-folder dialog title follow the selected language.
 
