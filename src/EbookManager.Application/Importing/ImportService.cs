@@ -149,6 +149,12 @@ public sealed class ImportService(
 
             try
             {
+                if (!IsSourceLocallyAvailable(sourcePath!))
+                {
+                    result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
+                    return await RecordAsync(result);
+                }
+
                 sourceLength = GetSourceLengthOrNull(sourcePath!);
                 if (sourceLength is null)
                 {
@@ -494,6 +500,20 @@ public sealed class ImportService(
         $"{message}; {SafeImportMessages.CleanupIncomplete}";
 
     private static bool IsBlank(string? value) => string.IsNullOrWhiteSpace(value);
+
+    private static bool IsSourceLocallyAvailable(string sourcePath)
+    {
+        try
+        {
+            var attributes = File.GetAttributes(sourcePath);
+            return !attributes.HasFlag(FileAttributes.Offline);
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or FileNotFoundException or PathTooLongException)
+        {
+            return false;
+        }
+    }
 
     private static long? GetSourceLengthOrNull(string sourcePath)
     {
