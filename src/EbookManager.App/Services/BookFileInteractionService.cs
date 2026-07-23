@@ -29,22 +29,21 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
         return Task.FromResult(true);
     }
 
-    public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
+    public Task<bool> OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var absolutePath = fileStore.GetAbsolutePath(relativePath);
-        var targetPath = File.Exists(absolutePath)
-            ? absolutePath
-            : Path.GetDirectoryName(absolutePath);
-        if (string.IsNullOrWhiteSpace(targetPath))
+        var fileExists = File.Exists(absolutePath);
+        var folderPath = Path.GetDirectoryName(absolutePath);
+        if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
         {
-            return Task.CompletedTask;
+            return Task.FromResult(false);
         }
 
-        var arguments = File.Exists(absolutePath)
+        var arguments = fileExists
             ? $"/select,\"{absolutePath}\""
-            : $"\"{targetPath}\"";
+            : $"\"{folderPath}\"";
 
         Process.Start(new ProcessStartInfo
         {
@@ -53,7 +52,7 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
             UseShellExecute = true
         });
 
-        return Task.CompletedTask;
+        return Task.FromResult(true);
     }
 
     public Task<string?> PickExportFolderAsync(CancellationToken cancellationToken)

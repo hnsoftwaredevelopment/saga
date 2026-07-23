@@ -448,6 +448,7 @@
   <data name="SelectExportFolder" xml:space="preserve"><value>Seleziona cartella di salvataggio</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} salvato in {1}</value></data>
   <data name="FormatFileMissing" xml:space="preserve"><value>File {0} mancante</value></data>
+  <data name="FormatFolderMissing" xml:space="preserve"><value>Cartella {0} mancante</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordina per</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordina la visualizzazione corrente della biblioteca</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>il gestore di e-book</value></data>

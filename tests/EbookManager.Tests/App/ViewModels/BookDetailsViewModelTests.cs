@@ -205,6 +205,27 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public async Task Open_folder_reports_missing_managed_folder()
+    {
+        var fileInteraction = new RecordingBookFileInteractionService
+        {
+            ShouldOpenContainingFolder = false
+        };
+        var viewModel = CreateViewModel(out var repository, fileInteraction);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub]);
+        repository.SeedFiles(
+            book.Id,
+            [CreateBookFile(book.Id, EbookFormat.Epub, "books/book/missing.epub", 1_887_436)]);
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+        await viewModel.FormatDetails[0].OpenContainingFolderCommand.ExecuteAsync(null);
+
+        viewModel.FormatDetails[0].ExportStatusMessage.Should().Be(
+            BookFormatExportStatusMessage.FolderMissing("EPUB"));
+    }
+
+    [Fact]
     public void Load_exposes_standard_metadata_fields()
     {
         var viewModel = CreateViewModel(out _);
@@ -554,6 +575,7 @@ public sealed class BookDetailsViewModelTests
         public string? DownloadsFolder { get; set; }
         public string? ExportFolder { get; set; }
         public bool ShouldOpenFile { get; set; } = true;
+        public bool ShouldOpenContainingFolder { get; set; } = true;
 
         public Task<bool> OpenFileAsync(string relativePath, CancellationToken cancellationToken)
         {
@@ -561,10 +583,10 @@ public sealed class BookDetailsViewModelTests
             return Task.FromResult(ShouldOpenFile);
         }
 
-        public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
+        public Task<bool> OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
         {
             OpenedRelativePaths.Add(relativePath);
-            return Task.CompletedTask;
+            return Task.FromResult(ShouldOpenContainingFolder);
         }
 
         public Task<string?> PickExportFolderAsync(CancellationToken cancellationToken) =>

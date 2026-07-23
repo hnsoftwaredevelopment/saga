@@ -486,10 +486,19 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
         }
     }
 
-    private Task OpenContainingFolderAsync(CancellationToken cancellationToken) =>
-        fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath)
-            ? Task.CompletedTask
-            : fileInteraction.OpenContainingFolderAsync(RelativePath, cancellationToken);
+    private async Task OpenContainingFolderAsync(CancellationToken cancellationToken)
+    {
+        if (fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath))
+        {
+            return;
+        }
+
+        var opened = await fileInteraction.OpenContainingFolderAsync(RelativePath, cancellationToken);
+        if (!opened)
+        {
+            ExportStatusMessage = BookFormatExportStatusMessage.FolderMissing(FormatText);
+        }
+    }
 
     private async Task ExportToDownloadsAsync(CancellationToken cancellationToken)
     {
@@ -565,6 +574,9 @@ public sealed record BookFormatExportStatusMessage(
 
     public static BookFormatExportStatusMessage FileMissing(string formatText) =>
         new("FormatFileMissing", formatText, string.Empty);
+
+    public static BookFormatExportStatusMessage FolderMissing(string formatText) =>
+        new("FormatFolderMissing", formatText, string.Empty);
 
     public static BookFormatExportStatusMessage? FromMessage(string? message) =>
         string.IsNullOrWhiteSpace(message)

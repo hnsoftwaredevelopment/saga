@@ -177,6 +177,7 @@
   <data name="SelectExportFolder" xml:space="preserve"><value>Selecteer opslagmap</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} opgeslagen in {1}</value></data>
   <data name="FormatFileMissing" xml:space="preserve"><value>{0}-bestand ontbreekt</value></data>
+  <data name="FormatFolderMissing" xml:space="preserve"><value>{0}-map ontbreekt</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sorteren op</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sorteer de huidige bibliotheekweergave</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>de e-bookmanager</value></data>

@@ -448,6 +448,7 @@
   <data name="SelectExportFolder" xml:space="preserve"><value>Sélectionner le dossier d’enregistrement</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} enregistré dans {1}</value></data>
   <data name="FormatFileMissing" xml:space="preserve"><value>Fichier {0} manquant</value></data>
+  <data name="FormatFolderMissing" xml:space="preserve"><value>Dossier {0} manquant</value></data>
   <data name="SortBy" xml:space="preserve"><value>Trier par</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Trier la vue actuelle de la bibliothèque</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>le gestionnaire d’e-books</value></data>
