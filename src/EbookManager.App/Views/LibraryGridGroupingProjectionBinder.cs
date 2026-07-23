@@ -125,20 +125,20 @@ internal sealed class LibraryGridGroupingProjectionBinder
 
     private void RefreshCaptionSummary()
     {
-        var booksText = LocalizedStrings.Current["BookCount"];
-        grid.GroupCaptionTextFormat = "{Key} - {ItemsCount} " + booksText;
+        grid.GroupCaptionTextFormat = "{Key}";
         grid.CaptionSummaryRow = new GridSummaryRow
         {
             ShowSummaryInRow = true,
-            Title = "{Key} - {BookCount} " + booksText,
+            Title = "{Key} - {BookCount}",
             SummaryColumns =
             [
                 new GridSummaryColumn
                 {
                     Name = "BookCount",
                     MappingName = nameof(BookRowViewModel.Id),
-                    SummaryType = SummaryType.CountAggregate,
-                    Format = "{Count:d}"
+                    SummaryType = SummaryType.Custom,
+                    CustomAggregate = new LocalizedBookCountAggregate(),
+                    Format = "{Text}"
                 }
             ]
         };

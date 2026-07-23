@@ -30,6 +30,9 @@
   <data name="BookCount" xml:space="preserve">
     <value>Buecher</value>
   </data>
+  <data name="BookSingular" xml:space="preserve">
+    <value>Buch</value>
+  </data>
   <data name="BookSaveConflict" xml:space="preserve">
     <value>Ein Buch mit demselben Titel und Autor ist bereits vorhanden.</value>
   </data>
