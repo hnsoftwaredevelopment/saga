@@ -8,6 +8,13 @@
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
     <converters:BookSaveErrorToLocalizedStringConverter x:Key="BookSaveErrorToLocalizedStringConverter" />
     <converters:FormatExportStatusToLocalizedStringConverter x:Key="FormatExportStatusToLocalizedStringConverter" />
+    <Style x:Key="FormatMenuIconStyle" TargetType="Path">
+      <Setter Property="Width" Value="14" />
+      <Setter Property="Height" Value="14" />
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Fill" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
   </UserControl.Resources>
   <DockPanel Margin="16">
     <StackPanel DockPanel.Dock="Top">
@@ -112,6 +119,10 @@
                   <ContextMenu>
                     <MenuItem Header="{loc:Loc OpenFile}"
                               Command="{Binding OpenFileCommand}">
+                      <MenuItem.Icon>
+                        <Path Data="{StaticResource OpenFileIconGeometry}"
+                              Style="{StaticResource FormatMenuIconStyle}" />
+                      </MenuItem.Icon>
                       <MenuItem.Style>
                         <Style TargetType="MenuItem">
                           <Setter Property="Visibility" Value="Visible" />
@@ -125,6 +136,10 @@
                     </MenuItem>
                     <MenuItem Header="{loc:Loc OpenFolder}"
                               Command="{Binding OpenContainingFolderCommand}">
+                      <MenuItem.Icon>
+                        <Path Data="{StaticResource OpenFolderIconGeometry}"
+                              Style="{StaticResource FormatMenuIconStyle}" />
+                      </MenuItem.Icon>
                       <MenuItem.Style>
                         <Style TargetType="MenuItem">
                           <Setter Property="Visibility" Value="Visible" />
@@ -139,6 +154,10 @@
                     <Separator />
                     <MenuItem Header="{loc:Loc SaveFile}"
                               Command="{Binding ExportToDownloadsCommand}">
+                      <MenuItem.Icon>
+                        <Path Data="{StaticResource SaveIconGeometry}"
+                              Style="{StaticResource FormatMenuIconStyle}" />
+                      </MenuItem.Icon>
                       <MenuItem.Style>
                         <Style TargetType="MenuItem">
                           <Setter Property="Visibility" Value="Visible" />
@@ -152,6 +171,10 @@
                     </MenuItem>
                     <MenuItem Header="{loc:Loc SaveFileTo}"
                               Command="{Binding ExportToFolderCommand}">
+                      <MenuItem.Icon>
+                        <Path Data="{StaticResource SaveToFolderIconGeometry}"
+                              Style="{StaticResource FormatMenuIconStyle}" />
+                      </MenuItem.Icon>
                       <MenuItem.Style>
                         <Style TargetType="MenuItem">
                           <Setter Property="Visibility" Value="Visible" />
@@ -165,7 +188,13 @@
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="{loc:Loc RemoveFormat}"
-                              Command="{Binding RemoveFormatCommand}">
+                              Command="{Binding RemoveFormatCommand}"
+                              Foreground="{DynamicResource DangerBrush}">
+                      <MenuItem.Icon>
+                        <Path Data="{StaticResource DeleteIconGeometry}"
+                              Style="{StaticResource FormatMenuIconStyle}"
+                              Fill="{DynamicResource DangerBrush}" />
+                      </MenuItem.Icon>
                       <MenuItem.Style>
                         <Style TargetType="MenuItem">
                           <Setter Property="Visibility" Value="Visible" />
