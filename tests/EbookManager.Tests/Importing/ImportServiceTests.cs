@@ -878,8 +878,11 @@ public sealed class ImportServiceTests
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) =>
             inner.DeleteAsync(id, cancellationToken);
 
-        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
-            inner.DeleteFileAsync(fileId, cancellationToken);
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(bookId, fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
@@ -939,8 +942,11 @@ public sealed class ImportServiceTests
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
 
-        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
-            inner.DeleteFileAsync(fileId, cancellationToken);
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(bookId, fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
@@ -1087,8 +1093,11 @@ public sealed class ImportServiceTests
             await inner.DeleteAsync(id, cancellationToken);
         }
 
-        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
-            inner.DeleteFileAsync(fileId, cancellationToken);
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(bookId, fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
@@ -1228,8 +1237,11 @@ public sealed class ImportServiceTests
             await inner.DeleteAsync(id, cancellationToken);
         }
 
-        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
-            inner.DeleteFileAsync(fileId, cancellationToken);
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(bookId, fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
@@ -1305,8 +1317,11 @@ public sealed class ImportServiceTests
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
 
-        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
-            inner.DeleteFileAsync(fileId, cancellationToken);
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(bookId, fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);
@@ -1356,8 +1371,11 @@ public sealed class ImportServiceTests
 
         public Task DeleteAsync(Guid id, CancellationToken cancellationToken) => inner.DeleteAsync(id, cancellationToken);
 
-        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken) =>
-            inner.DeleteFileAsync(fileId, cancellationToken);
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken) =>
+            inner.DeleteFileAsync(bookId, fileId, cancellationToken);
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             inner.ListFilesAsync(bookId, cancellationToken);

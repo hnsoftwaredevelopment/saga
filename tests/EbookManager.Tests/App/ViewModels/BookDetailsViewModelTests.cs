@@ -543,19 +543,24 @@ public sealed class BookDetailsViewModelTests
             return Task.CompletedTask;
         }
 
-        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken)
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken)
         {
-            foreach (var (bookId, files) in filesByBookId.ToArray())
+            if (!filesByBookId.TryGetValue(bookId, out var files))
             {
-                var remaining = files.Where(file => file.Id != fileId).ToArray();
-                if (remaining.Length != files.Count)
-                {
-                    filesByBookId[bookId] = remaining;
-                    break;
-                }
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
             }
 
-            return Task.CompletedTask;
+            var remaining = files.Where(file => file.Id != fileId).ToArray();
+            if (remaining.Length == files.Count)
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
+            }
+
+            filesByBookId[bookId] = remaining;
+            return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.Deleted));
         }
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>

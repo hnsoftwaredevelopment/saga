@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.ComponentModel;
 using System.IO;
 using EbookManager.App.Localization;
 using EbookManager.Domain.Abstractions;
@@ -20,13 +21,11 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
             return Task.FromResult(false);
         }
 
-        Process.Start(new ProcessStartInfo
+        return Task.FromResult(TryStartProcess(new ProcessStartInfo
         {
             FileName = absolutePath,
             UseShellExecute = true
-        });
-
-        return Task.FromResult(true);
+        }));
     }
 
     public Task<bool> OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
@@ -45,14 +44,12 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
             ? $"/select,\"{absolutePath}\""
             : $"\"{folderPath}\"";
 
-        Process.Start(new ProcessStartInfo
+        return Task.FromResult(TryStartProcess(new ProcessStartInfo
         {
             FileName = "explorer.exe",
             Arguments = arguments,
             UseShellExecute = true
-        });
-
-        return Task.FromResult(true);
+        }));
     }
 
     public Task<bool> ConfirmRemoveFormatAsync(string formatText, CancellationToken cancellationToken)
@@ -95,5 +92,22 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
         return string.IsNullOrWhiteSpace(userProfile)
             ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             : Path.Combine(userProfile, "Downloads");
+    }
+
+    private static bool TryStartProcess(ProcessStartInfo startInfo)
+    {
+        try
+        {
+            Process.Start(startInfo);
+            return true;
+        }
+        catch (Win32Exception)
+        {
+            return false;
+        }
+        catch (InvalidOperationException)
+        {
+            return false;
+        }
     }
 }

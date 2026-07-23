@@ -24,10 +24,19 @@ public interface IBookRepository
     Task AttachFilesToBookAsync(Guid sourceBookId, Guid targetBookId, CancellationToken cancellationToken);
     Task UpdateAsync(Book book, CancellationToken cancellationToken);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
-    Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken);
+    Task<BookFileDeleteRepositoryResult> DeleteFileAsync(Guid bookId, Guid fileId, CancellationToken cancellationToken);
     Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken);
     Task UpdateFileWriteBackAsync(
         Guid fileId,
         MetadataWriteResult result,
         CancellationToken cancellationToken);
 }
+
+public enum BookFileDeleteRepositoryStatus
+{
+    Deleted,
+    LastFormat,
+    NotFound
+}
+
+public sealed record BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus Status);

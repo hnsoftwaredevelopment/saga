@@ -28,15 +28,32 @@ public sealed class BookService(
         cancellationToken.ThrowIfCancellationRequested();
 
         var files = await bookRepository.ListFilesAsync(bookId, cancellationToken);
-        if (files.Count <= 1)
-        {
-            return new BookFileDeleteResult(BookFileDeleteStatus.LastFormat);
-        }
-
         var file = files.SingleOrDefault(candidate => candidate.Id == fileId);
         if (file is null)
         {
             return new BookFileDeleteResult(BookFileDeleteStatus.NotFound);
+        }
+
+        try
+        {
+            var repositoryResult = await bookRepository.DeleteFileAsync(bookId, fileId, cancellationToken);
+            if (repositoryResult.Status == BookFileDeleteRepositoryStatus.LastFormat)
+            {
+                return new BookFileDeleteResult(BookFileDeleteStatus.LastFormat);
+            }
+
+            if (repositoryResult.Status == BookFileDeleteRepositoryStatus.NotFound)
+            {
+                return new BookFileDeleteResult(BookFileDeleteStatus.NotFound);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            return new BookFileDeleteResult(BookFileDeleteStatus.Failed, exception.Message);
         }
 
         string? cleanupWarning = null;
@@ -51,19 +68,6 @@ public sealed class BookService(
         catch (Exception exception)
         {
             cleanupWarning = exception.Message;
-        }
-
-        try
-        {
-            await bookRepository.DeleteFileAsync(fileId, cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception exception)
-        {
-            return new BookFileDeleteResult(BookFileDeleteStatus.Failed, exception.Message);
         }
 
         return new BookFileDeleteResult(BookFileDeleteStatus.Deleted, cleanupWarning);

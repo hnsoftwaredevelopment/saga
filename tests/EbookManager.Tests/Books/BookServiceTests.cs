@@ -284,6 +284,25 @@ public sealed class BookServiceTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Delete_file_returns_not_found_before_checking_last_file()
+    {
+        var book = CreateBook();
+        var epub = CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub);
+        var repo = new InMemoryBookRepository(book, [epub]);
+        var fileStore = new RecordingLibraryFileStore();
+        var service = new BookService(
+            repo,
+            fileStore,
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter>()));
+
+        var result = await service.DeleteFileAsync(book.Id, Guid.NewGuid(), default);
+
+        result.Status.Should().Be(BookFileDeleteStatus.NotFound);
+        fileStore.DeletedFiles.Should().BeEmpty();
+        repo.StoredFiles.Should().ContainSingle();
+    }
+
+    [Fact]
     public async Task Delete_file_removes_database_row_when_file_cleanup_warns()
     {
         var book = CreateBook();
@@ -304,6 +323,30 @@ public sealed class BookServiceTests : IAsyncLifetime
         result.Status.Should().Be(BookFileDeleteStatus.Deleted);
         result.Message.Should().Be("file cleanup failed");
         repo.StoredFiles.Select(file => file.Format).Should().Equal(EbookFormat.Pdf);
+    }
+
+    [Fact]
+    public async Task Delete_file_keeps_physical_file_when_database_delete_fails()
+    {
+        var book = CreateBook();
+        var epub = CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub);
+        var pdf = CreateBookFile(book.Id, "books", "book.pdf", EbookFormat.Pdf);
+        var repo = new InMemoryBookRepository(book, [epub, pdf])
+        {
+            ThrowOnDeleteFile = true
+        };
+        var fileStore = new RecordingLibraryFileStore();
+        var service = new BookService(
+            repo,
+            fileStore,
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter>()));
+
+        var result = await service.DeleteFileAsync(book.Id, epub.Id, default);
+
+        result.Status.Should().Be(BookFileDeleteStatus.Failed);
+        result.Message.Should().Be("delete file failed");
+        fileStore.DeletedFiles.Should().BeEmpty();
+        repo.StoredFiles.Select(file => file.Format).Should().Equal(EbookFormat.Epub, EbookFormat.Pdf);
     }
 
     [Fact]
@@ -394,6 +437,7 @@ public sealed class BookServiceTests : IAsyncLifetime
         public bool ListFilesAsyncCalled { get; private set; }
         public bool DeleteAsyncCalled { get; private set; }
         public bool ThrowOnDelete { get; set; }
+        public bool ThrowOnDeleteFile { get; set; }
         public List<(Guid FileId, MetadataWriteResult Result)> UpdateFileWriteBackCalls { get; } = [];
         public List<BookFile> StoredFiles { get; } = [];
         public Book? StoredBook => books.Values.SingleOrDefault();
@@ -513,23 +557,36 @@ public sealed class BookServiceTests : IAsyncLifetime
             return Task.CompletedTask;
         }
 
-        public Task DeleteFileAsync(Guid fileId, CancellationToken cancellationToken)
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken)
         {
-            foreach (var (bookId, files) in filesByBookId.ToArray())
+            if (ThrowOnDeleteFile)
             {
-                var index = files.FindIndex(file => file.Id == fileId);
-                if (index < 0)
-                {
-                    continue;
-                }
-
-                files.RemoveAt(index);
-                filesByBookId[bookId] = files;
-                StoredFiles.RemoveAll(file => file.Id == fileId);
-                break;
+                throw new IOException("delete file failed");
             }
 
-            return Task.CompletedTask;
+            if (!filesByBookId.TryGetValue(bookId, out var files))
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
+            }
+
+            var index = files.FindIndex(file => file.Id == fileId);
+            if (index < 0)
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
+            }
+
+            if (files.Count <= 1)
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.LastFormat));
+            }
+
+            files.RemoveAt(index);
+            filesByBookId[bookId] = files;
+            StoredFiles.RemoveAll(file => file.Id == fileId);
+            return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.Deleted));
         }
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken)
