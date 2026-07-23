@@ -10,9 +10,11 @@ namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class BookDetailsViewModel(
     BookService bookService,
+    BookFileExportService? exportService = null,
     IBookFileInteractionService? fileInteraction = null) : ObservableObject
 {
     private readonly BookService bookService = bookService;
+    private readonly BookFileExportService? exportService = exportService;
     private readonly IBookFileInteractionService? fileInteraction = fileInteraction;
     private Book? originalBook;
     private bool isApplyingBook;
@@ -357,7 +359,11 @@ public sealed partial class BookDetailsViewModel(
             .OrderBy(file => file.Format)
             .ThenBy(file => file.RelativePath, StringComparer.CurrentCultureIgnoreCase))
         {
-            FormatDetails.Add(BookFormatDetailsViewModel.FromFile(file, fileInteraction));
+            FormatDetails.Add(BookFormatDetailsViewModel.FromFile(
+                originalBook,
+                file,
+                exportService,
+                fileInteraction));
         }
 
         FormatsText = FormatFormats(files.Select(file => file.Format).Distinct().ToArray());
@@ -395,25 +401,40 @@ public sealed partial class BookDetailsViewModel(
         value.ToLocalTime().ToString("g", System.Globalization.CultureInfo.CurrentCulture);
 }
 
-public sealed class BookFormatDetailsViewModel
+public sealed partial class BookFormatDetailsViewModel : ObservableObject
 {
+    private readonly Book? book;
+    private readonly BookFile? file;
+    private readonly BookFileExportService? exportService;
     private readonly IBookFileInteractionService? fileInteraction;
 
     private BookFormatDetailsViewModel(
         Guid? fileId,
+        Book? book,
+        BookFile? file,
         EbookFormat format,
         string? relativePath,
         long? sizeBytes,
+        BookFileExportService? exportService,
         IBookFileInteractionService? fileInteraction)
     {
         FileId = fileId;
+        this.book = book;
+        this.file = file;
         Format = format;
         RelativePath = relativePath;
         SizeBytes = sizeBytes;
+        this.exportService = exportService;
         this.fileInteraction = fileInteraction;
         OpenContainingFolderCommand = new AsyncRelayCommand(
             OpenContainingFolderAsync,
             () => CanOpenContainingFolder);
+        ExportToDownloadsCommand = new AsyncRelayCommand(
+            ExportToDownloadsAsync,
+            () => CanExport);
+        ExportToFolderCommand = new AsyncRelayCommand(
+            ExportToFolderAsync,
+            () => CanExport);
     }
 
     public Guid? FileId { get; }
@@ -427,20 +448,74 @@ public sealed class BookFormatDetailsViewModel
         : $"{FormatText} - {SizeText}";
     public bool CanOpenContainingFolder =>
         fileInteraction is not null && !string.IsNullOrWhiteSpace(RelativePath);
+    public bool CanExport =>
+        book is not null && file is not null && exportService is not null && fileInteraction is not null;
+    [ObservableProperty]
+    private BookFormatExportStatusMessage? exportStatusMessage;
     public IAsyncRelayCommand OpenContainingFolderCommand { get; }
+    public IAsyncRelayCommand ExportToDownloadsCommand { get; }
+    public IAsyncRelayCommand ExportToFolderCommand { get; }
 
     public static BookFormatDetailsViewModel FromFormat(EbookFormat format) =>
-        new(null, format, null, null, null);
+        new(null, null, null, format, null, null, null, null);
 
     public static BookFormatDetailsViewModel FromFile(
+        Book? book,
         BookFile file,
+        BookFileExportService? exportService = null,
         IBookFileInteractionService? fileInteraction = null) =>
-        new(file.Id, file.Format, file.RelativePath, file.SizeBytes, fileInteraction);
+        new(file.Id, book, file, file.Format, file.RelativePath, file.SizeBytes, exportService, fileInteraction);
 
     private Task OpenContainingFolderAsync(CancellationToken cancellationToken) =>
         fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath)
             ? Task.CompletedTask
             : fileInteraction.OpenContainingFolderAsync(RelativePath, cancellationToken);
+
+    private async Task ExportToDownloadsAsync(CancellationToken cancellationToken)
+    {
+        if (!CanExport)
+        {
+            return;
+        }
+
+        var folder = await fileInteraction!.GetDefaultExportFolderAsync(cancellationToken);
+        await ExportAsync(folder, cancellationToken);
+    }
+
+    private async Task ExportToFolderAsync(CancellationToken cancellationToken)
+    {
+        if (!CanExport)
+        {
+            return;
+        }
+
+        var folder = await fileInteraction!.PickExportFolderAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(folder))
+        {
+            return;
+        }
+
+        await ExportAsync(folder, cancellationToken);
+    }
+
+    private async Task ExportAsync(string destinationFolder, CancellationToken cancellationToken)
+    {
+        var result = await exportService!.ExportAsync(book!, file!, destinationFolder, cancellationToken);
+        ExportStatusMessage = result.Status == BookFileExportStatus.Exported
+            ? CreateExportSuccessMessage(destinationFolder)
+            : BookFormatExportStatusMessage.FromMessage(result.Message);
+    }
+
+    private BookFormatExportStatusMessage CreateExportSuccessMessage(string destinationFolder)
+    {
+        var folderName = Path.GetFileName(destinationFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        if (string.IsNullOrWhiteSpace(folderName))
+        {
+            folderName = destinationFolder;
+        }
+
+        return BookFormatExportStatusMessage.Saved(FormatText, folderName);
+    }
 
     private static string FormatSize(long bytes)
     {
@@ -457,4 +532,19 @@ public sealed class BookFormatDetailsViewModel
             ? $"{bytes} {units[unitIndex]}"
             : $"{value:0.#} {units[unitIndex]}";
     }
+}
+
+public sealed record BookFormatExportStatusMessage(
+    string ResourceKey,
+    string FormatText,
+    string FolderName,
+    string? Message = null)
+{
+    public static BookFormatExportStatusMessage Saved(string formatText, string folderName) =>
+        new("FormatSavedToFolder", formatText, folderName);
+
+    public static BookFormatExportStatusMessage? FromMessage(string? message) =>
+        string.IsNullOrWhiteSpace(message)
+            ? null
+            : new(string.Empty, string.Empty, string.Empty, message);
 }

@@ -35,4 +35,30 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
 
         return Task.CompletedTask;
     }
+
+    public Task<string?> PickExportFolderAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var dialog = new Microsoft.Win32.OpenFolderDialog
+        {
+            Title = "Select export folder",
+            InitialDirectory = GetDownloadsFolder()
+        };
+
+        return Task.FromResult(dialog.ShowDialog() == true ? dialog.FolderName : null);
+    }
+
+    public Task<string> GetDefaultExportFolderAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(GetDownloadsFolder());
+    }
+
+    private static string GetDownloadsFolder()
+    {
+        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        return string.IsNullOrWhiteSpace(userProfile)
+            ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            : Path.Combine(userProfile, "Downloads");
+    }
 }

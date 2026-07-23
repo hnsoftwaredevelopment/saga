@@ -4,6 +4,7 @@ using EbookManager.Domain.Books;
 using EbookManager.Domain.Metadata;
 using EbookManager.Presentation.Abstractions;
 using EbookManager.Presentation.ViewModels;
+using EbookManager.Tests.TestSupport;
 using FluentAssertions;
 using System.Globalization;
 
@@ -143,6 +144,41 @@ public sealed class BookDetailsViewModelTests
         viewModel.FormatDetails.Select(format => format.DisplayText).Should().Equal("EPUB", "PDF");
         viewModel.FormatsText.Should().Be("EPUB, PDF");
         viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Format_details_can_export_to_downloads()
+    {
+        using var temporaryDirectory = new TemporaryDirectory();
+        var libraryRoot = temporaryDirectory.CreateSubdirectory("Library").FullName;
+        var downloads = temporaryDirectory.CreateSubdirectory("Downloads").FullName;
+        var sourcePath = Path.Combine(libraryRoot, "books", "book", "original.epub");
+        Directory.CreateDirectory(Path.GetDirectoryName(sourcePath)!);
+        File.WriteAllText(sourcePath, "content");
+        var fileInteraction = new RecordingBookFileInteractionService
+        {
+            DownloadsFolder = downloads
+        };
+        var fileStore = new RootedLibraryFileStore(libraryRoot);
+        var viewModel = CreateViewModel(
+            out var repository,
+            fileInteraction,
+            fileStore,
+            new BookFileExportService(fileStore));
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub]);
+        repository.SeedFiles(
+            book.Id,
+            [CreateBookFile(book.Id, EbookFormat.Epub, "books/book/original.epub", 1_887_436)]);
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+        await viewModel.FormatDetails[0].ExportToDownloadsCommand.ExecuteAsync(null);
+
+        var exportedPath = Path.Combine(downloads, "First Author - Original.epub");
+        File.Exists(exportedPath).Should().BeTrue();
+        File.ReadAllText(exportedPath).Should().Be("content");
+        viewModel.FormatDetails[0].ExportStatusMessage.Should().Be(
+            BookFormatExportStatusMessage.Saved("EPUB", "Downloads"));
     }
 
     [Fact]
@@ -325,14 +361,15 @@ public sealed class BookDetailsViewModelTests
     private static BookDetailsViewModel CreateViewModel(
         out RecordingBookRepository repository,
         IBookFileInteractionService? fileInteraction = null,
-        ILibraryFileStore? fileStore = null)
+        ILibraryFileStore? fileStore = null,
+        BookFileExportService? exportService = null)
     {
         repository = new RecordingBookRepository();
         var service = new BookService(
             repository,
             fileStore ?? new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver());
-        return new BookDetailsViewModel(service, fileInteraction);
+        return new BookDetailsViewModel(service, exportService, fileInteraction);
     }
 
     private static Book CreateBook(
@@ -437,6 +474,21 @@ public sealed class BookDetailsViewModelTests
         public string GetAbsolutePath(string relativePath) => relativePath;
     }
 
+    private sealed class RootedLibraryFileStore(string rootPath) : ILibraryFileStore
+    {
+        public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
+            Guid bookId,
+            string sourcePath,
+            byte[]? coverBytes,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public string GetAbsolutePath(string relativePath) => Path.Combine(rootPath, relativePath);
+    }
+
     private sealed class ThrowingLibraryFileStore : ILibraryFileStore
     {
         public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
@@ -475,11 +527,19 @@ public sealed class BookDetailsViewModelTests
     private sealed class RecordingBookFileInteractionService : IBookFileInteractionService
     {
         public List<string> OpenedRelativePaths { get; } = [];
+        public string? DownloadsFolder { get; set; }
+        public string? ExportFolder { get; set; }
 
         public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
         {
             OpenedRelativePaths.Add(relativePath);
             return Task.CompletedTask;
         }
+
+        public Task<string?> PickExportFolderAsync(CancellationToken cancellationToken) =>
+            Task.FromResult(ExportFolder);
+
+        public Task<string> GetDefaultExportFolderAsync(CancellationToken cancellationToken) =>
+            Task.FromResult(DownloadsFolder ?? Path.GetTempPath());
     }
 }

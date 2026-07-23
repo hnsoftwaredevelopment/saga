@@ -442,6 +442,9 @@
   <data name="DuplicateMergeDefaultsDescription" xml:space="preserve"><value>Wähle die Aktion, mit der Saga die Zusammenführungs-Vorschau öffnet. Der Benutzer kann jedes Feld vor dem Zusammenführen weiterhin ändern.</value></data>
   <data name="EnableDiagnosticDetailsSetting" xml:space="preserve"><value>Detaillierte Diagnosen verfügbar halten</value></data>
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Diese Einstellung reserviert einen festen Platz für Importverlauf, Fehlerberichte und Diagnoseinformationen. Aktuelle Diagnosen bleiben verfügbar, während diese Grundlage fertiggestellt wird.</value></data>
+  <data name="SaveFile" xml:space="preserve"><value>Speichern</value></data>
+  <data name="SaveFileTo" xml:space="preserve"><value>Speichern unter...</value></data>
+  <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} in {1} gespeichert</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sortieren nach</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Aktuelle Bibliotheksansicht sortieren</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>der E-Book-Manager</value></data>
