@@ -55,6 +55,7 @@ Milestone 9 builds on version `0.1` with a DataGrid makeover, starting with a cl
 - English, Dutch, German, French, Spanish, and Italian selectable UI localization
 - toolbar and details action icons with localized tooltips
 - Syncfusion-based compact List view with real columns, sorting, and grouping surface
+- Detailed view exposes the standard details-pane metadata fields as grid columns
 
 ## Prerequisites
 

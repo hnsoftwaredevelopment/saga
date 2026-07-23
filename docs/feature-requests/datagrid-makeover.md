@@ -22,6 +22,7 @@ Because the detailed grid should eventually support richer desktop behavior, thi
 - Add grouping support for useful metadata fields.
 - Keep grid behavior consistent with user settings.
 - Prepare for user-defined views and column customization later.
+- Allow each view to define its own visible columns later.
 
 ## Candidate Scope
 
@@ -46,6 +47,15 @@ Initial grouping candidates:
 
 The UI may use a group panel above the grid, for example: "Drag a column here to group".
 
+Multi-value grouping needs Saga-specific behavior instead of plain string grouping:
+
+- grouping by author should create one group per individual author, not a combined heading such as `Author A, Author B`;
+- grouping by tag should create one group per individual tag;
+- when a book has multiple authors or tags, the same book may appear in multiple groups;
+- this behavior should apply consistently to grid views and, later, to Bookshelf grouping.
+
+Bookshelf grouping should preserve the visual nature of the bookshelf. Covers remain the primary content, but the source should be projected into grouped sections such as author, series, or tag. Horizontal-only cover flow should not return.
+
 ### Views
 
 The makeover should consider future user-defined views:
@@ -54,6 +64,8 @@ The makeover should consider future user-defined views:
 - remember visible columns per view;
 - allow default view selection;
 - avoid locking this behavior to the detailed grid only if bookshelf/list views later gain compatible view definitions.
+
+Detailed view should expose all standard metadata fields available in the details pane. Later the user can decide per view which of these columns are visible.
 
 ## Non-Goals
 
@@ -66,5 +78,7 @@ The makeover should consider future user-defined views:
 - Clicking the Author column header gives the same author order as the Saga sort dropdown.
 - Changing the author sort strategy in Settings immediately affects grid sorting behavior.
 - Grouping by category/tag shows books under the expected group headers.
+- Grouping by author or tag treats individual authors/tags as separate group keys, even when one book belongs to multiple values.
+- Bookshelf grouping shows cover sections without replacing the cover-first layout with a text grid.
 - Grouping and multi-column sorting can be combined without losing the selected library filter state.
 - Large libraries remain responsive.
