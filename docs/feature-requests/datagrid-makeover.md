@@ -2,7 +2,7 @@
 
 ## Status
 
-Future feature. Do not implement as part of Milestone 4.
+In progress as Milestone 9.
 
 ## Context
 
@@ -83,3 +83,17 @@ Detailed view should expose all standard metadata fields available in the detail
 - Bookshelf grouping shows cover sections without replacing the cover-first layout with a text grid.
 - Grouping and multi-column sorting can be combined without losing the selected library filter state.
 - Large libraries remain responsive.
+
+## Implemented Slices
+
+- List view now uses `SfDataGrid` columns instead of a continuous text row.
+- Detailed view exposes the standard details-pane metadata fields as grid columns.
+- Series number sorting uses the numeric series index.
+- Author grid sorting uses the configured author sort strategy while keeping the display name unchanged.
+- Detailed and List views have a `Group by` dropdown for automatic grouping by author, series, tag, language, status, or type.
+- Multi-value groups are projected by Saga before they reach the grid, so a multi-author, multi-tag, or multi-format book can appear under each individual group value while the visible book count remains unique.
+
+## Remaining Slices
+
+- Bookshelf grouping should show grouped cover sections using the same grouping source.
+- User-defined view settings should eventually remember grouping, sorting, and visible columns per view.

@@ -10,7 +10,8 @@
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
   </UserControl.Resources>
-  <syncfusion:SfDataGrid ItemsSource="{Binding VisibleBooks}"
+  <syncfusion:SfDataGrid x:Name="BooksGrid"
+                         ItemsSource="{Binding VisibleBooks}"
                          SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
                          AutoGenerateColumns="False"
                          AllowEditing="False"

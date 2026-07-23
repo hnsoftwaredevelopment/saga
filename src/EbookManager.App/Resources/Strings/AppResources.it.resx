@@ -455,6 +455,9 @@
   <data name="FormatRemovedFromLibrary" xml:space="preserve"><value>{0} rimosso da questo libro</value></data>
   <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} è l'ultimo formato. Usa Elimina per rimuovere il libro.</value></data>
   <data name="FormatRemoveFailed" xml:space="preserve"><value>Impossibile rimuovere {0}</value></data>
+  <data name="GroupBy" xml:space="preserve"><value>Raggruppa per</value></data>
+  <data name="GroupLibraryTooltip" xml:space="preserve"><value>Raggruppa la vista corrente della libreria</value></data>
+  <data name="NoGrouping" xml:space="preserve"><value>Nessun raggruppamento</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordina per</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordina la visualizzazione corrente della biblioteca</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>il gestore di e-book</value></data>

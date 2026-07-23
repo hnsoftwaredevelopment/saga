@@ -104,6 +104,9 @@ public sealed partial class LibraryViewModel : ObservableObject
     private LibrarySortOption selectedSortOption = LibrarySortOption.None;
 
     [ObservableProperty]
+    private LibraryGroupOption selectedGroupOption = LibraryGroupOption.None;
+
+    [ObservableProperty]
     private BookRowViewModel? selectedBook;
 
     [ObservableProperty]
@@ -149,7 +152,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool HasActiveImport => importAgent?.IsActive == true;
 
-    public int VisibleBookCount => VisibleBooks.Count;
+    public int VisibleBookCount => VisibleBooks.Select(row => row.Id).Distinct().Count();
 
     public IAsyncRelayCommand RefreshCommand => refreshCommand ??= new AsyncRelayCommand(RefreshAsync);
     public IAsyncRelayCommand AddBooksCommand => addBooksCommand ??= new AsyncRelayCommand(AddBooksAsync);
@@ -266,6 +269,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     partial void OnSearchTextChanged(string value) => ApplyFilter();
 
     partial void OnSelectedSortOptionChanged(LibrarySortOption value) => ApplyFilter();
+
+    partial void OnSelectedGroupOptionChanged(LibraryGroupOption value) => ApplyFilter();
 
     async partial void OnSelectedBookChanged(BookRowViewModel? value)
     {
@@ -467,7 +472,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         var selectedId = SelectedBook?.Id;
         var filteredBooks = ApplyFacetFilters(searchService.Filter(books, SearchText));
         var rows = ApplySort(
-                filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath, authorSortStrategy)),
+                ProjectRows(filteredBooks),
                 SelectedSortOption,
                 authorSortStrategy)
             .ToList();
@@ -486,6 +491,55 @@ public sealed partial class LibraryViewModel : ObservableObject
             ? "This library is empty. Add books or scan a folder to begin."
             : "Create or open a library to get started.";
     }
+
+    private IEnumerable<BookRowViewModel> ProjectRows(IEnumerable<Book> source)
+    {
+        foreach (var book in source)
+        {
+            foreach (var groupName in GetGroupNames(book, SelectedGroupOption))
+            {
+                yield return new BookRowViewModel(
+                    book,
+                    SearchText,
+                    CurrentLibraryPath,
+                    authorSortStrategy,
+                    groupName);
+            }
+        }
+    }
+
+    private static IEnumerable<string> GetGroupNames(Book book, LibraryGroupOption groupOption) =>
+        groupOption switch
+        {
+            LibraryGroupOption.Author => NonEmptyValues(book.Metadata.Authors, "Unknown author"),
+            LibraryGroupOption.Series => SingleNonEmptyValue(book.Metadata.Series, "No series"),
+            LibraryGroupOption.Tag => NonEmptyValues(book.Metadata.Tags ?? [], "No tags"),
+            LibraryGroupOption.Language => SingleNonEmptyValue(
+                string.IsNullOrWhiteSpace(book.Metadata.Language)
+                    ? null
+                    : LanguageDisplayService.DisplayName(book.Metadata.Language),
+                "No language"),
+            LibraryGroupOption.Status => [book.ReadingStatus.ToString()],
+            LibraryGroupOption.Format => NonEmptyValues(
+                book.Formats.Select(format => format.ToString().ToUpperInvariant()),
+                "No format"),
+            _ => [string.Empty]
+        };
+
+    private static IEnumerable<string> NonEmptyValues(IEnumerable<string> values, string fallback)
+    {
+        var normalized = values
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Select(value => value.Trim())
+            .Distinct(StringComparer.CurrentCultureIgnoreCase)
+            .OrderBy(value => value, StringComparer.CurrentCultureIgnoreCase)
+            .ToArray();
+
+        return normalized.Length == 0 ? [fallback] : normalized;
+    }
+
+    private static IEnumerable<string> SingleNonEmptyValue(string? value, string fallback) =>
+        [string.IsNullOrWhiteSpace(value) ? fallback : value.Trim()];
 
     private IReadOnlyList<Book> ApplyFacetFilters(IReadOnlyList<Book> source)
     {

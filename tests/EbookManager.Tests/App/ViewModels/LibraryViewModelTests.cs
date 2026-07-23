@@ -463,6 +463,48 @@ public sealed class LibraryViewModelTests
             .Should().BeEquivalentTo("Epub Book", "Pdf Book");
     }
 
+    [Fact]
+    public async Task Grouping_by_author_projects_multi_author_books_into_separate_groups()
+    {
+        var sharedBook = CreateBook("Shared Book", ["Jan Wiersma", "Sonja de Leeuw"]);
+        var soloBook = CreateBook("Solo Book", ["Jan Wiersma"]);
+        var viewModel = CreateViewModel([sharedBook, soloBook]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedGroupOption = LibraryGroupOption.Author;
+
+        viewModel.VisibleBooks.Select(row => (row.Title, row.GroupName))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("Shared Book", "Jan Wiersma"),
+                    ("Shared Book", "Sonja de Leeuw"),
+                    ("Solo Book", "Jan Wiersma")
+                ]);
+        viewModel.VisibleBookCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Grouping_by_tag_projects_multi_tag_books_but_keeps_unique_book_count()
+    {
+        var taggedBook = CreateBook("Tagged Book", ["Author"], tags: ["History", "Space"]);
+        var untaggedBook = CreateBook("Untagged Book", ["Author"]);
+        var viewModel = CreateViewModel([taggedBook, untaggedBook]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedGroupOption = LibraryGroupOption.Tag;
+
+        viewModel.VisibleBooks.Select(row => (row.Title, row.GroupName))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("Tagged Book", "History"),
+                    ("Tagged Book", "Space"),
+                    ("Untagged Book", "No tags")
+                ]);
+        viewModel.VisibleBookCount.Should().Be(2);
+    }
+
 
     [Fact]
     public async Task Selected_filters_expand_results_across_facets()

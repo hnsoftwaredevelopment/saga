@@ -9,7 +9,8 @@ public sealed class BookRowViewModel(
     Book book,
     string searchText = "",
     string? libraryPath = null,
-    AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName)
+    AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName,
+    string? groupName = null)
 {
     public Book Book { get; } = book;
     public Guid Id => Book.Id;
@@ -28,6 +29,7 @@ public sealed class BookRowViewModel(
         ? string.Empty
         : LanguageDisplayService.DisplayName(Book.Metadata.Language);
     public string Formats => string.Join(", ", Book.Formats.Select(format => format.ToString().ToUpperInvariant()));
+    public string GroupName { get; } = groupName ?? string.Empty;
     public ReadingStatus ReadingStatus => Book.ReadingStatus;
     public string DateAdded => FormatDateTime(Book.CreatedUtc);
     public string LastModified => FormatDateTime(Book.UpdatedUtc);

@@ -11,6 +11,10 @@
 - [ ] Click column headers in List view and confirm sorting works.
 - [ ] Confirm the group drop area is visible in Detailed view and List view.
 - [ ] Drag a supported column header to the group area and confirm grouping works.
+- [ ] Use the Group by dropdown in Detailed view and List view and confirm grouping is applied automatically.
+- [ ] Group by Author and confirm a multi-author book appears under each individual author.
+- [ ] Group by Tags and confirm a multi-tag book appears under each individual tag while the status book count remains unique.
+- [ ] Group by Type and confirm books with multiple formats can appear under each available format.
 - [ ] Switch between Bookshelf, Detailed, and List views without losing the active search and filters.
 
 ## Regression Checks

@@ -5,7 +5,8 @@
              xmlns:loc="clr-namespace:EbookManager.App.Localization"
              xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
              AllowDrop="True">
-  <syncfusion:SfDataGrid ItemsSource="{Binding VisibleBooks}"
+  <syncfusion:SfDataGrid x:Name="BooksGrid"
+                         ItemsSource="{Binding VisibleBooks}"
                          SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
                          AutoGenerateColumns="False"
                          AllowEditing="False"
