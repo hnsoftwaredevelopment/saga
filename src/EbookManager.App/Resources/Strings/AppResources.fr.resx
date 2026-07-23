@@ -426,6 +426,7 @@
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Mise à jour des métadonnées...</value></data>
   <data name="NoSort" xml:space="preserve"><value>Aucun</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Ouvrir une bibliothèque existante</value></data>
+  <data name="OpenFile" xml:space="preserve"><value>Ouvrir</value></data>
   <data name="OpenFolder" xml:space="preserve"><value>Ouvrir le dossier</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Ouvrir les paramètres</value></data>
   <data name="Outcome" xml:space="preserve"><value>Résultat</value></data>
@@ -444,6 +445,7 @@
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Ce réglage réserve un emplacement stable pour l'historique d'import, les rapports d'erreur et les informations de diagnostic. Les diagnostics actuels restent disponibles pendant la finalisation de cette base.</value></data>
   <data name="SaveFile" xml:space="preserve"><value>Enregistrer</value></data>
   <data name="SaveFileTo" xml:space="preserve"><value>Enregistrer dans...</value></data>
+  <data name="SelectExportFolder" xml:space="preserve"><value>Sélectionner le dossier d’enregistrement</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} enregistré dans {1}</value></data>
   <data name="SortBy" xml:space="preserve"><value>Trier par</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Trier la vue actuelle de la bibliothèque</value></data>

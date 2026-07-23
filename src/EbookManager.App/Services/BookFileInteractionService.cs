@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using EbookManager.App.Localization;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Presentation.Abstractions;
 
@@ -8,6 +9,25 @@ namespace EbookManager.App.Services;
 public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IBookFileInteractionService
 {
     private readonly ILibraryFileStore fileStore = fileStore;
+
+    public Task OpenFileAsync(string relativePath, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var absolutePath = fileStore.GetAbsolutePath(relativePath);
+        if (!File.Exists(absolutePath))
+        {
+            return Task.CompletedTask;
+        }
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = absolutePath,
+            UseShellExecute = true
+        });
+
+        return Task.CompletedTask;
+    }
 
     public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
     {
@@ -41,7 +61,7 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
         cancellationToken.ThrowIfCancellationRequested();
         var dialog = new Microsoft.Win32.OpenFolderDialog
         {
-            Title = "Select export folder",
+            Title = LocalizedStrings.Current["SelectExportFolder"],
             InitialDirectory = GetDownloadsFolder()
         };
 

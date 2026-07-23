@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 7 builds on version `0.1` with per-format file actions in the details pane, so users can open the managed file location or save a selected ebook format to Downloads or another folder without exposing internal library paths.
+Milestone 8 builds on version `0.1` with library management polish around day-to-day book and format actions, keeping common file workflows compact and localized.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -39,6 +39,7 @@ Milestone 7 builds on version `0.1` with per-format file actions in the details 
 - localized language filter and details display while preserving stable stored language codes
 - read-only details display for date added and last modified system metadata
 - per-format details rows with managed file sizes
+- per-format open-file action from the details pane
 - per-format open-folder action from the details pane
 - per-format save actions from the details pane with localized feedback
 - description cleanup for common HTML-like metadata
@@ -124,6 +125,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-5-checklist.md](docs/manual-tests/milestone-5-checklist.md)
 - [docs/manual-tests/milestone-6-checklist.md](docs/manual-tests/milestone-6-checklist.md)
 - [docs/manual-tests/milestone-7-checklist.md](docs/manual-tests/milestone-7-checklist.md)
+- [docs/manual-tests/milestone-8-checklist.md](docs/manual-tests/milestone-8-checklist.md)
 
 ## Later-Version Candidates
 

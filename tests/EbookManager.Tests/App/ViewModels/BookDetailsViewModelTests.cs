@@ -122,7 +122,9 @@ public sealed class BookDetailsViewModelTests
                 .Should()
                 .Equal("EPUB - 1.8 MB", "PDF - 4.2 MB");
             viewModel.FormatDetails.Should().AllSatisfy(format => format.FileId.Should().NotBeNull());
+            await viewModel.FormatDetails[0].OpenFileCommand.ExecuteAsync(null);
             await viewModel.FormatDetails[0].OpenContainingFolderCommand.ExecuteAsync(null);
+            fileInteraction.OpenedFiles.Should().Equal("books/book/original.epub");
             fileInteraction.OpenedRelativePaths.Should().Equal("books/book/original.epub");
             viewModel.HasUnsavedChanges.Should().BeFalse();
         }
@@ -526,9 +528,16 @@ public sealed class BookDetailsViewModelTests
 
     private sealed class RecordingBookFileInteractionService : IBookFileInteractionService
     {
+        public List<string> OpenedFiles { get; } = [];
         public List<string> OpenedRelativePaths { get; } = [];
         public string? DownloadsFolder { get; set; }
         public string? ExportFolder { get; set; }
+
+        public Task OpenFileAsync(string relativePath, CancellationToken cancellationToken)
+        {
+            OpenedFiles.Add(relativePath);
+            return Task.CompletedTask;
+        }
 
         public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
         {

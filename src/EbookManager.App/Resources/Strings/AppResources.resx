@@ -130,6 +130,7 @@
   <data name="NoLibrarySelected" xml:space="preserve"><value>No library selected</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Open an existing library</value></data>
   <data name="OpenLibrary" xml:space="preserve"><value>Open library</value></data>
+  <data name="OpenFile" xml:space="preserve"><value>Open</value></data>
   <data name="OpenFolder" xml:space="preserve"><value>Open folder</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Open settings</value></data>
   <data name="Outcome" xml:space="preserve"><value>Outcome</value></data>
@@ -173,6 +174,7 @@
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Reserve this setting for import history, error reporting, and troubleshooting details. Current diagnostics stay available while this foundation is completed.</value></data>
   <data name="SaveFile" xml:space="preserve"><value>Save</value></data>
   <data name="SaveFileTo" xml:space="preserve"><value>Save to...</value></data>
+  <data name="SelectExportFolder" xml:space="preserve"><value>Select save folder</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} saved in {1}</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>

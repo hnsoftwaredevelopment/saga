@@ -426,6 +426,9 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
         SizeBytes = sizeBytes;
         this.exportService = exportService;
         this.fileInteraction = fileInteraction;
+        OpenFileCommand = new AsyncRelayCommand(
+            OpenFileAsync,
+            () => CanOpenFile);
         OpenContainingFolderCommand = new AsyncRelayCommand(
             OpenContainingFolderAsync,
             () => CanOpenContainingFolder);
@@ -446,12 +449,15 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
     public string DisplayText => string.IsNullOrWhiteSpace(SizeText)
         ? FormatText
         : $"{FormatText} - {SizeText}";
+    public bool CanOpenFile =>
+        fileInteraction is not null && !string.IsNullOrWhiteSpace(RelativePath);
     public bool CanOpenContainingFolder =>
         fileInteraction is not null && !string.IsNullOrWhiteSpace(RelativePath);
     public bool CanExport =>
         book is not null && file is not null && exportService is not null && fileInteraction is not null;
     [ObservableProperty]
     private BookFormatExportStatusMessage? exportStatusMessage;
+    public IAsyncRelayCommand OpenFileCommand { get; }
     public IAsyncRelayCommand OpenContainingFolderCommand { get; }
     public IAsyncRelayCommand ExportToDownloadsCommand { get; }
     public IAsyncRelayCommand ExportToFolderCommand { get; }
@@ -465,6 +471,11 @@ public sealed partial class BookFormatDetailsViewModel : ObservableObject
         BookFileExportService? exportService = null,
         IBookFileInteractionService? fileInteraction = null) =>
         new(file.Id, book, file, file.Format, file.RelativePath, file.SizeBytes, exportService, fileInteraction);
+
+    private Task OpenFileAsync(CancellationToken cancellationToken) =>
+        fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath)
+            ? Task.CompletedTask
+            : fileInteraction.OpenFileAsync(RelativePath, cancellationToken);
 
     private Task OpenContainingFolderAsync(CancellationToken cancellationToken) =>
         fileInteraction is null || string.IsNullOrWhiteSpace(RelativePath)

@@ -426,6 +426,7 @@
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Actualizando metadatos...</value></data>
   <data name="NoSort" xml:space="preserve"><value>Ninguno</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Abrir una biblioteca existente</value></data>
+  <data name="OpenFile" xml:space="preserve"><value>Abrir</value></data>
   <data name="OpenFolder" xml:space="preserve"><value>Abrir carpeta</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Abrir configuración</value></data>
   <data name="Outcome" xml:space="preserve"><value>Resultado</value></data>
@@ -444,6 +445,7 @@
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Esta opción reserva un lugar estable para el historial de importación, informes de error e información de diagnóstico. Los diagnósticos actuales siguen disponibles mientras se completa esta base.</value></data>
   <data name="SaveFile" xml:space="preserve"><value>Guardar</value></data>
   <data name="SaveFileTo" xml:space="preserve"><value>Guardar en...</value></data>
+  <data name="SelectExportFolder" xml:space="preserve"><value>Seleccionar carpeta de guardado</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} guardado en {1}</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordenar por</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordenar la vista actual de la biblioteca</value></data>
