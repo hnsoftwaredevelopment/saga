@@ -186,6 +186,7 @@
   <data name="FormatRemoveFailed" xml:space="preserve"><value>{0} could not be removed</value></data>
   <data name="GroupBy" xml:space="preserve"><value>Group by</value></data>
   <data name="GroupLibraryTooltip" xml:space="preserve"><value>Group the current library view</value></data>
+  <data name="ThenBy" xml:space="preserve"><value>Then by</value></data>
   <data name="NoGrouping" xml:space="preserve"><value>No grouping</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>

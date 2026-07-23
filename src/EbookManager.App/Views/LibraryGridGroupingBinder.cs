@@ -37,7 +37,8 @@ internal sealed class LibraryGridGroupingBinder
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(LibraryViewModel.SelectedGroupOption))
+        if (e.PropertyName is nameof(LibraryViewModel.SelectedGroupOption)
+            or nameof(LibraryViewModel.SecondaryGroupOption))
         {
             ApplyGrouping();
         }
@@ -46,11 +47,27 @@ internal sealed class LibraryGridGroupingBinder
     private void ApplyGrouping()
     {
         grid.GroupColumnDescriptions.Clear();
-        if (viewModel?.SelectedGroupOption != LibraryGroupOption.None)
+        if (viewModel is null)
+        {
+            return;
+        }
+
+        var hasPrimary = viewModel.SelectedGroupOption != LibraryGroupOption.None;
+        var hasSecondary = viewModel.SecondaryGroupOption != LibraryGroupOption.None &&
+            viewModel.SecondaryGroupOption != viewModel.SelectedGroupOption;
+        if (hasPrimary || hasSecondary)
         {
             grid.GroupColumnDescriptions.Add(new GroupColumnDescription
             {
-                ColumnName = nameof(BookRowViewModel.GroupName)
+                ColumnName = nameof(BookRowViewModel.PrimaryGroupName)
+            });
+        }
+
+        if (hasPrimary && hasSecondary)
+        {
+            grid.GroupColumnDescriptions.Add(new GroupColumnDescription
+            {
+                ColumnName = nameof(BookRowViewModel.SecondaryGroupName)
             });
         }
     }

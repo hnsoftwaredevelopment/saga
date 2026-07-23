@@ -457,6 +457,7 @@
   <data name="FormatRemoveFailed" xml:space="preserve"><value>{0} konnte nicht entfernt werden</value></data>
   <data name="GroupBy" xml:space="preserve"><value>Gruppieren nach</value></data>
   <data name="GroupLibraryTooltip" xml:space="preserve"><value>Die aktuelle Bibliotheksansicht gruppieren</value></data>
+  <data name="ThenBy" xml:space="preserve"><value>Dann nach</value></data>
   <data name="NoGrouping" xml:space="preserve"><value>Keine Gruppierung</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sortieren nach</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Aktuelle Bibliotheksansicht sortieren</value></data>

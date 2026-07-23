@@ -10,7 +10,8 @@ public sealed class BookRowViewModel(
     string searchText = "",
     string? libraryPath = null,
     AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName,
-    string? groupName = null)
+    string? primaryGroupName = null,
+    string? secondaryGroupName = null)
 {
     public Book Book { get; } = book;
     public Guid Id => Book.Id;
@@ -29,7 +30,17 @@ public sealed class BookRowViewModel(
         ? string.Empty
         : LanguageDisplayService.DisplayName(Book.Metadata.Language);
     public string Formats => string.Join(", ", Book.Formats.Select(format => format.ToString().ToUpperInvariant()));
-    public string GroupName { get; } = groupName ?? string.Empty;
+    public string GroupName { get; } = primaryGroupName ?? string.Empty;
+    public string PrimaryGroupName { get; } = primaryGroupName ?? string.Empty;
+    public string SecondaryGroupName { get; } = secondaryGroupName ?? string.Empty;
+    public string BookshelfGroupHeader =>
+        (string.IsNullOrWhiteSpace(PrimaryGroupName), string.IsNullOrWhiteSpace(SecondaryGroupName)) switch
+        {
+            (true, true) => string.Empty,
+            (true, false) => SecondaryGroupName,
+            (false, true) => PrimaryGroupName,
+            _ => $"{PrimaryGroupName} / {SecondaryGroupName}"
+        };
     public ReadingStatus ReadingStatus => Book.ReadingStatus;
     public string DateAdded => FormatDateTime(Book.CreatedUtc);
     public string LastModified => FormatDateTime(Book.UpdatedUtc);

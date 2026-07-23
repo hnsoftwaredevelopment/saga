@@ -89,6 +89,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<FacetFilterViewModel> EReaderFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> FormatFilters { get; } = [];
+    public ObservableCollection<LibraryBookGroupViewModel> GroupedBookshelves { get; } = [];
 
     public BookDetailsViewModel Details { get; }
 
@@ -105,6 +106,9 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     [ObservableProperty]
     private LibraryGroupOption selectedGroupOption = LibraryGroupOption.None;
+
+    [ObservableProperty]
+    private LibraryGroupOption secondaryGroupOption = LibraryGroupOption.None;
 
     [ObservableProperty]
     private BookRowViewModel? selectedBook;
@@ -153,6 +157,10 @@ public sealed partial class LibraryViewModel : ObservableObject
     public bool HasActiveImport => importAgent?.IsActive == true;
 
     public int VisibleBookCount => VisibleBooks.Select(row => row.Id).Distinct().Count();
+
+    public bool IsLibraryGrouped =>
+        SelectedGroupOption != LibraryGroupOption.None ||
+        SecondaryGroupOption != LibraryGroupOption.None;
 
     public IAsyncRelayCommand RefreshCommand => refreshCommand ??= new AsyncRelayCommand(RefreshAsync);
     public IAsyncRelayCommand AddBooksCommand => addBooksCommand ??= new AsyncRelayCommand(AddBooksAsync);
@@ -271,6 +279,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     partial void OnSelectedSortOptionChanged(LibrarySortOption value) => ApplyFilter();
 
     partial void OnSelectedGroupOptionChanged(LibraryGroupOption value) => ApplyFilter();
+
+    partial void OnSecondaryGroupOptionChanged(LibraryGroupOption value) => ApplyFilter();
 
     async partial void OnSelectedBookChanged(BookRowViewModel? value)
     {
@@ -483,7 +493,9 @@ public sealed partial class LibraryViewModel : ObservableObject
             VisibleBooks.Add(row);
         }
 
+        RefreshGroupedBookshelves(rows);
         OnPropertyChanged(nameof(VisibleBookCount));
+        OnPropertyChanged(nameof(IsLibraryGrouped));
         SelectedBook = selectedId is null
             ? VisibleBooks.FirstOrDefault()
             : VisibleBooks.FirstOrDefault(row => row.Id == selectedId.Value);
@@ -494,17 +506,75 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private IEnumerable<BookRowViewModel> ProjectRows(IEnumerable<Book> source)
     {
+        var groupOptions = GetActiveGroupOptions();
         foreach (var book in source)
         {
-            foreach (var groupName in GetGroupNames(book, SelectedGroupOption))
+            if (groupOptions.Count == 0)
             {
                 yield return new BookRowViewModel(
                     book,
                     SearchText,
                     CurrentLibraryPath,
-                    authorSortStrategy,
-                    groupName);
+                    authorSortStrategy);
+                continue;
             }
+
+            foreach (var primaryGroupName in GetGroupNames(book, groupOptions[0]))
+            {
+                if (groupOptions.Count == 1)
+                {
+                    yield return new BookRowViewModel(
+                        book,
+                        SearchText,
+                        CurrentLibraryPath,
+                        authorSortStrategy,
+                        primaryGroupName);
+                    continue;
+                }
+
+                foreach (var secondaryGroupName in GetGroupNames(book, groupOptions[1]))
+                {
+                    yield return new BookRowViewModel(
+                        book,
+                        SearchText,
+                        CurrentLibraryPath,
+                        authorSortStrategy,
+                        primaryGroupName,
+                        secondaryGroupName);
+                }
+            }
+        }
+    }
+
+    private IReadOnlyList<LibraryGroupOption> GetActiveGroupOptions()
+    {
+        var options = new List<LibraryGroupOption>(capacity: 2);
+        if (SelectedGroupOption != LibraryGroupOption.None)
+        {
+            options.Add(SelectedGroupOption);
+        }
+
+        if (SecondaryGroupOption != LibraryGroupOption.None &&
+            SecondaryGroupOption != SelectedGroupOption)
+        {
+            options.Add(SecondaryGroupOption);
+        }
+
+        return options;
+    }
+
+    private void RefreshGroupedBookshelves(IReadOnlyList<BookRowViewModel> rows)
+    {
+        GroupedBookshelves.Clear();
+        if (!IsLibraryGrouped)
+        {
+            return;
+        }
+
+        foreach (var group in rows.GroupBy(row => row.BookshelfGroupHeader, StringComparer.CurrentCultureIgnoreCase)
+                     .OrderBy(group => group.Key, StringComparer.CurrentCultureIgnoreCase))
+        {
+            GroupedBookshelves.Add(new LibraryBookGroupViewModel(group.Key, group));
         }
     }
 

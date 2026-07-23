@@ -485,6 +485,33 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Grouping_by_author_then_series_keeps_individual_author_headers()
+    {
+        var book = CreateBook(
+            "Shared Series Book",
+            ["Abby Green", "Klaartje Kusters"],
+            series: "Bouquet");
+        var viewModel = CreateViewModel([book]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedGroupOption = LibraryGroupOption.Author;
+        viewModel.SecondaryGroupOption = LibraryGroupOption.Series;
+
+        viewModel.VisibleBooks.Select(row => (row.Title, row.PrimaryGroupName, row.SecondaryGroupName))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("Shared Series Book", "Abby Green", "Bouquet"),
+                    ("Shared Series Book", "Klaartje Kusters", "Bouquet")
+                ]);
+        viewModel.GroupedBookshelves.Select(group => group.Header)
+            .Should()
+            .BeEquivalentTo("Abby Green / Bouquet", "Klaartje Kusters / Bouquet");
+        viewModel.VisibleBookCount.Should().Be(1);
+        viewModel.IsLibraryGrouped.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Grouping_by_tag_projects_multi_tag_books_but_keeps_unique_book_count()
     {
         var taggedBook = CreateBook("Tagged Book", ["Author"], tags: ["History", "Space"]);
