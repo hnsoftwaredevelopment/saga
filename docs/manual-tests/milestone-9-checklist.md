@@ -4,6 +4,7 @@
 
 - [ ] Open the List view and confirm it uses visible columns with headers instead of one continuous text row.
 - [ ] Open the Detailed view and confirm all standard details-pane metadata fields are available as columns.
+- [ ] Sort Detailed view by Series number and confirm numeric order, for example 1, 2, 3, 10.
 - [ ] Confirm List view selection still updates the details pane.
 - [ ] Confirm search highlighting still works in the List view.
 - [ ] Click column headers in List view and confirm sorting works.

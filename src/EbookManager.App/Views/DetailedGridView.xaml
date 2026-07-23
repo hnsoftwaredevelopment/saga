@@ -93,7 +93,7 @@
                                      Width="110">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <controls:HighlightedTextBlock HighlightedText="{Binding SeriesNumber}"
+            <controls:HighlightedTextBlock HighlightedText="{Binding SeriesNumberText}"
                                            SearchText="{Binding SearchText}"
                                            HighlightBrush="{DynamicResource SearchHighlightBrush}"
                                            Foreground="{DynamicResource TextPrimaryBrush}" />

@@ -31,6 +31,7 @@ Because the detailed grid should eventually support richer desktop behavior, thi
 - Author column sorting should use the selected `AuthorSortStrategy`.
 - Language column sorting should use stable language keys while showing localized labels.
 - Format/type sorting should remain based on normalized format names.
+- Series number sorting should use the numeric series index, not the localized display text.
 - Multi-column sorting should remain available.
 
 ### Grouping
