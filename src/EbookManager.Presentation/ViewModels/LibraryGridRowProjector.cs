@@ -5,14 +5,17 @@ public static class LibraryGridRowProjector
     public static bool RequiresProjection(IEnumerable<string> groupColumnNames) =>
         groupColumnNames.Any(IsMultiValueGroupColumn);
 
+    public static IReadOnlyList<string> GetActiveProjectionColumns(IEnumerable<string> groupColumnNames) =>
+        groupColumnNames
+            .Where(IsMultiValueGroupColumn)
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
     public static IReadOnlyList<BookRowViewModel> Project(
         IEnumerable<BookRowViewModel> rows,
         IReadOnlyList<string> groupColumnNames)
     {
-        var activeGroupColumns = groupColumnNames
-            .Where(IsMultiValueGroupColumn)
-            .Distinct(StringComparer.Ordinal)
-            .ToList();
+        var activeGroupColumns = GetActiveProjectionColumns(groupColumnNames);
 
         if (activeGroupColumns.Count == 0)
         {

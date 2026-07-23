@@ -17,6 +17,7 @@ internal sealed class LibraryGridGroupingProjectionBinder
     private LibraryViewModel? viewModel;
     private bool isRefreshing;
     private bool isRefreshQueued;
+    private string projectionSignature = string.Empty;
 
     public LibraryGridGroupingProjectionBinder(FrameworkElement owner, SfDataGrid grid)
     {
@@ -74,7 +75,13 @@ internal sealed class LibraryGridGroupingProjectionBinder
         }
     }
 
-    private void OnGroupColumnDescriptionsChanged(object? sender, NotifyCollectionChangedEventArgs e) => QueueRefreshProjection();
+    private void OnGroupColumnDescriptionsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (ProjectionSignatureChanged())
+        {
+            QueueRefreshProjection();
+        }
+    }
 
     private void OnLocalizedStringsChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -120,6 +127,7 @@ internal sealed class LibraryGridGroupingProjectionBinder
                 .Select(description => description.ColumnName)
                 .Where(columnName => !string.IsNullOrWhiteSpace(columnName))
                 .ToList();
+            projectionSignature = CreateProjectionSignature(groupColumns);
 
             if (!LibraryGridRowProjector.RequiresProjection(groupColumns))
             {
@@ -149,4 +157,15 @@ internal sealed class LibraryGridGroupingProjectionBinder
         grid.GroupCaptionTextFormat = "{Key}";
         grid.CaptionSummaryRow = null;
     }
+
+    private bool ProjectionSignatureChanged()
+    {
+        var groupColumns = grid.GroupColumnDescriptions
+            .Select(description => description.ColumnName)
+            .Where(columnName => !string.IsNullOrWhiteSpace(columnName));
+        return !StringComparer.Ordinal.Equals(projectionSignature, CreateProjectionSignature(groupColumns));
+    }
+
+    private static string CreateProjectionSignature(IEnumerable<string> groupColumnNames) =>
+        string.Join("|", LibraryGridRowProjector.GetActiveProjectionColumns(groupColumnNames));
 }

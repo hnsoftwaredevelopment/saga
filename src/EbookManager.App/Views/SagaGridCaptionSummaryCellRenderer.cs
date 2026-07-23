@@ -27,16 +27,24 @@ internal sealed class SagaGridCaptionSummaryCellRenderer : GridCaptionSummaryCel
 
     private static void ApplyCaption(GridCaptionSummaryCell cell, object dataContext)
     {
-        if (dataContext is not Group group)
+        try
         {
-            return;
-        }
+            if (dataContext is not Group group)
+            {
+                return;
+            }
 
-        var key = group.Key?.ToString() ?? string.Empty;
-        var count = Math.Max(group.GetRecordCount(), 0);
-        var bookText = LocalizedStrings.Current[count == 1 ? "BookSingular" : "BookCount"];
-        cell.Content = string.IsNullOrWhiteSpace(key)
-            ? $"- {count} {bookText}"
-            : $"{key} - {count} {bookText}";
+            var key = group.Key?.ToString() ?? string.Empty;
+            var count = Math.Max(group.GetRecordCount(), 0);
+            var bookText = LocalizedStrings.Current[count == 1 ? "BookSingular" : "BookCount"];
+            cell.Content = string.IsNullOrWhiteSpace(key)
+                ? $"- {count} {bookText}"
+                : $"{key} - {count} {bookText}";
+        }
+        catch
+        {
+            // Syncfusion can render caption cells while nested groups are being rebuilt.
+            // Keep the grid alive and fall back to the framework-provided caption.
+        }
     }
 }
