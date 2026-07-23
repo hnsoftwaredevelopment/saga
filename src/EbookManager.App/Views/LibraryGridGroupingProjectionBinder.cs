@@ -22,6 +22,8 @@ internal sealed class LibraryGridGroupingProjectionBinder
     {
         this.grid = grid;
         this.grid.GroupColumnDescriptions.CollectionChanged += OnGroupColumnDescriptionsChanged;
+        this.grid.CellRenderers.Remove("CaptionSummary");
+        this.grid.CellRenderers.Add("CaptionSummary", new SagaGridCaptionSummaryCellRenderer());
 
         owner.DataContextChanged += OnDataContextChanged;
         LocalizedStrings.Current.PropertyChanged += OnLocalizedStringsChanged;
@@ -144,7 +146,7 @@ internal sealed class LibraryGridGroupingProjectionBinder
 
     private void RefreshCaptionSummary()
     {
-        grid.GroupCaptionTextFormat = "{Key} - {ItemsCount} " + LocalizedStrings.Current["BookCount"];
+        grid.GroupCaptionTextFormat = "{Key}";
         grid.CaptionSummaryRow = null;
     }
 }
