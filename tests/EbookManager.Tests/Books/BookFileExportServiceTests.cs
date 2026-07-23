@@ -122,5 +122,7 @@ public sealed class BookFileExportServiceTests : IDisposable
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
             throw new NotSupportedException();
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
     }
 }

@@ -279,6 +279,9 @@
   <data name="RememberAnswer" xml:space="preserve">
     <value>Ricorda la mia risposta</value>
   </data>
+  <data name="RemoveFormat" xml:space="preserve"><value>Rimuovi formato</value></data>
+  <data name="RemoveFormatConfirmationTitle" xml:space="preserve"><value>Rimuovi formato</value></data>
+  <data name="RemoveFormatConfirmationMessage" xml:space="preserve"><value>Rimuovere il formato {0} da questo libro?</value></data>
   <data name="RetryFailedImports" xml:space="preserve">
     <value>Riprova falliti</value>
   </data>
@@ -426,6 +429,7 @@
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Aggiornamento dei metadati...</value></data>
   <data name="NoSort" xml:space="preserve"><value>Nessuno</value></data>
   <data name="OpenLibraryTooltip" xml:space="preserve"><value>Apri una biblioteca esistente</value></data>
+  <data name="OpenFile" xml:space="preserve"><value>Apri</value></data>
   <data name="OpenFolder" xml:space="preserve"><value>Apri cartella</value></data>
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Apri impostazioni</value></data>
   <data name="Outcome" xml:space="preserve"><value>Esito</value></data>
@@ -444,7 +448,13 @@
   <data name="EnableDiagnosticDetailsDescription" xml:space="preserve"><value>Questa impostazione riserva un posto stabile per cronologia importazioni, segnalazioni di errore e informazioni diagnostiche. La diagnostica attuale resta disponibile mentre questa base viene completata.</value></data>
   <data name="SaveFile" xml:space="preserve"><value>Salva</value></data>
   <data name="SaveFileTo" xml:space="preserve"><value>Salva in...</value></data>
+  <data name="SelectExportFolder" xml:space="preserve"><value>Seleziona cartella di salvataggio</value></data>
   <data name="FormatSavedToFolder" xml:space="preserve"><value>{0} salvato in {1}</value></data>
+  <data name="FormatFileMissing" xml:space="preserve"><value>File {0} mancante</value></data>
+  <data name="FormatFolderMissing" xml:space="preserve"><value>Cartella {0} mancante</value></data>
+  <data name="FormatRemovedFromLibrary" xml:space="preserve"><value>{0} rimosso da questo libro</value></data>
+  <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} è l'ultimo formato. Usa Elimina per rimuovere il libro.</value></data>
+  <data name="FormatRemoveFailed" xml:space="preserve"><value>Impossibile rimuovere {0}</value></data>
   <data name="SortBy" xml:space="preserve"><value>Ordina per</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Ordina la visualizzazione corrente della biblioteca</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>il gestore di e-book</value></data>

@@ -48,6 +48,21 @@
     <Geometry>M9 3h6l1 2h5v2H3V5h5l1-2Zm-3 6h12l-1 12H7L6 9Zm3 2v8h2v-8H9Zm4 0v8h2v-8h-2Z</Geometry>
   </GeometryGroup>
 
+  <GeometryGroup x:Key="OpenFileIconGeometry">
+    <Geometry>M5 3h9l5 5v13H5V3Zm2 2v14h10V9h-4V5H7Z</Geometry>
+    <Geometry>M9 12h6v2H9v-2Zm0 4h5v2H9v-2Z</Geometry>
+  </GeometryGroup>
+
+  <GeometryGroup x:Key="OpenFolderIconGeometry">
+    <Geometry>M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Zm2 2v10h14V8H5Z</Geometry>
+    <Geometry>M10 11h5V9l4 3.5-4 3.5v-2h-5v-3Z</Geometry>
+  </GeometryGroup>
+
+  <GeometryGroup x:Key="SaveToFolderIconGeometry">
+    <Geometry>M3 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6Zm2 2v10h14V8H5Z</Geometry>
+    <Geometry>M11 10h2v5l2-2 1.4 1.4L12 18.8l-4.4-4.4L9 13l2 2v-5Z</Geometry>
+  </GeometryGroup>
+
   <Geometry x:Key="MergePreviewNoActionIconGeometry">M6 6 L42 42 M42 6 L6 42</Geometry>
   <Geometry x:Key="MergePreviewCopyIconGeometry">M20.447266,1.6972656 0,24 20.447266,46.302734 20.447266,33.183594 48.036264,33.183594 48.036264,14.816406 20.447266,14.816406z</Geometry>
   <Geometry x:Key="MergePreviewMergeIconGeometry">M20.447266,0 0,22.302734 20.447266,44.605468 20.447266,31.486328 29.630859,31.486328 29.630859,13.11914 20.447266,13.11914z M32.693359,13.11914 35.753906,13.11914 35.753906,31.486328 32.693359,31.486328z M38.816406,13.11914 41.876953,13.11914 41.876953,31.486328 38.816406,31.486328z M44.939453,13.11914 48,13.11914 48,31.486328 44.939453,31.486328z</Geometry>

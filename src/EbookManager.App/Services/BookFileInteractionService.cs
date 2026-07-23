@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.ComponentModel;
 using System.IO;
+using EbookManager.App.Localization;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Presentation.Abstractions;
 
@@ -9,31 +11,61 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
 {
     private readonly ILibraryFileStore fileStore = fileStore;
 
-    public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
+    public Task<bool> OpenFileAsync(string relativePath, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var absolutePath = fileStore.GetAbsolutePath(relativePath);
-        var targetPath = File.Exists(absolutePath)
-            ? absolutePath
-            : Path.GetDirectoryName(absolutePath);
-        if (string.IsNullOrWhiteSpace(targetPath))
+        if (!File.Exists(absolutePath))
         {
-            return Task.CompletedTask;
+            return Task.FromResult(false);
         }
 
-        var arguments = File.Exists(absolutePath)
-            ? $"/select,\"{absolutePath}\""
-            : $"\"{targetPath}\"";
+        return Task.FromResult(TryStartProcess(new ProcessStartInfo
+        {
+            FileName = absolutePath,
+            UseShellExecute = true
+        }));
+    }
 
-        Process.Start(new ProcessStartInfo
+    public Task<bool> OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var absolutePath = fileStore.GetAbsolutePath(relativePath);
+        var fileExists = File.Exists(absolutePath);
+        var folderPath = Path.GetDirectoryName(absolutePath);
+        if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
+        {
+            return Task.FromResult(false);
+        }
+
+        var arguments = fileExists
+            ? $"/select,\"{absolutePath}\""
+            : $"\"{folderPath}\"";
+
+        return Task.FromResult(TryStartProcess(new ProcessStartInfo
         {
             FileName = "explorer.exe",
             Arguments = arguments,
             UseShellExecute = true
-        });
+        }));
+    }
 
-        return Task.CompletedTask;
+    public Task<bool> ConfirmRemoveFormatAsync(string formatText, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var message = string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            LocalizedStrings.Current["RemoveFormatConfirmationMessage"],
+            formatText);
+        var result = System.Windows.MessageBox.Show(
+            message,
+            LocalizedStrings.Current["RemoveFormatConfirmationTitle"],
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+        return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
     }
 
     public Task<string?> PickExportFolderAsync(CancellationToken cancellationToken)
@@ -41,7 +73,7 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
         cancellationToken.ThrowIfCancellationRequested();
         var dialog = new Microsoft.Win32.OpenFolderDialog
         {
-            Title = "Select export folder",
+            Title = LocalizedStrings.Current["SelectExportFolder"],
             InitialDirectory = GetDownloadsFolder()
         };
 
@@ -60,5 +92,22 @@ public sealed class BookFileInteractionService(ILibraryFileStore fileStore) : IB
         return string.IsNullOrWhiteSpace(userProfile)
             ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             : Path.Combine(userProfile, "Downloads");
+    }
+
+    private static bool TryStartProcess(ProcessStartInfo startInfo)
+    {
+        try
+        {
+            Process.Start(startInfo);
+            return true;
+        }
+        catch (Win32Exception)
+        {
+            return false;
+        }
+        catch (InvalidOperationException)
+        {
+            return false;
+        }
     }
 }

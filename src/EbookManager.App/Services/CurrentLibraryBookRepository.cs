@@ -104,6 +104,12 @@ public sealed class CurrentLibraryBookRepository(
     public Task DeleteAsync(Guid id, CancellationToken cancellationToken) =>
         CreateRepository().DeleteAsync(id, cancellationToken);
 
+    public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+        Guid bookId,
+        Guid fileId,
+        CancellationToken cancellationToken) =>
+        CreateRepository().DeleteFileAsync(bookId, fileId, cancellationToken);
+
     public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken)
     {
         var repository = TryCreateRepository();

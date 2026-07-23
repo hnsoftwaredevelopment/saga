@@ -122,7 +122,9 @@ public sealed class BookDetailsViewModelTests
                 .Should()
                 .Equal("EPUB - 1.8 MB", "PDF - 4.2 MB");
             viewModel.FormatDetails.Should().AllSatisfy(format => format.FileId.Should().NotBeNull());
+            await viewModel.FormatDetails[0].OpenFileCommand.ExecuteAsync(null);
             await viewModel.FormatDetails[0].OpenContainingFolderCommand.ExecuteAsync(null);
+            fileInteraction.OpenedFiles.Should().Equal("books/book/original.epub");
             fileInteraction.OpenedRelativePaths.Should().Equal("books/book/original.epub");
             viewModel.HasUnsavedChanges.Should().BeFalse();
         }
@@ -179,6 +181,92 @@ public sealed class BookDetailsViewModelTests
         File.ReadAllText(exportedPath).Should().Be("content");
         viewModel.FormatDetails[0].ExportStatusMessage.Should().Be(
             BookFormatExportStatusMessage.Saved("EPUB", "Downloads"));
+    }
+
+    [Fact]
+    public async Task Open_file_reports_missing_managed_file()
+    {
+        var fileInteraction = new RecordingBookFileInteractionService
+        {
+            ShouldOpenFile = false
+        };
+        var viewModel = CreateViewModel(out var repository, fileInteraction);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub]);
+        repository.SeedFiles(
+            book.Id,
+            [CreateBookFile(book.Id, EbookFormat.Epub, "books/book/missing.epub", 1_887_436)]);
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+        await viewModel.FormatDetails[0].OpenFileCommand.ExecuteAsync(null);
+
+        viewModel.FormatDetails[0].ExportStatusMessage.Should().Be(
+            BookFormatExportStatusMessage.FileMissing("EPUB"));
+    }
+
+    [Fact]
+    public async Task Open_folder_reports_missing_managed_folder()
+    {
+        var fileInteraction = new RecordingBookFileInteractionService
+        {
+            ShouldOpenContainingFolder = false
+        };
+        var viewModel = CreateViewModel(out var repository, fileInteraction);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub]);
+        repository.SeedFiles(
+            book.Id,
+            [CreateBookFile(book.Id, EbookFormat.Epub, "books/book/missing.epub", 1_887_436)]);
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+        await viewModel.FormatDetails[0].OpenContainingFolderCommand.ExecuteAsync(null);
+
+        viewModel.FormatDetails[0].ExportStatusMessage.Should().Be(
+            BookFormatExportStatusMessage.FolderMissing("EPUB"));
+    }
+
+    [Fact]
+    public async Task Remove_format_removes_only_selected_format_when_multiple_formats_exist()
+    {
+        var fileInteraction = new RecordingBookFileInteractionService();
+        var viewModel = CreateViewModel(out var repository, fileInteraction);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub, EbookFormat.Pdf]);
+        var epubFile = CreateBookFile(book.Id, EbookFormat.Epub, "books/book/original.epub", 1_887_436);
+        var pdfFile = CreateBookFile(book.Id, EbookFormat.Pdf, "books/book/original.pdf", 4_404_019);
+        repository.SeedFiles(book.Id, [epubFile, pdfFile]);
+        Book? savedBook = null;
+        viewModel.BookSaved += (_, book) => savedBook = book;
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+        await viewModel.FormatDetails[0].RemoveFormatCommand.ExecuteAsync(null);
+
+        fileInteraction.ConfirmRemoveFormatCalls.Should().Be(1);
+        viewModel.FormatDetails.Select(format => format.Format).Should().Equal(EbookFormat.Pdf);
+        viewModel.FormatsText.Should().Be("PDF");
+        repository.FilesFor(book.Id).Select(file => file.Format).Should().Equal(EbookFormat.Pdf);
+        savedBook!.Formats.Should().Equal(EbookFormat.Pdf);
+    }
+
+    [Fact]
+    public async Task Remove_format_blocks_last_format_and_keeps_book()
+    {
+        var fileInteraction = new RecordingBookFileInteractionService();
+        var viewModel = CreateViewModel(out var repository, fileInteraction);
+        var book = CreateBook("Original", ["First Author"], [EbookFormat.Epub]);
+        repository.SeedFiles(
+            book.Id,
+            [CreateBookFile(book.Id, EbookFormat.Epub, "books/book/original.epub", 1_887_436)]);
+
+        viewModel.Load(book);
+        await viewModel.LoadFormatDetailsAsync(book.Id);
+        await viewModel.FormatDetails[0].RemoveFormatCommand.ExecuteAsync(null);
+
+        fileInteraction.ConfirmRemoveFormatCalls.Should().Be(0);
+        viewModel.FormatDetails.Should().ContainSingle();
+        viewModel.FormatDetails[0].ExportStatusMessage.Should().Be(
+            BookFormatExportStatusMessage.LastFormatCannotRemove("EPUB"));
+        repository.FilesFor(book.Id).Should().ContainSingle();
     }
 
     [Fact]
@@ -425,6 +513,9 @@ public sealed class BookDetailsViewModelTests
             filesByBookId[bookId] = files;
         }
 
+        public IReadOnlyList<BookFile> FilesFor(Guid bookId) =>
+            filesByBookId.TryGetValue(bookId, out var files) ? files : [];
+
         public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([]);
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult<Book?>(null);
         public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) => Task.FromResult(false);
@@ -452,6 +543,26 @@ public sealed class BookDetailsViewModelTests
             return Task.CompletedTask;
         }
 
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken)
+        {
+            if (!filesByBookId.TryGetValue(bookId, out var files))
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
+            }
+
+            var remaining = files.Where(file => file.Id != fileId).ToArray();
+            if (remaining.Length == files.Count)
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
+            }
+
+            filesByBookId[bookId] = remaining;
+            return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.Deleted));
+        }
+
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
             Task.FromResult(filesByBookId.TryGetValue(bookId, out var files)
                 ? files
@@ -471,6 +582,7 @@ public sealed class BookDetailsViewModelTests
             Task.FromResult(($"books/{bookId:N}/book.epub", (string?)null));
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) => Task.CompletedTask;
         public string GetAbsolutePath(string relativePath) => relativePath;
     }
 
@@ -484,6 +596,8 @@ public sealed class BookDetailsViewModelTests
             throw new NotSupportedException();
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
             throw new NotSupportedException();
 
         public string GetAbsolutePath(string relativePath) => Path.Combine(rootPath, relativePath);
@@ -499,6 +613,8 @@ public sealed class BookDetailsViewModelTests
             throw new NotSupportedException();
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            throw new IOException("cleanup failed");
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
             throw new IOException("cleanup failed");
 
         public string GetAbsolutePath(string relativePath) => relativePath;
@@ -526,14 +642,30 @@ public sealed class BookDetailsViewModelTests
 
     private sealed class RecordingBookFileInteractionService : IBookFileInteractionService
     {
+        public List<string> OpenedFiles { get; } = [];
         public List<string> OpenedRelativePaths { get; } = [];
         public string? DownloadsFolder { get; set; }
         public string? ExportFolder { get; set; }
+        public bool ShouldOpenFile { get; set; } = true;
+        public bool ShouldOpenContainingFolder { get; set; } = true;
+        public int ConfirmRemoveFormatCalls { get; private set; }
 
-        public Task OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
+        public Task<bool> OpenFileAsync(string relativePath, CancellationToken cancellationToken)
+        {
+            OpenedFiles.Add(relativePath);
+            return Task.FromResult(ShouldOpenFile);
+        }
+
+        public Task<bool> OpenContainingFolderAsync(string relativePath, CancellationToken cancellationToken)
         {
             OpenedRelativePaths.Add(relativePath);
-            return Task.CompletedTask;
+            return Task.FromResult(ShouldOpenContainingFolder);
+        }
+
+        public Task<bool> ConfirmRemoveFormatAsync(string formatText, CancellationToken cancellationToken)
+        {
+            ConfirmRemoveFormatCalls++;
+            return Task.FromResult(true);
         }
 
         public Task<string?> PickExportFolderAsync(CancellationToken cancellationToken) =>

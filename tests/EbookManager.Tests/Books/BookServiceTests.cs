@@ -243,6 +243,113 @@ public sealed class BookServiceTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Delete_file_removes_selected_file_when_book_has_multiple_files()
+    {
+        var book = CreateBook();
+        var epub = CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub);
+        var pdf = CreateBookFile(book.Id, "books", "book.pdf", EbookFormat.Pdf);
+        var repo = new InMemoryBookRepository(book, [epub, pdf]);
+        var fileStore = new RecordingLibraryFileStore();
+        var service = new BookService(
+            repo,
+            fileStore,
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter>()));
+
+        var result = await service.DeleteFileAsync(book.Id, epub.Id, default);
+
+        result.Status.Should().Be(BookFileDeleteStatus.Deleted);
+        fileStore.DeletedFiles.Should().Equal(epub.RelativePath);
+        repo.StoredFiles.Select(file => file.Format).Should().Equal(EbookFormat.Pdf);
+        repo.ContainsBook(book.Id).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Delete_file_blocks_last_file()
+    {
+        var book = CreateBook();
+        var epub = CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub);
+        var repo = new InMemoryBookRepository(book, [epub]);
+        var fileStore = new RecordingLibraryFileStore();
+        var service = new BookService(
+            repo,
+            fileStore,
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter>()));
+
+        var result = await service.DeleteFileAsync(book.Id, epub.Id, default);
+
+        result.Status.Should().Be(BookFileDeleteStatus.LastFormat);
+        fileStore.DeletedFiles.Should().BeEmpty();
+        repo.StoredFiles.Should().ContainSingle();
+        repo.ContainsBook(book.Id).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Delete_file_returns_not_found_before_checking_last_file()
+    {
+        var book = CreateBook();
+        var epub = CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub);
+        var repo = new InMemoryBookRepository(book, [epub]);
+        var fileStore = new RecordingLibraryFileStore();
+        var service = new BookService(
+            repo,
+            fileStore,
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter>()));
+
+        var result = await service.DeleteFileAsync(book.Id, Guid.NewGuid(), default);
+
+        result.Status.Should().Be(BookFileDeleteStatus.NotFound);
+        fileStore.DeletedFiles.Should().BeEmpty();
+        repo.StoredFiles.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Delete_file_removes_database_row_when_file_cleanup_warns()
+    {
+        var book = CreateBook();
+        var epub = CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub);
+        var pdf = CreateBookFile(book.Id, "books", "book.pdf", EbookFormat.Pdf);
+        var repo = new InMemoryBookRepository(book, [epub, pdf]);
+        var fileStore = new RecordingLibraryFileStore
+        {
+            ThrowOnDeleteFile = true
+        };
+        var service = new BookService(
+            repo,
+            fileStore,
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter>()));
+
+        var result = await service.DeleteFileAsync(book.Id, epub.Id, default);
+
+        result.Status.Should().Be(BookFileDeleteStatus.Deleted);
+        result.Message.Should().Be("file cleanup failed");
+        repo.StoredFiles.Select(file => file.Format).Should().Equal(EbookFormat.Pdf);
+    }
+
+    [Fact]
+    public async Task Delete_file_keeps_physical_file_when_database_delete_fails()
+    {
+        var book = CreateBook();
+        var epub = CreateBookFile(book.Id, "books", "book.epub", EbookFormat.Epub);
+        var pdf = CreateBookFile(book.Id, "books", "book.pdf", EbookFormat.Pdf);
+        var repo = new InMemoryBookRepository(book, [epub, pdf])
+        {
+            ThrowOnDeleteFile = true
+        };
+        var fileStore = new RecordingLibraryFileStore();
+        var service = new BookService(
+            repo,
+            fileStore,
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter>()));
+
+        var result = await service.DeleteFileAsync(book.Id, epub.Id, default);
+
+        result.Status.Should().Be(BookFileDeleteStatus.Failed);
+        result.Message.Should().Be("delete file failed");
+        fileStore.DeletedFiles.Should().BeEmpty();
+        repo.StoredFiles.Select(file => file.Format).Should().Equal(EbookFormat.Epub, EbookFormat.Pdf);
+    }
+
+    [Fact]
     public async Task Save_propagates_cancellation_before_work_starts()
     {
         var repo = new InMemoryBookRepository();
@@ -330,6 +437,7 @@ public sealed class BookServiceTests : IAsyncLifetime
         public bool ListFilesAsyncCalled { get; private set; }
         public bool DeleteAsyncCalled { get; private set; }
         public bool ThrowOnDelete { get; set; }
+        public bool ThrowOnDeleteFile { get; set; }
         public List<(Guid FileId, MetadataWriteResult Result)> UpdateFileWriteBackCalls { get; } = [];
         public List<BookFile> StoredFiles { get; } = [];
         public Book? StoredBook => books.Values.SingleOrDefault();
@@ -449,6 +557,38 @@ public sealed class BookServiceTests : IAsyncLifetime
             return Task.CompletedTask;
         }
 
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(
+            Guid bookId,
+            Guid fileId,
+            CancellationToken cancellationToken)
+        {
+            if (ThrowOnDeleteFile)
+            {
+                throw new IOException("delete file failed");
+            }
+
+            if (!filesByBookId.TryGetValue(bookId, out var files))
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
+            }
+
+            var index = files.FindIndex(file => file.Id == fileId);
+            if (index < 0)
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
+            }
+
+            if (files.Count <= 1)
+            {
+                return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.LastFormat));
+            }
+
+            files.RemoveAt(index);
+            filesByBookId[bookId] = files;
+            StoredFiles.RemoveAll(file => file.Id == fileId);
+            return Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.Deleted));
+        }
+
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken)
         {
             ListFilesAsyncCalled = true;
@@ -522,6 +662,8 @@ public sealed class BookServiceTests : IAsyncLifetime
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
             throw new IOException("cleanup failed");
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
+            throw new IOException("cleanup failed");
     }
 
     private sealed class NoopLibraryFileStore : ILibraryFileStore
@@ -536,6 +678,36 @@ public sealed class BookServiceTests : IAsyncLifetime
             Task.FromResult(($"books/{bookId:N}/book.epub", (string?)null));
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) => Task.CompletedTask;
+    }
+
+    private sealed class RecordingLibraryFileStore : ILibraryFileStore
+    {
+        public List<string> DeletedFiles { get; } = [];
+        public bool ThrowOnDeleteFile { get; init; }
+
+        public string GetAbsolutePath(string relativePath) => relativePath;
+
+        public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
+            Guid bookId,
+            string sourcePath,
+            byte[]? coverBytes,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken)
+        {
+            if (ThrowOnDeleteFile)
+            {
+                throw new IOException("file cleanup failed");
+            }
+
+            DeletedFiles.Add(relativePath);
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class RecordingMetadataSidecarStore : IMetadataSidecarStore

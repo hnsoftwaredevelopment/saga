@@ -1297,6 +1297,8 @@ public sealed class LibraryViewModelTests
             Books.RemoveAll(book => book.Id == id);
             return Task.CompletedTask;
         }
+        public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(Guid bookId, Guid fileId, CancellationToken cancellationToken) =>
+            Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<BookFile>>([]);
         public Task UpdateFileWriteBackAsync(Guid fileId, MetadataWriteResult result, CancellationToken cancellationToken) => Task.CompletedTask;
     }
@@ -1518,6 +1520,7 @@ public sealed class LibraryViewModelTests
             Task.FromResult(($"books/{bookId:N}/book.epub", (string?)null));
 
         public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) => Task.CompletedTask;
         public string GetAbsolutePath(string relativePath) => relativePath;
     }
 
