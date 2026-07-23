@@ -11,13 +11,17 @@ public sealed class BookRowViewModel(
     string? libraryPath = null,
     AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName,
     string? primaryGroupName = null,
-    string? secondaryGroupName = null)
+    string? secondaryGroupName = null,
+    string? authorsGroupKey = null,
+    string? tagsGroupKey = null,
+    string? formatsGroupKey = null)
 {
     public Book Book { get; } = book;
     public Guid Id => Book.Id;
     public string Title => Book.Metadata.Title;
     public string Authors => string.Join(", ", Book.Metadata.Authors);
     public string AuthorsSortKey => AuthorSortKeyBuilder.BuildSortKey(Authors, authorSortStrategy);
+    public string AuthorsGroupKey => authorsGroupKey ?? AuthorsSortKey;
     public string Description => Book.Metadata.Description ?? string.Empty;
     public string Series => Book.Metadata.Series ?? string.Empty;
     public decimal? SeriesNumber => Book.Metadata.SeriesNumber;
@@ -25,11 +29,13 @@ public sealed class BookRowViewModel(
     public string Publisher => Book.Metadata.Publisher ?? string.Empty;
     public string PublicationDate => Book.Metadata.PublicationDate?.ToString("d", CultureInfo.CurrentCulture) ?? string.Empty;
     public string Tags => string.Join(", ", Book.Metadata.Tags ?? []);
+    public string TagsGroupKey => tagsGroupKey ?? Tags;
     public string Isbn => Book.Metadata.Isbn ?? string.Empty;
     public string Language => string.IsNullOrWhiteSpace(Book.Metadata.Language)
         ? string.Empty
         : LanguageDisplayService.DisplayName(Book.Metadata.Language);
     public string Formats => string.Join(", ", Book.Formats.Select(format => format.ToString().ToUpperInvariant()));
+    public string FormatsGroupKey => formatsGroupKey ?? Formats;
     public string GroupName { get; } = primaryGroupName ?? string.Empty;
     public string PrimaryGroupName { get; } = primaryGroupName ?? string.Empty;
     public string SecondaryGroupName { get; } = secondaryGroupName ?? string.Empty;
@@ -51,6 +57,21 @@ public sealed class BookRowViewModel(
         ? null
         : Path.Combine(libraryPath, Book.CoverRelativePath);
     public string SearchText { get; } = searchText;
+
+    public BookRowViewModel WithGridGroupKeys(
+        string? authorsGroupKey = null,
+        string? tagsGroupKey = null,
+        string? formatsGroupKey = null) =>
+        new(
+            Book,
+            SearchText,
+            libraryPath,
+            authorSortStrategy,
+            PrimaryGroupName,
+            SecondaryGroupName,
+            authorsGroupKey,
+            tagsGroupKey,
+            formatsGroupKey);
 
     private static string FormatDateTime(DateTimeOffset value) =>
         value.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);

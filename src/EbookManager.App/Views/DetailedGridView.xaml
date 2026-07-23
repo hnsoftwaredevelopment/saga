@@ -54,7 +54,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Authors}"
-                                     MappingName="AuthorsSortKey"
+                                     MappingName="AuthorsGroupKey"
                                      Width="220">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
@@ -66,7 +66,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Type}"
-                                     MappingName="Formats"
+                                     MappingName="FormatsGroupKey"
                                      Width="110">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
@@ -150,7 +150,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Tags}"
-                                     MappingName="Tags"
+                                     MappingName="TagsGroupKey"
                                      Width="220">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
