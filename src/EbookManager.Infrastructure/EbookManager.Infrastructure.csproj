@@ -17,8 +17,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>26.6.2.0</AssemblyVersion>
-    <FileVersion>26.6.2.0</FileVersion>
+    <AssemblyVersion>2026.7.24.2</AssemblyVersion>
+    <FileVersion>2026.7.24.2</FileVersion>
   </PropertyGroup>
 
 </Project>
