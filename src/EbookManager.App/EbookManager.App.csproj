@@ -7,25 +7,27 @@
     <AssemblyName>EbookManager</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>26.6.3.0</AssemblyVersion>
-    <FileVersion>26.6.3.0</FileVersion>
+    <AssemblyVersion>2026.7.24.7</AssemblyVersion>
+    <FileVersion>2026.7.24.7</FileVersion>
     <ApplicationIcon>Resources\AppIcon\appicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Resource Include="Resources\AppIcon\appicon.ico" />
-    <Resource Include="Resources\AppIcon\appicon.png" />
-    <Resource Include="Resources\Splash\SplashBase.png" />
+	  <Resource Include="Resources\AppIcon\appicon.ico" />
+	  <Resource Include="Resources\AppIcon\appicon.png" />
+	  <Resource Include="Resources\Images\devLogo.png" />
+	  <Resource Include="Resources\Splash\SplashBase.png" />
+	  <Resource Include="Resources\Fonts\*.ttf" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EbookManager.Domain\EbookManager.Domain.csproj" />
-    <ProjectReference Include="..\EbookManager.Application\EbookManager.Application.csproj" />
-    <ProjectReference Include="..\EbookManager.Infrastructure\EbookManager.Infrastructure.csproj" />
-    <ProjectReference Include="..\EbookManager.Presentation\EbookManager.Presentation.csproj" />
+	  <ProjectReference Include="..\EbookManager.Domain\EbookManager.Domain.csproj" />
+	  <ProjectReference Include="..\EbookManager.Application\EbookManager.Application.csproj" />
+	  <ProjectReference Include="..\EbookManager.Infrastructure\EbookManager.Infrastructure.csproj" />
+	  <ProjectReference Include="..\EbookManager.Presentation\EbookManager.Presentation.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Syncfusion.SfGrid.WPF" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+	  <PackageReference Include="Syncfusion.SfGrid.WPF" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 </Project>
