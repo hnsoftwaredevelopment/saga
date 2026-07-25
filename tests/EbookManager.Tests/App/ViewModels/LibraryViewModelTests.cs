@@ -627,6 +627,33 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Sorting_replaces_visible_books_in_bulk()
+    {
+        var viewModel = CreateViewModel(
+            [
+                CreateBook("C", ["Author"]),
+                CreateBook("A", ["Author"]),
+                CreateBook("B", ["Author"])
+            ]);
+        var resetCount = 0;
+        viewModel.VisibleBooks.CollectionChanged += (_, args) =>
+        {
+            if (args.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {
+                resetCount++;
+            }
+        };
+
+        await viewModel.RefreshAsync();
+        resetCount = 0;
+
+        viewModel.SelectedSortOption = LibrarySortOption.Title;
+
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("A", "B", "C");
+        resetCount.Should().Be(1);
+    }
+
+    [Fact]
     public async Task Removing_grouping_preserves_remaining_grouping_chips()
     {
         var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])]);

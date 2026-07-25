@@ -86,7 +86,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    public ObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
+    public BulkObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
     public ObservableCollection<FacetFilterViewModel> AuthorFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> CategoryFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> SeriesFilters { get; } = [];
@@ -94,7 +94,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<FacetFilterViewModel> EReaderFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> FormatFilters { get; } = [];
-    public ObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
+    public BulkObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
     public ObservableCollection<LibraryGroupOption> ActiveGroupOptions { get; } = [];
     public IReadOnlyList<LibraryGroupOption> AvailableGroupOptions { get; } =
     [
@@ -511,11 +511,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 authorSortStrategy)
             .ToList();
 
-        VisibleBooks.Clear();
-        foreach (var row in rows)
-        {
-            VisibleBooks.Add(row);
-        }
+        VisibleBooks.ReplaceAll(rows);
 
         RefreshGroupedLibraryNodes(rows);
         OnPropertyChanged(nameof(VisibleBookCount));
@@ -679,17 +675,14 @@ public sealed partial class LibraryViewModel : ObservableObject
     private void RefreshGroupedLibraryNodes(IReadOnlyList<BookRowViewModel> rows)
     {
         var expandedGroupPaths = CaptureExpandedGroupPaths(GroupedLibraryNodes);
-        GroupedLibraryNodes.Clear();
         var groupOptions = GetActiveGroupOptions();
         if (groupOptions.Count == 0)
         {
+            GroupedLibraryNodes.ReplaceAll([]);
             return;
         }
 
-        foreach (var group in BuildGroupNodes(rows, groupOptions, level: 0, parentPath: string.Empty, expandedGroupPaths))
-        {
-            GroupedLibraryNodes.Add(group);
-        }
+        GroupedLibraryNodes.ReplaceAll(BuildGroupNodes(rows, groupOptions, level: 0, parentPath: string.Empty, expandedGroupPaths));
     }
 
     private IEnumerable<LibraryGroupNodeViewModel> BuildGroupNodes(
@@ -1414,8 +1407,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         currentLibrary?.Clear();
         books = [];
-        VisibleBooks.Clear();
-        GroupedLibraryNodes.Clear();
+        VisibleBooks.ReplaceAll([]);
+        GroupedLibraryNodes.ReplaceAll([]);
         AuthorFilters.Clear();
         CategoryFilters.Clear();
         SeriesFilters.Clear();
