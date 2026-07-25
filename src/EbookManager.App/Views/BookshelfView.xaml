@@ -8,6 +8,7 @@
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
+    <converters:LibraryGroupHeaderTextConverter x:Key="LibraryGroupHeaderTextConverter" />
     <DataTemplate x:Key="BookTileTemplate">
       <Border Width="150"
               Margin="10"
@@ -43,6 +44,47 @@
                                          Foreground="{DynamicResource TextSecondaryBrush}" />
         </StackPanel>
       </Border>
+    </DataTemplate>
+    <DataTemplate x:Key="BookshelfGroupNodeTemplate">
+      <StackPanel Margin="0,0,0,10">
+        <Expander IsExpanded="False">
+          <Expander.Header>
+            <Border Background="{DynamicResource PanelBackgroundBrush}"
+                    CornerRadius="12"
+                    Padding="14,8"
+                    Margin="10,10,10,0">
+              <TextBlock FontWeight="SemiBold"
+                         FontSize="16"
+                         Foreground="{DynamicResource TextPrimaryBrush}">
+                <TextBlock.Text>
+                  <MultiBinding Converter="{StaticResource LibraryGroupHeaderTextConverter}">
+                    <Binding Path="Header" />
+                    <Binding Path="BookCount" />
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+            </Border>
+          </Expander.Header>
+          <StackPanel Margin="22,4,0,0">
+            <ItemsControl ItemsSource="{Binding Groups}"
+                          ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}" />
+            <ListBox ItemsSource="{Binding Books}"
+                     SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
+                     ItemTemplate="{StaticResource BookTileTemplate}"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     AllowDrop="True"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+              <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel IsItemsHost="True" />
+                </ItemsPanelTemplate>
+              </ListBox.ItemsPanel>
+            </ListBox>
+          </StackPanel>
+        </Expander>
+      </StackPanel>
     </DataTemplate>
   </UserControl.Resources>
   <Grid>
@@ -83,37 +125,8 @@
           </Style.Triggers>
         </Style>
       </ScrollViewer.Style>
-      <ItemsControl ItemsSource="{Binding GroupedBookshelves}">
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
-            <StackPanel Margin="0,0,0,18">
-              <Border Background="{DynamicResource PanelBackgroundBrush}"
-                      CornerRadius="12"
-                      Padding="14,8"
-                      Margin="10,10,10,0">
-                <TextBlock Text="{Binding Header}"
-                           FontWeight="SemiBold"
-                           FontSize="16"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
-              </Border>
-              <ListBox ItemsSource="{Binding Books}"
-                       SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
-                       ItemTemplate="{StaticResource BookTileTemplate}"
-                       BorderThickness="0"
-                       Background="Transparent"
-                       AllowDrop="True"
-                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                       ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                <ListBox.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True" />
-                  </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-              </ListBox>
-            </StackPanel>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+      <ItemsControl ItemsSource="{Binding GroupedLibraryNodes}"
+                    ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}" />
     </ScrollViewer>
   </Grid>
 </UserControl>

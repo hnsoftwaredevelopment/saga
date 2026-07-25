@@ -59,7 +59,7 @@
     </DataTemplate>
     <DataTemplate x:Key="DetailedGroupNodeTemplate">
       <StackPanel Margin="0,0,0,4">
-        <Expander IsExpanded="True">
+        <Expander IsExpanded="False">
           <Expander.Header>
             <TextBlock FontWeight="SemiBold"
                        FontSize="15"

@@ -89,7 +89,6 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<FacetFilterViewModel> EReaderFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> FormatFilters { get; } = [];
-    public ObservableCollection<LibraryBookGroupViewModel> GroupedBookshelves { get; } = [];
     public ObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
 
     public BookDetailsViewModel Details { get; }
@@ -496,7 +495,6 @@ public sealed partial class LibraryViewModel : ObservableObject
             VisibleBooks.Add(row);
         }
 
-        RefreshGroupedBookshelves(filteredBooks);
         RefreshGroupedLibraryNodes(rows);
         OnPropertyChanged(nameof(VisibleBookCount));
         OnPropertyChanged(nameof(IsBookshelfGrouped));
@@ -507,48 +505,6 @@ public sealed partial class LibraryViewModel : ObservableObject
         EmptyStateMessage = HasActiveLibrary
             ? "This library is empty. Add books or scan a folder to begin."
             : "Create or open a library to get started.";
-    }
-
-    private IEnumerable<BookRowViewModel> ProjectBookshelfRows(IEnumerable<Book> source)
-    {
-        var groupOptions = GetActiveBookshelfGroupOptions();
-        foreach (var book in source)
-        {
-            if (groupOptions.Count == 0)
-            {
-                yield return new BookRowViewModel(
-                    book,
-                    SearchText,
-                    CurrentLibraryPath,
-                    authorSortStrategy);
-                continue;
-            }
-
-            foreach (var primaryGroupName in GetGroupNames(book, groupOptions[0]))
-            {
-                if (groupOptions.Count == 1)
-                {
-                    yield return new BookRowViewModel(
-                        book,
-                        SearchText,
-                        CurrentLibraryPath,
-                        authorSortStrategy,
-                        primaryGroupName);
-                    continue;
-                }
-
-                foreach (var secondaryGroupName in GetGroupNames(book, groupOptions[1]))
-                {
-                    yield return new BookRowViewModel(
-                        book,
-                        SearchText,
-                        CurrentLibraryPath,
-                        authorSortStrategy,
-                        primaryGroupName,
-                        secondaryGroupName);
-                }
-            }
-        }
     }
 
     private IReadOnlyList<LibraryGroupOption> GetActiveBookshelfGroupOptions()
@@ -625,44 +581,6 @@ public sealed partial class LibraryViewModel : ObservableObject
             yield return new LibraryGroupNodeViewModel(rowGroup.Key, children, directBooks);
         }
     }
-
-    private void RefreshGroupedBookshelves(IReadOnlyList<Book> filteredBooks)
-    {
-        GroupedBookshelves.Clear();
-        if (!IsBookshelfGrouped)
-        {
-            return;
-        }
-
-        var rows = ApplySort(
-                ProjectBookshelfRows(filteredBooks),
-                SelectedSortOption,
-                authorSortStrategy)
-            .ToList();
-        foreach (var group in rows.GroupBy(row => row.BookshelfGroupHeader, StringComparer.CurrentCultureIgnoreCase)
-                     .OrderBy(group => group.Key, StringComparer.CurrentCultureIgnoreCase))
-        {
-            GroupedBookshelves.Add(new LibraryBookGroupViewModel(group.Key, group));
-        }
-    }
-
-    private static IEnumerable<string> GetGroupNames(Book book, LibraryGroupOption groupOption) =>
-        groupOption switch
-        {
-            LibraryGroupOption.Author => NonEmptyValues(book.Metadata.Authors, "Unknown author"),
-            LibraryGroupOption.Series => SingleNonEmptyValue(book.Metadata.Series, "No series"),
-            LibraryGroupOption.Tag => NonEmptyValues(book.Metadata.Tags ?? [], "No tags"),
-            LibraryGroupOption.Language => SingleNonEmptyValue(
-                string.IsNullOrWhiteSpace(book.Metadata.Language)
-                    ? null
-                    : LanguageDisplayService.DisplayName(book.Metadata.Language),
-                "No language"),
-            LibraryGroupOption.Status => [book.ReadingStatus.ToString()],
-            LibraryGroupOption.Format => NonEmptyValues(
-                book.Formats.Select(format => format.ToString().ToUpperInvariant()),
-                "No format"),
-            _ => [string.Empty]
-        };
 
     private static IEnumerable<string> GetDisplayGroupNames(Book book, LibraryGroupOption groupOption) =>
         groupOption switch
