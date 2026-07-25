@@ -539,10 +539,19 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public void SetGroupingOptions(IEnumerable<LibraryGroupOption> options)
     {
-        viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
-        RefreshActiveGroupOptions();
-        RefreshGroupingOnly();
-        SaveGroupingSettingsAsync(CancellationToken.None).GetAwaiter().GetResult();
+        var performance = new LibraryViewPerformanceTracker("SetGroupingOptions");
+        performance.Measure(
+            "active-groups",
+            () =>
+            {
+                viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
+                RefreshActiveGroupOptions();
+            });
+        var visibleCount = RefreshGroupingOnly(performance);
+        performance.Measure(
+            "settings-save",
+            () => SaveGroupingSettingsAsync(CancellationToken.None).GetAwaiter().GetResult());
+        ReportPerformance(performance, visibleCount);
     }
 
     private IReadOnlyList<LibraryGroupOption> GetActiveGroupOptions() =>
@@ -555,10 +564,17 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
-        RefreshActiveGroupOptions();
-        RefreshGroupingOnly();
-        await SaveGroupingSettingsAsync(cancellationToken);
+        var performance = new LibraryViewPerformanceTracker("AddGrouping");
+        performance.Measure(
+            "active-groups",
+            () =>
+            {
+                viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
+                RefreshActiveGroupOptions();
+            });
+        var visibleCount = RefreshGroupingOnly(performance);
+        await performance.MeasureAsync("settings-save", () => SaveGroupingSettingsAsync(cancellationToken));
+        ReportPerformance(performance, visibleCount);
     }
 
     private bool CanAddGrouping() =>
@@ -572,12 +588,19 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        viewGroupings[SelectedView] = viewGroupings[SelectedView]
-            .Where(existing => existing != option)
-            .ToList();
-        RefreshActiveGroupOptions();
-        RefreshGroupingOnly();
-        await SaveGroupingSettingsAsync(cancellationToken);
+        var performance = new LibraryViewPerformanceTracker("RemoveGrouping");
+        performance.Measure(
+            "active-groups",
+            () =>
+            {
+                viewGroupings[SelectedView] = viewGroupings[SelectedView]
+                    .Where(existing => existing != option)
+                    .ToList();
+                RefreshActiveGroupOptions();
+            });
+        var visibleCount = RefreshGroupingOnly(performance);
+        await performance.MeasureAsync("settings-save", () => SaveGroupingSettingsAsync(cancellationToken));
+        ReportPerformance(performance, visibleCount);
     }
 
     private void RefreshActiveGroupOptions()
@@ -610,14 +633,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(IsLibraryGrouped));
     }
 
-    private void RefreshGroupingOnly()
+    private int RefreshGroupingOnly(LibraryViewPerformanceTracker? performanceTracker = null)
     {
-        var performance = new LibraryViewPerformanceTracker("RefreshGroupingOnly");
+        var performance = performanceTracker ?? new LibraryViewPerformanceTracker("RefreshGroupingOnly");
         var rows = performance.Measure("snapshot", () => VisibleBooks.ToArray());
         performance.Measure("grouping", () => RefreshGroupedLibraryNodes(rows));
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
-        ReportPerformance(performance, rows.Length);
+        if (performanceTracker is null)
+        {
+            ReportPerformance(performance, rows.Length);
+        }
+
+        return rows.Length;
     }
 
     private async Task SaveGroupingSettingsAsync(CancellationToken cancellationToken)
@@ -1643,6 +1671,19 @@ public sealed partial class LibraryViewModel : ObservableObject
             try
             {
                 action();
+            }
+            finally
+            {
+                RecordPhase(phase, phaseStopwatch.Elapsed);
+            }
+        }
+
+        public async Task MeasureAsync(string phase, Func<Task> action)
+        {
+            var phaseStopwatch = Stopwatch.StartNew();
+            try
+            {
+                await action();
             }
             finally
             {

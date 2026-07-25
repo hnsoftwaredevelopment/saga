@@ -21,7 +21,7 @@ public sealed class LibraryPerformanceReporter : ILibraryPerformanceReporter
 
     public void Report(LibraryPerformanceSnapshot snapshot)
     {
-        if (snapshot.TotalDuration < SlowOperationThreshold)
+        if (snapshot.TotalDuration < SlowOperationThreshold && !ShouldAlwaysLog(snapshot))
         {
             return;
         }
@@ -37,4 +37,7 @@ public sealed class LibraryPerformanceReporter : ILibraryPerformanceReporter
 
         File.AppendAllLines(logPath, [line]);
     }
+
+    private static bool ShouldAlwaysLog(LibraryPerformanceSnapshot snapshot) =>
+        snapshot.Operation is "AddGrouping" or "RemoveGrouping" or "SetGroupingOptions";
 }

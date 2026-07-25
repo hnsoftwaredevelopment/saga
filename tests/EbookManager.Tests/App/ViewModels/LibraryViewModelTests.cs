@@ -1484,12 +1484,12 @@ public sealed class LibraryViewModelTests
         await viewModel.AddGroupingCommand.ExecuteAsync(null);
 
         var snapshot = reporter.Snapshots.Should()
-            .ContainSingle(item => item.Operation == "RefreshGroupingOnly")
+            .ContainSingle(item => item.Operation == "AddGrouping")
             .Which;
         snapshot.BookCount.Should().Be(2);
         snapshot.VisibleBookCount.Should().Be(2);
         snapshot.Groupings.Should().Equal(LibraryGroupOption.Author);
-        snapshot.Phases.Keys.Should().Contain(["snapshot", "grouping"]);
+        snapshot.Phases.Keys.Should().Contain(["active-groups", "snapshot", "grouping", "settings-save"]);
     }
 
     private static LibraryViewModel CreateViewModel(
