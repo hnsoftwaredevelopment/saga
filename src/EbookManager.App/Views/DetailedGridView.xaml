@@ -24,6 +24,13 @@
           <ColumnDefinition Width="120" />
           <ColumnDefinition Width="130" />
           <ColumnDefinition Width="170" />
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="140" />
+          <ColumnDefinition Width="320" />
+          <ColumnDefinition Width="150" />
+          <ColumnDefinition Width="150" />
+          <ColumnDefinition Width="120" />
         </Grid.ColumnDefinitions>
         <Border Grid.Column="0"
                 Width="34"
@@ -55,6 +62,13 @@
         <TextBlock Grid.Column="6" Text="{Binding ReadingStatus}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
         <TextBlock Grid.Column="7" Text="{Binding Language}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
         <TextBlock Grid.Column="8" Text="{Binding Publisher}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="9" Text="{Binding PublicationDate}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="10" Text="{Binding Tags}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="11" Text="{Binding Isbn}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="12" Text="{Binding Description}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" TextTrimming="CharacterEllipsis" />
+        <TextBlock Grid.Column="13" Text="{Binding DateAdded}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="14" Text="{Binding LastModified}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="15" Text="{Binding EReader}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
       </Grid>
     </DataTemplate>
     <DataTemplate x:Key="DetailedGroupNodeTemplate">
@@ -355,6 +369,13 @@
           <ColumnDefinition Width="120" />
           <ColumnDefinition Width="130" />
           <ColumnDefinition Width="170" />
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="140" />
+          <ColumnDefinition Width="320" />
+          <ColumnDefinition Width="150" />
+          <ColumnDefinition Width="150" />
+          <ColumnDefinition Width="120" />
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" Text="{loc:Loc Cover}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
         <TextBlock Grid.Column="1" Text="{loc:Loc Title}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -365,6 +386,13 @@
         <TextBlock Grid.Column="6" Text="{loc:Loc Status}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
         <TextBlock Grid.Column="7" Text="{loc:Loc Language}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
         <TextBlock Grid.Column="8" Text="{loc:Loc Publisher}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="9" Text="{loc:Loc PublicationDate}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="10" Text="{loc:Loc Tags}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="11" Text="{loc:Loc Isbn}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="12" Text="{loc:Loc Description}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="13" Text="{loc:Loc DateAdded}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="14" Text="{loc:Loc LastModified}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="15" Text="{loc:Loc EReader}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
       </Grid>
       <ListBox Grid.Row="1"
                ItemsSource="{Binding GroupedLibraryNodes}"
