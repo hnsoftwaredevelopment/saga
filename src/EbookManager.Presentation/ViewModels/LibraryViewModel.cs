@@ -178,6 +178,24 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool IsLibraryGrouped => IsBookshelfGrouped;
 
+    public IEnumerable<BookRowViewModel>? BookshelfVisibleBooksSource =>
+        SelectedView == LibraryView.Bookshelf && !IsBookshelfGrouped ? VisibleBooks : null;
+
+    public IEnumerable<LibraryGroupNodeViewModel>? BookshelfGroupedLibraryNodesSource =>
+        SelectedView == LibraryView.Bookshelf && IsBookshelfGrouped ? GroupedLibraryNodes : null;
+
+    public IEnumerable<BookRowViewModel>? DetailedVisibleBooksSource =>
+        SelectedView == LibraryView.Detailed && !IsLibraryGrouped ? VisibleBooks : null;
+
+    public IEnumerable<LibraryGroupNodeViewModel>? DetailedGroupedLibraryNodesSource =>
+        SelectedView == LibraryView.Detailed && IsLibraryGrouped ? GroupedLibraryNodes : null;
+
+    public IEnumerable<BookRowViewModel>? ListVisibleBooksSource =>
+        SelectedView == LibraryView.List && !IsLibraryGrouped ? VisibleBooks : null;
+
+    public IEnumerable<LibraryGroupNodeViewModel>? ListGroupedLibraryNodesSource =>
+        SelectedView == LibraryView.List && IsLibraryGrouped ? GroupedLibraryNodes : null;
+
     public IAsyncRelayCommand RefreshCommand => refreshCommand ??= new AsyncRelayCommand(RefreshAsync);
     public IAsyncRelayCommand AddBooksCommand => addBooksCommand ??= new AsyncRelayCommand(AddBooksAsync);
     public IAsyncRelayCommand ScanFolderCommand => scanFolderCommand ??= new AsyncRelayCommand(ScanFolderAsync);
@@ -301,6 +319,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         RefreshActiveGroupOptions();
         RefreshGroupingOnly();
+        NotifyActiveViewSourcesChanged();
     }
 
     partial void OnSelectedSortOptionChanged(LibrarySortOption value) => ApplyFilter();
@@ -526,6 +545,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(VisibleBookCount));
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
+        NotifyActiveViewSourcesChanged();
         performance.Measure(
             "selection",
             () => SelectedBook = selectedId is null
@@ -631,6 +651,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         addGroupingCommand?.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
+        NotifyActiveViewSourcesChanged();
     }
 
     private int RefreshGroupingOnly(LibraryViewPerformanceTracker? performanceTracker = null)
@@ -640,12 +661,23 @@ public sealed partial class LibraryViewModel : ObservableObject
         performance.Measure("grouping", () => RefreshGroupedLibraryNodes(rows));
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
+        NotifyActiveViewSourcesChanged();
         if (performanceTracker is null)
         {
             ReportPerformance(performance, rows.Length);
         }
 
         return rows.Length;
+    }
+
+    private void NotifyActiveViewSourcesChanged()
+    {
+        OnPropertyChanged(nameof(BookshelfVisibleBooksSource));
+        OnPropertyChanged(nameof(BookshelfGroupedLibraryNodesSource));
+        OnPropertyChanged(nameof(DetailedVisibleBooksSource));
+        OnPropertyChanged(nameof(DetailedGroupedLibraryNodesSource));
+        OnPropertyChanged(nameof(ListVisibleBooksSource));
+        OnPropertyChanged(nameof(ListGroupedLibraryNodesSource));
     }
 
     private async Task SaveGroupingSettingsAsync(CancellationToken cancellationToken)

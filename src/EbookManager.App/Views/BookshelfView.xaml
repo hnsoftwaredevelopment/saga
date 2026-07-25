@@ -108,7 +108,7 @@
     </DataTemplate>
   </UserControl.Resources>
   <Grid>
-    <ListBox ItemsSource="{Binding VisibleBooks}"
+    <ListBox ItemsSource="{Binding BookshelfVisibleBooksSource}"
              SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
              ItemTemplate="{StaticResource BookTileTemplate}"
              BorderThickness="0"
@@ -133,7 +133,7 @@
       </ListBox.ItemsPanel>
     </ListBox>
 
-    <ListBox ItemsSource="{Binding GroupedLibraryNodes}"
+    <ListBox ItemsSource="{Binding BookshelfGroupedLibraryNodesSource}"
              ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}"
              BorderThickness="0"
              Background="Transparent"

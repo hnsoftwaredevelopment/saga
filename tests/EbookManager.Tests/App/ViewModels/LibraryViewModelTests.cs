@@ -627,6 +627,33 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Only_active_library_view_exposes_item_sources()
+    {
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], series: "Series")]);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.DetailedVisibleBooksSource.Should().BeSameAs(viewModel.VisibleBooks);
+        viewModel.ListVisibleBooksSource.Should().BeNull();
+        viewModel.BookshelfVisibleBooksSource.Should().BeNull();
+
+        viewModel.SelectedView = LibraryView.Bookshelf;
+
+        viewModel.BookshelfVisibleBooksSource.Should().BeSameAs(viewModel.VisibleBooks);
+        viewModel.DetailedVisibleBooksSource.Should().BeNull();
+        viewModel.ListVisibleBooksSource.Should().BeNull();
+
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Author;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+
+        viewModel.BookshelfVisibleBooksSource.Should().BeNull();
+        viewModel.BookshelfGroupedLibraryNodesSource.Should().BeSameAs(viewModel.GroupedLibraryNodes);
+        viewModel.DetailedGroupedLibraryNodesSource.Should().BeNull();
+        viewModel.ListGroupedLibraryNodesSource.Should().BeNull();
+    }
+
+    [Fact]
     public async Task Sorting_replaces_visible_books_in_bulk()
     {
         var viewModel = CreateViewModel(
