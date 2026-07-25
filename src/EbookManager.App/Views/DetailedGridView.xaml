@@ -59,7 +59,18 @@
     </DataTemplate>
     <DataTemplate x:Key="DetailedGroupNodeTemplate">
       <StackPanel Margin="0,0,0,4">
-        <Expander IsExpanded="False">
+        <Expander IsExpanded="False"
+                  Content="{Binding}">
+          <Expander.Style>
+            <Style TargetType="Expander">
+              <Setter Property="ContentTemplate" Value="{x:Null}" />
+              <Style.Triggers>
+                <Trigger Property="IsExpanded" Value="True">
+                  <Setter Property="ContentTemplate" Value="{DynamicResource DetailedGroupContentTemplate}" />
+                </Trigger>
+              </Style.Triggers>
+            </Style>
+          </Expander.Style>
           <Expander.Header>
             <TextBlock FontWeight="SemiBold"
                        FontSize="15"
@@ -72,16 +83,23 @@
               </TextBlock.Text>
             </TextBlock>
           </Expander.Header>
-          <StackPanel Margin="22,4,0,0">
-            <ItemsControl ItemsSource="{Binding Groups}"
-                          ItemTemplate="{StaticResource DetailedGroupNodeTemplate}" />
-            <ListBox ItemsSource="{Binding Books}"
-                     SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
-                     ItemTemplate="{StaticResource DetailedBookRowTemplate}"
-                     BorderThickness="0"
-                     Background="Transparent" />
-          </StackPanel>
         </Expander>
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate x:Key="DetailedGroupContentTemplate">
+      <StackPanel Margin="22,4,0,0">
+        <ListBox ItemsSource="{Binding Groups}"
+                 ItemTemplate="{StaticResource DetailedGroupNodeTemplate}"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 ScrollViewer.CanContentScroll="True" />
+        <ListBox ItemsSource="{Binding Books}"
+                 SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
+                 ItemTemplate="{StaticResource DetailedBookRowTemplate}"
+                 BorderThickness="0"
+                 Background="Transparent" />
       </StackPanel>
     </DataTemplate>
   </UserControl.Resources>
@@ -309,10 +327,9 @@
       </syncfusion:GridTemplateColumn>
     </syncfusion:SfDataGrid.Columns>
   </syncfusion:SfDataGrid>
-  <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto">
-    <ScrollViewer.Style>
-      <Style TargetType="ScrollViewer">
+  <Grid>
+    <Grid.Style>
+      <Style TargetType="Grid">
         <Setter Property="Visibility" Value="Collapsed" />
         <Style.Triggers>
           <DataTrigger Binding="{Binding IsLibraryGrouped}" Value="True">
@@ -320,8 +337,11 @@
           </DataTrigger>
         </Style.Triggers>
       </Style>
-    </ScrollViewer.Style>
-    <StackPanel>
+    </Grid.Style>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
       <Grid MinHeight="36" Background="{DynamicResource PanelBackgroundBrush}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="80" />
@@ -344,9 +364,16 @@
         <TextBlock Grid.Column="7" Text="{loc:Loc Language}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
         <TextBlock Grid.Column="8" Text="{loc:Loc Publisher}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
       </Grid>
-      <ItemsControl ItemsSource="{Binding GroupedLibraryNodes}"
-                    ItemTemplate="{StaticResource DetailedGroupNodeTemplate}" />
-    </StackPanel>
-  </ScrollViewer>
+      <ListBox Grid.Row="1"
+               ItemsSource="{Binding GroupedLibraryNodes}"
+               ItemTemplate="{StaticResource DetailedGroupNodeTemplate}"
+               BorderThickness="0"
+               Background="Transparent"
+               VirtualizingPanel.IsVirtualizing="True"
+               VirtualizingPanel.VirtualizationMode="Recycling"
+               ScrollViewer.CanContentScroll="True"
+               ScrollViewer.HorizontalScrollBarVisibility="Auto"
+               ScrollViewer.VerticalScrollBarVisibility="Auto" />
+  </Grid>
   </Grid>
 </UserControl>

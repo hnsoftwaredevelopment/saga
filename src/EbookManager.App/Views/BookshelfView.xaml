@@ -47,7 +47,18 @@
     </DataTemplate>
     <DataTemplate x:Key="BookshelfGroupNodeTemplate">
       <StackPanel Margin="0,0,0,10">
-        <Expander IsExpanded="False">
+        <Expander IsExpanded="False"
+                  Content="{Binding}">
+          <Expander.Style>
+            <Style TargetType="Expander">
+              <Setter Property="ContentTemplate" Value="{x:Null}" />
+              <Style.Triggers>
+                <Trigger Property="IsExpanded" Value="True">
+                  <Setter Property="ContentTemplate" Value="{DynamicResource BookshelfGroupContentTemplate}" />
+                </Trigger>
+              </Style.Triggers>
+            </Style>
+          </Expander.Style>
           <Expander.Header>
             <Border Background="{DynamicResource PanelBackgroundBrush}"
                     CornerRadius="12"
@@ -65,25 +76,32 @@
               </TextBlock>
             </Border>
           </Expander.Header>
-          <StackPanel Margin="22,4,0,0">
-            <ItemsControl ItemsSource="{Binding Groups}"
-                          ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}" />
-            <ListBox ItemsSource="{Binding Books}"
-                     SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
-                     ItemTemplate="{StaticResource BookTileTemplate}"
-                     BorderThickness="0"
-                     Background="Transparent"
-                     AllowDrop="True"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
-              <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel IsItemsHost="True" />
-                </ItemsPanelTemplate>
-              </ListBox.ItemsPanel>
-            </ListBox>
-          </StackPanel>
         </Expander>
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate x:Key="BookshelfGroupContentTemplate">
+      <StackPanel Margin="22,4,0,0">
+        <ListBox ItemsSource="{Binding Groups}"
+                 ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 ScrollViewer.CanContentScroll="True" />
+        <ListBox ItemsSource="{Binding Books}"
+                 SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
+                 ItemTemplate="{StaticResource BookTileTemplate}"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 AllowDrop="True"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel IsItemsHost="True" />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
+        </ListBox>
       </StackPanel>
     </DataTemplate>
   </UserControl.Resources>
@@ -113,10 +131,17 @@
       </ListBox.ItemsPanel>
     </ListBox>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                  VerticalScrollBarVisibility="Auto">
-      <ScrollViewer.Style>
-        <Style TargetType="ScrollViewer">
+    <ListBox ItemsSource="{Binding GroupedLibraryNodes}"
+             ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}"
+             BorderThickness="0"
+             Background="Transparent"
+             VirtualizingPanel.IsVirtualizing="True"
+             VirtualizingPanel.VirtualizationMode="Recycling"
+             ScrollViewer.CanContentScroll="True"
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+             ScrollViewer.VerticalScrollBarVisibility="Auto">
+      <ListBox.Style>
+        <Style TargetType="ListBox">
           <Setter Property="Visibility" Value="Collapsed" />
           <Style.Triggers>
             <DataTrigger Binding="{Binding IsBookshelfGrouped}" Value="True">
@@ -124,9 +149,7 @@
             </DataTrigger>
           </Style.Triggers>
         </Style>
-      </ScrollViewer.Style>
-      <ItemsControl ItemsSource="{Binding GroupedLibraryNodes}"
-                    ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}" />
-    </ScrollViewer>
+      </ListBox.Style>
+    </ListBox>
   </Grid>
 </UserControl>
