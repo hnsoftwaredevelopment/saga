@@ -15,6 +15,14 @@ public sealed class ImportItemEntity
     public Guid? BookId { get; set; }
     public BookEntity? Book { get; set; }
     public long? DurationMilliseconds { get; set; }
+    public long? AvailabilityCheckMilliseconds { get; set; }
+    public long? SizeReadMilliseconds { get; set; }
+    public long? HashingMilliseconds { get; set; }
+    public long? MetadataReadMilliseconds { get; set; }
+    public long? DuplicateCheckMilliseconds { get; set; }
+    public long? ManagedCopyMilliseconds { get; set; }
+    public long? DatabaseSaveMilliseconds { get; set; }
+    public long? CleanupMilliseconds { get; set; }
     public long? SizeBytes { get; set; }
     public EbookFormat? Format { get; set; }
     public string? SuggestionKind { get; set; }

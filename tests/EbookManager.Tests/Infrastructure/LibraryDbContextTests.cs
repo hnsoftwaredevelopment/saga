@@ -555,7 +555,16 @@ public sealed class LibraryDbContextTests
         var diagnostics = new ImportItemDiagnostics(
             TimeSpan.FromMilliseconds(1234),
             SizeBytes: 42_000,
-            Format: EbookFormat.Cbr);
+            Format: EbookFormat.Cbr,
+            PhaseTimings: new ImportPhaseTimings(
+                AvailabilityCheck: TimeSpan.FromMilliseconds(1),
+                SizeRead: TimeSpan.FromMilliseconds(2),
+                Hashing: TimeSpan.FromMilliseconds(3),
+                MetadataRead: TimeSpan.FromMilliseconds(4),
+                DuplicateCheck: TimeSpan.FromMilliseconds(5),
+                ManagedCopy: TimeSpan.FromMilliseconds(6),
+                DatabaseSave: TimeSpan.FromMilliseconds(7),
+                Cleanup: TimeSpan.FromMilliseconds(8)));
 
         await importRepository.RecordItemAsync(
             runId,

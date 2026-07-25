@@ -38,13 +38,18 @@ public sealed class ImportResultViewModelTests
                     Diagnostics: new ImportItemDiagnostics(
                         TimeSpan.FromMilliseconds(1234),
                         SizeBytes: 1_572_864,
-                        Format: EbookFormat.Cbr))
+                        Format: EbookFormat.Cbr,
+                        PhaseTimings: new ImportPhaseTimings(
+                            Hashing: TimeSpan.FromMilliseconds(25),
+                            MetadataRead: TimeSpan.FromMilliseconds(1250))))
             ]));
 
         var item = viewModel.Items.Should().ContainSingle().Which;
         item.FormatText.Should().Be("CBR");
         item.SizeText.Should().Be("1,5 MB");
         item.DurationText.Should().Be("1,2 s");
+        item.PhaseTimingsText.Should().Contain("hash 25 ms");
+        item.PhaseTimingsText.Should().Contain("meta 1,3 s");
     }
 
     [Fact]

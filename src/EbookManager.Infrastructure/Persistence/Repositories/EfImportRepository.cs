@@ -60,6 +60,14 @@ public sealed class EfImportRepository(
             DurationMilliseconds = diagnostics is null
                 ? null
                 : Math.Max(0, (long)Math.Round(diagnostics.Duration.TotalMilliseconds)),
+            AvailabilityCheckMilliseconds = ToMilliseconds(diagnostics?.PhaseTimings?.AvailabilityCheck),
+            SizeReadMilliseconds = ToMilliseconds(diagnostics?.PhaseTimings?.SizeRead),
+            HashingMilliseconds = ToMilliseconds(diagnostics?.PhaseTimings?.Hashing),
+            MetadataReadMilliseconds = ToMilliseconds(diagnostics?.PhaseTimings?.MetadataRead),
+            DuplicateCheckMilliseconds = ToMilliseconds(diagnostics?.PhaseTimings?.DuplicateCheck),
+            ManagedCopyMilliseconds = ToMilliseconds(diagnostics?.PhaseTimings?.ManagedCopy),
+            DatabaseSaveMilliseconds = ToMilliseconds(diagnostics?.PhaseTimings?.DatabaseSave),
+            CleanupMilliseconds = ToMilliseconds(diagnostics?.PhaseTimings?.Cleanup),
             SizeBytes = diagnostics?.SizeBytes,
             Format = diagnostics?.Format,
             SuggestionKind = suggestion?.Kind.ToString(),
@@ -149,7 +157,15 @@ public sealed class EfImportRepository(
     {
         if (item.DurationMilliseconds is null &&
             item.SizeBytes is null &&
-            item.Format is null)
+            item.Format is null &&
+            item.AvailabilityCheckMilliseconds is null &&
+            item.SizeReadMilliseconds is null &&
+            item.HashingMilliseconds is null &&
+            item.MetadataReadMilliseconds is null &&
+            item.DuplicateCheckMilliseconds is null &&
+            item.ManagedCopyMilliseconds is null &&
+            item.DatabaseSaveMilliseconds is null &&
+            item.CleanupMilliseconds is null)
         {
             return null;
         }
@@ -157,8 +173,25 @@ public sealed class EfImportRepository(
         return new ImportItemDiagnostics(
             TimeSpan.FromMilliseconds(item.DurationMilliseconds ?? 0),
             item.SizeBytes,
-            item.Format);
+            item.Format,
+            new ImportPhaseTimings(
+                FromMilliseconds(item.AvailabilityCheckMilliseconds),
+                FromMilliseconds(item.SizeReadMilliseconds),
+                FromMilliseconds(item.HashingMilliseconds),
+                FromMilliseconds(item.MetadataReadMilliseconds),
+                FromMilliseconds(item.DuplicateCheckMilliseconds),
+                FromMilliseconds(item.ManagedCopyMilliseconds),
+                FromMilliseconds(item.DatabaseSaveMilliseconds),
+                FromMilliseconds(item.CleanupMilliseconds)));
     }
+
+    private static long? ToMilliseconds(TimeSpan? duration) =>
+        duration is null
+            ? null
+            : Math.Max(0, (long)Math.Round(duration.Value.TotalMilliseconds));
+
+    private static TimeSpan? FromMilliseconds(long? milliseconds) =>
+        milliseconds is null ? null : TimeSpan.FromMilliseconds(milliseconds.Value);
 
     private static ImportItemSuggestion? ToSuggestion(ImportItemEntity item)
     {

@@ -110,6 +110,16 @@
                             Binding="{Binding DurationText}"
                             SortMemberPath="DurationMillisecondsSort"
                             Width="90" />
+        <DataGridTextColumn Header="{loc:Loc ImportPhases}"
+                            Binding="{Binding PhaseTimingsText}"
+                            Width="220">
+          <DataGridTextColumn.ElementStyle>
+            <Style TargetType="TextBlock">
+              <Setter Property="ToolTip" Value="{Binding PhaseTimingsText}" />
+              <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            </Style>
+          </DataGridTextColumn.ElementStyle>
+        </DataGridTextColumn>
         <DataGridTextColumn Header="{loc:Loc Outcome}"
                             Binding="{Binding Outcome, Converter={StaticResource ImportOutcomeToLocalizedStringConverter}}"
                             SortMemberPath="Outcome"

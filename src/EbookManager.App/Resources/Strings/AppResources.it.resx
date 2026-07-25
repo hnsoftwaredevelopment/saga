@@ -406,6 +406,7 @@
   <data name="FilterRemoveConfirmationMessage" xml:space="preserve"><value>Rimuovere «{0}» da {1} libro/i?</value></data>
   <data name="Rename" xml:space="preserve"><value>Rinomina</value></data>
   <data name="ImportDuplicates" xml:space="preserve"><value>Duplicati</value></data>
+  <data name="ImportPhases" xml:space="preserve"><value>Fasi</value></data>
   <data name="ImportPossibleShort" xml:space="preserve"><value>Possibile</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Aggiunto</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Probabilmente già presente</value></data>

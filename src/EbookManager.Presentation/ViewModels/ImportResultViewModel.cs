@@ -191,6 +191,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
         FormatText = item.Diagnostics?.Format?.ToString().ToUpperInvariant() ?? string.Empty;
         SizeText = FormatSize(item.Diagnostics?.SizeBytes);
         DurationText = FormatDuration(item.Diagnostics?.Duration);
+        PhaseTimingsText = FormatPhaseTimings(item.Diagnostics?.PhaseTimings);
         SizeBytesSort = item.Diagnostics?.SizeBytes ?? -1;
         DurationMillisecondsSort = item.Diagnostics?.Duration.TotalMilliseconds ?? -1;
         Outcome = item.Outcome;
@@ -217,6 +218,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
     public string FormatText { get; }
     public string SizeText { get; }
     public string DurationText { get; }
+    public string PhaseTimingsText { get; }
     public long SizeBytesSort { get; }
     public double DurationMillisecondsSort { get; }
     public ImportOutcome Outcome { get; }
@@ -270,6 +272,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
             Contains(FormatText, searchText) ||
             Contains(SizeText, searchText) ||
             Contains(DurationText, searchText) ||
+            Contains(PhaseTimingsText, searchText) ||
             Contains(OutcomeLabel, searchText) ||
             Contains(Message, searchText) ||
             Contains(SuggestionText, searchText);
@@ -313,5 +316,30 @@ public sealed class ImportResultItemViewModel : ObservableObject
                 : duration.Value.TotalHours < 1
                     ? duration.Value.ToString(@"m\:ss", CultureInfo.CurrentCulture)
                     : duration.Value.ToString(@"h\:mm\:ss", CultureInfo.CurrentCulture);
+    }
+
+    private static string FormatPhaseTimings(ImportPhaseTimings? timings)
+    {
+        if (timings is null)
+        {
+            return string.Empty;
+        }
+
+        var parts = new[]
+            {
+                ("local", timings.AvailabilityCheck),
+                ("size", timings.SizeRead),
+                ("hash", timings.Hashing),
+                ("meta", timings.MetadataRead),
+                ("dup", timings.DuplicateCheck),
+                ("copy", timings.ManagedCopy),
+                ("db", timings.DatabaseSave),
+                ("cleanup", timings.Cleanup)
+            }
+            .Where(part => part.Item2 is not null)
+            .Select(part => $"{part.Item1} {FormatDuration(part.Item2)}")
+            .ToArray();
+
+        return string.Join("; ", parts);
     }
 }
