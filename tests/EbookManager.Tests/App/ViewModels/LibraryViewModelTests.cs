@@ -584,6 +584,43 @@ public sealed class LibraryViewModelTests
         settingsStore.Settings.LibraryGroupings.List.Should().Equal(nameof(LibraryGroupOption.Series));
     }
 
+    [Fact]
+    public async Task Grouping_changes_do_not_rebuild_visible_books_or_reload_selected_book_details()
+    {
+        var first = CreateBook("First", ["Author"], tags: ["Tag"]);
+        var second = CreateBook("Second", ["Author"], tags: ["Tag"]);
+        var repository = new StaticBookRepository([first, second]);
+        var viewModel = CreateViewModel([first, second], repository: repository);
+
+        await viewModel.RefreshAsync();
+        var visibleRows = viewModel.VisibleBooks.ToArray();
+        var getCallsAfterRefresh = repository.GetCalls;
+
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Author;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Tag;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+
+        viewModel.VisibleBooks.Should().Equal(visibleRows);
+        repository.GetCalls.Should().Be(getCallsAfterRefresh);
+        viewModel.GroupedLibraryNodes.Should().ContainSingle(group => group.Header == "Author");
+    }
+
+    [Fact]
+    public async Task Removing_grouping_preserves_remaining_grouping_chips()
+    {
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Tag]);
+        var optionsReference = viewModel.ActiveGroupOptions;
+
+        await viewModel.RemoveGroupingCommand.ExecuteAsync(LibraryGroupOption.Tag);
+
+        viewModel.ActiveGroupOptions.Should().BeSameAs(optionsReference);
+        viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Author);
+    }
+
 
     [Fact]
     public async Task Selected_filters_expand_results_across_facets()
@@ -1391,9 +1428,14 @@ public sealed class LibraryViewModelTests
 
         public IReadOnlyList<Book> BooksSnapshot => [.. Books];
         public int UpdateCalls { get; private set; }
+        public int GetCalls { get; private set; }
 
         public virtual Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([.. Books]);
-        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult(Books.SingleOrDefault(book => book.Id == id));
+        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
+        {
+            GetCalls++;
+            return Task.FromResult(Books.SingleOrDefault(book => book.Id == id));
+        }
         public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) => Task.FromResult(false);
         public Task<bool> HasNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) => Task.FromResult(false);
         public Task<Book?> FindByNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) => Task.FromResult<Book?>(null);

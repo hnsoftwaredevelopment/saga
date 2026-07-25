@@ -297,7 +297,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     partial void OnSelectedViewChanged(LibraryView value)
     {
         RefreshActiveGroupOptions();
-        ApplyFilter();
+        RefreshGroupingOnly();
     }
 
     partial void OnSelectedSortOptionChanged(LibrarySortOption value) => ApplyFilter();
@@ -534,7 +534,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
         RefreshActiveGroupOptions();
-        ApplyFilter();
+        RefreshGroupingOnly();
     }
 
     private IReadOnlyList<LibraryGroupOption> GetActiveGroupOptions() =>
@@ -549,7 +549,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
         RefreshActiveGroupOptions();
-        ApplyFilter();
+        RefreshGroupingOnly();
         await SaveGroupingSettingsAsync(cancellationToken);
     }
 
@@ -568,19 +568,43 @@ public sealed partial class LibraryViewModel : ObservableObject
             .Where(existing => existing != option)
             .ToList();
         RefreshActiveGroupOptions();
-        ApplyFilter();
+        RefreshGroupingOnly();
         await SaveGroupingSettingsAsync(cancellationToken);
     }
 
     private void RefreshActiveGroupOptions()
     {
-        ActiveGroupOptions.Clear();
-        foreach (var option in NormalizeGroupOptions(viewGroupings.GetValueOrDefault(SelectedView) ?? []))
+        var desiredOptions = NormalizeGroupOptions(viewGroupings.GetValueOrDefault(SelectedView) ?? []);
+        for (var index = ActiveGroupOptions.Count - 1; index >= 0; index--)
         {
-            ActiveGroupOptions.Add(option);
+            if (!desiredOptions.Contains(ActiveGroupOptions[index]))
+            {
+                ActiveGroupOptions.RemoveAt(index);
+            }
+        }
+
+        for (var desiredIndex = 0; desiredIndex < desiredOptions.Count; desiredIndex++)
+        {
+            var option = desiredOptions[desiredIndex];
+            var currentIndex = ActiveGroupOptions.IndexOf(option);
+            if (currentIndex < 0)
+            {
+                ActiveGroupOptions.Insert(desiredIndex, option);
+            }
+            else if (currentIndex != desiredIndex)
+            {
+                ActiveGroupOptions.Move(currentIndex, desiredIndex);
+            }
         }
 
         addGroupingCommand?.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(IsBookshelfGrouped));
+        OnPropertyChanged(nameof(IsLibraryGrouped));
+    }
+
+    private void RefreshGroupingOnly()
+    {
+        RefreshGroupedLibraryNodes(VisibleBooks.ToArray());
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
     }
