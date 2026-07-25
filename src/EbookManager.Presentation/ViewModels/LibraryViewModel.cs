@@ -188,7 +188,6 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IAsyncRelayCommand AddGroupingCommand => addGroupingCommand ??= new AsyncRelayCommand(AddGroupingAsync, CanAddGrouping);
     public IAsyncRelayCommand<LibraryGroupOption> RemoveGroupingCommand =>
         removeGroupingCommand ??= new AsyncRelayCommand<LibraryGroupOption>(RemoveGroupingAsync);
-    public IAsyncRelayCommand ClearGroupingCommand => clearGroupingCommand ??= new AsyncRelayCommand(ClearGroupingAsync);
     public IAsyncRelayCommand<FacetFilterViewModel> RenameAuthorFilterCommand =>
         renameAuthorFilterCommand ??= new AsyncRelayCommand<FacetFilterViewModel>(filter => RenameFilterValueAsync(filter, MetadataFilterKind.Author));
     public IAsyncRelayCommand<FacetFilterViewModel> RemoveAuthorFilterCommand =>
@@ -220,7 +219,6 @@ public sealed partial class LibraryViewModel : ObservableObject
     private RelayCommand? closeImportJobCommand;
     private AsyncRelayCommand? addGroupingCommand;
     private AsyncRelayCommand<LibraryGroupOption>? removeGroupingCommand;
-    private AsyncRelayCommand? clearGroupingCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? renameAuthorFilterCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? removeAuthorFilterCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? renameSeriesFilterCommand;
@@ -569,19 +567,6 @@ public sealed partial class LibraryViewModel : ObservableObject
         viewGroupings[SelectedView] = viewGroupings[SelectedView]
             .Where(existing => existing != option)
             .ToList();
-        RefreshActiveGroupOptions();
-        ApplyFilter();
-        await SaveGroupingSettingsAsync(cancellationToken);
-    }
-
-    private async Task ClearGroupingAsync(CancellationToken cancellationToken)
-    {
-        if (ActiveGroupOptions.Count == 0)
-        {
-            return;
-        }
-
-        viewGroupings[SelectedView].Clear();
         RefreshActiveGroupOptions();
         ApplyFilter();
         await SaveGroupingSettingsAsync(cancellationToken);

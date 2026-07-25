@@ -236,10 +236,6 @@
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
-          <Button Content="{loc:Loc NoGrouping}"
-                  Command="{Binding ClearGroupingCommand}"
-                  Margin="0,0,0,12"
-                  HorizontalAlignment="Left" />
           <Expander Header="{loc:Loc Authors}" IsExpanded="False" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="180"
                           VerticalScrollBarVisibility="Auto">
