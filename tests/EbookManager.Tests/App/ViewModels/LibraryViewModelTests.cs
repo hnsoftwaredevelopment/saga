@@ -471,7 +471,7 @@ public sealed class LibraryViewModelTests
         var viewModel = CreateViewModel([sharedBook, soloBook]);
 
         await viewModel.RefreshAsync();
-        viewModel.BookshelfGroupOption = LibraryGroupOption.Author;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author]);
 
         viewModel.GroupedLibraryNodes.Select(group => (group.Header, group.BookCount))
             .Should()
@@ -496,8 +496,7 @@ public sealed class LibraryViewModelTests
         var viewModel = CreateViewModel([looseBook, firstSeriesBook, secondSeriesBook]);
 
         await viewModel.RefreshAsync();
-        viewModel.BookshelfGroupOption = LibraryGroupOption.Author;
-        viewModel.BookshelfSecondaryGroupOption = LibraryGroupOption.Series;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Series]);
 
         var authorGroup = viewModel.GroupedLibraryNodes.Should().ContainSingle()
             .Which;
@@ -521,7 +520,7 @@ public sealed class LibraryViewModelTests
         var viewModel = CreateViewModel([looseBook, seriesBook]);
 
         await viewModel.RefreshAsync();
-        viewModel.BookshelfGroupOption = LibraryGroupOption.Series;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Series]);
 
         viewModel.GroupedLibraryNodes.Select(group => (group.Header, group.BookCount))
             .Should()
@@ -530,6 +529,59 @@ public sealed class LibraryViewModelTests
                     ("Apollo", 1),
                     ("No series", 1)
                 ]);
+    }
+
+    [Fact]
+    public async Task Library_grouping_supports_more_than_two_levels()
+    {
+        var epub = CreateBook("Apollo 1", ["A.E. van Vogt"], series: "Apollo", formats: [EbookFormat.Epub]);
+        var pdf = CreateBook("Apollo 2", ["A.E. van Vogt"], series: "Apollo", formats: [EbookFormat.Pdf]);
+        var viewModel = CreateViewModel([epub, pdf]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions(
+            [
+                LibraryGroupOption.Author,
+                LibraryGroupOption.Series,
+                LibraryGroupOption.Format
+            ]);
+
+        var authorGroup = viewModel.GroupedLibraryNodes.Should().ContainSingle().Which;
+        authorGroup.Header.Should().Be("A.E. van Vogt");
+        authorGroup.BookCount.Should().Be(2);
+        var seriesGroup = authorGroup.Groups.Should().ContainSingle().Which;
+        seriesGroup.Header.Should().Be("Apollo");
+        seriesGroup.BookCount.Should().Be(2);
+        seriesGroup.Groups.Select(group => (group.Header, group.BookCount))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("EPUB", 1),
+                    ("PDF", 1)
+                ]);
+    }
+
+    [Fact]
+    public async Task Grouping_commands_save_grouping_per_view()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel(
+            [CreateBook("Book", ["Author"], series: "Series")],
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Author;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+        viewModel.SelectedView = LibraryView.List;
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Series;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+        viewModel.SelectedView = LibraryView.Detailed;
+
+        viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Author);
+        settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
+        settingsStore.Settings.LibraryGroupings!.Detailed.Should().Equal(nameof(LibraryGroupOption.Author));
+        settingsStore.Settings.LibraryGroupings.List.Should().Equal(nameof(LibraryGroupOption.Series));
     }
 
 

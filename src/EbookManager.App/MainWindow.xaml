@@ -17,6 +17,7 @@
     <Grid.Resources>
       <converters:EmptyStateMessageToLocalizedStringConverter x:Key="EmptyStateMessageToLocalizedStringConverter" />
       <converters:NullOrWhiteSpaceFallbackConverter x:Key="NullOrWhiteSpaceFallbackConverter" />
+      <converters:LibraryGroupOptionToLocalizedStringConverter x:Key="LibraryGroupOptionToLocalizedStringConverter" />
       <Style x:Key="ToolbarIconButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="42" />
         <Setter Property="Height" Value="40" />
@@ -189,47 +190,56 @@
           <TextBlock Text="{loc:Loc GroupBy}"
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      Margin="0,0,0,4" />
-          <ComboBox SelectedValue="{Binding BookshelfGroupOption}"
-                    SelectedValuePath="Tag"
+          <DockPanel Margin="0,0,0,8">
+            <Button Content="+"
+                    DockPanel.Dock="Right"
+                    Width="34"
+                    Margin="6,0,0,0"
+                    Command="{Binding AddGroupingCommand}"
+                    ToolTip="{loc:Loc GroupLibraryTooltip}" />
+            <ComboBox ItemsSource="{Binding AvailableGroupOptions}"
+                      SelectedItem="{Binding SelectedGroupOptionToAdd}"
+                      ToolTip="{loc:Loc GroupLibraryTooltip}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Converter={StaticResource LibraryGroupOptionToLocalizedStringConverter}}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </DockPanel>
+          <ItemsControl ItemsSource="{Binding ActiveGroupOptions}"
                     Margin="0,0,0,8"
                     ToolTip="{loc:Loc GroupLibraryTooltip}">
-            <ComboBoxItem Content="{loc:Loc NoGrouping}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.None}" />
-            <ComboBoxItem Content="{loc:Loc Authors}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Author}" />
-            <ComboBoxItem Content="{loc:Loc Series}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Series}" />
-            <ComboBoxItem Content="{loc:Loc Tags}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Tag}" />
-            <ComboBoxItem Content="{loc:Loc Language}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Language}" />
-            <ComboBoxItem Content="{loc:Loc Status}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Status}" />
-            <ComboBoxItem Content="{loc:Loc Type}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Format}" />
-          </ComboBox>
-          <TextBlock Text="{loc:Loc ThenBy}"
-                     Foreground="{DynamicResource TextSecondaryBrush}"
-                     Margin="0,0,0,4" />
-          <ComboBox SelectedValue="{Binding BookshelfSecondaryGroupOption}"
-                    SelectedValuePath="Tag"
-                    Margin="0,0,0,12"
-                    ToolTip="{loc:Loc GroupLibraryTooltip}">
-            <ComboBoxItem Content="{loc:Loc NoGrouping}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.None}" />
-            <ComboBoxItem Content="{loc:Loc Authors}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Author}" />
-            <ComboBoxItem Content="{loc:Loc Series}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Series}" />
-            <ComboBoxItem Content="{loc:Loc Tags}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Tag}" />
-            <ComboBoxItem Content="{loc:Loc Language}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Language}" />
-            <ComboBoxItem Content="{loc:Loc Status}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Status}" />
-            <ComboBoxItem Content="{loc:Loc Type}"
-                          Tag="{x:Static viewModels:LibraryGroupOption.Format}" />
-          </ComboBox>
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Background="{DynamicResource PanelBackgroundBrush}"
+                        CornerRadius="12"
+                        Padding="8,4"
+                        Margin="0,0,6,6">
+                  <DockPanel LastChildFill="False">
+                    <TextBlock Text="{Binding Converter={StaticResource LibraryGroupOptionToLocalizedStringConverter}}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                    <Button Content="×"
+                            DockPanel.Dock="Right"
+                            Margin="6,0,0,0"
+                            Padding="4,0"
+                            Command="{Binding DataContext.RemoveGroupingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}" />
+                  </DockPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button Content="{loc:Loc NoGrouping}"
+                  Command="{Binding ClearGroupingCommand}"
+                  Margin="0,0,0,12"
+                  HorizontalAlignment="Left" />
           <Expander Header="{loc:Loc Authors}" IsExpanded="False" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="180"
                           VerticalScrollBarVisibility="Auto">

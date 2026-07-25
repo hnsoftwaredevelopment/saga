@@ -37,6 +37,12 @@ public sealed partial class LibraryViewModel : ObservableObject
     private bool hasAppliedDefaultView;
     private int selectionVersion;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
+    private readonly Dictionary<LibraryView, List<LibraryGroupOption>> viewGroupings = new()
+    {
+        [LibraryView.Bookshelf] = [],
+        [LibraryView.Detailed] = [],
+        [LibraryView.List] = []
+    };
 
     public LibraryViewModel(
         IBookRepository bookRepository,
@@ -90,6 +96,16 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> FormatFilters { get; } = [];
     public ObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
+    public ObservableCollection<LibraryGroupOption> ActiveGroupOptions { get; } = [];
+    public IReadOnlyList<LibraryGroupOption> AvailableGroupOptions { get; } =
+    [
+        LibraryGroupOption.Author,
+        LibraryGroupOption.Series,
+        LibraryGroupOption.Tag,
+        LibraryGroupOption.Language,
+        LibraryGroupOption.Status,
+        LibraryGroupOption.Format
+    ];
 
     public BookDetailsViewModel Details { get; }
 
@@ -105,10 +121,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private LibrarySortOption selectedSortOption = LibrarySortOption.None;
 
     [ObservableProperty]
-    private LibraryGroupOption bookshelfGroupOption = LibraryGroupOption.None;
-
-    [ObservableProperty]
-    private LibraryGroupOption bookshelfSecondaryGroupOption = LibraryGroupOption.None;
+    private LibraryGroupOption selectedGroupOptionToAdd = LibraryGroupOption.Author;
 
     [ObservableProperty]
     private BookRowViewModel? selectedBook;
@@ -158,9 +171,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public int VisibleBookCount => VisibleBooks.Select(row => row.Id).Distinct().Count();
 
-    public bool IsBookshelfGrouped =>
-        BookshelfGroupOption != LibraryGroupOption.None ||
-        BookshelfSecondaryGroupOption != LibraryGroupOption.None;
+    public bool IsBookshelfGrouped => ActiveGroupOptions.Count > 0;
 
     public bool IsLibraryGrouped => IsBookshelfGrouped;
 
@@ -174,6 +185,10 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IAsyncRelayCommand ShowImportHistoryCommand => showImportHistoryCommand ??= new AsyncRelayCommand(ShowImportHistoryAsync);
     public IAsyncRelayCommand ShowDuplicateCandidatesCommand => showDuplicateCandidatesCommand ??= new AsyncRelayCommand(ShowDuplicateCandidatesAsync);
     public IRelayCommand CloseImportJobCommand => closeImportJobCommand ??= new RelayCommand(() => importAgent?.Job.Close());
+    public IAsyncRelayCommand AddGroupingCommand => addGroupingCommand ??= new AsyncRelayCommand(AddGroupingAsync, CanAddGrouping);
+    public IAsyncRelayCommand<LibraryGroupOption> RemoveGroupingCommand =>
+        removeGroupingCommand ??= new AsyncRelayCommand<LibraryGroupOption>(RemoveGroupingAsync);
+    public IAsyncRelayCommand ClearGroupingCommand => clearGroupingCommand ??= new AsyncRelayCommand(ClearGroupingAsync);
     public IAsyncRelayCommand<FacetFilterViewModel> RenameAuthorFilterCommand =>
         renameAuthorFilterCommand ??= new AsyncRelayCommand<FacetFilterViewModel>(filter => RenameFilterValueAsync(filter, MetadataFilterKind.Author));
     public IAsyncRelayCommand<FacetFilterViewModel> RemoveAuthorFilterCommand =>
@@ -203,6 +218,9 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand? showImportHistoryCommand;
     private AsyncRelayCommand? showDuplicateCandidatesCommand;
     private RelayCommand? closeImportJobCommand;
+    private AsyncRelayCommand? addGroupingCommand;
+    private AsyncRelayCommand<LibraryGroupOption>? removeGroupingCommand;
+    private AsyncRelayCommand? clearGroupingCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? renameAuthorFilterCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? removeAuthorFilterCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? renameSeriesFilterCommand;
@@ -278,11 +296,18 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     partial void OnSearchTextChanged(string value) => ApplyFilter();
 
+    partial void OnSelectedViewChanged(LibraryView value)
+    {
+        RefreshActiveGroupOptions();
+        ApplyFilter();
+    }
+
     partial void OnSelectedSortOptionChanged(LibrarySortOption value) => ApplyFilter();
 
-    partial void OnBookshelfGroupOptionChanged(LibraryGroupOption value) => ApplyFilter();
-
-    partial void OnBookshelfSecondaryGroupOptionChanged(LibraryGroupOption value) => ApplyFilter();
+    partial void OnSelectedGroupOptionToAddChanged(LibraryGroupOption value)
+    {
+        addGroupingCommand?.NotifyCanExecuteChanged();
+    }
 
     async partial void OnSelectedBookChanged(BookRowViewModel? value)
     {
@@ -507,27 +532,145 @@ public sealed partial class LibraryViewModel : ObservableObject
             : "Create or open a library to get started.";
     }
 
-    private IReadOnlyList<LibraryGroupOption> GetActiveBookshelfGroupOptions()
+    public void SetGroupingOptions(IEnumerable<LibraryGroupOption> options)
     {
-        var options = new List<LibraryGroupOption>(capacity: 2);
-        if (BookshelfGroupOption != LibraryGroupOption.None)
+        viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
+        RefreshActiveGroupOptions();
+        ApplyFilter();
+    }
+
+    private IReadOnlyList<LibraryGroupOption> GetActiveGroupOptions() =>
+        ActiveGroupOptions.ToArray();
+
+    private async Task AddGroupingAsync(CancellationToken cancellationToken)
+    {
+        if (!CanAddGrouping())
         {
-            options.Add(BookshelfGroupOption);
+            return;
         }
 
-        if (BookshelfSecondaryGroupOption != LibraryGroupOption.None &&
-            BookshelfSecondaryGroupOption != BookshelfGroupOption)
+        viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
+        RefreshActiveGroupOptions();
+        ApplyFilter();
+        await SaveGroupingSettingsAsync(cancellationToken);
+    }
+
+    private bool CanAddGrouping() =>
+        SelectedGroupOptionToAdd != LibraryGroupOption.None &&
+        !ActiveGroupOptions.Contains(SelectedGroupOptionToAdd);
+
+    private async Task RemoveGroupingAsync(LibraryGroupOption option, CancellationToken cancellationToken)
+    {
+        if (option == LibraryGroupOption.None)
         {
-            options.Add(BookshelfSecondaryGroupOption);
+            return;
         }
 
-        return options;
+        viewGroupings[SelectedView] = viewGroupings[SelectedView]
+            .Where(existing => existing != option)
+            .ToList();
+        RefreshActiveGroupOptions();
+        ApplyFilter();
+        await SaveGroupingSettingsAsync(cancellationToken);
+    }
+
+    private async Task ClearGroupingAsync(CancellationToken cancellationToken)
+    {
+        if (ActiveGroupOptions.Count == 0)
+        {
+            return;
+        }
+
+        viewGroupings[SelectedView].Clear();
+        RefreshActiveGroupOptions();
+        ApplyFilter();
+        await SaveGroupingSettingsAsync(cancellationToken);
+    }
+
+    private void RefreshActiveGroupOptions()
+    {
+        ActiveGroupOptions.Clear();
+        foreach (var option in NormalizeGroupOptions(viewGroupings.GetValueOrDefault(SelectedView) ?? []))
+        {
+            ActiveGroupOptions.Add(option);
+        }
+
+        addGroupingCommand?.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(IsBookshelfGrouped));
+        OnPropertyChanged(nameof(IsLibraryGrouped));
+    }
+
+    private async Task SaveGroupingSettingsAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        var settings = await settingsStore.LoadAsync(cancellationToken);
+        await settingsStore.SaveAsync(
+            settings with
+            {
+                LibraryGroupings = CreateGroupingSettings()
+            },
+            cancellationToken);
+    }
+
+    private LibraryGroupingSettings CreateGroupingSettings() =>
+        new(
+            ToSettingValues(viewGroupings[LibraryView.Bookshelf]),
+            ToSettingValues(viewGroupings[LibraryView.Detailed]),
+            ToSettingValues(viewGroupings[LibraryView.List]));
+
+    private void LoadGroupingSettings(LibraryGroupingSettings? settings)
+    {
+        viewGroupings[LibraryView.Bookshelf] = ParseGroupOptions(settings?.Bookshelf).ToList();
+        viewGroupings[LibraryView.Detailed] = ParseGroupOptions(settings?.Detailed).ToList();
+        viewGroupings[LibraryView.List] = ParseGroupOptions(settings?.List).ToList();
+        RefreshActiveGroupOptions();
+    }
+
+    private static IReadOnlyList<string> ToSettingValues(IEnumerable<LibraryGroupOption> options) =>
+        NormalizeGroupOptions(options)
+            .Select(option => option.ToString())
+            .ToArray();
+
+    private static IReadOnlyList<LibraryGroupOption> ParseGroupOptions(IEnumerable<string>? values)
+    {
+        if (values is null)
+        {
+            return [];
+        }
+
+        return NormalizeGroupOptions(values.Select(ParseGroupOption));
+    }
+
+    private static LibraryGroupOption ParseGroupOption(string? value) =>
+        Enum.TryParse<LibraryGroupOption>(value, ignoreCase: true, out var option) &&
+        Enum.IsDefined(option)
+            ? option
+            : LibraryGroupOption.None;
+
+    private static IReadOnlyList<LibraryGroupOption> NormalizeGroupOptions(IEnumerable<LibraryGroupOption> options)
+    {
+        var normalized = new List<LibraryGroupOption>();
+        foreach (var option in options)
+        {
+            if (option == LibraryGroupOption.None || normalized.Contains(option))
+            {
+                continue;
+            }
+
+            normalized.Add(option);
+        }
+
+        return normalized;
     }
 
     private void RefreshGroupedLibraryNodes(IReadOnlyList<BookRowViewModel> rows)
     {
         GroupedLibraryNodes.Clear();
-        var groupOptions = GetActiveBookshelfGroupOptions();
+        var groupOptions = GetActiveGroupOptions();
         if (groupOptions.Count == 0)
         {
             return;
@@ -1185,7 +1328,9 @@ public sealed partial class LibraryViewModel : ObservableObject
         hasAppliedDefaultView = true;
         var settings = await settingsStore.LoadAsync(cancellationToken);
         authorSortStrategy = settings.AuthorSortStrategy;
+        LoadGroupingSettings(settings.LibraryGroupings);
         ApplyDefaultViewPreference(settings.DefaultView);
+        RefreshActiveGroupOptions();
     }
 
     private void RefreshLibraryDisplay()
