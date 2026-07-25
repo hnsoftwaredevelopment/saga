@@ -2,7 +2,7 @@
 
 ## Status
 
-Future feature. Do not implement as part of Milestone 4.
+In progress as Milestone 9.
 
 ## Context
 
@@ -22,14 +22,16 @@ Because the detailed grid should eventually support richer desktop behavior, thi
 - Add grouping support for useful metadata fields.
 - Keep grid behavior consistent with user settings.
 - Prepare for user-defined views and column customization later.
+- Allow each view to define its own visible columns later.
 
 ## Candidate Scope
 
 ### Sorting
 
-- Author column sorting should use the selected `AuthorSortStrategy`.
+- Author column sorting uses the selected `AuthorSortStrategy` in the grid row sort key while still showing the normal author display text.
 - Language column sorting should use stable language keys while showing localized labels.
 - Format/type sorting should remain based on normalized format names.
+- Series number sorting should use the numeric series index, not the localized display text.
 - Multi-column sorting should remain available.
 
 ### Grouping
@@ -44,7 +46,16 @@ Initial grouping candidates:
 - book type/format;
 - e-reader availability later.
 
-The UI may use a group panel above the grid, for example: "Drag a column here to group".
+The UI uses Saga's grouping builder in the filter pane. The user adds grouping chips from a localized dropdown and removes each grouping with the chip close button.
+
+Multi-value grouping needs Saga-specific behavior instead of plain string grouping:
+
+- grouping by author should create one group per individual author, not a combined heading such as `Author A, Author B`;
+- grouping by tag should create one group per individual tag;
+- when a book has multiple authors or tags, the same book may appear in multiple groups;
+- this behavior should apply consistently to grid views and Bookshelf grouping.
+
+Bookshelf grouping should preserve the visual nature of the bookshelf. Covers remain the primary content, but the source should be projected into grouped sections such as author, series, or tag. Horizontal-only cover flow should not return.
 
 ### Views
 
@@ -54,6 +65,8 @@ The makeover should consider future user-defined views:
 - remember visible columns per view;
 - allow default view selection;
 - avoid locking this behavior to the detailed grid only if bookshelf/list views later gain compatible view definitions.
+
+Detailed view should expose all standard metadata fields available in the details pane. Later the user can decide per view which of these columns are visible.
 
 ## Non-Goals
 
@@ -66,5 +79,28 @@ The makeover should consider future user-defined views:
 - Clicking the Author column header gives the same author order as the Saga sort dropdown.
 - Changing the author sort strategy in Settings immediately affects grid sorting behavior.
 - Grouping by category/tag shows books under the expected group headers.
+- Grouping by author or tag treats individual authors/tags as separate group keys, even when one book belongs to multiple values.
+- Bookshelf grouping shows cover sections without replacing the cover-first layout with a text grid.
 - Grouping and multi-column sorting can be combined without losing the selected library filter state.
 - Large libraries remain responsive.
+
+## Implemented Slices
+
+- List view now uses `SfDataGrid` columns instead of a continuous text row.
+- Detailed view exposes the standard details-pane metadata fields as grid columns.
+- Series number sorting uses the numeric series index.
+- Author grid sorting uses the configured author sort strategy while keeping the display name unchanged.
+- Bookshelf view has Saga-driven grouping by author, series, tag, language, status, or type.
+- Saga-driven grouping is available for Bookshelf, Detailed, and List views.
+- Grouping supports multiple levels through removable grouping chips.
+- Bookshelf multi-value groups are projected by Saga before they reach the view, so a multi-author, multi-tag, or multi-format book can appear under each individual group value while the visible book count remains unique.
+- Bookshelf grouping shows cover sections with headers above the cover rows.
+- Detailed and List grouped views use the same Saga group tree as Bookshelf, so multi-author, multi-tag, and multi-format grouping behaves consistently across views.
+- Detailed grouped view keeps all standard details-pane metadata columns visible.
+- List view keeps the same standard metadata columns as Detailed view, minus the cover.
+- Grouping updates reuse the existing visible book rows so adding or removing grouping does not rebuild the filtered list.
+
+## Remaining Slices
+
+- User-defined view settings should eventually remember grouping, sorting, and visible columns per view.
+- User-defined column visibility still needs a separate design.

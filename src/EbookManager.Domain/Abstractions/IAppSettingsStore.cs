@@ -13,7 +13,8 @@ public sealed record AppSettings(
     AuthorSortStrategy AuthorSortStrategy = AuthorSortStrategy.DisplayName,
     bool DuplicateExactMatchesOnly = true,
     bool EnableDiagnosticDetails = true,
-    DuplicateMergeDefaultSettings? DuplicateMergeDefaults = null);
+    DuplicateMergeDefaultSettings? DuplicateMergeDefaults = null,
+    LibraryGroupingSettings? LibraryGroupings = null);
 
 public interface IAppSettingsStore
 {

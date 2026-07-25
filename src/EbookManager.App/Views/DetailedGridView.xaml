@@ -9,17 +9,146 @@
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
+    <converters:LibraryGroupHeaderTextConverter x:Key="LibraryGroupHeaderTextConverter" />
+    <DataTemplate x:Key="DetailedBookRowTemplate">
+      <Grid MinHeight="42"
+            Margin="0,0,0,1"
+            Background="{DynamicResource PanelBackgroundBrush}"
+            MouseLeftButtonDown="BookRowMouseLeftButtonDown">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="80" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="170" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="120" />
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="170" />
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="140" />
+          <ColumnDefinition Width="320" />
+          <ColumnDefinition Width="150" />
+          <ColumnDefinition Width="150" />
+          <ColumnDefinition Width="120" />
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0"
+                Width="34"
+                Height="34"
+                Background="#FFE2E8F0"
+                CornerRadius="4"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=48}"
+                 Stretch="UniformToFill" />
+        </Border>
+        <controls:HighlightedTextBlock Grid.Column="1"
+                                       HighlightedText="{Binding Title}"
+                                       SearchText="{Binding SearchText}"
+                                       HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0" />
+        <controls:HighlightedTextBlock Grid.Column="2"
+                                       HighlightedText="{Binding Authors}"
+                                       SearchText="{Binding SearchText}"
+                                       HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0" />
+        <TextBlock Grid.Column="3" Text="{Binding Formats}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="4" Text="{Binding Series}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="5" Text="{Binding SeriesNumberText}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="6" Text="{Binding ReadingStatus}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="7" Text="{Binding Language}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="8" Text="{Binding Publisher}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="9" Text="{Binding PublicationDate}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="10" Text="{Binding Tags}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="11" Text="{Binding Isbn}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="12" Text="{Binding Description}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" TextTrimming="CharacterEllipsis" />
+        <TextBlock Grid.Column="13" Text="{Binding DateAdded}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="14" Text="{Binding LastModified}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="15" Text="{Binding EReader}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+      </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="DetailedGroupNodeTemplate">
+      <StackPanel Margin="0,0,0,4">
+        <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                  Content="{Binding}">
+          <Expander.Style>
+            <Style TargetType="Expander">
+              <Setter Property="ContentTemplate" Value="{x:Null}" />
+              <Style.Triggers>
+                <Trigger Property="IsExpanded" Value="True">
+                  <Setter Property="ContentTemplate" Value="{DynamicResource DetailedGroupContentTemplate}" />
+                </Trigger>
+              </Style.Triggers>
+            </Style>
+          </Expander.Style>
+          <Expander.Header>
+            <TextBlock FontWeight="SemiBold"
+                       FontSize="15"
+                       Foreground="{DynamicResource TextPrimaryBrush}">
+              <TextBlock.Text>
+                <MultiBinding Converter="{StaticResource LibraryGroupHeaderTextConverter}">
+                  <Binding Path="Header" />
+                  <Binding Path="BookCount" />
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock>
+          </Expander.Header>
+        </Expander>
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate x:Key="DetailedGroupContentTemplate">
+      <Grid Margin="22,4,0,0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ListBox ItemsSource="{Binding Groups}"
+                 ItemTemplate="{StaticResource DetailedGroupNodeTemplate}"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 ScrollViewer.CanContentScroll="True"
+                 controls:MouseWheelScrollAssist.BubbleToParent="True" />
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Books}"
+                 ItemTemplate="{StaticResource DetailedBookRowTemplate}"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 controls:MouseWheelScrollAssist.BubbleToParent="True" />
+      </Grid>
+    </DataTemplate>
   </UserControl.Resources>
-  <syncfusion:SfDataGrid ItemsSource="{Binding VisibleBooks}"
+  <Grid>
+  <syncfusion:SfDataGrid x:Name="BooksGrid"
+                         ItemsSource="{Binding VisibleBooks}"
                          SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
                          AutoGenerateColumns="False"
                          AllowEditing="False"
                          AllowSorting="True"
+                         AllowGrouping="False"
+                         ShowGroupDropArea="False"
                          NavigationMode="Row"
                          SelectionMode="Single"
                          HeaderRowHeight="36"
                          RowHeight="42"
                          AllowDrop="True">
+    <syncfusion:SfDataGrid.Style>
+      <Style TargetType="syncfusion:SfDataGrid">
+        <Setter Property="Visibility" Value="Visible" />
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding IsLibraryGrouped}" Value="True">
+            <Setter Property="Visibility" Value="Collapsed" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </syncfusion:SfDataGrid.Style>
     <syncfusion:SfDataGrid.Columns>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Cover}"
                                      MappingName="CoverBytes"
@@ -62,12 +191,144 @@
           </DataTemplate>
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Type}"
+                                     MappingName="Formats"
+                                     Width="110">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding Formats}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Series}"
+                                     MappingName="Series"
+                                     Width="170">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding Series}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc SeriesNumber}"
+                                     MappingName="SeriesNumber"
+                                     Width="110">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding SeriesNumberText}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Status}"
                                      MappingName="ReadingStatus"
                                      Width="120">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
             <controls:HighlightedTextBlock HighlightedText="{Binding ReadingStatus}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Language}"
+                                     MappingName="Language"
+                                     Width="130">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding Language}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Publisher}"
+                                     MappingName="Publisher"
+                                     Width="170">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding Publisher}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc PublicationDate}"
+                                     MappingName="PublicationDateSortValue"
+                                     Width="130">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding PublicationDate}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Tags}"
+                                     MappingName="Tags"
+                                     Width="220">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding Tags}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Isbn}"
+                                     MappingName="Isbn"
+                                     Width="140">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding Isbn}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Description}"
+                                     MappingName="Description"
+                                     Width="320">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding Description}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc DateAdded}"
+                                     MappingName="DateAddedSortValue"
+                                     Width="150">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding DateAdded}"
+                                           SearchText="{Binding SearchText}"
+                                           HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+          </DataTemplate>
+        </syncfusion:GridTemplateColumn.CellTemplate>
+      </syncfusion:GridTemplateColumn>
+      <syncfusion:GridTemplateColumn HeaderText="{loc:Loc LastModified}"
+                                     MappingName="LastModifiedSortValue"
+                                     Width="150">
+        <syncfusion:GridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <controls:HighlightedTextBlock HighlightedText="{Binding LastModified}"
                                            SearchText="{Binding SearchText}"
                                            HighlightBrush="{DynamicResource SearchHighlightBrush}"
                                            Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -88,4 +349,68 @@
       </syncfusion:GridTemplateColumn>
     </syncfusion:SfDataGrid.Columns>
   </syncfusion:SfDataGrid>
+  <Grid>
+    <Grid.Style>
+      <Style TargetType="Grid">
+        <Setter Property="Visibility" Value="Collapsed" />
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding IsLibraryGrouped}" Value="True">
+            <Setter Property="Visibility" Value="Visible" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </Grid.Style>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+      <Grid MinHeight="36" Background="{DynamicResource PanelBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="80" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="170" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="120" />
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="170" />
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="140" />
+          <ColumnDefinition Width="320" />
+          <ColumnDefinition Width="150" />
+          <ColumnDefinition Width="150" />
+          <ColumnDefinition Width="120" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Column="0" Text="{loc:Loc Cover}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="1" Text="{loc:Loc Title}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="2" Text="{loc:Loc Authors}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="3" Text="{loc:Loc Type}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="4" Text="{loc:Loc Series}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="5" Text="{loc:Loc SeriesNumber}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="6" Text="{loc:Loc Status}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="7" Text="{loc:Loc Language}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="8" Text="{loc:Loc Publisher}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="9" Text="{loc:Loc PublicationDate}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="10" Text="{loc:Loc Tags}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="11" Text="{loc:Loc Isbn}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="12" Text="{loc:Loc Description}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="13" Text="{loc:Loc DateAdded}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="14" Text="{loc:Loc LastModified}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="15" Text="{loc:Loc EReader}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+      </Grid>
+      <ListBox Grid.Row="1"
+               ItemsSource="{Binding GroupedLibraryNodes}"
+               ItemTemplate="{StaticResource DetailedGroupNodeTemplate}"
+               BorderThickness="0"
+               Background="Transparent"
+               VirtualizingPanel.IsVirtualizing="True"
+               VirtualizingPanel.VirtualizationMode="Recycling"
+               VirtualizingPanel.ScrollUnit="Pixel"
+               ScrollViewer.CanContentScroll="True"
+               ScrollViewer.HorizontalScrollBarVisibility="Auto"
+               ScrollViewer.VerticalScrollBarVisibility="Auto" />
+  </Grid>
+  </Grid>
 </UserControl>

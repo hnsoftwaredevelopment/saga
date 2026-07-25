@@ -10,6 +10,7 @@
   <data name="AppName" xml:space="preserve"><value>Saga</value></data>
   <data name="AppVersion" xml:space="preserve"><value>Versie</value></data>
   <data name="Authors" xml:space="preserve"><value>Auteurs</value></data>
+  <data name="BookSingular" xml:space="preserve"><value>Boek</value></data>
   <data name="BookCount" xml:space="preserve"><value>Boeken</value></data>
   <data name="BookSaveConflict" xml:space="preserve"><value>Er bestaat al een boek met dezelfde titel en auteur.</value></data>
   <data name="BookSaveFailed" xml:space="preserve"><value>De wijzigingen konden niet worden opgeslagen.</value></data>
@@ -184,6 +185,15 @@
   <data name="FormatRemovedFromLibrary" xml:space="preserve"><value>{0} verwijderd uit dit boek</value></data>
   <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} is het laatste formaat. Gebruik Verwijderen om het boek te verwijderen.</value></data>
   <data name="FormatRemoveFailed" xml:space="preserve"><value>{0} kon niet worden verwijderd</value></data>
+  <data name="GroupBy" xml:space="preserve"><value>Groeperen op</value></data>
+  <data name="GroupUnknownAuthor" xml:space="preserve"><value>Onbekende auteur</value></data>
+  <data name="GroupNoSeries" xml:space="preserve"><value>Geen serie</value></data>
+  <data name="GroupNoTags" xml:space="preserve"><value>Geen tags</value></data>
+  <data name="GroupNoLanguage" xml:space="preserve"><value>Geen taal</value></data>
+  <data name="GroupNoFormat" xml:space="preserve"><value>Geen formaat</value></data>
+  <data name="GroupLibraryTooltip" xml:space="preserve"><value>Groepeer de huidige bibliotheekweergave</value></data>
+  <data name="ThenBy" xml:space="preserve"><value>Daarna op</value></data>
+  <data name="NoGrouping" xml:space="preserve"><value>Geen groepering</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sorteren op</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sorteer de huidige bibliotheekweergave</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>de e-bookmanager</value></data>

@@ -10,6 +10,7 @@
   <data name="AppName" xml:space="preserve"><value>Saga</value></data>
   <data name="AppVersion" xml:space="preserve"><value>Version</value></data>
   <data name="Authors" xml:space="preserve"><value>Authors</value></data>
+  <data name="BookSingular" xml:space="preserve"><value>Book</value></data>
   <data name="BookCount" xml:space="preserve"><value>Books</value></data>
   <data name="BookSaveConflict" xml:space="preserve"><value>A book with the same title and author already exists.</value></data>
   <data name="BookSaveFailed" xml:space="preserve"><value>The changes could not be saved.</value></data>
@@ -184,6 +185,15 @@
   <data name="FormatRemovedFromLibrary" xml:space="preserve"><value>{0} removed from this book</value></data>
   <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} is the last format. Use Delete to remove the book.</value></data>
   <data name="FormatRemoveFailed" xml:space="preserve"><value>{0} could not be removed</value></data>
+  <data name="GroupBy" xml:space="preserve"><value>Group by</value></data>
+  <data name="GroupUnknownAuthor" xml:space="preserve"><value>Unknown author</value></data>
+  <data name="GroupNoSeries" xml:space="preserve"><value>No series</value></data>
+  <data name="GroupNoTags" xml:space="preserve"><value>No tags</value></data>
+  <data name="GroupNoLanguage" xml:space="preserve"><value>No language</value></data>
+  <data name="GroupNoFormat" xml:space="preserve"><value>No format</value></data>
+  <data name="GroupLibraryTooltip" xml:space="preserve"><value>Group the current library view</value></data>
+  <data name="ThenBy" xml:space="preserve"><value>Then by</value></data>
+  <data name="NoGrouping" xml:space="preserve"><value>No grouping</value></data>
   <data name="SortBy" xml:space="preserve"><value>Sort by</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Sort the current library view</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>the e-book manager</value></data>

@@ -8,6 +8,7 @@
         Title="{loc:Loc AppName}"
         Width="1360"
         Height="820"
+        Icon="Resources/AppIcon/appicon.ico"
         MinWidth="1100"
         MinHeight="680"
         AllowDrop="True"
@@ -16,6 +17,7 @@
     <Grid.Resources>
       <converters:EmptyStateMessageToLocalizedStringConverter x:Key="EmptyStateMessageToLocalizedStringConverter" />
       <converters:NullOrWhiteSpaceFallbackConverter x:Key="NullOrWhiteSpaceFallbackConverter" />
+      <converters:LibraryGroupOptionToLocalizedStringConverter x:Key="LibraryGroupOptionToLocalizedStringConverter" />
       <Style x:Key="ToolbarIconButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="42" />
         <Setter Property="Height" Value="40" />
@@ -185,6 +187,57 @@
             <ComboBoxItem Content="{loc:Loc Tags}"
                           Tag="{x:Static viewModels:LibrarySortOption.Category}" />
           </ComboBox>
+          <TextBlock Text="{loc:Loc GroupBy}"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Margin="0,0,0,4" />
+          <DockPanel Margin="0,0,0,8">
+            <Button Content="+"
+                    DockPanel.Dock="Right"
+                    Width="34"
+                    Margin="6,0,0,0"
+                    Command="{Binding AddGroupingCommand}"
+                    ToolTip="{loc:Loc GroupLibraryTooltip}" />
+            <ComboBox ItemsSource="{Binding AvailableGroupOptions}"
+                      SelectedItem="{Binding SelectedGroupOptionToAdd}"
+                      ToolTip="{loc:Loc GroupLibraryTooltip}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Converter={StaticResource LibraryGroupOptionToLocalizedStringConverter}}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </DockPanel>
+          <ItemsControl ItemsSource="{Binding ActiveGroupOptions}"
+                    Margin="0,0,0,8"
+                    ToolTip="{loc:Loc GroupLibraryTooltip}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Background="{DynamicResource PanelBackgroundBrush}"
+                        BorderBrush="{DynamicResource AccentBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="8,4"
+                        Margin="0,0,6,6">
+                  <DockPanel LastChildFill="False">
+                    <TextBlock Text="{Binding Converter={StaticResource LibraryGroupOptionToLocalizedStringConverter}}"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                    <Button Content="×"
+                            DockPanel.Dock="Right"
+                            Margin="6,0,0,0"
+                            Padding="4,0"
+                            Command="{Binding DataContext.RemoveGroupingCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="{Binding}" />
+                  </DockPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
           <Expander Header="{loc:Loc Authors}" IsExpanded="False" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="180"
                           VerticalScrollBarVisibility="Auto">

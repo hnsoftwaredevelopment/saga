@@ -463,6 +463,222 @@ public sealed class LibraryViewModelTests
             .Should().BeEquivalentTo("Epub Book", "Pdf Book");
     }
 
+    [Fact]
+    public async Task Library_grouping_projects_multi_author_books_into_separate_author_nodes()
+    {
+        var sharedBook = CreateBook("Shared Book", ["Jan Wiersma", "Sonja de Leeuw"]);
+        var soloBook = CreateBook("Solo Book", ["Jan Wiersma"]);
+        var viewModel = CreateViewModel([sharedBook, soloBook]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author]);
+
+        viewModel.GroupedLibraryNodes.Select(group => (group.Header, group.BookCount))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("Jan Wiersma", 2),
+                    ("Sonja de Leeuw", 1)
+                ]);
+        viewModel.GroupedLibraryNodes.Single(group => group.Header == "Jan Wiersma").Books
+            .Select(row => row.Title)
+            .Should()
+            .BeEquivalentTo("Shared Book", "Solo Book");
+        viewModel.VisibleBookCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Library_grouping_by_author_then_series_keeps_books_without_series_directly_under_author()
+    {
+        var looseBook = CreateBook("Loose Book", ["A.E. van Vogt"]);
+        var firstSeriesBook = CreateBook("Apollo 1", ["A.E. van Vogt"], series: "Apollo");
+        var secondSeriesBook = CreateBook("Apollo 2", ["A.E. van Vogt"], series: "Apollo");
+        var viewModel = CreateViewModel([looseBook, firstSeriesBook, secondSeriesBook]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Series]);
+
+        var authorGroup = viewModel.GroupedLibraryNodes.Should().ContainSingle()
+            .Which;
+        authorGroup.Header.Should().Be("A.E. van Vogt");
+        authorGroup.BookCount.Should().Be(3);
+        authorGroup.Books.Should().ContainSingle()
+            .Which.Title.Should().Be("Loose Book");
+        authorGroup.Groups.Should().ContainSingle()
+            .Which.Header.Should().Be("Apollo");
+        authorGroup.Groups.Single().BookCount.Should().Be(2);
+        authorGroup.Groups.Single().Books.Select(row => row.Title)
+            .Should()
+            .BeEquivalentTo("Apollo 1", "Apollo 2");
+    }
+
+    [Fact]
+    public async Task Library_grouping_by_series_only_keeps_a_no_series_group()
+    {
+        var looseBook = CreateBook("Loose Book", ["Author"]);
+        var seriesBook = CreateBook("Series Book", ["Author"], series: "Apollo");
+        var viewModel = CreateViewModel([looseBook, seriesBook]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Series]);
+
+        viewModel.GroupedLibraryNodes.Select(group => (group.Header, group.BookCount))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("Apollo", 1),
+                    ("No series", 1)
+                ]);
+    }
+
+    [Fact]
+    public async Task Library_grouping_supports_more_than_two_levels()
+    {
+        var epub = CreateBook("Apollo 1", ["A.E. van Vogt"], series: "Apollo", formats: [EbookFormat.Epub]);
+        var pdf = CreateBook("Apollo 2", ["A.E. van Vogt"], series: "Apollo", formats: [EbookFormat.Pdf]);
+        var viewModel = CreateViewModel([epub, pdf]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions(
+            [
+                LibraryGroupOption.Author,
+                LibraryGroupOption.Series,
+                LibraryGroupOption.Format
+            ]);
+
+        var authorGroup = viewModel.GroupedLibraryNodes.Should().ContainSingle().Which;
+        authorGroup.Header.Should().Be("A.E. van Vogt");
+        authorGroup.BookCount.Should().Be(2);
+        var seriesGroup = authorGroup.Groups.Should().ContainSingle().Which;
+        seriesGroup.Header.Should().Be("Apollo");
+        seriesGroup.BookCount.Should().Be(2);
+        seriesGroup.Groups.Select(group => (group.Header, group.BookCount))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("EPUB", 1),
+                    ("PDF", 1)
+                ]);
+    }
+
+    [Fact]
+    public async Task Grouping_commands_save_grouping_per_view()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel(
+            [CreateBook("Book", ["Author"], series: "Series")],
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Author;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+        viewModel.SelectedView = LibraryView.List;
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Series;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+        viewModel.SelectedView = LibraryView.Detailed;
+
+        viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Author);
+        settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
+        settingsStore.Settings.LibraryGroupings!.Detailed.Should().Equal(nameof(LibraryGroupOption.Author));
+        settingsStore.Settings.LibraryGroupings.List.Should().Equal(nameof(LibraryGroupOption.Series));
+    }
+
+    [Fact]
+    public async Task Grouping_changes_do_not_rebuild_visible_books_or_reload_selected_book_details()
+    {
+        var first = CreateBook("First", ["Author"], tags: ["Tag"]);
+        var second = CreateBook("Second", ["Author"], tags: ["Tag"]);
+        var repository = new StaticBookRepository([first, second]);
+        var viewModel = CreateViewModel([first, second], repository: repository);
+
+        await viewModel.RefreshAsync();
+        var visibleRows = viewModel.VisibleBooks.ToArray();
+        viewModel.SelectedBook = viewModel.VisibleBooks.First();
+        var getCallsAfterRefresh = repository.GetCalls;
+
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Author;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Tag;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+
+        viewModel.VisibleBooks.Should().Equal(visibleRows);
+        repository.GetCalls.Should().Be(getCallsAfterRefresh);
+        viewModel.GroupedLibraryNodes.Should().ContainSingle(group => group.Header == "Author");
+    }
+
+    [Fact]
+    public async Task Removing_grouping_preserves_remaining_grouping_chips()
+    {
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Tag]);
+        var optionsReference = viewModel.ActiveGroupOptions;
+
+        await viewModel.RemoveGroupingCommand.ExecuteAsync(LibraryGroupOption.Tag);
+
+        viewModel.ActiveGroupOptions.Should().BeSameAs(optionsReference);
+        viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Author);
+    }
+
+    [Fact]
+    public async Task SetGroupingOptions_persists_grouping_settings()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Tag]);
+
+        settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
+        settingsStore.Settings.LibraryGroupings!.Detailed.Should().Equal(
+            nameof(LibraryGroupOption.Author),
+            nameof(LibraryGroupOption.Tag));
+    }
+
+    [Fact]
+    public async Task Grouping_refresh_preserves_expanded_group_nodes()
+    {
+        var book = CreateBook("Book", ["Author"], series: "Series");
+        var viewModel = CreateViewModel([book]);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Series]);
+        var authorGroup = viewModel.GroupedLibraryNodes.Should().ContainSingle().Which;
+        authorGroup.IsExpanded = true;
+        authorGroup.Groups.Should().ContainSingle().Which.IsExpanded = true;
+
+        viewModel.SearchText = "Book";
+
+        authorGroup = viewModel.GroupedLibraryNodes.Should().ContainSingle().Which;
+        authorGroup.IsExpanded.Should().BeTrue();
+        authorGroup.Groups.Should().ContainSingle().Which.IsExpanded.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Grouping_headers_use_localized_fallbacks_and_status_values()
+    {
+        var book = CreateBook("Book", [], formats: []);
+        var viewModel = CreateViewModel(
+            [book],
+            localize: key => key switch
+            {
+                "GroupUnknownAuthor" => "Localized author",
+                "Unread" => "Localized unread",
+                _ => key
+            });
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author]);
+        viewModel.GroupedLibraryNodes.Should().ContainSingle()
+            .Which.Header.Should().Be("Localized author");
+
+        viewModel.SetGroupingOptions([LibraryGroupOption.Status]);
+        viewModel.GroupedLibraryNodes.Should().ContainSingle()
+            .Which.Header.Should().Be("Localized unread");
+    }
+
 
     [Fact]
     public async Task Selected_filters_expand_results_across_facets()
@@ -1201,7 +1417,8 @@ public sealed class LibraryViewModelTests
         BookDetailsViewModel? details = null,
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
-        DirectoryScanner? directoryScanner = null)
+        DirectoryScanner? directoryScanner = null,
+        Func<string, string>? localize = null)
     {
         repository ??= new StaticBookRepository(books);
         var bookService = new BookService(
@@ -1221,7 +1438,8 @@ public sealed class LibraryViewModelTests
             directoryScanner: directoryScanner,
             settingsStore: settingsStore,
             importAgent: importAgent,
-            importRepository: importRepository);
+            importRepository: importRepository,
+            localize: localize);
     }
 
     private static Book CreateBook(
@@ -1270,9 +1488,14 @@ public sealed class LibraryViewModelTests
 
         public IReadOnlyList<Book> BooksSnapshot => [.. Books];
         public int UpdateCalls { get; private set; }
+        public int GetCalls { get; private set; }
 
         public virtual Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([.. Books]);
-        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) => Task.FromResult(Books.SingleOrDefault(book => book.Id == id));
+        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
+        {
+            GetCalls++;
+            return Task.FromResult(Books.SingleOrDefault(book => book.Id == id));
+        }
         public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) => Task.FromResult(false);
         public Task<bool> HasNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) => Task.FromResult(false);
         public Task<Book?> FindByNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) => Task.FromResult<Book?>(null);

@@ -73,6 +73,70 @@ public sealed class ImportServiceTests
     }
 
     [Fact]
+    public async Task Import_async_skips_offline_cloud_placeholder_before_hashing()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var hasher = new ThrowingFileHasher();
+        var service = CreateImportService(
+            fixture.BookRepository,
+            fixture.ImportRepository,
+            fixture.FileStore,
+            hasher,
+            fixture.MetadataAdapterResolver,
+            fixture.ExceptionClassifier);
+        var source = fixture.WriteBytesFile(
+            @"incoming\Cloud Only - Author.pdf",
+            Encoding.UTF8.GetBytes("placeholder"));
+        File.SetAttributes(source, File.GetAttributes(source) | FileAttributes.Offline);
+
+        try
+        {
+            var result = await service.ImportAsync([source], default);
+
+            result.Items.Should().ContainSingle();
+            result.Items[0].Outcome.Should().Be(ImportOutcome.Failed);
+            result.Items[0].Message.Should().Be("source unreadable; make sure the file is available locally");
+        }
+        finally
+        {
+            File.SetAttributes(source, File.GetAttributes(source) & ~FileAttributes.Offline);
+        }
+    }
+
+    [Theory]
+    [InlineData(0x00040000)]
+    [InlineData(0x00400000)]
+    public async Task Import_async_skips_recall_cloud_placeholder_before_hashing(int placeholderAttribute)
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var hasher = new ThrowingFileHasher();
+        var service = CreateImportService(
+            fixture.BookRepository,
+            fixture.ImportRepository,
+            fixture.FileStore,
+            hasher,
+            fixture.MetadataAdapterResolver,
+            fixture.ExceptionClassifier);
+        var source = fixture.WriteBytesFile(
+            @"incoming\Cloud Recall - Author.pdf",
+            Encoding.UTF8.GetBytes("placeholder"));
+        File.SetAttributes(source, File.GetAttributes(source) | (FileAttributes)placeholderAttribute);
+
+        try
+        {
+            var result = await service.ImportAsync([source], default);
+
+            result.Items.Should().ContainSingle();
+            result.Items[0].Outcome.Should().Be(ImportOutcome.Failed);
+            result.Items[0].Message.Should().Be("source unreadable; make sure the file is available locally");
+        }
+        finally
+        {
+            File.SetAttributes(source, File.GetAttributes(source) & ~(FileAttributes)placeholderAttribute);
+        }
+    }
+
+    [Fact]
     public async Task Import_async_returns_partial_result_when_cancelled_after_progress()
     {
         await using var fixture = await ImportServiceFixture.CreateAsync();

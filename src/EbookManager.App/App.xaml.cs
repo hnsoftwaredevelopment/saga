@@ -142,7 +142,8 @@ public partial class App : System.Windows.Application
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),
             provider.GetService<DirectoryScanner>(),
-            provider.GetRequiredService<IAppSettingsStore>()));
+            provider.GetRequiredService<IAppSettingsStore>(),
+            provider.GetRequiredService<LocalizationService>().GetString));
         services.AddTransient<SettingsViewModel>();
         services.AddSingleton<MainWindow>();
 

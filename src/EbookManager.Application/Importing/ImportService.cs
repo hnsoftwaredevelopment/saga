@@ -149,6 +149,12 @@ public sealed class ImportService(
 
             try
             {
+                if (!IsSourceLocallyAvailable(sourcePath!))
+                {
+                    result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
+                    return await RecordAsync(result);
+                }
+
                 sourceLength = GetSourceLengthOrNull(sourcePath!);
                 if (sourceLength is null)
                 {
@@ -494,6 +500,25 @@ public sealed class ImportService(
         $"{message}; {SafeImportMessages.CleanupIncomplete}";
 
     private static bool IsBlank(string? value) => string.IsNullOrWhiteSpace(value);
+
+    private static bool IsSourceLocallyAvailable(string sourcePath)
+    {
+        try
+        {
+            var attributes = File.GetAttributes(sourcePath);
+            return (attributes & CloudPlaceholderAttributes) == 0;
+        }
+        catch (Exception exception) when (
+            exception is IOException or UnauthorizedAccessException or FileNotFoundException or PathTooLongException)
+        {
+            return false;
+        }
+    }
+
+    private const FileAttributes CloudPlaceholderAttributes =
+        FileAttributes.Offline |
+        (FileAttributes)0x00040000 |
+        (FileAttributes)0x00400000;
 
     private static long? GetSourceLengthOrNull(string sourcePath)
     {

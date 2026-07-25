@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -29,6 +29,9 @@
   </data>
   <data name="BookCount" xml:space="preserve">
     <value>Livres</value>
+  </data>
+  <data name="BookSingular" xml:space="preserve">
+    <value>Livre</value>
   </data>
   <data name="BookSaveConflict" xml:space="preserve">
     <value>Un livre avec le meme titre et le meme auteur existe deja.</value>
@@ -455,6 +458,15 @@
   <data name="FormatRemovedFromLibrary" xml:space="preserve"><value>{0} supprimé de ce livre</value></data>
   <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} est le dernier format. Utilisez Supprimer pour retirer le livre.</value></data>
   <data name="FormatRemoveFailed" xml:space="preserve"><value>{0} n’a pas pu être supprimé</value></data>
+  <data name="GroupBy" xml:space="preserve"><value>Regrouper par</value></data>
+  <data name="GroupUnknownAuthor" xml:space="preserve"><value>Auteur inconnu</value></data>
+  <data name="GroupNoSeries" xml:space="preserve"><value>Aucune série</value></data>
+  <data name="GroupNoTags" xml:space="preserve"><value>Aucune étiquette</value></data>
+  <data name="GroupNoLanguage" xml:space="preserve"><value>Aucune langue</value></data>
+  <data name="GroupNoFormat" xml:space="preserve"><value>Aucun format</value></data>
+  <data name="GroupLibraryTooltip" xml:space="preserve"><value>Regrouper la vue actuelle de la bibliothèque</value></data>
+  <data name="ThenBy" xml:space="preserve"><value>Puis par</value></data>
+  <data name="NoGrouping" xml:space="preserve"><value>Aucun regroupement</value></data>
   <data name="SortBy" xml:space="preserve"><value>Trier par</value></data>
   <data name="SortLibraryTooltip" xml:space="preserve"><value>Trier la vue actuelle de la bibliothèque</value></data>
   <data name="SplashSubtitle" xml:space="preserve"><value>le gestionnaire d’e-books</value></data>
