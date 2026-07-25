@@ -99,6 +99,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<LocalizationService>();
         services.AddSingleton<ThemeService>();
         services.AddSingleton<DeleteConfirmationService>();
+        services.AddSingleton<ILibraryPerformanceReporter, LibraryPerformanceReporter>();
         services.AddSingleton<IUserInteractionService, UserInteractionService>();
         services.AddSingleton<DirectoryScanner>();
         services.AddSingleton<IFileHasher, Sha256FileHasher>();
@@ -143,6 +144,7 @@ public partial class App : System.Windows.Application
             provider.GetService<ILibraryDatabaseInitializer>(),
             provider.GetService<DirectoryScanner>(),
             provider.GetRequiredService<IAppSettingsStore>(),
+            provider.GetRequiredService<ILibraryPerformanceReporter>(),
             provider.GetRequiredService<LocalizationService>().GetString));
         services.AddTransient<SettingsViewModel>();
         services.AddSingleton<MainWindow>();

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -33,6 +34,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
     private readonly DirectoryScanner? directoryScanner;
     private readonly IAppSettingsStore? settingsStore;
+    private readonly ILibraryPerformanceReporter? performanceReporter;
     private readonly Func<string, string> localize;
     private IReadOnlyList<Book> books = [];
     private bool hasAppliedDefaultView;
@@ -57,6 +59,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         ILibraryDatabaseInitializer? databaseInitializer = null,
         DirectoryScanner? directoryScanner = null,
         IAppSettingsStore? settingsStore = null,
+        ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
     {
         this.bookRepository = bookRepository;
@@ -74,6 +77,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.databaseInitializer = databaseInitializer;
         this.directoryScanner = directoryScanner;
         this.settingsStore = settingsStore;
+        this.performanceReporter = performanceReporter;
         this.localize = localize ?? DefaultGroupText;
         currentLibraryName = currentLibrary?.Current?.Name;
         currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
@@ -503,26 +507,34 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void ApplyFilter()
     {
+        var performance = new LibraryViewPerformanceTracker("ApplyFilter");
         var selectedId = SelectedBook?.Id;
-        var filteredBooks = ApplyFacetFilters(searchService.Filter(books, SearchText));
-        var rows = ApplySort(
-                filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath, authorSortStrategy)),
-                SelectedSortOption,
-                authorSortStrategy)
-            .ToList();
+        var filteredBooks = performance.Measure(
+            "filter",
+            () => ApplyFacetFilters(searchService.Filter(books, SearchText)));
+        var rows = performance.Measure(
+            "materialize-sort",
+            () => ApplySort(
+                    filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath, authorSortStrategy)),
+                    SelectedSortOption,
+                    authorSortStrategy)
+                .ToList());
 
-        VisibleBooks.ReplaceAll(rows);
+        performance.Measure("visible-reset", () => VisibleBooks.ReplaceAll(rows));
 
-        RefreshGroupedLibraryNodes(rows);
+        performance.Measure("grouping", () => RefreshGroupedLibraryNodes(rows));
         OnPropertyChanged(nameof(VisibleBookCount));
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
-        SelectedBook = selectedId is null
-            ? VisibleBooks.FirstOrDefault()
-            : VisibleBooks.FirstOrDefault(row => row.Id == selectedId.Value);
+        performance.Measure(
+            "selection",
+            () => SelectedBook = selectedId is null
+                ? VisibleBooks.FirstOrDefault()
+                : VisibleBooks.FirstOrDefault(row => row.Id == selectedId.Value));
         EmptyStateMessage = HasActiveLibrary
             ? "This library is empty. Add books or scan a folder to begin."
             : "Create or open a library to get started.";
+        ReportPerformance(performance, rows.Count);
     }
 
     public void SetGroupingOptions(IEnumerable<LibraryGroupOption> options)
@@ -600,9 +612,12 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void RefreshGroupingOnly()
     {
-        RefreshGroupedLibraryNodes(VisibleBooks.ToArray());
+        var performance = new LibraryViewPerformanceTracker("RefreshGroupingOnly");
+        var rows = performance.Measure("snapshot", () => VisibleBooks.ToArray());
+        performance.Measure("grouping", () => RefreshGroupedLibraryNodes(rows));
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
+        ReportPerformance(performance, rows.Length);
     }
 
     private async Task SaveGroupingSettingsAsync(CancellationToken cancellationToken)
@@ -1503,6 +1518,19 @@ public sealed partial class LibraryViewModel : ObservableObject
     private Task RetryFailedImportsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken) =>
         ImportFilesAsync(paths, cancellationToken, ImportRunContext.FileImport);
 
+    private void ReportPerformance(LibraryViewPerformanceTracker tracker, int visibleCount)
+    {
+        performanceReporter?.Report(new LibraryPerformanceSnapshot(
+            tracker.Operation,
+            tracker.Elapsed,
+            books.Count,
+            visibleCount,
+            GroupedLibraryNodes.Count,
+            GetActiveGroupOptions(),
+            SelectedSortOption,
+            tracker.Phases));
+    }
+
     private async Task LinkImportSuggestionAsync(
         Guid sourceBookId,
         Guid targetBookId,
@@ -1581,5 +1609,52 @@ public sealed partial class LibraryViewModel : ObservableObject
         Series,
         Tag,
         Language
+    }
+
+    private sealed class LibraryViewPerformanceTracker
+    {
+        private readonly Stopwatch stopwatch = Stopwatch.StartNew();
+        private readonly Dictionary<string, TimeSpan> phases = new(StringComparer.Ordinal);
+
+        public LibraryViewPerformanceTracker(string operation) => Operation = operation;
+
+        public string Operation { get; }
+
+        public TimeSpan Elapsed => stopwatch.Elapsed;
+
+        public IReadOnlyDictionary<string, TimeSpan> Phases => phases;
+
+        public T Measure<T>(string phase, Func<T> action)
+        {
+            var phaseStopwatch = Stopwatch.StartNew();
+            try
+            {
+                return action();
+            }
+            finally
+            {
+                RecordPhase(phase, phaseStopwatch.Elapsed);
+            }
+        }
+
+        public void Measure(string phase, Action action)
+        {
+            var phaseStopwatch = Stopwatch.StartNew();
+            try
+            {
+                action();
+            }
+            finally
+            {
+                RecordPhase(phase, phaseStopwatch.Elapsed);
+            }
+        }
+
+        private void RecordPhase(string phase, TimeSpan elapsed)
+        {
+            phases[phase] = phases.TryGetValue(phase, out var existing)
+                ? existing + elapsed
+                : elapsed;
+        }
     }
 }

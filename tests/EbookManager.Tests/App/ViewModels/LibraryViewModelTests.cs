@@ -1452,6 +1452,46 @@ public sealed class LibraryViewModelTests
             .Which.Book.Formats.Should().BeEquivalentTo([EbookFormat.Epub, EbookFormat.Pdf]);
     }
 
+    [Fact]
+    public async Task Refresh_reports_library_view_performance_phases()
+    {
+        var reporter = new CapturingLibraryPerformanceReporter();
+        var first = CreateBook("Dune", ["Frank Herbert"]);
+        var second = CreateBook("The Hobbit", ["J.R.R. Tolkien"]);
+        var viewModel = CreateViewModel([first, second], performanceReporter: reporter);
+
+        await viewModel.RefreshAsync();
+
+        var snapshot = reporter.Snapshots.Should()
+            .ContainSingle(item => item.Operation == "ApplyFilter")
+            .Which;
+        snapshot.BookCount.Should().Be(2);
+        snapshot.VisibleBookCount.Should().Be(2);
+        snapshot.Phases.Keys.Should().Contain(["filter", "materialize-sort", "visible-reset", "grouping", "selection"]);
+    }
+
+    [Fact]
+    public async Task Add_grouping_reports_grouping_performance_phases()
+    {
+        var reporter = new CapturingLibraryPerformanceReporter();
+        var first = CreateBook("Dune", ["Frank Herbert"]);
+        var second = CreateBook("Children of Dune", ["Frank Herbert"]);
+        var viewModel = CreateViewModel([first, second], performanceReporter: reporter);
+        await viewModel.RefreshAsync();
+        reporter.Snapshots.Clear();
+
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Author;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+
+        var snapshot = reporter.Snapshots.Should()
+            .ContainSingle(item => item.Operation == "RefreshGroupingOnly")
+            .Which;
+        snapshot.BookCount.Should().Be(2);
+        snapshot.VisibleBookCount.Should().Be(2);
+        snapshot.Groupings.Should().Equal(LibraryGroupOption.Author);
+        snapshot.Phases.Keys.Should().Contain(["snapshot", "grouping"]);
+    }
+
     private static LibraryViewModel CreateViewModel(
         IReadOnlyList<Book> books,
         IUserInteractionService? userInteraction = null,
@@ -1464,6 +1504,7 @@ public sealed class LibraryViewModelTests
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
         DirectoryScanner? directoryScanner = null,
+        ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
     {
         repository ??= new StaticBookRepository(books);
@@ -1485,6 +1526,7 @@ public sealed class LibraryViewModelTests
             settingsStore: settingsStore,
             importAgent: importAgent,
             importRepository: importRepository,
+            performanceReporter: performanceReporter,
             localize: localize);
     }
 
@@ -1513,6 +1555,13 @@ public sealed class LibraryViewModelTests
 
     private static BookRowViewModel CreateRow(string title) =>
         new(CreateBook(title, ["Author"]));
+
+    private sealed class CapturingLibraryPerformanceReporter : ILibraryPerformanceReporter
+    {
+        public List<LibraryPerformanceSnapshot> Snapshots { get; } = [];
+
+        public void Report(LibraryPerformanceSnapshot snapshot) => Snapshots.Add(snapshot);
+    }
 
     private static CurrentLibrary CreateActiveLibrary()
     {
