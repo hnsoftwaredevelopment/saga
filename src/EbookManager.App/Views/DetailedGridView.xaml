@@ -9,20 +9,106 @@
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
+    <converters:LibraryGroupHeaderTextConverter x:Key="LibraryGroupHeaderTextConverter" />
+    <DataTemplate x:Key="DetailedBookRowTemplate">
+      <Grid MinHeight="42"
+            Margin="0,0,0,1"
+            Background="{DynamicResource PanelBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="80" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="170" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="120" />
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="170" />
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0"
+                Width="34"
+                Height="34"
+                Background="#FFE2E8F0"
+                CornerRadius="4"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+          <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=48}"
+                 Stretch="UniformToFill" />
+        </Border>
+        <controls:HighlightedTextBlock Grid.Column="1"
+                                       HighlightedText="{Binding Title}"
+                                       SearchText="{Binding SearchText}"
+                                       HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0" />
+        <controls:HighlightedTextBlock Grid.Column="2"
+                                       HighlightedText="{Binding Authors}"
+                                       SearchText="{Binding SearchText}"
+                                       HighlightBrush="{DynamicResource SearchHighlightBrush}"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0" />
+        <TextBlock Grid.Column="3" Text="{Binding Formats}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="4" Text="{Binding Series}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="5" Text="{Binding SeriesNumberText}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="6" Text="{Binding ReadingStatus}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="7" Text="{Binding Language}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+        <TextBlock Grid.Column="8" Text="{Binding Publisher}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="8,0" />
+      </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="DetailedGroupNodeTemplate">
+      <StackPanel Margin="0,0,0,4">
+        <Expander IsExpanded="True">
+          <Expander.Header>
+            <TextBlock FontWeight="SemiBold"
+                       FontSize="15"
+                       Foreground="{DynamicResource TextPrimaryBrush}">
+              <TextBlock.Text>
+                <MultiBinding Converter="{StaticResource LibraryGroupHeaderTextConverter}">
+                  <Binding Path="Header" />
+                  <Binding Path="BookCount" />
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock>
+          </Expander.Header>
+          <StackPanel Margin="22,4,0,0">
+            <ItemsControl ItemsSource="{Binding Groups}"
+                          ItemTemplate="{StaticResource DetailedGroupNodeTemplate}" />
+            <ListBox ItemsSource="{Binding Books}"
+                     SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
+                     ItemTemplate="{StaticResource DetailedBookRowTemplate}"
+                     BorderThickness="0"
+                     Background="Transparent" />
+          </StackPanel>
+        </Expander>
+      </StackPanel>
+    </DataTemplate>
   </UserControl.Resources>
+  <Grid>
   <syncfusion:SfDataGrid x:Name="BooksGrid"
                          ItemsSource="{Binding VisibleBooks}"
                          SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
                          AutoGenerateColumns="False"
                          AllowEditing="False"
                          AllowSorting="True"
-                         AllowGrouping="True"
-                         ShowGroupDropArea="True"
+                         AllowGrouping="False"
+                         ShowGroupDropArea="False"
                          NavigationMode="Row"
                          SelectionMode="Single"
                          HeaderRowHeight="36"
                          RowHeight="42"
                          AllowDrop="True">
+    <syncfusion:SfDataGrid.Style>
+      <Style TargetType="syncfusion:SfDataGrid">
+        <Setter Property="Visibility" Value="Visible" />
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding IsLibraryGrouped}" Value="True">
+            <Setter Property="Visibility" Value="Collapsed" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </syncfusion:SfDataGrid.Style>
     <syncfusion:SfDataGrid.Columns>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Cover}"
                                      MappingName="CoverBytes"
@@ -54,7 +140,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Authors}"
-                                     MappingName="AuthorsGroupKey"
+                                     MappingName="Authors"
                                      Width="220">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
@@ -66,7 +152,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Type}"
-                                     MappingName="FormatsGroupKey"
+                                     MappingName="Formats"
                                      Width="110">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
@@ -150,7 +236,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc Tags}"
-                                     MappingName="TagsGroupKey"
+                                     MappingName="Tags"
                                      Width="220">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
@@ -223,4 +309,44 @@
       </syncfusion:GridTemplateColumn>
     </syncfusion:SfDataGrid.Columns>
   </syncfusion:SfDataGrid>
+  <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto">
+    <ScrollViewer.Style>
+      <Style TargetType="ScrollViewer">
+        <Setter Property="Visibility" Value="Collapsed" />
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding IsLibraryGrouped}" Value="True">
+            <Setter Property="Visibility" Value="Visible" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </ScrollViewer.Style>
+    <StackPanel>
+      <Grid MinHeight="36" Background="{DynamicResource PanelBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="80" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="220" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="170" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="120" />
+          <ColumnDefinition Width="130" />
+          <ColumnDefinition Width="170" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Column="0" Text="{loc:Loc Cover}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="1" Text="{loc:Loc Title}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="2" Text="{loc:Loc Authors}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="3" Text="{loc:Loc Type}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="4" Text="{loc:Loc Series}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="5" Text="{loc:Loc SeriesNumber}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="6" Text="{loc:Loc Status}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="7" Text="{loc:Loc Language}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="8" Text="{loc:Loc Publisher}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
+      </Grid>
+      <ItemsControl ItemsSource="{Binding GroupedLibraryNodes}"
+                    ItemTemplate="{StaticResource DetailedGroupNodeTemplate}" />
+    </StackPanel>
+  </ScrollViewer>
+  </Grid>
 </UserControl>

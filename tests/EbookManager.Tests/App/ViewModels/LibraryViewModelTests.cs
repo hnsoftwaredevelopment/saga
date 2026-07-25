@@ -533,6 +533,75 @@ public sealed class LibraryViewModelTests
         viewModel.VisibleBookCount.Should().Be(2);
     }
 
+    [Fact]
+    public async Task Library_grouping_projects_multi_author_books_into_separate_author_nodes()
+    {
+        var sharedBook = CreateBook("Shared Book", ["Jan Wiersma", "Sonja de Leeuw"]);
+        var soloBook = CreateBook("Solo Book", ["Jan Wiersma"]);
+        var viewModel = CreateViewModel([sharedBook, soloBook]);
+
+        await viewModel.RefreshAsync();
+        viewModel.BookshelfGroupOption = LibraryGroupOption.Author;
+
+        viewModel.GroupedLibraryNodes.Select(group => (group.Header, group.BookCount))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("Jan Wiersma", 2),
+                    ("Sonja de Leeuw", 1)
+                ]);
+        viewModel.GroupedLibraryNodes.Single(group => group.Header == "Jan Wiersma").Books
+            .Select(row => row.Title)
+            .Should()
+            .BeEquivalentTo("Shared Book", "Solo Book");
+        viewModel.VisibleBookCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Library_grouping_by_author_then_series_keeps_books_without_series_directly_under_author()
+    {
+        var looseBook = CreateBook("Loose Book", ["A.E. van Vogt"]);
+        var firstSeriesBook = CreateBook("Apollo 1", ["A.E. van Vogt"], series: "Apollo");
+        var secondSeriesBook = CreateBook("Apollo 2", ["A.E. van Vogt"], series: "Apollo");
+        var viewModel = CreateViewModel([looseBook, firstSeriesBook, secondSeriesBook]);
+
+        await viewModel.RefreshAsync();
+        viewModel.BookshelfGroupOption = LibraryGroupOption.Author;
+        viewModel.BookshelfSecondaryGroupOption = LibraryGroupOption.Series;
+
+        var authorGroup = viewModel.GroupedLibraryNodes.Should().ContainSingle()
+            .Which;
+        authorGroup.Header.Should().Be("A.E. van Vogt");
+        authorGroup.BookCount.Should().Be(3);
+        authorGroup.Books.Should().ContainSingle()
+            .Which.Title.Should().Be("Loose Book");
+        authorGroup.Groups.Should().ContainSingle()
+            .Which.Header.Should().Be("Apollo");
+        authorGroup.Groups.Single().BookCount.Should().Be(2);
+        authorGroup.Groups.Single().Books.Select(row => row.Title)
+            .Should()
+            .BeEquivalentTo("Apollo 1", "Apollo 2");
+    }
+
+    [Fact]
+    public async Task Library_grouping_by_series_only_keeps_a_no_series_group()
+    {
+        var looseBook = CreateBook("Loose Book", ["Author"]);
+        var seriesBook = CreateBook("Series Book", ["Author"], series: "Apollo");
+        var viewModel = CreateViewModel([looseBook, seriesBook]);
+
+        await viewModel.RefreshAsync();
+        viewModel.BookshelfGroupOption = LibraryGroupOption.Series;
+
+        viewModel.GroupedLibraryNodes.Select(group => (group.Header, group.BookCount))
+            .Should()
+            .BeEquivalentTo(
+                [
+                    ("Apollo", 1),
+                    ("No series", 1)
+                ]);
+    }
+
 
     [Fact]
     public async Task Selected_filters_expand_results_across_facets()
