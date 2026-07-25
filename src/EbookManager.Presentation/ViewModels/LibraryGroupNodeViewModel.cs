@@ -1,8 +1,9 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed class LibraryGroupNodeViewModel
+public sealed partial class LibraryGroupNodeViewModel : ObservableObject
 {
     public LibraryGroupNodeViewModel(
         string header,
@@ -24,6 +25,9 @@ public sealed class LibraryGroupNodeViewModel
     public int BookCount { get; }
     public bool HasGroups => Groups.Count > 0;
     public bool HasBooks => Books.Count > 0;
+
+    [ObservableProperty]
+    private bool isExpanded;
 
     private static int CountUniqueBooks(
         IEnumerable<LibraryGroupNodeViewModel> groups,

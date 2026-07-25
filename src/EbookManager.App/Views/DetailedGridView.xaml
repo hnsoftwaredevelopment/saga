@@ -59,7 +59,7 @@
     </DataTemplate>
     <DataTemplate x:Key="DetailedGroupNodeTemplate">
       <StackPanel Margin="0,0,0,4">
-        <Expander IsExpanded="False"
+        <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
                   Content="{Binding}">
           <Expander.Style>
             <Style TargetType="Expander">
@@ -94,12 +94,14 @@
                  Background="Transparent"
                  VirtualizingPanel.IsVirtualizing="True"
                  VirtualizingPanel.VirtualizationMode="Recycling"
-                 ScrollViewer.CanContentScroll="True" />
+                 ScrollViewer.CanContentScroll="True"
+                 controls:MouseWheelScrollAssist.BubbleToParent="True" />
         <ListBox ItemsSource="{Binding Books}"
                  SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
                  ItemTemplate="{StaticResource DetailedBookRowTemplate}"
                  BorderThickness="0"
-                 Background="Transparent" />
+                 Background="Transparent"
+                 controls:MouseWheelScrollAssist.BubbleToParent="True" />
       </StackPanel>
     </DataTemplate>
   </UserControl.Resources>
@@ -371,6 +373,7 @@
                Background="Transparent"
                VirtualizingPanel.IsVirtualizing="True"
                VirtualizingPanel.VirtualizationMode="Recycling"
+               VirtualizingPanel.ScrollUnit="Pixel"
                ScrollViewer.CanContentScroll="True"
                ScrollViewer.HorizontalScrollBarVisibility="Auto"
                ScrollViewer.VerticalScrollBarVisibility="Auto" />

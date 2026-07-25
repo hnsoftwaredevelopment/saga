@@ -47,7 +47,7 @@
     </DataTemplate>
     <DataTemplate x:Key="BookshelfGroupNodeTemplate">
       <StackPanel Margin="0,0,0,10">
-        <Expander IsExpanded="False"
+        <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
                   Content="{Binding}">
           <Expander.Style>
             <Style TargetType="Expander">
@@ -87,7 +87,8 @@
                  Background="Transparent"
                  VirtualizingPanel.IsVirtualizing="True"
                  VirtualizingPanel.VirtualizationMode="Recycling"
-                 ScrollViewer.CanContentScroll="True" />
+                 ScrollViewer.CanContentScroll="True"
+                 controls:MouseWheelScrollAssist.BubbleToParent="True" />
         <ListBox ItemsSource="{Binding Books}"
                  SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
                  ItemTemplate="{StaticResource BookTileTemplate}"
@@ -95,7 +96,8 @@
                  Background="Transparent"
                  AllowDrop="True"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                 controls:MouseWheelScrollAssist.BubbleToParent="True">
           <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
               <WrapPanel IsItemsHost="True" />
@@ -137,6 +139,7 @@
              Background="Transparent"
              VirtualizingPanel.IsVirtualizing="True"
              VirtualizingPanel.VirtualizationMode="Recycling"
+             VirtualizingPanel.ScrollUnit="Pixel"
              ScrollViewer.CanContentScroll="True"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
              ScrollViewer.VerticalScrollBarVisibility="Auto">
