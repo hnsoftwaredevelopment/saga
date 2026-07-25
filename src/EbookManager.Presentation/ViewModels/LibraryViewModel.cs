@@ -734,7 +734,12 @@ public sealed partial class LibraryViewModel : ObservableObject
 
             var groupPath = CreateGroupPath(parentPath, groupOptions[level], rowGroup.Key);
             var children = BuildGroupNodes(childRows, groupOptions, level + 1, groupPath, expandedGroupPaths).ToList();
-            yield return new LibraryGroupNodeViewModel(rowGroup.Key, children, directBooks, groupOptions[level])
+            yield return new LibraryGroupNodeViewModel(
+                rowGroup.Key,
+                children,
+                directBooks,
+                groupOptions[level],
+                groupRows.Count)
             {
                 IsExpanded = expandedGroupPaths.Contains(groupPath)
             };

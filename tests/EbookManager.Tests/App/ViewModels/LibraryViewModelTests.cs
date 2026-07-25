@@ -562,6 +562,25 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public void Library_group_node_uses_precomputed_book_count_when_available()
+    {
+        var child = new LibraryGroupNodeViewModel(
+            "Child",
+            [],
+            [CreateRow("Child Book")],
+            LibraryGroupOption.Series);
+
+        var parent = new LibraryGroupNodeViewModel(
+            "Parent",
+            [child],
+            [],
+            LibraryGroupOption.Author,
+            bookCount: 42);
+
+        parent.BookCount.Should().Be(42);
+    }
+
+    [Fact]
     public async Task Grouping_commands_save_grouping_per_view()
     {
         var settingsStore = new InMemoryAppSettingsStore();
@@ -1464,6 +1483,9 @@ public sealed class LibraryViewModelTests
             Formats = formats ?? []
         };
     }
+
+    private static BookRowViewModel CreateRow(string title) =>
+        new(CreateBook(title, ["Author"]));
 
     private static CurrentLibrary CreateActiveLibrary()
     {

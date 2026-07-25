@@ -87,6 +87,8 @@
               AutoGenerateColumns="False"
               IsReadOnly="True"
               CanUserSortColumns="True"
+              ScrollViewer.HorizontalScrollBarVisibility="Auto"
+              ScrollViewer.VerticalScrollBarVisibility="Auto"
               GridLinesVisibility="Horizontal"
               HeadersVisibility="Column">
       <DataGrid.Columns>
