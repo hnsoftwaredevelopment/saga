@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -459,6 +459,11 @@
   <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} es el último formato. Use Eliminar para quitar el libro.</value></data>
   <data name="FormatRemoveFailed" xml:space="preserve"><value>No se pudo eliminar {0}</value></data>
   <data name="GroupBy" xml:space="preserve"><value>Agrupar por</value></data>
+  <data name="GroupUnknownAuthor" xml:space="preserve"><value>Autor desconocido</value></data>
+  <data name="GroupNoSeries" xml:space="preserve"><value>Sin serie</value></data>
+  <data name="GroupNoTags" xml:space="preserve"><value>Sin etiquetas</value></data>
+  <data name="GroupNoLanguage" xml:space="preserve"><value>Sin idioma</value></data>
+  <data name="GroupNoFormat" xml:space="preserve"><value>Sin formato</value></data>
   <data name="GroupLibraryTooltip" xml:space="preserve"><value>Agrupar la vista actual de la biblioteca</value></data>
   <data name="ThenBy" xml:space="preserve"><value>Luego por</value></data>
   <data name="NoGrouping" xml:space="preserve"><value>Sin agrupación</value></data>

@@ -13,7 +13,8 @@
     <DataTemplate x:Key="DetailedBookRowTemplate">
       <Grid MinHeight="42"
             Margin="0,0,0,1"
-            Background="{DynamicResource PanelBackgroundBrush}">
+            Background="{DynamicResource PanelBackgroundBrush}"
+            MouseLeftButtonDown="BookRowMouseLeftButtonDown">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="80" />
           <ColumnDefinition Width="220" />
@@ -101,22 +102,27 @@
       </StackPanel>
     </DataTemplate>
     <DataTemplate x:Key="DetailedGroupContentTemplate">
-      <StackPanel Margin="22,4,0,0">
+      <Grid Margin="22,4,0,0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <ListBox ItemsSource="{Binding Groups}"
                  ItemTemplate="{StaticResource DetailedGroupNodeTemplate}"
                  BorderThickness="0"
                  Background="Transparent"
                  VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                  VirtualizingPanel.VirtualizationMode="Recycling"
                  ScrollViewer.CanContentScroll="True"
                  controls:MouseWheelScrollAssist.BubbleToParent="True" />
-        <ListBox ItemsSource="{Binding Books}"
-                 SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Books}"
                  ItemTemplate="{StaticResource DetailedBookRowTemplate}"
                  BorderThickness="0"
                  Background="Transparent"
                  controls:MouseWheelScrollAssist.BubbleToParent="True" />
-      </StackPanel>
+      </Grid>
     </DataTemplate>
   </UserControl.Resources>
   <Grid>
@@ -258,7 +264,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc PublicationDate}"
-                                     MappingName="PublicationDate"
+                                     MappingName="PublicationDateSortValue"
                                      Width="130">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
@@ -306,7 +312,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc DateAdded}"
-                                     MappingName="DateAdded"
+                                     MappingName="DateAddedSortValue"
                                      Width="150">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>
@@ -318,7 +324,7 @@
         </syncfusion:GridTemplateColumn.CellTemplate>
       </syncfusion:GridTemplateColumn>
       <syncfusion:GridTemplateColumn HeaderText="{loc:Loc LastModified}"
-                                     MappingName="LastModified"
+                                     MappingName="LastModifiedSortValue"
                                      Width="150">
         <syncfusion:GridTemplateColumn.CellTemplate>
           <DataTemplate>

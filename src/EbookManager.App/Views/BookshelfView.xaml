@@ -14,7 +14,8 @@
               Margin="10"
               Padding="10"
               Background="{DynamicResource PanelBackgroundBrush}"
-              CornerRadius="14">
+              CornerRadius="14"
+              MouseLeftButtonDown="BookRowMouseLeftButtonDown">
         <StackPanel>
           <Border Height="190"
                   Background="#FFE2E8F0"
@@ -90,7 +91,6 @@
                  ScrollViewer.CanContentScroll="True"
                  controls:MouseWheelScrollAssist.BubbleToParent="True" />
         <ListBox ItemsSource="{Binding Books}"
-                 SelectedItem="{Binding DataContext.SelectedBook, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
                  ItemTemplate="{StaticResource BookTileTemplate}"
                  BorderThickness="0"
                  Background="Transparent"

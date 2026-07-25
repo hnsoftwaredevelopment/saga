@@ -218,6 +218,8 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Border Background="{DynamicResource PanelBackgroundBrush}"
+                        BorderBrush="{DynamicResource AccentBrush}"
+                        BorderThickness="1"
                         CornerRadius="12"
                         Padding="8,4"
                         Margin="0,0,6,6">

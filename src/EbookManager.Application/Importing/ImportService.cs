@@ -506,7 +506,7 @@ public sealed class ImportService(
         try
         {
             var attributes = File.GetAttributes(sourcePath);
-            return !attributes.HasFlag(FileAttributes.Offline);
+            return (attributes & CloudPlaceholderAttributes) == 0;
         }
         catch (Exception exception) when (
             exception is IOException or UnauthorizedAccessException or FileNotFoundException or PathTooLongException)
@@ -514,6 +514,11 @@ public sealed class ImportService(
             return false;
         }
     }
+
+    private const FileAttributes CloudPlaceholderAttributes =
+        FileAttributes.Offline |
+        (FileAttributes)0x00040000 |
+        (FileAttributes)0x00400000;
 
     private static long? GetSourceLengthOrNull(string sourcePath)
     {

@@ -33,16 +33,13 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
     private readonly DirectoryScanner? directoryScanner;
     private readonly IAppSettingsStore? settingsStore;
+    private readonly Func<string, string> localize;
     private IReadOnlyList<Book> books = [];
     private bool hasAppliedDefaultView;
     private int selectionVersion;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
-    private readonly Dictionary<LibraryView, List<LibraryGroupOption>> viewGroupings = new()
-    {
-        [LibraryView.Bookshelf] = [],
-        [LibraryView.Detailed] = [],
-        [LibraryView.List] = []
-    };
+    private readonly Dictionary<LibraryView, List<LibraryGroupOption>> viewGroupings =
+        Enum.GetValues<LibraryView>().ToDictionary(view => view, _ => new List<LibraryGroupOption>());
 
     public LibraryViewModel(
         IBookRepository bookRepository,
@@ -59,7 +56,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         CurrentLibrary? currentLibrary = null,
         ILibraryDatabaseInitializer? databaseInitializer = null,
         DirectoryScanner? directoryScanner = null,
-        IAppSettingsStore? settingsStore = null)
+        IAppSettingsStore? settingsStore = null,
+        Func<string, string>? localize = null)
     {
         this.bookRepository = bookRepository;
         this.searchService = searchService;
@@ -76,6 +74,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.databaseInitializer = databaseInitializer;
         this.directoryScanner = directoryScanner;
         this.settingsStore = settingsStore;
+        this.localize = localize ?? DefaultGroupText;
         currentLibraryName = currentLibrary?.Current?.Name;
         currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
 
@@ -535,6 +534,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
         RefreshActiveGroupOptions();
         RefreshGroupingOnly();
+        SaveGroupingSettingsAsync(CancellationToken.None).GetAwaiter().GetResult();
     }
 
     private IReadOnlyList<LibraryGroupOption> GetActiveGroupOptions() =>
@@ -678,6 +678,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void RefreshGroupedLibraryNodes(IReadOnlyList<BookRowViewModel> rows)
     {
+        var expandedGroupPaths = CaptureExpandedGroupPaths(GroupedLibraryNodes);
         GroupedLibraryNodes.Clear();
         var groupOptions = GetActiveGroupOptions();
         if (groupOptions.Count == 0)
@@ -685,7 +686,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        foreach (var group in BuildGroupNodes(rows, groupOptions, level: 0))
+        foreach (var group in BuildGroupNodes(rows, groupOptions, level: 0, parentPath: string.Empty, expandedGroupPaths))
         {
             GroupedLibraryNodes.Add(group);
         }
@@ -694,7 +695,9 @@ public sealed partial class LibraryViewModel : ObservableObject
     private IEnumerable<LibraryGroupNodeViewModel> BuildGroupNodes(
         IReadOnlyList<BookRowViewModel> rows,
         IReadOnlyList<LibraryGroupOption> groupOptions,
-        int level)
+        int level,
+        string parentPath,
+        ISet<string> expandedGroupPaths)
     {
         if (level >= groupOptions.Count)
         {
@@ -729,27 +732,70 @@ public sealed partial class LibraryViewModel : ObservableObject
                     .ToList();
             }
 
-            var children = BuildGroupNodes(childRows, groupOptions, level + 1).ToList();
-            yield return new LibraryGroupNodeViewModel(rowGroup.Key, children, directBooks);
+            var groupPath = CreateGroupPath(parentPath, groupOptions[level], rowGroup.Key);
+            var children = BuildGroupNodes(childRows, groupOptions, level + 1, groupPath, expandedGroupPaths).ToList();
+            yield return new LibraryGroupNodeViewModel(rowGroup.Key, children, directBooks, groupOptions[level])
+            {
+                IsExpanded = expandedGroupPaths.Contains(groupPath)
+            };
         }
     }
 
-    private static IEnumerable<string> GetDisplayGroupNames(Book book, LibraryGroupOption groupOption) =>
+    private IEnumerable<string> GetDisplayGroupNames(Book book, LibraryGroupOption groupOption) =>
         groupOption switch
         {
-            LibraryGroupOption.Author => NonEmptyValues(book.Metadata.Authors, "Unknown author"),
-            LibraryGroupOption.Series => SingleNonEmptyValue(book.Metadata.Series, "No series"),
-            LibraryGroupOption.Tag => NonEmptyValues(book.Metadata.Tags ?? [], "No tags"),
+            LibraryGroupOption.Author => NonEmptyValues(book.Metadata.Authors, localize("GroupUnknownAuthor")),
+            LibraryGroupOption.Series => SingleNonEmptyValue(book.Metadata.Series, localize("GroupNoSeries")),
+            LibraryGroupOption.Tag => NonEmptyValues(book.Metadata.Tags ?? [], localize("GroupNoTags")),
             LibraryGroupOption.Language => SingleNonEmptyValue(
                 string.IsNullOrWhiteSpace(book.Metadata.Language)
                     ? null
                     : LanguageDisplayService.DisplayName(book.Metadata.Language),
-                "No language"),
-            LibraryGroupOption.Status => [book.ReadingStatus.ToString()],
+                localize("GroupNoLanguage")),
+            LibraryGroupOption.Status => [localize(book.ReadingStatus.ToString())],
             LibraryGroupOption.Format => NonEmptyValues(
                 book.Formats.Select(format => format.ToString().ToUpperInvariant()),
-                "No format"),
+                localize("GroupNoFormat")),
             _ => [string.Empty]
+        };
+
+    private static ISet<string> CaptureExpandedGroupPaths(IEnumerable<LibraryGroupNodeViewModel> groups) =>
+        CaptureExpandedGroupPaths(groups, string.Empty);
+
+    private static ISet<string> CaptureExpandedGroupPaths(
+        IEnumerable<LibraryGroupNodeViewModel> groups,
+        string parentPath)
+    {
+        var expandedPaths = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var group in groups)
+        {
+            var groupPath = CreateGroupPath(parentPath, group.GroupOption, group.Header);
+            if (group.IsExpanded)
+            {
+                expandedPaths.Add(groupPath);
+            }
+
+            expandedPaths.UnionWith(CaptureExpandedGroupPaths(group.Groups, groupPath));
+        }
+
+        return expandedPaths;
+    }
+
+    private static string CreateGroupPath(string parentPath, LibraryGroupOption option, string header) =>
+        string.Concat(parentPath, "\u001F", option, "\u001F", header);
+
+    private static string DefaultGroupText(string key) =>
+        key switch
+        {
+            "GroupUnknownAuthor" => "Unknown author",
+            "GroupNoSeries" => "No series",
+            "GroupNoTags" => "No tags",
+            "GroupNoLanguage" => "No language",
+            "GroupNoFormat" => "No format",
+            "Unread" => "Unread",
+            "Reading" => "Reading",
+            "Read" => "Read",
+            _ => key
         };
 
     private static IEnumerable<string> NonEmptyValues(IEnumerable<string> values, string fallback)

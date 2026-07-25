@@ -186,6 +186,11 @@
   <data name="FormatLastFormatCannotRemove" xml:space="preserve"><value>{0} is the last format. Use Delete to remove the book.</value></data>
   <data name="FormatRemoveFailed" xml:space="preserve"><value>{0} could not be removed</value></data>
   <data name="GroupBy" xml:space="preserve"><value>Group by</value></data>
+  <data name="GroupUnknownAuthor" xml:space="preserve"><value>Unknown author</value></data>
+  <data name="GroupNoSeries" xml:space="preserve"><value>No series</value></data>
+  <data name="GroupNoTags" xml:space="preserve"><value>No tags</value></data>
+  <data name="GroupNoLanguage" xml:space="preserve"><value>No language</value></data>
+  <data name="GroupNoFormat" xml:space="preserve"><value>No format</value></data>
   <data name="GroupLibraryTooltip" xml:space="preserve"><value>Group the current library view</value></data>
   <data name="ThenBy" xml:space="preserve"><value>Then by</value></data>
   <data name="NoGrouping" xml:space="preserve"><value>No grouping</value></data>

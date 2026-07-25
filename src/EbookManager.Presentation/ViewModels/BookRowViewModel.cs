@@ -21,7 +21,8 @@ public sealed class BookRowViewModel(
     public decimal? SeriesNumber => Book.Metadata.SeriesNumber;
     public string SeriesNumberText => SeriesNumber?.ToString(CultureInfo.CurrentCulture) ?? string.Empty;
     public string Publisher => Book.Metadata.Publisher ?? string.Empty;
-    public string PublicationDate => Book.Metadata.PublicationDate?.ToString("d", CultureInfo.CurrentCulture) ?? string.Empty;
+    public DateOnly? PublicationDateSortValue => Book.Metadata.PublicationDate;
+    public string PublicationDate => PublicationDateSortValue?.ToString("d", CultureInfo.CurrentCulture) ?? string.Empty;
     public string Tags => string.Join(", ", Book.Metadata.Tags ?? []);
     public string Isbn => Book.Metadata.Isbn ?? string.Empty;
     public string Language => string.IsNullOrWhiteSpace(Book.Metadata.Language)
@@ -29,8 +30,10 @@ public sealed class BookRowViewModel(
         : LanguageDisplayService.DisplayName(Book.Metadata.Language);
     public string Formats => string.Join(", ", Book.Formats.Select(format => format.ToString().ToUpperInvariant()));
     public ReadingStatus ReadingStatus => Book.ReadingStatus;
-    public string DateAdded => FormatDateTime(Book.CreatedUtc);
-    public string LastModified => FormatDateTime(Book.UpdatedUtc);
+    public DateTimeOffset DateAddedSortValue => Book.CreatedUtc;
+    public string DateAdded => FormatDateTime(DateAddedSortValue);
+    public DateTimeOffset LastModifiedSortValue => Book.UpdatedUtc;
+    public string LastModified => FormatDateTime(LastModifiedSortValue);
     public string EReader => "Unavailable";
     public byte[]? CoverBytes => Book.Metadata.CoverBytes;
     public string? CoverRelativePath => Book.CoverRelativePath;

@@ -24,5 +24,5 @@
 ## Regression Checks
 
 - [ ] Confirm Detailed view still shows cover, title, author, status, and e-reader columns.
-- [ ] Confirm drag and drop import still works in Detailed view and List view.
+- [ ] Confirm drag-and-drop import still works in Detailed view and List view.
 - [ ] Confirm a large library remains responsive enough when switching between grid views.
