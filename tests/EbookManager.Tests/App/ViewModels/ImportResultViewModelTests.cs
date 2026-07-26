@@ -2,6 +2,7 @@ using EbookManager.Domain.Importing;
 using EbookManager.Domain.Books;
 using EbookManager.Presentation.ViewModels;
 using FluentAssertions;
+using System.Collections.Specialized;
 
 namespace EbookManager.Tests.App.ViewModels;
 
@@ -119,6 +120,26 @@ public sealed class ImportResultViewModelTests
         viewModel.SelectedOutcomeFilter = ImportResultOutcomeFilter.Failed;
         viewModel.VisibleItems.Should().ContainSingle()
             .Which.FileName.Should().Be("slow-comic.cbr");
+    }
+
+    [Fact]
+    public void Visible_items_refresh_with_single_reset_notification()
+    {
+        var viewModel = new ImportResultViewModel(new ImportBatchResult(
+            Guid.NewGuid(),
+            Enumerable.Range(0, 1_000)
+                .Select(index => new ImportItemResult(
+                    $"book-{index}.epub",
+                    index % 2 == 0 ? ImportOutcome.Added : ImportOutcome.Failed,
+                    index % 2 == 0 ? "added" : "source unreadable"))
+                .ToArray()));
+        var notifications = new List<NotifyCollectionChangedAction>();
+        viewModel.VisibleItems.CollectionChanged += (_, args) => notifications.Add(args.Action);
+
+        viewModel.SelectedOutcomeFilter = ImportResultOutcomeFilter.Failed;
+
+        viewModel.VisibleItems.Should().HaveCount(500);
+        notifications.Should().Equal(NotifyCollectionChangedAction.Reset);
     }
 
     [Fact]

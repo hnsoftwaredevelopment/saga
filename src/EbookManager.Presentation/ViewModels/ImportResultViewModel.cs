@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using EbookManager.Domain.Importing;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -49,7 +48,7 @@ public sealed partial class ImportResultViewModel : ObservableObject
     public IReadOnlyList<ImportResultItemViewModel> Items { get; }
     public IReadOnlyList<ImportPhaseSummaryViewModel> PhaseSummaries { get; }
     public IReadOnlyList<ImportResultOutcomeFilter> OutcomeFilterOptions { get; }
-    public ObservableCollection<ImportResultItemViewModel> VisibleItems { get; } = [];
+    public BulkObservableCollection<ImportResultItemViewModel> VisibleItems { get; } = [];
     public int TotalCount => Items.Count;
     public int AddedCount => Count(ImportOutcome.Added);
     public int ExactDuplicateCount => Count(ImportOutcome.ExactDuplicate);
@@ -133,11 +132,7 @@ public sealed partial class ImportResultViewModel : ObservableObject
             query = query.Where(item => item.Matches(search));
         }
 
-        VisibleItems.Clear();
-        foreach (var item in query)
-        {
-            VisibleItems.Add(item);
-        }
+        VisibleItems.ReplaceAll(query.ToArray());
     }
 
     private static IReadOnlyList<ImportPhaseSummaryViewModel> CreatePhaseSummaries(IEnumerable<ImportItemResult> items)

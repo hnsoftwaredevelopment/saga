@@ -101,7 +101,7 @@
                                Margin="0,4,0,0"
                                Minimum="0"
                                Maximum="100"
-                               Value="{Binding Percentage}" />
+                               Value="{Binding Percentage, Mode=OneWay}" />
                 </Grid>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -141,8 +141,13 @@
               AutoGenerateColumns="False"
               IsReadOnly="True"
               CanUserSortColumns="True"
+              EnableRowVirtualization="True"
+              EnableColumnVirtualization="True"
               ScrollViewer.HorizontalScrollBarVisibility="Auto"
               ScrollViewer.VerticalScrollBarVisibility="Auto"
+              ScrollViewer.CanContentScroll="True"
+              VirtualizingPanel.IsVirtualizing="True"
+              VirtualizingPanel.VirtualizationMode="Recycling"
               GridLinesVisibility="Horizontal"
               HeadersVisibility="Column">
       <DataGrid.Columns>
