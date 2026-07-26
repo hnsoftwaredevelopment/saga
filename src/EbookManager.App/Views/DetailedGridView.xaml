@@ -13,7 +13,7 @@
     <converters:LibraryColumnGridLengthConverter x:Key="LibraryColumnGridLengthConverter" />
     <controls:BindingProxy x:Key="LibraryViewModelProxy" Data="{Binding}" />
     <Style x:Key="GroupedColumnHeaderTextStyle" TargetType="TextBlock">
-      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
       <Setter Property="FontWeight" Value="SemiBold" />
@@ -22,10 +22,10 @@
     <Style x:Key="StandardGridHeaderCellStyle" TargetType="syncfusion:GridHeaderCellControl">
       <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderThickness" Value="0,0,0,1" />
+      <Setter Property="BorderThickness" Value="0,0,1,1" />
       <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Padding" Value="8,0" />
     </Style>
@@ -151,6 +151,7 @@
                          AutoGenerateColumns="False"
                          AllowEditing="False"
                          AllowSorting="True"
+                         AllowTriStateSorting="True"
                          AllowGrouping="False"
                          ShowGroupDropArea="False"
                          NavigationMode="Row"

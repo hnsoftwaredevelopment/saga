@@ -117,8 +117,10 @@ Status: implemented as a visually distinct fixed header row for grouped Detailed
 
 - Standard Detailed and List grid headers should visually match the grouped header style.
 - Native Syncfusion header sorting must remain active when clicking a column header.
+- Header sorting should support the normal three-state cycle: ascending, descending, and no sorting.
+- Header labels should align with the column content and use theme-aware separator lines.
 
-Status: implemented by styling the native `SfDataGrid.HeaderStyle`, preserving Syncfusion sorting behavior.
+Status: implemented by styling the native `SfDataGrid.HeaderStyle`, preserving Syncfusion sorting behavior. Standard headers are left aligned, use the theme accent color for separator lines, and enable Syncfusion tri-state sorting.
 
 ### Slice 2: Column Width Foundation
 
