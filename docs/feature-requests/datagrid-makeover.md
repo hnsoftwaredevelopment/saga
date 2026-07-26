@@ -111,6 +111,8 @@ The current milestone focuses on finishing the grid experience created by Milest
 - Hidden columns should disappear from both the header and row layout.
 - The header should remain understandable even when the grouped tree is scrolled.
 
+Status: implemented as a visually distinct fixed header row for grouped Detailed and List views.
+
 ### Slice 2: Column Width Foundation
 
 - Capture current column widths per view.
