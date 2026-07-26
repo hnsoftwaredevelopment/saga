@@ -8,27 +8,29 @@
              AllowDrop="True">
   <UserControl.Resources>
     <converters:LibraryGroupHeaderTextConverter x:Key="LibraryGroupHeaderTextConverter" />
+    <converters:LibraryColumnGridLengthConverter x:Key="LibraryColumnGridLengthConverter" />
+    <controls:BindingProxy x:Key="LibraryViewModelProxy" Data="{Binding}" />
     <DataTemplate x:Key="ListBookRowTemplate">
       <Grid MinHeight="34"
             Margin="0,0,0,1"
             Background="{DynamicResource PanelBackgroundBrush}"
             MouseLeftButtonDown="BookRowMouseLeftButtonDown">
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="260" />
-          <ColumnDefinition Width="220" />
-          <ColumnDefinition Width="170" />
-          <ColumnDefinition Width="110" />
-          <ColumnDefinition Width="120" />
-          <ColumnDefinition Width="130" />
-          <ColumnDefinition Width="130" />
-          <ColumnDefinition Width="170" />
-          <ColumnDefinition Width="130" />
-          <ColumnDefinition Width="220" />
-          <ColumnDefinition Width="140" />
-          <ColumnDefinition Width="320" />
-          <ColumnDefinition Width="150" />
-          <ColumnDefinition Width="150" />
-          <ColumnDefinition Width="120" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Title|260}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Authors|220}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Series|170}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=SeriesNumber|110}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Status|120}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Language|130}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Format|130}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Publisher|170}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=PublicationDate|130}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Tags|220}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Isbn|140}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Description|320}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=DateAdded|150}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=LastModified|150}" />
+          <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=EReader|120}" />
         </Grid.ColumnDefinitions>
         <controls:HighlightedTextBlock Grid.Column="0"
                                        HighlightedText="{Binding Title}"
@@ -351,21 +353,21 @@
       </Grid.RowDefinitions>
         <Grid MinHeight="36" Background="{DynamicResource PanelBackgroundBrush}">
           <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="260" />
-            <ColumnDefinition Width="220" />
-            <ColumnDefinition Width="170" />
-            <ColumnDefinition Width="110" />
-            <ColumnDefinition Width="120" />
-            <ColumnDefinition Width="130" />
-            <ColumnDefinition Width="130" />
-            <ColumnDefinition Width="170" />
-            <ColumnDefinition Width="130" />
-            <ColumnDefinition Width="220" />
-            <ColumnDefinition Width="140" />
-            <ColumnDefinition Width="320" />
-            <ColumnDefinition Width="150" />
-            <ColumnDefinition Width="150" />
-            <ColumnDefinition Width="120" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Title|260}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Authors|220}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Series|170}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=SeriesNumber|110}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Status|120}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Language|130}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Format|130}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Publisher|170}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=PublicationDate|130}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Tags|220}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Isbn|140}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Description|320}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=DateAdded|150}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=LastModified|150}" />
+            <ColumnDefinition Width="{Binding Data.ActiveColumnOptionsSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=EReader|120}" />
           </Grid.ColumnDefinitions>
           <TextBlock Grid.Column="0" Text="{loc:Loc Title}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
           <TextBlock Grid.Column="1" Text="{loc:Loc Authors}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />

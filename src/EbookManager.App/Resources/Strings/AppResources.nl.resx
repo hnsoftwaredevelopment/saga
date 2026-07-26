@@ -18,6 +18,8 @@
   <data name="Cancel" xml:space="preserve"><value>Annuleren</value></data>
   <data name="Close" xml:space="preserve"><value>Sluiten</value></data>
   <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Vragen voordat boeken worden verwijderd</value></data>
+  <data name="Columns" xml:space="preserve"><value>Kolommen</value></data>
+  <data name="ColumnsTooltip" xml:space="preserve"><value>Kies welke kolommen zichtbaar zijn in deze weergave</value></data>
   <data name="Cover" xml:space="preserve"><value>Omslag</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Maak een nieuwe bibliotheek</value></data>
   <data name="CreateLibrary" xml:space="preserve"><value>Nieuwe bibliotheek</value></data>
