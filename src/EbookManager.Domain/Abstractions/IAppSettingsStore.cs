@@ -14,7 +14,8 @@ public sealed record AppSettings(
     bool DuplicateExactMatchesOnly = true,
     bool EnableDiagnosticDetails = true,
     DuplicateMergeDefaultSettings? DuplicateMergeDefaults = null,
-    LibraryGroupingSettings? LibraryGroupings = null);
+    LibraryGroupingSettings? LibraryGroupings = null,
+    LibraryColumnSettings? LibraryColumns = null);
 
 public interface IAppSettingsStore
 {

@@ -45,6 +45,13 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
     private readonly Dictionary<LibraryView, List<LibraryGroupOption>> viewGroupings =
         Enum.GetValues<LibraryView>().ToDictionary(view => view, _ => new List<LibraryGroupOption>());
+    private readonly Dictionary<LibraryView, List<LibraryColumnOption>> viewColumns =
+        new()
+        {
+            [LibraryView.Bookshelf] = [],
+            [LibraryView.Detailed] = DefaultDetailedColumns().ToList(),
+            [LibraryView.List] = DefaultListColumns().ToList()
+        };
 
     public LibraryViewModel(
         IBookRepository bookRepository,
@@ -103,6 +110,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<FacetFilterViewModel> FormatFilters { get; } = [];
     public BulkObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
     public ObservableCollection<LibraryGroupOption> ActiveGroupOptions { get; } = [];
+    public ObservableCollection<LibraryColumnOption> ActiveColumnOptions { get; } = [];
     public IReadOnlyList<LibraryGroupOption> AvailableGroupOptions { get; } =
     [
         LibraryGroupOption.Author,
@@ -111,6 +119,25 @@ public sealed partial class LibraryViewModel : ObservableObject
         LibraryGroupOption.Language,
         LibraryGroupOption.Status,
         LibraryGroupOption.Format
+    ];
+    public IReadOnlyList<LibraryColumnOption> AvailableColumnOptions { get; } =
+    [
+        LibraryColumnOption.Cover,
+        LibraryColumnOption.Title,
+        LibraryColumnOption.Authors,
+        LibraryColumnOption.Format,
+        LibraryColumnOption.Series,
+        LibraryColumnOption.SeriesNumber,
+        LibraryColumnOption.Status,
+        LibraryColumnOption.Language,
+        LibraryColumnOption.Publisher,
+        LibraryColumnOption.PublicationDate,
+        LibraryColumnOption.Tags,
+        LibraryColumnOption.Isbn,
+        LibraryColumnOption.Description,
+        LibraryColumnOption.DateAdded,
+        LibraryColumnOption.LastModified,
+        LibraryColumnOption.EReader
     ];
 
     public BookDetailsViewModel Details { get; }
@@ -321,6 +348,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     partial void OnSelectedViewChanged(LibraryView value)
     {
         RefreshActiveGroupOptions(notifyActiveViewSources: false);
+        RefreshActiveColumnOptions();
         RefreshGroupingOnly();
     }
 
@@ -692,6 +720,34 @@ public sealed partial class LibraryViewModel : ObservableObject
         return rows.Length;
     }
 
+    public IReadOnlyList<LibraryColumnOption> GetVisibleColumns(LibraryView view) =>
+        viewColumns.TryGetValue(view, out var columns)
+            ? columns.ToArray()
+            : [];
+
+    public bool IsColumnVisible(LibraryView view, LibraryColumnOption column) =>
+        viewColumns.TryGetValue(view, out var columns) && columns.Contains(column);
+
+    public async Task SetVisibleColumnsAsync(
+        LibraryView view,
+        IEnumerable<LibraryColumnOption> columns,
+        CancellationToken cancellationToken = default)
+    {
+        if (view == LibraryView.Bookshelf)
+        {
+            return;
+        }
+
+        viewColumns[view] = NormalizeColumnOptions(view, columns).ToList();
+        if (view == SelectedView)
+        {
+            RefreshActiveColumnOptions();
+            NotifyActiveViewSourcesChanged();
+        }
+
+        await SaveColumnSettingsAsync(cancellationToken);
+    }
+
     private void NotifyActiveViewSourcesChanged()
     {
         OnPropertyChanged(nameof(BookshelfVisibleBooksSource));
@@ -762,10 +818,68 @@ public sealed partial class LibraryViewModel : ObservableObject
         RefreshActiveGroupOptions();
     }
 
+    private LibraryColumnSettings CreateColumnSettings() =>
+        new(
+            ToColumnSettingValues(viewColumns[LibraryView.Detailed]),
+            ToColumnSettingValues(viewColumns[LibraryView.List]));
+
+    private void LoadColumnSettings(LibraryColumnSettings? settings)
+    {
+        viewColumns[LibraryView.Bookshelf] = [];
+        viewColumns[LibraryView.Detailed] = ParseColumnOptions(LibraryView.Detailed, settings?.Detailed).ToList();
+        viewColumns[LibraryView.List] = ParseColumnOptions(LibraryView.List, settings?.List).ToList();
+        RefreshActiveColumnOptions();
+    }
+
+    private void RefreshActiveColumnOptions()
+    {
+        var desiredOptions = GetVisibleColumns(SelectedView);
+        for (var index = ActiveColumnOptions.Count - 1; index >= 0; index--)
+        {
+            if (!desiredOptions.Contains(ActiveColumnOptions[index]))
+            {
+                ActiveColumnOptions.RemoveAt(index);
+            }
+        }
+
+        for (var desiredIndex = 0; desiredIndex < desiredOptions.Count; desiredIndex++)
+        {
+            var option = desiredOptions[desiredIndex];
+            var currentIndex = ActiveColumnOptions.IndexOf(option);
+            if (currentIndex < 0)
+            {
+                ActiveColumnOptions.Insert(desiredIndex, option);
+            }
+            else if (currentIndex != desiredIndex)
+            {
+                ActiveColumnOptions.Move(currentIndex, desiredIndex);
+            }
+        }
+    }
+
+    private async Task SaveColumnSettingsAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        var settings = await settingsStore.LoadAsync(cancellationToken);
+        await settingsStore.SaveAsync(
+            settings with
+            {
+                LibraryColumns = CreateColumnSettings()
+            },
+            cancellationToken);
+    }
+
     private static IReadOnlyList<string> ToSettingValues(IEnumerable<LibraryGroupOption> options) =>
         NormalizeGroupOptions(options)
             .Select(option => option.ToString())
             .ToArray();
+
+    private static IReadOnlyList<string> ToColumnSettingValues(IEnumerable<LibraryColumnOption> options) =>
+        options.Select(option => option.ToString()).ToArray();
 
     private static IReadOnlyList<LibraryGroupOption> ParseGroupOptions(IEnumerable<string>? values)
     {
@@ -798,6 +912,85 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         return normalized;
     }
+
+    private static IReadOnlyList<LibraryColumnOption> ParseColumnOptions(
+        LibraryView view,
+        IEnumerable<string>? values)
+    {
+        if (values is null)
+        {
+            return GetDefaultColumns(view);
+        }
+
+        var parsed = values
+            .Select(value => Enum.TryParse<LibraryColumnOption>(value, ignoreCase: true, out var option) && Enum.IsDefined(option)
+                ? option
+                : (LibraryColumnOption?)null)
+            .OfType<LibraryColumnOption>()
+            .ToArray();
+        return NormalizeColumnOptions(view, parsed);
+    }
+
+    private static IReadOnlyList<LibraryColumnOption> NormalizeColumnOptions(
+        LibraryView view,
+        IEnumerable<LibraryColumnOption> options)
+    {
+        var allowed = GetDefaultColumns(view).ToHashSet();
+        var normalized = options
+            .Where(option => allowed.Contains(option))
+            .Distinct()
+            .ToList();
+        return normalized.Count == 0
+            ? GetDefaultColumns(view)
+            : normalized;
+    }
+
+    private static IReadOnlyList<LibraryColumnOption> GetDefaultColumns(LibraryView view) =>
+        view switch
+        {
+            LibraryView.Detailed => DefaultDetailedColumns(),
+            LibraryView.List => DefaultListColumns(),
+            _ => []
+        };
+
+    private static IReadOnlyList<LibraryColumnOption> DefaultDetailedColumns() =>
+    [
+        LibraryColumnOption.Cover,
+        LibraryColumnOption.Title,
+        LibraryColumnOption.Authors,
+        LibraryColumnOption.Format,
+        LibraryColumnOption.Series,
+        LibraryColumnOption.SeriesNumber,
+        LibraryColumnOption.Status,
+        LibraryColumnOption.Language,
+        LibraryColumnOption.Publisher,
+        LibraryColumnOption.PublicationDate,
+        LibraryColumnOption.Tags,
+        LibraryColumnOption.Isbn,
+        LibraryColumnOption.Description,
+        LibraryColumnOption.DateAdded,
+        LibraryColumnOption.LastModified,
+        LibraryColumnOption.EReader
+    ];
+
+    private static IReadOnlyList<LibraryColumnOption> DefaultListColumns() =>
+    [
+        LibraryColumnOption.Title,
+        LibraryColumnOption.Authors,
+        LibraryColumnOption.Series,
+        LibraryColumnOption.SeriesNumber,
+        LibraryColumnOption.Status,
+        LibraryColumnOption.Language,
+        LibraryColumnOption.Format,
+        LibraryColumnOption.Publisher,
+        LibraryColumnOption.PublicationDate,
+        LibraryColumnOption.Tags,
+        LibraryColumnOption.Isbn,
+        LibraryColumnOption.Description,
+        LibraryColumnOption.DateAdded,
+        LibraryColumnOption.LastModified,
+        LibraryColumnOption.EReader
+    ];
 
     private void RefreshGroupedLibraryNodes(IReadOnlyList<BookRowViewModel> rows)
     {
@@ -1509,8 +1702,10 @@ public sealed partial class LibraryViewModel : ObservableObject
         var settings = await settingsStore.LoadAsync(cancellationToken);
         authorSortStrategy = settings.AuthorSortStrategy;
         LoadGroupingSettings(settings.LibraryGroupings);
+        LoadColumnSettings(settings.LibraryColumns);
         ApplyDefaultViewPreference(settings.DefaultView);
         RefreshActiveGroupOptions();
+        RefreshActiveColumnOptions();
     }
 
     private void RefreshLibraryDisplay()

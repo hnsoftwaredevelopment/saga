@@ -713,6 +713,33 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Visible_columns_are_saved_per_grid_view()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Title, LibraryColumnOption.Authors, LibraryColumnOption.Series]);
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.List,
+            [LibraryColumnOption.Title, LibraryColumnOption.Format]);
+
+        viewModel.GetVisibleColumns(LibraryView.Detailed).Should().Equal(
+            LibraryColumnOption.Title,
+            LibraryColumnOption.Authors,
+            LibraryColumnOption.Series);
+        viewModel.SelectedView = LibraryView.List;
+        viewModel.ActiveColumnOptions.Should().Equal(
+            LibraryColumnOption.Title,
+            LibraryColumnOption.Format);
+        settingsStore.Settings.LibraryColumns.Should().NotBeNull();
+        settingsStore.Settings.LibraryColumns!.Detailed.Should().Equal("Title", "Authors", "Series");
+        settingsStore.Settings.LibraryColumns.List.Should().Equal("Title", "Format");
+    }
+
+    [Fact]
     public async Task Grouping_refresh_preserves_expanded_group_nodes()
     {
         var book = CreateBook("Book", ["Author"], series: "Series");

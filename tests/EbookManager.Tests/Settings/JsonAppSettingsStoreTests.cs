@@ -199,6 +199,35 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task Settings_round_trip_library_columns()
+    {
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+        var settings = new AppSettings(
+            "C:\\Books",
+            "nl-NL",
+            "Sepia",
+            "Bookshelf",
+            true,
+            true,
+            EbookManager.Domain.Settings.AuthorSortStrategy.DisplayName,
+            true,
+            true,
+            new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings(),
+            null,
+            new EbookManager.Domain.Settings.LibraryColumnSettings(
+                ["Title", "Authors", "Series"],
+                ["Title", "Format"]));
+
+        await store.SaveAsync(settings, CancellationToken.None);
+
+        var loaded = await new JsonAppSettingsStore(temporaryDirectory.DirectoryPath).LoadAsync(default);
+
+        loaded.LibraryColumns.Should().NotBeNull();
+        loaded.LibraryColumns!.Detailed.Should().Equal("Title", "Authors", "Series");
+        loaded.LibraryColumns.List.Should().Equal("Title", "Format");
+    }
+
+    [Fact]
     public async Task ListLibraries_quarantines_malformed_json_and_returns_empty_list()
     {
         var path = Path.Combine(temporaryDirectory.DirectoryPath, "libraries.json");
