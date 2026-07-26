@@ -12,6 +12,7 @@ public partial class MainWindow : System.Windows.Window
     private readonly ThemeService themeService;
     private bool isHandlingDrop;
     private bool initialRefreshCompleted;
+    private bool isClosingAfterPendingGroupingSave;
 
     public MainWindow(
         LibraryViewModel viewModel,
@@ -58,8 +59,17 @@ public partial class MainWindow : System.Windows.Window
         window.ShowDialog();
     }
 
-    private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+    private async void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
+        if (!isClosingAfterPendingGroupingSave && viewModel.HasPendingGroupingSettingsSave)
+        {
+            e.Cancel = true;
+            await viewModel.WaitForPendingGroupingSettingsSaveAsync();
+            isClosingAfterPendingGroupingSave = true;
+            Close();
+            return;
+        }
+
         if (!viewModel.HasActiveImport)
         {
             return;

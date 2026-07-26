@@ -406,7 +406,18 @@
   <data name="FilterRemoveConfirmationMessage" xml:space="preserve"><value>„{0}“ aus {1} Buch/Büchern entfernen?</value></data>
   <data name="Rename" xml:space="preserve"><value>Umbenennen</value></data>
   <data name="ImportDuplicates" xml:space="preserve"><value>Duplikate</value></data>
+  <data name="ImportPhases" xml:space="preserve"><value>Phasen</value></data>
+  <data name="ImportPhaseSummary" xml:space="preserve"><value>Phasenzusammenfassung</value></data>
+  <data name="ImportPhaseLocal" xml:space="preserve"><value>Datei verfügbar</value></data>
+  <data name="ImportPhaseSize" xml:space="preserve"><value>Dateigröße</value></data>
+  <data name="ImportPhaseHash" xml:space="preserve"><value>Dateierkennung</value></data>
+  <data name="ImportPhaseMetadata" xml:space="preserve"><value>Metadaten</value></data>
+  <data name="ImportPhaseDuplicate" xml:space="preserve"><value>Duplikatprüfung</value></data>
+  <data name="ImportPhaseCopy" xml:space="preserve"><value>In Bibliothek kopieren</value></data>
+  <data name="ImportPhaseDatabase" xml:space="preserve"><value>Daten speichern</value></data>
+  <data name="ImportPhaseCleanup" xml:space="preserve"><value>Bereinigung</value></data>
   <data name="ImportPossibleShort" xml:space="preserve"><value>Möglich</value></data>
+  <data name="ImportResultsSummaryFormat" xml:space="preserve"><value>{0} Dateien verarbeitet: {1} hinzugefügt, {2} übersprungen, {3} fehlgeschlagen.</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Hinzugefügt</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Wahrscheinlich bereits vorhanden</value></data>
   <data name="ImportOutcomeFailed" xml:space="preserve"><value>Fehlgeschlagen</value></data>

@@ -17,7 +17,7 @@
                Margin="0"
                VerticalAlignment="Top"
                Width="800"
-               Source="/EbookManager;component/Resources/Splash/SplashBase.png"/>
+               Source="/Resources/Splash/SplashBase.png"/>
 
         <StackPanel Orientation="Vertical" Margin="0,-3,20,0">
             <StackPanel Orientation="Horizontal"

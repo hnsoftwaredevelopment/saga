@@ -40,7 +40,18 @@ public sealed record ImportItemResult(
 public sealed record ImportItemDiagnostics(
     TimeSpan Duration,
     long? SizeBytes = null,
-    EbookFormat? Format = null);
+    EbookFormat? Format = null,
+    ImportPhaseTimings? PhaseTimings = null);
+
+public sealed record ImportPhaseTimings(
+    TimeSpan? AvailabilityCheck = null,
+    TimeSpan? SizeRead = null,
+    TimeSpan? Hashing = null,
+    TimeSpan? MetadataRead = null,
+    TimeSpan? DuplicateCheck = null,
+    TimeSpan? ManagedCopy = null,
+    TimeSpan? DatabaseSave = null,
+    TimeSpan? Cleanup = null);
 
 public sealed record ImportItemSuggestion(
     ImportItemSuggestionKind Kind,

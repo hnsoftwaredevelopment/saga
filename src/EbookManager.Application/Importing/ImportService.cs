@@ -108,6 +108,7 @@ public sealed class ImportService(
     {
         var sourceDisplayName = GetSafeSourceDisplayName(sourcePath);
         var stopwatch = Stopwatch.StartNew();
+        var phaseTimings = new ImportPhaseStopwatch();
         EbookFormat? resolvedFormat = null;
         long? sourceLength = null;
         ImportItemResult? result = null;
@@ -119,7 +120,8 @@ public sealed class ImportService(
             var diagnostics = new ImportItemDiagnostics(
                 stopwatch.Elapsed,
                 sourceLength,
-                resolvedFormat);
+                resolvedFormat,
+                phaseTimings.ToTimings());
             return RecordAndReturnAsync(
                 runId,
                 sequence,
@@ -149,13 +151,17 @@ public sealed class ImportService(
 
             try
             {
-                if (!IsSourceLocallyAvailable(sourcePath!))
+                if (!phaseTimings.Measure(
+                        ImportPhase.AvailabilityCheck,
+                        () => IsSourceLocallyAvailable(sourcePath!)))
                 {
                     result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
                     return await RecordAsync(result);
                 }
 
-                sourceLength = GetSourceLengthOrNull(sourcePath!);
+                sourceLength = phaseTimings.Measure(
+                    ImportPhase.SizeRead,
+                    () => GetSourceLengthOrNull(sourcePath!));
                 if (sourceLength is null)
                 {
                     result = CreateFailedResult(sourcePath, sourceDisplayName, SafeImportMessages.SourceUnreadable);
@@ -172,7 +178,9 @@ public sealed class ImportService(
                 {
                     try
                     {
-                        sha256 = CanonicalizeSha256(await hasher.ComputeSha256Async(sourcePath!, cancellationToken));
+                        sha256 = CanonicalizeSha256(await phaseTimings.MeasureAsync(
+                            ImportPhase.Hashing,
+                            () => hasher.ComputeSha256Async(sourcePath!, cancellationToken)));
                     }
                     catch (OperationCanceledException)
                     {
@@ -184,7 +192,9 @@ public sealed class ImportService(
                         return await RecordAsync(result);
                     }
 
-                    if (await duplicateTracker.HasHashAsync(sha256, cancellationToken))
+                    if (await phaseTimings.MeasureAsync(
+                            ImportPhase.DuplicateCheck,
+                            () => duplicateTracker.HasHashAsync(sha256, cancellationToken)))
                     {
                         result = CreateSuccessResult(
                             sourcePath,
@@ -197,7 +207,9 @@ public sealed class ImportService(
                 MetadataReadResult metadata;
                 try
                 {
-                    metadata = await metadataSourceResolver.ReadAsync(sourcePath!, format, cancellationToken);
+                    metadata = await phaseTimings.MeasureAsync(
+                        ImportPhase.MetadataRead,
+                        () => metadataSourceResolver.ReadAsync(sourcePath!, format, cancellationToken));
                 }
                 catch (OperationCanceledException)
                 {
@@ -214,11 +226,13 @@ public sealed class ImportService(
                     metadata.Metadata.Authors);
                 var isPossibleDuplicate = false;
                 ImportItemSuggestion? possibleTitleMatch = null;
-                var duplicate = await duplicateTracker.FindDuplicateAsync(
+                var duplicate = await phaseTimings.MeasureAsync(
+                    ImportPhase.DuplicateCheck,
+                    () => duplicateTracker.FindDuplicateAsync(
                         metadata.Metadata.Title,
                         metadata.Metadata.Authors,
                         duplicateKey,
-                        cancellationToken);
+                        cancellationToken));
                 if (duplicate is not null)
                 {
                     if (duplicate.BookId is null || duplicate.Formats.Contains(format))
@@ -242,10 +256,12 @@ public sealed class ImportService(
                 }
                 else
                 {
-                    possibleTitleMatch = await duplicateTracker.FindPossibleTitleMatchAsync(
+                    possibleTitleMatch = await phaseTimings.MeasureAsync(
+                        ImportPhase.DuplicateCheck,
+                        () => duplicateTracker.FindPossibleTitleMatchAsync(
                         metadata.Metadata.Title,
                         metadata.Metadata.Authors,
-                        cancellationToken);
+                        cancellationToken));
                 }
 
                 (string RelativeBookPath, string? RelativeCoverPath) copy;
@@ -253,21 +269,25 @@ public sealed class ImportService(
                 {
                     if (useSinglePassCopy)
                     {
-                        var hashingCopy = await hashingFileStore!.CopyIntoLibraryWithHashAsync(
-                            targetBookId,
-                            sourcePath!,
-                            metadata.Metadata.CoverBytes,
-                            cancellationToken);
+                        var hashingCopy = await phaseTimings.MeasureAsync(
+                            ImportPhase.ManagedCopy,
+                            () => hashingFileStore!.CopyIntoLibraryWithHashAsync(
+                                targetBookId,
+                                sourcePath!,
+                                metadata.Metadata.CoverBytes,
+                                cancellationToken));
                         copy = (hashingCopy.RelativeBookPath, hashingCopy.RelativeCoverPath);
                         sha256 = CanonicalizeSha256(hashingCopy.Sha256);
                     }
                     else
                     {
-                        copy = await fileStore.CopyIntoLibraryAsync(
-                            targetBookId,
-                            sourcePath!,
-                            metadata.Metadata.CoverBytes,
-                            cancellationToken);
+                        copy = await phaseTimings.MeasureAsync(
+                            ImportPhase.ManagedCopy,
+                            () => fileStore.CopyIntoLibraryAsync(
+                                targetBookId,
+                                sourcePath!,
+                                metadata.Metadata.CoverBytes,
+                                cancellationToken));
                     }
 
                     copied = true;
@@ -282,7 +302,9 @@ public sealed class ImportService(
                     return await RecordAsync(result);
                 }
 
-                if (useSinglePassCopy && await duplicateTracker.HasHashAsync(sha256!, cancellationToken))
+                if (useSinglePassCopy && await phaseTimings.MeasureAsync(
+                        ImportPhase.DuplicateCheck,
+                        () => duplicateTracker.HasHashAsync(sha256!, cancellationToken)))
                 {
                     result = CreateSuccessResult(
                         sourcePath,
@@ -322,11 +344,15 @@ public sealed class ImportService(
                     {
                         if (addFileToExistingBook)
                         {
-                            await bookRepository.AddFileAsync(file, cancellationToken);
+                            await phaseTimings.MeasureAsync(
+                                ImportPhase.DatabaseSave,
+                                () => bookRepository.AddFileAsync(file, cancellationToken));
                         }
                         else
                         {
-                            await bookRepository.AddAsync(book, file, cancellationToken);
+                            await phaseTimings.MeasureAsync(
+                                ImportPhase.DatabaseSave,
+                                () => bookRepository.AddAsync(book, file, cancellationToken));
                         }
 
                         bookPersisted = true;
@@ -362,7 +388,9 @@ public sealed class ImportService(
                 Guid? copiedBookCanBeCleaned = addFileToExistingBook ? null : targetBookId;
                 if ((shouldCleanup || (!bookPersisted && copied)) && copiedBookCanBeCleaned is { } bookToClean)
                 {
-                    var cleanupIncomplete = await CleanupImportedBookAsync(bookToClean);
+                    var cleanupIncomplete = await phaseTimings.MeasureAsync(
+                        ImportPhase.Cleanup,
+                        () => CleanupImportedBookAsync(bookToClean));
                     if (
                         cleanupIncomplete
                         && result is not null
@@ -692,6 +720,88 @@ public sealed class ImportService(
     }
 
     private sealed record DuplicateBookReference(Guid? BookId, HashSet<EbookFormat> Formats);
+
+    private enum ImportPhase
+    {
+        AvailabilityCheck,
+        SizeRead,
+        Hashing,
+        MetadataRead,
+        DuplicateCheck,
+        ManagedCopy,
+        DatabaseSave,
+        Cleanup
+    }
+
+    private sealed class ImportPhaseStopwatch
+    {
+        private readonly Dictionary<ImportPhase, TimeSpan> durations = [];
+
+        public T Measure<T>(ImportPhase phase, Func<T> operation)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            try
+            {
+                return operation();
+            }
+            finally
+            {
+                stopwatch.Stop();
+                Add(phase, stopwatch.Elapsed);
+            }
+        }
+
+        public async Task<T> MeasureAsync<T>(ImportPhase phase, Func<Task<T>> operation)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            try
+            {
+                return await operation();
+            }
+            finally
+            {
+                stopwatch.Stop();
+                Add(phase, stopwatch.Elapsed);
+            }
+        }
+
+        public async Task MeasureAsync(ImportPhase phase, Func<Task> operation)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            try
+            {
+                await operation();
+            }
+            finally
+            {
+                stopwatch.Stop();
+                Add(phase, stopwatch.Elapsed);
+            }
+        }
+
+        public ImportPhaseTimings ToTimings() =>
+            new(
+                Get(ImportPhase.AvailabilityCheck),
+                Get(ImportPhase.SizeRead),
+                Get(ImportPhase.Hashing),
+                Get(ImportPhase.MetadataRead),
+                Get(ImportPhase.DuplicateCheck),
+                Get(ImportPhase.ManagedCopy),
+                Get(ImportPhase.DatabaseSave),
+                Get(ImportPhase.Cleanup));
+
+        private void Add(ImportPhase phase, TimeSpan duration)
+        {
+            durations[phase] = durations.TryGetValue(phase, out var existing)
+                ? existing + duration
+                : duration;
+        }
+
+        private TimeSpan? Get(ImportPhase phase) =>
+            durations.TryGetValue(phase, out var duration)
+                ? duration
+                : null;
+    }
 
     private static class SafeImportMessages
     {

@@ -562,6 +562,25 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public void Library_group_node_uses_precomputed_book_count_when_available()
+    {
+        var child = new LibraryGroupNodeViewModel(
+            "Child",
+            [],
+            [CreateRow("Child Book")],
+            LibraryGroupOption.Series);
+
+        var parent = new LibraryGroupNodeViewModel(
+            "Parent",
+            [child],
+            [],
+            LibraryGroupOption.Author,
+            bookCount: 42);
+
+        parent.BookCount.Should().Be(42);
+    }
+
+    [Fact]
     public async Task Grouping_commands_save_grouping_per_view()
     {
         var settingsStore = new InMemoryAppSettingsStore();
@@ -577,6 +596,7 @@ public sealed class LibraryViewModelTests
         viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Series;
         await viewModel.AddGroupingCommand.ExecuteAsync(null);
         viewModel.SelectedView = LibraryView.Detailed;
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
 
         viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Author);
         settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
@@ -608,6 +628,60 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Only_active_library_view_exposes_item_sources()
+    {
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], series: "Series")]);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.DetailedVisibleBooksSource.Should().BeSameAs(viewModel.VisibleBooks);
+        viewModel.ListVisibleBooksSource.Should().BeNull();
+        viewModel.BookshelfVisibleBooksSource.Should().BeNull();
+
+        viewModel.SelectedView = LibraryView.Bookshelf;
+
+        viewModel.BookshelfVisibleBooksSource.Should().BeSameAs(viewModel.VisibleBooks);
+        viewModel.DetailedVisibleBooksSource.Should().BeNull();
+        viewModel.ListVisibleBooksSource.Should().BeNull();
+
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Author;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+
+        viewModel.BookshelfVisibleBooksSource.Should().BeNull();
+        viewModel.BookshelfGroupedLibraryNodesSource.Should().BeSameAs(viewModel.GroupedLibraryNodes);
+        viewModel.DetailedGroupedLibraryNodesSource.Should().BeNull();
+        viewModel.ListGroupedLibraryNodesSource.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Sorting_replaces_visible_books_in_bulk()
+    {
+        var viewModel = CreateViewModel(
+            [
+                CreateBook("C", ["Author"]),
+                CreateBook("A", ["Author"]),
+                CreateBook("B", ["Author"])
+            ]);
+        var resetCount = 0;
+        viewModel.VisibleBooks.CollectionChanged += (_, args) =>
+        {
+            if (args.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {
+                resetCount++;
+            }
+        };
+
+        await viewModel.RefreshAsync();
+        resetCount = 0;
+
+        viewModel.SelectedSortOption = LibrarySortOption.Title;
+
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("A", "B", "C");
+        resetCount.Should().Be(1);
+    }
+
+    [Fact]
     public async Task Removing_grouping_preserves_remaining_grouping_chips()
     {
         var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])]);
@@ -630,6 +704,7 @@ public sealed class LibraryViewModelTests
 
         await viewModel.RefreshAsync();
         viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Tag]);
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
 
         settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
         settingsStore.Settings.LibraryGroupings!.Detailed.Should().Equal(
@@ -1406,6 +1481,46 @@ public sealed class LibraryViewModelTests
             .Which.Book.Formats.Should().BeEquivalentTo([EbookFormat.Epub, EbookFormat.Pdf]);
     }
 
+    [Fact]
+    public async Task Refresh_reports_library_view_performance_phases()
+    {
+        var reporter = new CapturingLibraryPerformanceReporter();
+        var first = CreateBook("Dune", ["Frank Herbert"]);
+        var second = CreateBook("The Hobbit", ["J.R.R. Tolkien"]);
+        var viewModel = CreateViewModel([first, second], performanceReporter: reporter);
+
+        await viewModel.RefreshAsync();
+
+        var snapshot = reporter.Snapshots.Should()
+            .ContainSingle(item => item.Operation == "ApplyFilter")
+            .Which;
+        snapshot.BookCount.Should().Be(2);
+        snapshot.VisibleBookCount.Should().Be(2);
+        snapshot.Phases.Keys.Should().Contain(["filter", "materialize-sort", "visible-reset", "grouping", "selection"]);
+    }
+
+    [Fact]
+    public async Task Add_grouping_reports_grouping_performance_phases()
+    {
+        var reporter = new CapturingLibraryPerformanceReporter();
+        var first = CreateBook("Dune", ["Frank Herbert"]);
+        var second = CreateBook("Children of Dune", ["Frank Herbert"]);
+        var viewModel = CreateViewModel([first, second], performanceReporter: reporter);
+        await viewModel.RefreshAsync();
+        reporter.Snapshots.Clear();
+
+        viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Author;
+        await viewModel.AddGroupingCommand.ExecuteAsync(null);
+
+        var snapshot = reporter.Snapshots.Should()
+            .ContainSingle(item => item.Operation == "AddGrouping")
+            .Which;
+        snapshot.BookCount.Should().Be(2);
+        snapshot.VisibleBookCount.Should().Be(2);
+        snapshot.Groupings.Should().Equal(LibraryGroupOption.Author);
+        snapshot.Phases.Keys.Should().Contain(["active-groups", "snapshot", "grouping", "settings-schedule"]);
+    }
+
     private static LibraryViewModel CreateViewModel(
         IReadOnlyList<Book> books,
         IUserInteractionService? userInteraction = null,
@@ -1418,6 +1533,7 @@ public sealed class LibraryViewModelTests
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
         DirectoryScanner? directoryScanner = null,
+        ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
     {
         repository ??= new StaticBookRepository(books);
@@ -1439,6 +1555,7 @@ public sealed class LibraryViewModelTests
             settingsStore: settingsStore,
             importAgent: importAgent,
             importRepository: importRepository,
+            performanceReporter: performanceReporter,
             localize: localize);
     }
 
@@ -1463,6 +1580,16 @@ public sealed class LibraryViewModelTests
         {
             Formats = formats ?? []
         };
+    }
+
+    private static BookRowViewModel CreateRow(string title) =>
+        new(CreateBook(title, ["Author"]));
+
+    private sealed class CapturingLibraryPerformanceReporter : ILibraryPerformanceReporter
+    {
+        public List<LibraryPerformanceSnapshot> Snapshots { get; } = [];
+
+        public void Report(LibraryPerformanceSnapshot snapshot) => Snapshots.Add(snapshot);
     }
 
     private static CurrentLibrary CreateActiveLibrary()

@@ -100,7 +100,9 @@
                  controls:MouseWheelScrollAssist.BubbleToParent="True">
           <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
-              <WrapPanel IsItemsHost="True" />
+              <controls:VirtualizingWrapPanel IsItemsHost="True"
+                                               ItemWidth="170"
+                                               ItemHeight="285" />
             </ItemsPanelTemplate>
           </ListBox.ItemsPanel>
         </ListBox>
@@ -108,14 +110,15 @@
     </DataTemplate>
   </UserControl.Resources>
   <Grid>
-    <ListBox ItemsSource="{Binding VisibleBooks}"
+    <ListBox ItemsSource="{Binding BookshelfVisibleBooksSource}"
              SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
              ItemTemplate="{StaticResource BookTileTemplate}"
              BorderThickness="0"
              Background="Transparent"
              AllowDrop="True"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-             ScrollViewer.VerticalScrollBarVisibility="Auto">
+             ScrollViewer.VerticalScrollBarVisibility="Auto"
+             ScrollViewer.CanContentScroll="True">
       <ListBox.Style>
         <Style TargetType="ListBox">
           <Setter Property="Visibility" Value="Visible" />
@@ -128,12 +131,14 @@
       </ListBox.Style>
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <WrapPanel IsItemsHost="True" />
+          <controls:VirtualizingWrapPanel IsItemsHost="True"
+                                           ItemWidth="170"
+                                           ItemHeight="285" />
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
     </ListBox>
 
-    <ListBox ItemsSource="{Binding GroupedLibraryNodes}"
+    <ListBox ItemsSource="{Binding BookshelfGroupedLibraryNodesSource}"
              ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}"
              BorderThickness="0"
              Background="Transparent"

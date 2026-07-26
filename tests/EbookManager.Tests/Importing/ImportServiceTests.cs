@@ -35,6 +35,14 @@ public sealed class ImportServiceTests
         item.Diagnostics!.Format.Should().Be(EbookFormat.Pdf);
         item.Diagnostics.SizeBytes.Should().Be(sourceBytes.Length);
         item.Diagnostics.Duration.Should().BeGreaterThanOrEqualTo(TimeSpan.Zero);
+        item.Diagnostics.PhaseTimings.Should().NotBeNull();
+        item.Diagnostics.PhaseTimings!.AvailabilityCheck.Should().NotBeNull();
+        item.Diagnostics.PhaseTimings.SizeRead.Should().NotBeNull();
+        item.Diagnostics.PhaseTimings.Hashing.Should().NotBeNull();
+        item.Diagnostics.PhaseTimings.MetadataRead.Should().NotBeNull();
+        item.Diagnostics.PhaseTimings.DuplicateCheck.Should().NotBeNull();
+        item.Diagnostics.PhaseTimings.ManagedCopy.Should().NotBeNull();
+        item.Diagnostics.PhaseTimings.DatabaseSave.Should().NotBeNull();
 
         var book = await fixture.BookRepository.GetAsync(item.BookId!.Value, default);
         book.Should().NotBeNull();

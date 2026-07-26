@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -33,8 +34,12 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
     private readonly DirectoryScanner? directoryScanner;
     private readonly IAppSettingsStore? settingsStore;
+    private readonly ILibraryPerformanceReporter? performanceReporter;
     private readonly Func<string, string> localize;
+    private readonly SemaphoreSlim groupingSettingsSaveLock = new(1, 1);
     private IReadOnlyList<Book> books = [];
+    private Task pendingGroupingSettingsSave = Task.CompletedTask;
+    private long groupingSettingsSaveVersion;
     private bool hasAppliedDefaultView;
     private int selectionVersion;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
@@ -57,6 +62,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         ILibraryDatabaseInitializer? databaseInitializer = null,
         DirectoryScanner? directoryScanner = null,
         IAppSettingsStore? settingsStore = null,
+        ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
     {
         this.bookRepository = bookRepository;
@@ -74,6 +80,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.databaseInitializer = databaseInitializer;
         this.directoryScanner = directoryScanner;
         this.settingsStore = settingsStore;
+        this.performanceReporter = performanceReporter;
         this.localize = localize ?? DefaultGroupText;
         currentLibraryName = currentLibrary?.Current?.Name;
         currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
@@ -86,7 +93,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    public ObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
+    public BulkObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
     public ObservableCollection<FacetFilterViewModel> AuthorFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> CategoryFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> SeriesFilters { get; } = [];
@@ -94,7 +101,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<FacetFilterViewModel> EReaderFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> FormatFilters { get; } = [];
-    public ObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
+    public BulkObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
     public ObservableCollection<LibraryGroupOption> ActiveGroupOptions { get; } = [];
     public IReadOnlyList<LibraryGroupOption> AvailableGroupOptions { get; } =
     [
@@ -173,6 +180,24 @@ public sealed partial class LibraryViewModel : ObservableObject
     public bool IsBookshelfGrouped => ActiveGroupOptions.Count > 0;
 
     public bool IsLibraryGrouped => IsBookshelfGrouped;
+
+    public IEnumerable<BookRowViewModel>? BookshelfVisibleBooksSource =>
+        SelectedView == LibraryView.Bookshelf && !IsBookshelfGrouped ? VisibleBooks : null;
+
+    public IEnumerable<LibraryGroupNodeViewModel>? BookshelfGroupedLibraryNodesSource =>
+        SelectedView == LibraryView.Bookshelf && IsBookshelfGrouped ? GroupedLibraryNodes : null;
+
+    public IEnumerable<BookRowViewModel>? DetailedVisibleBooksSource =>
+        SelectedView == LibraryView.Detailed && !IsLibraryGrouped ? VisibleBooks : null;
+
+    public IEnumerable<LibraryGroupNodeViewModel>? DetailedGroupedLibraryNodesSource =>
+        SelectedView == LibraryView.Detailed && IsLibraryGrouped ? GroupedLibraryNodes : null;
+
+    public IEnumerable<BookRowViewModel>? ListVisibleBooksSource =>
+        SelectedView == LibraryView.List && !IsLibraryGrouped ? VisibleBooks : null;
+
+    public IEnumerable<LibraryGroupNodeViewModel>? ListGroupedLibraryNodesSource =>
+        SelectedView == LibraryView.List && IsLibraryGrouped ? GroupedLibraryNodes : null;
 
     public IAsyncRelayCommand RefreshCommand => refreshCommand ??= new AsyncRelayCommand(RefreshAsync);
     public IAsyncRelayCommand AddBooksCommand => addBooksCommand ??= new AsyncRelayCommand(AddBooksAsync);
@@ -295,7 +320,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     partial void OnSelectedViewChanged(LibraryView value)
     {
-        RefreshActiveGroupOptions();
+        RefreshActiveGroupOptions(notifyActiveViewSources: false);
         RefreshGroupingOnly();
     }
 
@@ -503,38 +528,50 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void ApplyFilter()
     {
+        var performance = new LibraryViewPerformanceTracker("ApplyFilter");
         var selectedId = SelectedBook?.Id;
-        var filteredBooks = ApplyFacetFilters(searchService.Filter(books, SearchText));
-        var rows = ApplySort(
-                filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath, authorSortStrategy)),
-                SelectedSortOption,
-                authorSortStrategy)
-            .ToList();
+        var filteredBooks = performance.Measure(
+            "filter",
+            () => ApplyFacetFilters(searchService.Filter(books, SearchText)));
+        var rows = performance.Measure(
+            "materialize-sort",
+            () => ApplySort(
+                    filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath, authorSortStrategy)),
+                    SelectedSortOption,
+                    authorSortStrategy)
+                .ToList());
 
-        VisibleBooks.Clear();
-        foreach (var row in rows)
-        {
-            VisibleBooks.Add(row);
-        }
+        performance.Measure("visible-reset", () => VisibleBooks.ReplaceAll(rows));
 
-        RefreshGroupedLibraryNodes(rows);
+        performance.Measure("grouping", () => RefreshGroupedLibraryNodes(rows));
         OnPropertyChanged(nameof(VisibleBookCount));
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
-        SelectedBook = selectedId is null
-            ? VisibleBooks.FirstOrDefault()
-            : VisibleBooks.FirstOrDefault(row => row.Id == selectedId.Value);
+        NotifyActiveViewSourcesChanged();
+        performance.Measure(
+            "selection",
+            () => SelectedBook = selectedId is null
+                ? VisibleBooks.FirstOrDefault()
+                : VisibleBooks.FirstOrDefault(row => row.Id == selectedId.Value));
         EmptyStateMessage = HasActiveLibrary
             ? "This library is empty. Add books or scan a folder to begin."
             : "Create or open a library to get started.";
+        ReportPerformance(performance, rows.Count);
     }
 
     public void SetGroupingOptions(IEnumerable<LibraryGroupOption> options)
     {
-        viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
-        RefreshActiveGroupOptions();
-        RefreshGroupingOnly();
-        SaveGroupingSettingsAsync(CancellationToken.None).GetAwaiter().GetResult();
+        var performance = new LibraryViewPerformanceTracker("SetGroupingOptions");
+        performance.Measure(
+            "active-groups",
+            () =>
+            {
+                viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
+                RefreshActiveGroupOptions(notifyActiveViewSources: false);
+            });
+        var visibleCount = RefreshGroupingOnly(performance);
+        performance.Measure("settings-schedule", QueueGroupingSettingsSave);
+        ReportPerformance(performance, visibleCount);
     }
 
     private IReadOnlyList<LibraryGroupOption> GetActiveGroupOptions() =>
@@ -547,10 +584,19 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
-        RefreshActiveGroupOptions();
-        RefreshGroupingOnly();
-        await SaveGroupingSettingsAsync(cancellationToken);
+        var performance = new LibraryViewPerformanceTracker("AddGrouping");
+        performance.Measure(
+            "active-groups",
+            () =>
+            {
+                viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
+                RefreshActiveGroupOptions(notifyActiveViewSources: false);
+                SelectNextAvailableGroupOption();
+            });
+        var visibleCount = RefreshGroupingOnly(performance);
+        performance.Measure("settings-schedule", QueueGroupingSettingsSave);
+        ReportPerformance(performance, visibleCount);
+        await Task.CompletedTask;
     }
 
     private bool CanAddGrouping() =>
@@ -564,15 +610,23 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        viewGroupings[SelectedView] = viewGroupings[SelectedView]
-            .Where(existing => existing != option)
-            .ToList();
-        RefreshActiveGroupOptions();
-        RefreshGroupingOnly();
-        await SaveGroupingSettingsAsync(cancellationToken);
+        var performance = new LibraryViewPerformanceTracker("RemoveGrouping");
+        performance.Measure(
+            "active-groups",
+            () =>
+            {
+                viewGroupings[SelectedView] = viewGroupings[SelectedView]
+                    .Where(existing => existing != option)
+                    .ToList();
+                RefreshActiveGroupOptions(notifyActiveViewSources: false);
+            });
+        var visibleCount = RefreshGroupingOnly(performance);
+        performance.Measure("settings-schedule", QueueGroupingSettingsSave);
+        ReportPerformance(performance, visibleCount);
+        await Task.CompletedTask;
     }
 
-    private void RefreshActiveGroupOptions()
+    private void RefreshActiveGroupOptions(bool notifyActiveViewSources = true)
     {
         var desiredOptions = NormalizeGroupOptions(viewGroupings.GetValueOrDefault(SelectedView) ?? []);
         for (var index = ActiveGroupOptions.Count - 1; index >= 0; index--)
@@ -600,29 +654,98 @@ public sealed partial class LibraryViewModel : ObservableObject
         addGroupingCommand?.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
+        if (notifyActiveViewSources)
+        {
+            NotifyActiveViewSourcesChanged();
+        }
     }
 
-    private void RefreshGroupingOnly()
+    private void SelectNextAvailableGroupOption()
     {
-        RefreshGroupedLibraryNodes(VisibleBooks.ToArray());
-        OnPropertyChanged(nameof(IsBookshelfGrouped));
-        OnPropertyChanged(nameof(IsLibraryGrouped));
-    }
-
-    private async Task SaveGroupingSettingsAsync(CancellationToken cancellationToken)
-    {
-        if (settingsStore is null)
+        if (CanAddGrouping())
         {
             return;
         }
 
-        var settings = await settingsStore.LoadAsync(cancellationToken);
-        await settingsStore.SaveAsync(
-            settings with
+        var nextOption = AvailableGroupOptions.FirstOrDefault(option =>
+            option != LibraryGroupOption.None &&
+            !ActiveGroupOptions.Contains(option));
+        if (nextOption != LibraryGroupOption.None)
+        {
+            SelectedGroupOptionToAdd = nextOption;
+        }
+    }
+
+    private int RefreshGroupingOnly(LibraryViewPerformanceTracker? performanceTracker = null)
+    {
+        var performance = performanceTracker ?? new LibraryViewPerformanceTracker("RefreshGroupingOnly");
+        var rows = performance.Measure("snapshot", () => VisibleBooks.ToArray());
+        performance.Measure("grouping", () => RefreshGroupedLibraryNodes(rows));
+        OnPropertyChanged(nameof(IsBookshelfGrouped));
+        OnPropertyChanged(nameof(IsLibraryGrouped));
+        NotifyActiveViewSourcesChanged();
+        if (performanceTracker is null)
+        {
+            ReportPerformance(performance, rows.Length);
+        }
+
+        return rows.Length;
+    }
+
+    private void NotifyActiveViewSourcesChanged()
+    {
+        OnPropertyChanged(nameof(BookshelfVisibleBooksSource));
+        OnPropertyChanged(nameof(BookshelfGroupedLibraryNodesSource));
+        OnPropertyChanged(nameof(DetailedVisibleBooksSource));
+        OnPropertyChanged(nameof(DetailedGroupedLibraryNodesSource));
+        OnPropertyChanged(nameof(ListVisibleBooksSource));
+        OnPropertyChanged(nameof(ListGroupedLibraryNodesSource));
+    }
+
+    public bool HasPendingGroupingSettingsSave => !pendingGroupingSettingsSave.IsCompleted;
+
+    public Task WaitForPendingGroupingSettingsSaveAsync() => pendingGroupingSettingsSave;
+
+    private void QueueGroupingSettingsSave()
+    {
+        if (settingsStore is null)
+        {
+            pendingGroupingSettingsSave = Task.CompletedTask;
+            return;
+        }
+
+        var saveVersion = Interlocked.Increment(ref groupingSettingsSaveVersion);
+        var groupingSettings = CreateGroupingSettings();
+        pendingGroupingSettingsSave = Task.Run(
+            async () =>
             {
-                LibraryGroupings = CreateGroupingSettings()
-            },
-            cancellationToken);
+                await groupingSettingsSaveLock.WaitAsync().ConfigureAwait(false);
+                try
+                {
+                    if (saveVersion != Interlocked.Read(ref groupingSettingsSaveVersion))
+                    {
+                        return;
+                    }
+
+                    var settings = await settingsStore.LoadAsync(CancellationToken.None).ConfigureAwait(false);
+                    if (saveVersion != Interlocked.Read(ref groupingSettingsSaveVersion))
+                    {
+                        return;
+                    }
+
+                    await settingsStore.SaveAsync(
+                            settings with
+                            {
+                                LibraryGroupings = groupingSettings
+                            },
+                            CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
+                finally
+                {
+                    groupingSettingsSaveLock.Release();
+                }
+            });
     }
 
     private LibraryGroupingSettings CreateGroupingSettings() =>
@@ -679,17 +802,14 @@ public sealed partial class LibraryViewModel : ObservableObject
     private void RefreshGroupedLibraryNodes(IReadOnlyList<BookRowViewModel> rows)
     {
         var expandedGroupPaths = CaptureExpandedGroupPaths(GroupedLibraryNodes);
-        GroupedLibraryNodes.Clear();
         var groupOptions = GetActiveGroupOptions();
         if (groupOptions.Count == 0)
         {
+            GroupedLibraryNodes.ReplaceAll([]);
             return;
         }
 
-        foreach (var group in BuildGroupNodes(rows, groupOptions, level: 0, parentPath: string.Empty, expandedGroupPaths))
-        {
-            GroupedLibraryNodes.Add(group);
-        }
+        GroupedLibraryNodes.ReplaceAll(BuildGroupNodes(rows, groupOptions, level: 0, parentPath: string.Empty, expandedGroupPaths));
     }
 
     private IEnumerable<LibraryGroupNodeViewModel> BuildGroupNodes(
@@ -734,7 +854,12 @@ public sealed partial class LibraryViewModel : ObservableObject
 
             var groupPath = CreateGroupPath(parentPath, groupOptions[level], rowGroup.Key);
             var children = BuildGroupNodes(childRows, groupOptions, level + 1, groupPath, expandedGroupPaths).ToList();
-            yield return new LibraryGroupNodeViewModel(rowGroup.Key, children, directBooks, groupOptions[level])
+            yield return new LibraryGroupNodeViewModel(
+                rowGroup.Key,
+                children,
+                directBooks,
+                groupOptions[level],
+                groupRows.Count)
             {
                 IsExpanded = expandedGroupPaths.Contains(groupPath)
             };
@@ -1409,8 +1534,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         currentLibrary?.Clear();
         books = [];
-        VisibleBooks.Clear();
-        GroupedLibraryNodes.Clear();
+        VisibleBooks.ReplaceAll([]);
+        GroupedLibraryNodes.ReplaceAll([]);
         AuthorFilters.Clear();
         CategoryFilters.Clear();
         SeriesFilters.Clear();
@@ -1497,13 +1622,40 @@ public sealed partial class LibraryViewModel : ObservableObject
     }
 
     private ImportResultViewModel CreateImportResultViewModel(ImportBatchResult result) =>
-        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync);
+        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync, LocalizeImportPhaseName);
 
     private ImportResultViewModel CreateImportResultViewModel(ImportRunResult result) =>
-        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync);
+        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync, LocalizeImportPhaseName);
+
+    private string LocalizeImportPhaseName(string phaseName) =>
+        phaseName switch
+        {
+            "local" => localize("ImportPhaseLocal"),
+            "size" => localize("ImportPhaseSize"),
+            "hash" => localize("ImportPhaseHash"),
+            "meta" => localize("ImportPhaseMetadata"),
+            "dup" => localize("ImportPhaseDuplicate"),
+            "copy" => localize("ImportPhaseCopy"),
+            "db" => localize("ImportPhaseDatabase"),
+            "cleanup" => localize("ImportPhaseCleanup"),
+            _ => phaseName
+        };
 
     private Task RetryFailedImportsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken) =>
         ImportFilesAsync(paths, cancellationToken, ImportRunContext.FileImport);
+
+    private void ReportPerformance(LibraryViewPerformanceTracker tracker, int visibleCount)
+    {
+        performanceReporter?.Report(new LibraryPerformanceSnapshot(
+            tracker.Operation,
+            tracker.Elapsed,
+            books.Count,
+            visibleCount,
+            GroupedLibraryNodes.Count,
+            GetActiveGroupOptions(),
+            SelectedSortOption,
+            tracker.Phases));
+    }
 
     private async Task LinkImportSuggestionAsync(
         Guid sourceBookId,
@@ -1583,5 +1735,65 @@ public sealed partial class LibraryViewModel : ObservableObject
         Series,
         Tag,
         Language
+    }
+
+    private sealed class LibraryViewPerformanceTracker
+    {
+        private readonly Stopwatch stopwatch = Stopwatch.StartNew();
+        private readonly Dictionary<string, TimeSpan> phases = new(StringComparer.Ordinal);
+
+        public LibraryViewPerformanceTracker(string operation) => Operation = operation;
+
+        public string Operation { get; }
+
+        public TimeSpan Elapsed => stopwatch.Elapsed;
+
+        public IReadOnlyDictionary<string, TimeSpan> Phases => phases;
+
+        public T Measure<T>(string phase, Func<T> action)
+        {
+            var phaseStopwatch = Stopwatch.StartNew();
+            try
+            {
+                return action();
+            }
+            finally
+            {
+                RecordPhase(phase, phaseStopwatch.Elapsed);
+            }
+        }
+
+        public void Measure(string phase, Action action)
+        {
+            var phaseStopwatch = Stopwatch.StartNew();
+            try
+            {
+                action();
+            }
+            finally
+            {
+                RecordPhase(phase, phaseStopwatch.Elapsed);
+            }
+        }
+
+        public async Task MeasureAsync(string phase, Func<Task> action)
+        {
+            var phaseStopwatch = Stopwatch.StartNew();
+            try
+            {
+                await action();
+            }
+            finally
+            {
+                RecordPhase(phase, phaseStopwatch.Elapsed);
+            }
+        }
+
+        private void RecordPhase(string phase, TimeSpan elapsed)
+        {
+            phases[phase] = phases.TryGetValue(phase, out var existing)
+                ? existing + elapsed
+                : elapsed;
+        }
     }
 }

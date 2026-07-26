@@ -9,7 +9,8 @@ public sealed partial class LibraryGroupNodeViewModel : ObservableObject
         string header,
         IEnumerable<LibraryGroupNodeViewModel> groups,
         IEnumerable<BookRowViewModel> books,
-        LibraryGroupOption groupOption = LibraryGroupOption.None)
+        LibraryGroupOption groupOption = LibraryGroupOption.None,
+        int? bookCount = null)
     {
         var groupItems = groups.ToArray();
         var bookItems = books.ToArray();
@@ -18,7 +19,7 @@ public sealed partial class LibraryGroupNodeViewModel : ObservableObject
         GroupOption = groupOption;
         Groups = new ObservableCollection<LibraryGroupNodeViewModel>(groupItems);
         Books = new ObservableCollection<BookRowViewModel>(bookItems);
-        BookCount = CountUniqueBooks(groupItems, bookItems);
+        BookCount = bookCount ?? CountUniqueBooks(groupItems, bookItems);
     }
 
     public string Header { get; }

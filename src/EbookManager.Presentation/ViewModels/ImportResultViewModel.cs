@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using EbookManager.Domain.Importing;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -23,22 +22,26 @@ public sealed partial class ImportResultViewModel : ObservableObject
     public ImportResultViewModel(
         ImportRunResult result,
         Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null,
-        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
-        : this(new ImportBatchResult(result.Id, result.Items), retryFailedAsync, linkSuggestionAsync)
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null,
+        Func<string, string>? phaseNameLocalizer = null)
+        : this(new ImportBatchResult(result.Id, result.Items), retryFailedAsync, linkSuggestionAsync, phaseNameLocalizer)
     {
     }
 
     public ImportResultViewModel(
         ImportBatchResult result,
         Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null,
-        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null,
+        Func<string, string>? phaseNameLocalizer = null)
     {
         this.retryFailedAsync = retryFailedAsync;
+        var resolvedPhaseNameLocalizer = phaseNameLocalizer ?? DefaultPhaseName;
         RunId = result.RunId;
         Items = result.Items
-            .Select(item => new ImportResultItemViewModel(item, linkSuggestionAsync))
+            .Select(item => new ImportResultItemViewModel(item, linkSuggestionAsync, resolvedPhaseNameLocalizer))
             .ToList()
             .AsReadOnly();
+        PhaseSummaries = CreatePhaseSummaries(result.Items, resolvedPhaseNameLocalizer);
         OutcomeFilterOptions = Enum.GetValues<ImportResultOutcomeFilter>();
         retryFailedCommand = new AsyncRelayCommand(RetryFailedImportsAsync, () => CanRetryFailedImports);
         RefreshVisibleItems();
@@ -46,8 +49,9 @@ public sealed partial class ImportResultViewModel : ObservableObject
 
     public Guid RunId { get; }
     public IReadOnlyList<ImportResultItemViewModel> Items { get; }
+    public IReadOnlyList<ImportPhaseSummaryViewModel> PhaseSummaries { get; }
     public IReadOnlyList<ImportResultOutcomeFilter> OutcomeFilterOptions { get; }
-    public ObservableCollection<ImportResultItemViewModel> VisibleItems { get; } = [];
+    public BulkObservableCollection<ImportResultItemViewModel> VisibleItems { get; } = [];
     public int TotalCount => Items.Count;
     public int AddedCount => Count(ImportOutcome.Added);
     public int ExactDuplicateCount => Count(ImportOutcome.ExactDuplicate);
@@ -60,6 +64,10 @@ public sealed partial class ImportResultViewModel : ObservableObject
     public IAsyncRelayCommand RetryFailedCommand => retryFailedCommand;
     public string SummaryText =>
         $"{TotalCount} files processed: {AddedCount} added, {SkippedCount} skipped, {FailedCount} failed.";
+    public bool HasPhaseSummaries => PhaseSummaries.Count > 0;
+    public string PhaseSummaryText => string.Join(
+        "; ",
+        PhaseSummaries.Select(summary => $"{summary.DisplayName} {summary.DurationText} ({summary.PercentageText})"));
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -127,12 +135,86 @@ public sealed partial class ImportResultViewModel : ObservableObject
             query = query.Where(item => item.Matches(search));
         }
 
-        VisibleItems.Clear();
-        foreach (var item in query)
+        VisibleItems.ReplaceAll(query.ToArray());
+    }
+
+    private static IReadOnlyList<ImportPhaseSummaryViewModel> CreatePhaseSummaries(
+        IEnumerable<ImportItemResult> items,
+        Func<string, string> phaseNameLocalizer)
+    {
+        var totals = new Dictionary<string, TimeSpan>(StringComparer.Ordinal)
         {
-            VisibleItems.Add(item);
+            ["local"] = TimeSpan.Zero,
+            ["size"] = TimeSpan.Zero,
+            ["hash"] = TimeSpan.Zero,
+            ["meta"] = TimeSpan.Zero,
+            ["dup"] = TimeSpan.Zero,
+            ["copy"] = TimeSpan.Zero,
+            ["db"] = TimeSpan.Zero,
+            ["cleanup"] = TimeSpan.Zero
+        };
+
+        foreach (var timings in items.Select(item => item.Diagnostics?.PhaseTimings).OfType<ImportPhaseTimings>())
+        {
+            Add(totals, "local", timings.AvailabilityCheck);
+            Add(totals, "size", timings.SizeRead);
+            Add(totals, "hash", timings.Hashing);
+            Add(totals, "meta", timings.MetadataRead);
+            Add(totals, "dup", timings.DuplicateCheck);
+            Add(totals, "copy", timings.ManagedCopy);
+            Add(totals, "db", timings.DatabaseSave);
+            Add(totals, "cleanup", timings.Cleanup);
+        }
+
+        var totalMilliseconds = totals.Values.Sum(duration => duration.TotalMilliseconds);
+        if (totalMilliseconds <= 0)
+        {
+            return [];
+        }
+
+        return totals
+            .Where(total => total.Value > TimeSpan.Zero)
+            .OrderByDescending(total => total.Value)
+            .Select(total => new ImportPhaseSummaryViewModel(
+                total.Key,
+                phaseNameLocalizer(total.Key),
+                total.Value,
+                total.Value.TotalMilliseconds / totalMilliseconds * 100))
+            .ToList()
+            .AsReadOnly();
+
+        static void Add(IDictionary<string, TimeSpan> totals, string name, TimeSpan? duration)
+        {
+            if (duration is not null)
+            {
+                totals[name] += duration.Value;
+            }
         }
     }
+
+    internal static string DefaultPhaseName(string name) =>
+        name switch
+        {
+            "local" => "File availability",
+            "size" => "File size",
+            "hash" => "File recognition",
+            "meta" => "Metadata",
+            "dup" => "Duplicate check",
+            "copy" => "Copy to library",
+            "db" => "Save data",
+            "cleanup" => "Cleanup",
+            _ => name
+        };
+}
+
+public sealed class ImportPhaseSummaryViewModel(string name, string displayName, TimeSpan duration, double percentage)
+{
+    public string Name { get; } = name;
+    public string DisplayName { get; } = displayName;
+    public TimeSpan Duration { get; } = duration;
+    public double Percentage { get; } = percentage;
+    public string DurationText { get; } = ImportResultFormatting.FormatDuration(duration);
+    public string PercentageText { get; } = percentage.ToString("0.#", CultureInfo.CurrentCulture) + "%";
 }
 
 public sealed class ImportHistoryViewModel(IEnumerable<ImportRunSummary> summaries)
@@ -181,7 +263,8 @@ public sealed class ImportResultItemViewModel : ObservableObject
 
     public ImportResultItemViewModel(
         ImportItemResult item,
-        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null,
+        Func<string, string>? phaseNameLocalizer = null)
     {
         this.linkSuggestionAsync = linkSuggestionAsync;
         bookId = item.BookId;
@@ -190,7 +273,8 @@ public sealed class ImportResultItemViewModel : ObservableObject
         FileName = Path.GetFileName(item.SourcePath);
         FormatText = item.Diagnostics?.Format?.ToString().ToUpperInvariant() ?? string.Empty;
         SizeText = FormatSize(item.Diagnostics?.SizeBytes);
-        DurationText = FormatDuration(item.Diagnostics?.Duration);
+        DurationText = ImportResultFormatting.FormatDuration(item.Diagnostics?.Duration);
+        PhaseTimingsText = FormatPhaseTimings(item.Diagnostics?.PhaseTimings, phaseNameLocalizer ?? ImportResultViewModel.DefaultPhaseName);
         SizeBytesSort = item.Diagnostics?.SizeBytes ?? -1;
         DurationMillisecondsSort = item.Diagnostics?.Duration.TotalMilliseconds ?? -1;
         Outcome = item.Outcome;
@@ -217,6 +301,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
     public string FormatText { get; }
     public string SizeText { get; }
     public string DurationText { get; }
+    public string PhaseTimingsText { get; }
     public long SizeBytesSort { get; }
     public double DurationMillisecondsSort { get; }
     public ImportOutcome Outcome { get; }
@@ -270,6 +355,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
             Contains(FormatText, searchText) ||
             Contains(SizeText, searchText) ||
             Contains(DurationText, searchText) ||
+            Contains(PhaseTimingsText, searchText) ||
             Contains(OutcomeLabel, searchText) ||
             Contains(Message, searchText) ||
             Contains(SuggestionText, searchText);
@@ -299,7 +385,35 @@ public sealed class ImportResultItemViewModel : ObservableObject
             : $"{value.ToString("0.#", CultureInfo.CurrentCulture)} {units[unitIndex]}";
     }
 
-    private static string FormatDuration(TimeSpan? duration)
+    private static string FormatPhaseTimings(ImportPhaseTimings? timings, Func<string, string> phaseNameLocalizer)
+    {
+        if (timings is null)
+        {
+            return string.Empty;
+        }
+
+        var parts = new[]
+            {
+                ("local", timings.AvailabilityCheck),
+                ("size", timings.SizeRead),
+                ("hash", timings.Hashing),
+                ("meta", timings.MetadataRead),
+                ("dup", timings.DuplicateCheck),
+                ("copy", timings.ManagedCopy),
+                ("db", timings.DatabaseSave),
+                ("cleanup", timings.Cleanup)
+            }
+            .Where(part => part.Item2 is not null)
+            .Select(part => $"{phaseNameLocalizer(part.Item1)} {ImportResultFormatting.FormatDuration(part.Item2)}")
+            .ToArray();
+
+        return string.Join("; ", parts);
+    }
+}
+
+internal static class ImportResultFormatting
+{
+    public static string FormatDuration(TimeSpan? duration)
     {
         if (duration is null)
         {

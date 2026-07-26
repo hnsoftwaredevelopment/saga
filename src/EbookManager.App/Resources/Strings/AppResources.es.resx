@@ -406,6 +406,17 @@
   <data name="FilterRemoveConfirmationMessage" xml:space="preserve"><value>¿Eliminar «{0}» de {1} libro(s)?</value></data>
   <data name="Rename" xml:space="preserve"><value>Renombrar</value></data>
   <data name="ImportDuplicates" xml:space="preserve"><value>Duplicados</value></data>
+  <data name="ImportPhases" xml:space="preserve"><value>Fases</value></data>
+  <data name="ImportPhaseSummary" xml:space="preserve"><value>Resumen de fases</value></data>
+  <data name="ImportPhaseLocal" xml:space="preserve"><value>Archivo disponible</value></data>
+  <data name="ImportPhaseSize" xml:space="preserve"><value>Tamaño del archivo</value></data>
+  <data name="ImportPhaseHash" xml:space="preserve"><value>Reconocimiento del archivo</value></data>
+  <data name="ImportPhaseMetadata" xml:space="preserve"><value>Metadatos</value></data>
+  <data name="ImportPhaseDuplicate" xml:space="preserve"><value>Comprobación de duplicados</value></data>
+  <data name="ImportPhaseCopy" xml:space="preserve"><value>Copiar a la biblioteca</value></data>
+  <data name="ImportPhaseDatabase" xml:space="preserve"><value>Guardar datos</value></data>
+  <data name="ImportPhaseCleanup" xml:space="preserve"><value>Limpieza</value></data>
+  <data name="ImportResultsSummaryFormat" xml:space="preserve"><value>{0} archivos procesados: {1} añadidos, {2} omitidos, {3} fallidos.</value></data>
   <data name="ImportPossibleShort" xml:space="preserve"><value>Posible</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Añadido</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Probablemente ya existe</value></data>

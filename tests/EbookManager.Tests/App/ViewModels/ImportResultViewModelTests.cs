@@ -2,6 +2,7 @@ using EbookManager.Domain.Importing;
 using EbookManager.Domain.Books;
 using EbookManager.Presentation.ViewModels;
 using FluentAssertions;
+using System.Collections.Specialized;
 
 namespace EbookManager.Tests.App.ViewModels;
 
@@ -38,13 +39,76 @@ public sealed class ImportResultViewModelTests
                     Diagnostics: new ImportItemDiagnostics(
                         TimeSpan.FromMilliseconds(1234),
                         SizeBytes: 1_572_864,
-                        Format: EbookFormat.Cbr))
+                        Format: EbookFormat.Cbr,
+                        PhaseTimings: new ImportPhaseTimings(
+                            Hashing: TimeSpan.FromMilliseconds(25),
+                            MetadataRead: TimeSpan.FromMilliseconds(1250))))
             ]));
 
         var item = viewModel.Items.Should().ContainSingle().Which;
         item.FormatText.Should().Be("CBR");
         item.SizeText.Should().Be("1,5 MB");
         item.DurationText.Should().Be("1,2 s");
+        item.PhaseTimingsText.Should().Contain("File recognition 25 ms");
+        item.PhaseTimingsText.Should().Contain("Metadata 1,3 s");
+    }
+
+    [Fact]
+    public void Import_result_summarizes_phase_timings_across_items()
+    {
+        var viewModel = new ImportResultViewModel(new ImportBatchResult(
+            Guid.NewGuid(),
+            [
+                new ImportItemResult(
+                    "first.epub",
+                    ImportOutcome.Added,
+                    "added",
+                    Diagnostics: new ImportItemDiagnostics(
+                        TimeSpan.FromMilliseconds(100),
+                        PhaseTimings: new ImportPhaseTimings(
+                            Hashing: TimeSpan.FromMilliseconds(30),
+                            MetadataRead: TimeSpan.FromMilliseconds(70)))),
+                new ImportItemResult(
+                    "second.epub",
+                    ImportOutcome.Added,
+                    "added",
+                    Diagnostics: new ImportItemDiagnostics(
+                        TimeSpan.FromMilliseconds(100),
+                        PhaseTimings: new ImportPhaseTimings(
+                            Hashing: TimeSpan.FromMilliseconds(20),
+                            DatabaseSave: TimeSpan.FromMilliseconds(80))))
+            ]));
+
+        viewModel.HasPhaseSummaries.Should().BeTrue();
+        viewModel.PhaseSummaries.Select(summary => (summary.Name, summary.Duration))
+            .Should()
+            .Equal(
+                ("db", TimeSpan.FromMilliseconds(80)),
+                ("meta", TimeSpan.FromMilliseconds(70)),
+                ("hash", TimeSpan.FromMilliseconds(50)));
+        viewModel.PhaseSummaryText.Should().Contain("Save data 80 ms");
+        viewModel.PhaseSummaryText.Should().Contain("File recognition 50 ms");
+    }
+
+    [Fact]
+    public void Import_result_uses_supplied_phase_labels()
+    {
+        var viewModel = new ImportResultViewModel(
+            new ImportBatchResult(
+                Guid.NewGuid(),
+                [
+                    new ImportItemResult(
+                        "book.epub",
+                        ImportOutcome.Added,
+                        "added",
+                        Diagnostics: new ImportItemDiagnostics(
+                            TimeSpan.FromMilliseconds(100),
+                            PhaseTimings: new ImportPhaseTimings(Hashing: TimeSpan.FromMilliseconds(100))))
+                ]),
+            phaseNameLocalizer: phase => phase == "hash" ? "Bestandsherkenning" : phase);
+
+        viewModel.Items.Single().PhaseTimingsText.Should().Be("Bestandsherkenning 100 ms");
+        viewModel.PhaseSummaryText.Should().Contain("Bestandsherkenning 100 ms");
     }
 
     [Fact]
@@ -77,6 +141,26 @@ public sealed class ImportResultViewModelTests
         viewModel.SelectedOutcomeFilter = ImportResultOutcomeFilter.Failed;
         viewModel.VisibleItems.Should().ContainSingle()
             .Which.FileName.Should().Be("slow-comic.cbr");
+    }
+
+    [Fact]
+    public void Visible_items_refresh_with_single_reset_notification()
+    {
+        var viewModel = new ImportResultViewModel(new ImportBatchResult(
+            Guid.NewGuid(),
+            Enumerable.Range(0, 1_000)
+                .Select(index => new ImportItemResult(
+                    $"book-{index}.epub",
+                    index % 2 == 0 ? ImportOutcome.Added : ImportOutcome.Failed,
+                    index % 2 == 0 ? "added" : "source unreadable"))
+                .ToArray()));
+        var notifications = new List<NotifyCollectionChangedAction>();
+        viewModel.VisibleItems.CollectionChanged += (_, args) => notifications.Add(args.Action);
+
+        viewModel.SelectedOutcomeFilter = ImportResultOutcomeFilter.Failed;
+
+        viewModel.VisibleItems.Should().HaveCount(500);
+        notifications.Should().Equal(NotifyCollectionChangedAction.Reset);
     }
 
     [Fact]

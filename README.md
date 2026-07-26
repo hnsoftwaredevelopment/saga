@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 9 builds on version `0.1` with a DataGrid makeover, starting with a cleaner Syncfusion-based List view and shared grouping foundations for grid views.
+Milestone 10 builds on version `0.1` with import performance diagnostics and large-library hardening.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -56,6 +56,8 @@ Milestone 9 builds on version `0.1` with a DataGrid makeover, starting with a cl
 - toolbar and details action icons with localized tooltips
 - Syncfusion-based compact List view with real columns, sorting, and grouping surface
 - Detailed view exposes the standard details-pane metadata fields as grid columns
+- import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
+- aggregate import phase summaries in import result details
 
 ## Prerequisites
 
@@ -131,6 +133,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-7-checklist.md](docs/manual-tests/milestone-7-checklist.md)
 - [docs/manual-tests/milestone-8-checklist.md](docs/manual-tests/milestone-8-checklist.md)
 - [docs/manual-tests/milestone-9-checklist.md](docs/manual-tests/milestone-9-checklist.md)
+- [docs/manual-tests/milestone-10-checklist.md](docs/manual-tests/milestone-10-checklist.md)
 
 ## Later-Version Candidates
 

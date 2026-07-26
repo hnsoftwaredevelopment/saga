@@ -555,7 +555,16 @@ public sealed class LibraryDbContextTests
         var diagnostics = new ImportItemDiagnostics(
             TimeSpan.FromMilliseconds(1234),
             SizeBytes: 42_000,
-            Format: EbookFormat.Cbr);
+            Format: EbookFormat.Cbr,
+            PhaseTimings: new ImportPhaseTimings(
+                AvailabilityCheck: TimeSpan.FromMilliseconds(1),
+                SizeRead: TimeSpan.FromMilliseconds(2),
+                Hashing: TimeSpan.FromMilliseconds(3),
+                MetadataRead: TimeSpan.FromMilliseconds(4),
+                DuplicateCheck: TimeSpan.FromMilliseconds(5),
+                ManagedCopy: TimeSpan.FromMilliseconds(6),
+                DatabaseSave: TimeSpan.FromMilliseconds(7),
+                Cleanup: TimeSpan.FromMilliseconds(8)));
 
         await importRepository.RecordItemAsync(
             runId,
@@ -569,6 +578,35 @@ public sealed class LibraryDbContextTests
 
         var item = (await importRepository.GetAsync(runId, default))!.Items.Should().ContainSingle().Which;
         item.Diagnostics.Should().BeEquivalentTo(diagnostics);
+    }
+
+    [Fact]
+    public async Task Import_repository_preserves_missing_phase_timings()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var importRepository = new EfImportRepository(factory, libraryPath);
+        var runId = await importRepository.StartRunAsync(DateTimeOffset.UtcNow, default);
+        var diagnostics = new ImportItemDiagnostics(
+            TimeSpan.FromMilliseconds(1234),
+            SizeBytes: 42_000,
+            Format: EbookFormat.Cbr,
+            PhaseTimings: null);
+
+        await importRepository.RecordItemAsync(
+            runId,
+            0,
+            "comic.cbr",
+            ImportOutcome.Added,
+            "Imported",
+            null,
+            default,
+            diagnostics);
+
+        var item = (await importRepository.GetAsync(runId, default))!.Items.Should().ContainSingle().Which;
+        item.Diagnostics.Should().NotBeNull();
+        item.Diagnostics!.PhaseTimings.Should().BeNull();
     }
 
     [Fact]

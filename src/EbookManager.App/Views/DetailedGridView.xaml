@@ -127,7 +127,7 @@
   </UserControl.Resources>
   <Grid>
   <syncfusion:SfDataGrid x:Name="BooksGrid"
-                         ItemsSource="{Binding VisibleBooks}"
+                         ItemsSource="{Binding DetailedVisibleBooksSource}"
                          SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
                          AutoGenerateColumns="False"
                          AllowEditing="False"
@@ -401,7 +401,7 @@
         <TextBlock Grid.Column="15" Text="{loc:Loc EReader}" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" />
       </Grid>
       <ListBox Grid.Row="1"
-               ItemsSource="{Binding GroupedLibraryNodes}"
+               ItemsSource="{Binding DetailedGroupedLibraryNodesSource}"
                ItemTemplate="{StaticResource DetailedGroupNodeTemplate}"
                BorderThickness="0"
                Background="Transparent"
