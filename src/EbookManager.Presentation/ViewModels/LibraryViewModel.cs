@@ -36,7 +36,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IAppSettingsStore? settingsStore;
     private readonly ILibraryPerformanceReporter? performanceReporter;
     private readonly Func<string, string> localize;
-    private readonly SemaphoreSlim groupingSettingsSaveLock = new(1, 1);
+    private readonly SemaphoreSlim settingsSaveLock = new(1, 1);
     private IReadOnlyList<Book> books = [];
     private Task pendingGroupingSettingsSave = Task.CompletedTask;
     private long groupingSettingsSaveVersion;
@@ -121,31 +121,15 @@ public sealed partial class LibraryViewModel : ObservableObject
         LibraryGroupOption.Status,
         LibraryGroupOption.Format
     ];
-    public IReadOnlyList<LibraryColumnOption> AvailableColumnOptions { get; } =
-    [
-        LibraryColumnOption.Cover,
-        LibraryColumnOption.Title,
-        LibraryColumnOption.Authors,
-        LibraryColumnOption.Format,
-        LibraryColumnOption.Series,
-        LibraryColumnOption.SeriesNumber,
-        LibraryColumnOption.Status,
-        LibraryColumnOption.Language,
-        LibraryColumnOption.Publisher,
-        LibraryColumnOption.PublicationDate,
-        LibraryColumnOption.Tags,
-        LibraryColumnOption.Isbn,
-        LibraryColumnOption.Description,
-        LibraryColumnOption.DateAdded,
-        LibraryColumnOption.LastModified,
-        LibraryColumnOption.EReader
-    ];
+    public IReadOnlyList<LibraryColumnOption> AvailableColumnOptions { get; } = DefaultDetailedColumns();
 
     public BookDetailsViewModel Details { get; }
 
     public ImportJobViewModel? ImportJob => importAgent?.Job;
 
     public bool HasColumnChoices => ColumnChoices.Count > 0;
+
+    public IReadOnlyList<LibraryColumnOption> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -781,7 +765,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         pendingGroupingSettingsSave = Task.Run(
             async () =>
             {
-                await groupingSettingsSaveLock.WaitAsync().ConfigureAwait(false);
+                await settingsSaveLock.WaitAsync().ConfigureAwait(false);
                 try
                 {
                     if (saveVersion != Interlocked.Read(ref groupingSettingsSaveVersion))
@@ -805,7 +789,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 }
                 finally
                 {
-                    groupingSettingsSaveLock.Release();
+                    settingsSaveLock.Release();
                 }
             });
     }
@@ -863,16 +847,38 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         RefreshColumnChoices();
+        OnPropertyChanged(nameof(ActiveColumnOptionsSnapshot));
     }
 
     private void RefreshColumnChoices()
     {
         var availableOptions = GetDefaultColumns(SelectedView);
         var visibleOptions = GetVisibleColumns(SelectedView).ToHashSet();
-        ColumnChoices.Clear();
-        foreach (var option in availableOptions)
+
+        for (var index = ColumnChoices.Count - 1; index >= 0; index--)
         {
-            ColumnChoices.Add(new LibraryColumnChoiceViewModel(option, visibleOptions.Contains(option)));
+            if (!availableOptions.Contains(ColumnChoices[index].Option))
+            {
+                ColumnChoices.RemoveAt(index);
+            }
+        }
+
+        for (var desiredIndex = 0; desiredIndex < availableOptions.Count; desiredIndex++)
+        {
+            var option = availableOptions[desiredIndex];
+            var choice = ColumnChoices.FirstOrDefault(existing => existing.Option == option);
+            if (choice is null)
+            {
+                ColumnChoices.Insert(desiredIndex, new LibraryColumnChoiceViewModel(option, visibleOptions.Contains(option)));
+                continue;
+            }
+
+            choice.IsSelected = visibleOptions.Contains(option);
+            var currentIndex = ColumnChoices.IndexOf(choice);
+            if (currentIndex != desiredIndex)
+            {
+                ColumnChoices.Move(currentIndex, desiredIndex);
+            }
         }
 
         OnPropertyChanged(nameof(HasColumnChoices));
@@ -914,13 +920,22 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        var settings = await settingsStore.LoadAsync(cancellationToken);
-        await settingsStore.SaveAsync(
-            settings with
-            {
-                LibraryColumns = CreateColumnSettings()
-            },
-            cancellationToken);
+        await settingsSaveLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var settings = await settingsStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            await settingsStore.SaveAsync(
+                    settings with
+                    {
+                        LibraryColumns = CreateColumnSettings()
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            settingsSaveLock.Release();
+        }
     }
 
     private static IReadOnlyList<string> ToSettingValues(IEnumerable<LibraryGroupOption> options) =>

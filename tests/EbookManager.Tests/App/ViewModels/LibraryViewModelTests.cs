@@ -737,6 +737,20 @@ public sealed class LibraryViewModelTests
         settingsStore.Settings.LibraryColumns.Should().NotBeNull();
         settingsStore.Settings.LibraryColumns!.Detailed.Should().Equal("Title", "Authors", "Series");
         settingsStore.Settings.LibraryColumns.List.Should().Equal("Title", "Format");
+
+        var reloadedViewModel = CreateViewModel(
+            [CreateBook("Book", ["Author"])],
+            settingsStore: settingsStore);
+        await reloadedViewModel.RefreshAsync();
+
+        reloadedViewModel.GetVisibleColumns(LibraryView.Detailed).Should().Equal(
+            LibraryColumnOption.Title,
+            LibraryColumnOption.Authors,
+            LibraryColumnOption.Series);
+        reloadedViewModel.SelectedView = LibraryView.List;
+        reloadedViewModel.ActiveColumnOptions.Should().Equal(
+            LibraryColumnOption.Title,
+            LibraryColumnOption.Format);
     }
 
     [Fact]
