@@ -113,6 +113,13 @@ The current milestone focuses on finishing the grid experience created by Milest
 
 Status: implemented as a visually distinct fixed header row for grouped Detailed and List views.
 
+### Slice 1b: Standard Header Styling
+
+- Standard Detailed and List grid headers should visually match the grouped header style.
+- Native Syncfusion header sorting must remain active when clicking a column header.
+
+Status: implemented by styling the native `SfDataGrid.HeaderStyle`, preserving Syncfusion sorting behavior.
+
 ### Slice 2: Column Width Foundation
 
 - Capture current column widths per view.

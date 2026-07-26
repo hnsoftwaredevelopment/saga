@@ -3,9 +3,11 @@
 ## Grouped Headers
 
 - [ ] Open Detailed view without grouping and confirm the normal header is visible.
+- [ ] Click a Detailed view column header and confirm sorting still works.
 - [ ] Add grouping in Detailed view and confirm the grouped layout still shows a visible column header.
 - [ ] Hide a column in Detailed view and confirm the grouped header and grouped rows both hide it.
 - [ ] Open List view without grouping and confirm the normal header is visible.
+- [ ] Click a List view column header and confirm sorting still works.
 - [ ] Add grouping in List view and confirm the grouped layout still shows a visible column header.
 - [ ] Hide a column in List view and confirm the grouped header and grouped rows both hide it.
 
