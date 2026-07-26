@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress as Milestone 11.
+Implemented as Milestone 11.
 
 ## Context
 
@@ -31,7 +31,11 @@ The first milestone slice adds a shared column model and persists visible column
 ## Current Findings
 
 - With a very large library, the Bookshelf can briefly render empty during startup or immediately after removing grouping while the virtualized view rebuilds. This is acceptable for now as long as the UI remains responsive and the view repopulates within a few seconds.
+- Grouped Detailed and List views currently use a custom grouped layout. Hidden columns are respected, but a fixed visible grouped column header is deferred to the future grid/view makeover.
 
-## Remaining Slices
+## Deferred
 
-- Decide whether column order should be user-editable in this milestone or deferred.
+- User-editable column order.
+- User-editable column widths.
+- Fixed grouped column headers.
+- User-defined views.
