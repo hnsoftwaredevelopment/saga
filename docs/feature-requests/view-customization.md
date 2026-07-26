@@ -23,11 +23,15 @@ The first milestone slice adds a shared column model and persists visible column
 - Added `LibraryColumnOption` as the standard column identifier set.
 - Added `LibraryColumnSettings` to app settings for Detailed and List views.
 - Added `LibraryViewModel` APIs to read and update visible columns per view.
+- Bound the standard Detailed and List grids to the persisted visible-column model.
 - Added settings round-trip and viewmodel persistence tests.
+
+## Current Findings
+
+- With a very large library, the Bookshelf can briefly render empty during startup or immediately after removing grouping while the virtualized view rebuilds. This is acceptable for now as long as the UI remains responsive and the view repopulates within a few seconds.
 
 ## Remaining Slices
 
-- Bind Detailed and List grid column visibility to the persisted column model.
 - Add a user-facing column chooser for Detailed and List views.
 - Decide whether column order should be user-editable in this milestone or deferred.
 - Add manual test coverage once the UI is available.

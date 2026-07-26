@@ -2,9 +2,15 @@ namespace EbookManager.App.Views;
 
 public partial class LibraryListView : System.Windows.Controls.UserControl
 {
+    private readonly LibraryGridColumnVisibility columnVisibility;
+
     public LibraryListView()
     {
         InitializeComponent();
+        columnVisibility = new LibraryGridColumnVisibility(BooksGrid, EbookManager.Presentation.ViewModels.LibraryView.List);
+        DataContextChanged += (_, e) => columnVisibility.Attach(e.NewValue as EbookManager.Presentation.ViewModels.LibraryViewModel);
+        Loaded += (_, _) => columnVisibility.Attach(DataContext as EbookManager.Presentation.ViewModels.LibraryViewModel);
+        Unloaded += (_, _) => columnVisibility.Detach();
     }
 
     private void BookRowMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
