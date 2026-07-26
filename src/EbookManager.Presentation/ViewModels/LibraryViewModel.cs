@@ -36,7 +36,10 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IAppSettingsStore? settingsStore;
     private readonly ILibraryPerformanceReporter? performanceReporter;
     private readonly Func<string, string> localize;
+    private readonly SemaphoreSlim groupingSettingsSaveLock = new(1, 1);
     private IReadOnlyList<Book> books = [];
+    private Task pendingGroupingSettingsSave = Task.CompletedTask;
+    private long groupingSettingsSaveVersion;
     private bool hasAppliedDefaultView;
     private int selectionVersion;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
@@ -319,7 +322,6 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         RefreshActiveGroupOptions();
         RefreshGroupingOnly();
-        NotifyActiveViewSourcesChanged();
     }
 
     partial void OnSelectedSortOptionChanged(LibrarySortOption value) => ApplyFilter();
@@ -568,9 +570,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 RefreshActiveGroupOptions();
             });
         var visibleCount = RefreshGroupingOnly(performance);
-        performance.Measure(
-            "settings-save",
-            () => SaveGroupingSettingsAsync(CancellationToken.None).GetAwaiter().GetResult());
+        performance.Measure("settings-schedule", QueueGroupingSettingsSave);
         ReportPerformance(performance, visibleCount);
     }
 
@@ -591,10 +591,12 @@ public sealed partial class LibraryViewModel : ObservableObject
             {
                 viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
                 RefreshActiveGroupOptions();
+                SelectNextAvailableGroupOption();
             });
         var visibleCount = RefreshGroupingOnly(performance);
-        await performance.MeasureAsync("settings-save", () => SaveGroupingSettingsAsync(cancellationToken));
+        performance.Measure("settings-schedule", QueueGroupingSettingsSave);
         ReportPerformance(performance, visibleCount);
+        await Task.CompletedTask;
     }
 
     private bool CanAddGrouping() =>
@@ -619,8 +621,9 @@ public sealed partial class LibraryViewModel : ObservableObject
                 RefreshActiveGroupOptions();
             });
         var visibleCount = RefreshGroupingOnly(performance);
-        await performance.MeasureAsync("settings-save", () => SaveGroupingSettingsAsync(cancellationToken));
+        performance.Measure("settings-schedule", QueueGroupingSettingsSave);
         ReportPerformance(performance, visibleCount);
+        await Task.CompletedTask;
     }
 
     private void RefreshActiveGroupOptions()
@@ -652,6 +655,22 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
         NotifyActiveViewSourcesChanged();
+    }
+
+    private void SelectNextAvailableGroupOption()
+    {
+        if (CanAddGrouping())
+        {
+            return;
+        }
+
+        var nextOption = AvailableGroupOptions.FirstOrDefault(option =>
+            option != LibraryGroupOption.None &&
+            !ActiveGroupOptions.Contains(option));
+        if (nextOption != LibraryGroupOption.None)
+        {
+            SelectedGroupOptionToAdd = nextOption;
+        }
     }
 
     private int RefreshGroupingOnly(LibraryViewPerformanceTracker? performanceTracker = null)
@@ -694,6 +713,50 @@ public sealed partial class LibraryViewModel : ObservableObject
                 LibraryGroupings = CreateGroupingSettings()
             },
             cancellationToken);
+    }
+
+    public Task WaitForPendingGroupingSettingsSaveAsync() => pendingGroupingSettingsSave;
+
+    private void QueueGroupingSettingsSave()
+    {
+        if (settingsStore is null)
+        {
+            pendingGroupingSettingsSave = Task.CompletedTask;
+            return;
+        }
+
+        var saveVersion = Interlocked.Increment(ref groupingSettingsSaveVersion);
+        var groupingSettings = CreateGroupingSettings();
+        pendingGroupingSettingsSave = Task.Run(
+            async () =>
+            {
+                await groupingSettingsSaveLock.WaitAsync().ConfigureAwait(false);
+                try
+                {
+                    if (saveVersion != Interlocked.Read(ref groupingSettingsSaveVersion))
+                    {
+                        return;
+                    }
+
+                    var settings = await settingsStore.LoadAsync(CancellationToken.None).ConfigureAwait(false);
+                    if (saveVersion != Interlocked.Read(ref groupingSettingsSaveVersion))
+                    {
+                        return;
+                    }
+
+                    await settingsStore.SaveAsync(
+                            settings with
+                            {
+                                LibraryGroupings = groupingSettings
+                            },
+                            CancellationToken.None)
+                        .ConfigureAwait(false);
+                }
+                finally
+                {
+                    groupingSettingsSaveLock.Release();
+                }
+            });
     }
 
     private LibraryGroupingSettings CreateGroupingSettings() =>

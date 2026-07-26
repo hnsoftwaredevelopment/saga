@@ -596,6 +596,7 @@ public sealed class LibraryViewModelTests
         viewModel.SelectedGroupOptionToAdd = LibraryGroupOption.Series;
         await viewModel.AddGroupingCommand.ExecuteAsync(null);
         viewModel.SelectedView = LibraryView.Detailed;
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
 
         viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Author);
         settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
@@ -703,6 +704,7 @@ public sealed class LibraryViewModelTests
 
         await viewModel.RefreshAsync();
         viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Tag]);
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
 
         settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
         settingsStore.Settings.LibraryGroupings!.Detailed.Should().Equal(
@@ -1516,7 +1518,7 @@ public sealed class LibraryViewModelTests
         snapshot.BookCount.Should().Be(2);
         snapshot.VisibleBookCount.Should().Be(2);
         snapshot.Groupings.Should().Equal(LibraryGroupOption.Author);
-        snapshot.Phases.Keys.Should().Contain(["active-groups", "snapshot", "grouping", "settings-save"]);
+        snapshot.Phases.Keys.Should().Contain(["active-groups", "snapshot", "grouping", "settings-schedule"]);
     }
 
     private static LibraryViewModel CreateViewModel(
