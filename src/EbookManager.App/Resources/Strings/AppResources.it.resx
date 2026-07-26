@@ -408,6 +408,15 @@
   <data name="ImportDuplicates" xml:space="preserve"><value>Duplicati</value></data>
   <data name="ImportPhases" xml:space="preserve"><value>Fasi</value></data>
   <data name="ImportPhaseSummary" xml:space="preserve"><value>Riepilogo fasi</value></data>
+  <data name="ImportPhaseLocal" xml:space="preserve"><value>File disponibile</value></data>
+  <data name="ImportPhaseSize" xml:space="preserve"><value>Dimensione file</value></data>
+  <data name="ImportPhaseHash" xml:space="preserve"><value>Riconoscimento file</value></data>
+  <data name="ImportPhaseMetadata" xml:space="preserve"><value>Metadati</value></data>
+  <data name="ImportPhaseDuplicate" xml:space="preserve"><value>Controllo duplicati</value></data>
+  <data name="ImportPhaseCopy" xml:space="preserve"><value>Copia nella biblioteca</value></data>
+  <data name="ImportPhaseDatabase" xml:space="preserve"><value>Salvataggio dati</value></data>
+  <data name="ImportPhaseCleanup" xml:space="preserve"><value>Pulizia</value></data>
+  <data name="ImportResultsSummaryFormat" xml:space="preserve"><value>{0} file elaborati: {1} aggiunti, {2} saltati, {3} non riusciti.</value></data>
   <data name="ImportPossibleShort" xml:space="preserve"><value>Possibile</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Aggiunto</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Probabilmente già presente</value></data>

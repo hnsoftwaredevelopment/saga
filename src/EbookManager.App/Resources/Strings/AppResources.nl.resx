@@ -67,8 +67,17 @@
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Mogelijk duplicaat</value></data>
   <data name="ImportPhases" xml:space="preserve"><value>Fases</value></data>
   <data name="ImportPhaseSummary" xml:space="preserve"><value>Fasesamenvatting</value></data>
+  <data name="ImportPhaseLocal" xml:space="preserve"><value>Bestand beschikbaar</value></data>
+  <data name="ImportPhaseSize" xml:space="preserve"><value>Bestandsgrootte</value></data>
+  <data name="ImportPhaseHash" xml:space="preserve"><value>Bestandsherkenning</value></data>
+  <data name="ImportPhaseMetadata" xml:space="preserve"><value>Metadata</value></data>
+  <data name="ImportPhaseDuplicate" xml:space="preserve"><value>Duplicatencontrole</value></data>
+  <data name="ImportPhaseCopy" xml:space="preserve"><value>Kopieren naar bibliotheek</value></data>
+  <data name="ImportPhaseDatabase" xml:space="preserve"><value>Gegevens opslaan</value></data>
+  <data name="ImportPhaseCleanup" xml:space="preserve"><value>Opschonen</value></data>
   <data name="ImportPossibleShort" xml:space="preserve"><value>Mogelijk</value></data>
   <data name="ImportResults" xml:space="preserve"><value>Importresultaten</value></data>
+  <data name="ImportResultsSummaryFormat" xml:space="preserve"><value>{0} bestanden verwerkt: {1} toegevoegd, {2} overgeslagen, {3} mislukt.</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Toegevoegd</value></data>
   <data name="ImportOutcomeExactDuplicate" xml:space="preserve"><value>Overgeslagen, exact hetzelfde bestand is al aanwezig</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Waarschijnlijk al aanwezig</value></data>

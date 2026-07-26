@@ -67,8 +67,17 @@
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>
   <data name="ImportPhases" xml:space="preserve"><value>Phases</value></data>
   <data name="ImportPhaseSummary" xml:space="preserve"><value>Phase summary</value></data>
+  <data name="ImportPhaseLocal" xml:space="preserve"><value>File availability</value></data>
+  <data name="ImportPhaseSize" xml:space="preserve"><value>File size</value></data>
+  <data name="ImportPhaseHash" xml:space="preserve"><value>File recognition</value></data>
+  <data name="ImportPhaseMetadata" xml:space="preserve"><value>Metadata</value></data>
+  <data name="ImportPhaseDuplicate" xml:space="preserve"><value>Duplicate check</value></data>
+  <data name="ImportPhaseCopy" xml:space="preserve"><value>Copy to library</value></data>
+  <data name="ImportPhaseDatabase" xml:space="preserve"><value>Save data</value></data>
+  <data name="ImportPhaseCleanup" xml:space="preserve"><value>Cleanup</value></data>
   <data name="ImportPossibleShort" xml:space="preserve"><value>Possible</value></data>
   <data name="ImportResults" xml:space="preserve"><value>Import results</value></data>
+  <data name="ImportResultsSummaryFormat" xml:space="preserve"><value>{0} files processed: {1} added, {2} skipped, {3} failed.</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Added</value></data>
   <data name="ImportOutcomeExactDuplicate" xml:space="preserve"><value>Skipped, exact same file already exists</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Probably already exists</value></data>
