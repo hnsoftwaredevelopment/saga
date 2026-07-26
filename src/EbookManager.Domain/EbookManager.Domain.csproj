@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
     <AssemblyVersion>2026.7.24.2</AssemblyVersion>
     <FileVersion>2026.7.24.2</FileVersion>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="appicon.ico" />
+  </ItemGroup>
 
 </Project>

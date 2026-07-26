@@ -55,7 +55,14 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
 
     protected override Size MeasureOverride(Size availableSize)
     {
-        var itemCount = ItemsControl.GetItemsOwner(this)?.Items.Count ?? 0;
+        var itemsOwner = ItemsControl.GetItemsOwner(this);
+        if (itemsOwner is null || ItemContainerGenerator is null)
+        {
+            ClearRealizedChildren();
+            return availableSize;
+        }
+
+        var itemCount = itemsOwner.Items.Count;
         var safeItemWidth = Math.Max(1, ItemWidth);
         var safeItemHeight = Math.Max(1, ItemHeight);
         var availableWidth = double.IsInfinity(availableSize.Width) ? safeItemWidth : Math.Max(1, availableSize.Width);
@@ -72,7 +79,7 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
         var generator = ItemContainerGenerator;
         if (itemCount == 0)
         {
-            RemoveInternalChildRange(0, InternalChildren.Count);
+            ClearRealizedChildren();
             return availableSize;
         }
 
@@ -89,7 +96,11 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
         {
             for (var itemIndex = firstIndex; itemIndex <= lastIndex; itemIndex++, childIndex++)
             {
-                var child = (UIElement)generator.GenerateNext(out var newlyRealized);
+                if (generator.GenerateNext(out var newlyRealized) is not UIElement child)
+                {
+                    continue;
+                }
+
                 if (newlyRealized)
                 {
                     if (childIndex >= InternalChildren.Count)
@@ -113,8 +124,8 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        var itemCount = ItemsControl.GetItemsOwner(this)?.Items.Count ?? 0;
-        if (itemCount == 0)
+        var itemsOwner = ItemsControl.GetItemsOwner(this);
+        if (itemsOwner is null || ItemContainerGenerator is null || itemsOwner.Items.Count == 0)
         {
             return finalSize;
         }
@@ -186,6 +197,12 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
     private void CleanupItems(int firstIndex, int lastIndex)
     {
         var generator = ItemContainerGenerator;
+        if (generator is null)
+        {
+            ClearRealizedChildren();
+            return;
+        }
+
         for (var childIndex = InternalChildren.Count - 1; childIndex >= 0; childIndex--)
         {
             var generatorPosition = new GeneratorPosition(childIndex, 0);
@@ -195,6 +212,14 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
                 generator.Remove(generatorPosition, 1);
                 RemoveInternalChildRange(childIndex, 1);
             }
+        }
+    }
+
+    private void ClearRealizedChildren()
+    {
+        if (InternalChildren.Count > 0)
+        {
+            RemoveInternalChildRange(0, InternalChildren.Count);
         }
     }
 }

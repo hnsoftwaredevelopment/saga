@@ -4,7 +4,7 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <RootNamespace>EbookManager.App</RootNamespace>
-    <AssemblyName>EbookManager</AssemblyName>
+    <AssemblyName>Saga</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyVersion>2026.7.24.7</AssemblyVersion>
