@@ -37,7 +37,7 @@ public sealed class ThemeService(IAppSettingsStore settingsStore)
         var dictionary = new System.Windows.ResourceDictionary
         {
             Source = new Uri(
-                $"/EbookManager;component/Resources/Styles/Themes/{normalizedTheme}Theme.xaml",
+                $"Resources/Styles/Themes/{normalizedTheme}Theme.xaml",
                 UriKind.Relative)
         };
         application.Resources.MergedDictionaries.Add(dictionary);
