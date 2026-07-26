@@ -117,7 +117,8 @@
              Background="Transparent"
              AllowDrop="True"
              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-             ScrollViewer.VerticalScrollBarVisibility="Auto">
+             ScrollViewer.VerticalScrollBarVisibility="Auto"
+             ScrollViewer.CanContentScroll="True">
       <ListBox.Style>
         <Style TargetType="ListBox">
           <Setter Property="Visibility" Value="Visible" />

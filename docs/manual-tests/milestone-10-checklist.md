@@ -8,7 +8,7 @@
 - [ ] Confirm the import result details show an aggregate phase summary ordered by the phases that took the most total time.
 - [ ] Open the same import from import history and confirm the phase timings are still available.
 - [ ] Import or scan a folder with multiple formats and confirm phase timings appear per row.
-- [ ] Search the import result details for a phase label such as `metadata` or `copy` and confirm matching rows remain visible.
+- [ ] Search the import result details for the currently displayed phase label, such as `metadata` or `copy` in English, and confirm matching rows remain visible.
 - [ ] Confirm the import result details grid shows a horizontal scrollbar when columns exceed the window width.
 - [ ] With a library of at least 6000 books, group by Author, sort by Author, add Series grouping, and confirm Saga returns without a long UI freeze.
 

@@ -11,8 +11,6 @@
   <Window.Resources>
     <converters:ImportOutcomeToLocalizedStringConverter x:Key="ImportOutcomeToLocalizedStringConverter" />
     <converters:ImportMessageToLocalizedStringConverter x:Key="ImportMessageToLocalizedStringConverter" />
-    <converters:ImportPhaseNameToLocalizedStringConverter x:Key="ImportPhaseNameToLocalizedStringConverter" />
-    <converters:ImportPhaseSummaryToLocalizedStringConverter x:Key="ImportPhaseSummaryToLocalizedStringConverter" />
     <converters:ImportResultSummaryToLocalizedStringConverter x:Key="ImportResultSummaryToLocalizedStringConverter" />
   </Window.Resources>
   <DockPanel Margin="18">
@@ -61,7 +59,7 @@
               CornerRadius="10"
               Padding="10"
               Margin="0,12,0,0"
-              ToolTip="{Binding PhaseSummaries, Converter={StaticResource ImportPhaseSummaryToLocalizedStringConverter}}">
+              ToolTip="{Binding PhaseSummaryText}">
         <Border.Style>
           <Style TargetType="Border">
             <Setter Property="Visibility" Value="Visible" />
@@ -95,7 +93,7 @@
                     <TextBlock Text="{Binding PercentageText}"
                                DockPanel.Dock="Right"
                                Foreground="{DynamicResource TextSecondaryBrush}" />
-                    <TextBlock Text="{Binding Name, Converter={StaticResource ImportPhaseNameToLocalizedStringConverter}}"
+                    <TextBlock Text="{Binding DisplayName}"
                                FontWeight="SemiBold"
                                Foreground="{DynamicResource TextPrimaryBrush}" />
                   </DockPanel>

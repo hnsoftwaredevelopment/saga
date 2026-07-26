@@ -35,7 +35,16 @@ public sealed class LibraryPerformanceReporter : ILibraryPerformanceReporter
         var line =
             $"{DateTimeOffset.Now:O}\t{snapshot.Operation}\ttotal={snapshot.TotalDuration.TotalMilliseconds:0}ms\tbooks={snapshot.BookCount}\tvisible={snapshot.VisibleBookCount}\tgroups={snapshot.GroupCount}\tsort={snapshot.SortOption}\tgroupings={groupings}\tphases={phases}";
 
-        File.AppendAllLines(logPath, [line]);
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await File.AppendAllLinesAsync(logPath, [line]).ConfigureAwait(false);
+            }
+            catch
+            {
+            }
+        });
     }
 
     private static bool ShouldAlwaysLog(LibraryPerformanceSnapshot snapshot) =>

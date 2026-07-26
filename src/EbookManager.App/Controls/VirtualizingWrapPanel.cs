@@ -59,7 +59,7 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
         if (itemsOwner is null || ItemContainerGenerator is null)
         {
             ClearRealizedChildren();
-            return availableSize;
+            return CoerceFiniteSize(availableSize);
         }
 
         var itemCount = itemsOwner.Items.Count;
@@ -69,7 +69,10 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
         var columns = Math.Max(1, (int)Math.Floor(availableWidth / safeItemWidth));
         var rows = itemCount == 0 ? 0 : (int)Math.Ceiling(itemCount / (double)columns);
 
-        viewport = new Size(availableWidth, double.IsInfinity(availableSize.Height) ? rows * safeItemHeight : availableSize.Height);
+        var availableHeight = double.IsInfinity(availableSize.Height)
+            ? safeItemHeight
+            : Math.Max(1, availableSize.Height);
+        viewport = new Size(availableWidth, availableHeight);
         extent = new Size(columns * safeItemWidth, rows * safeItemHeight);
         offset = new Point(
             Math.Clamp(offset.X, 0, Math.Max(0, extent.Width - viewport.Width)),
@@ -80,7 +83,7 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
         if (itemCount == 0)
         {
             ClearRealizedChildren();
-            return availableSize;
+            return new Size(availableWidth, 0);
         }
 
         var firstVisibleRow = Math.Max(0, (int)Math.Floor(offset.Y / safeItemHeight));
@@ -119,7 +122,7 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
             }
         }
 
-        return availableSize;
+        return viewport;
     }
 
     protected override Size ArrangeOverride(Size finalSize)
@@ -192,7 +195,63 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
         InvalidateMeasure();
     }
 
-    public Rect MakeVisible(Visual visual, Rect rectangle) => rectangle;
+    public Rect MakeVisible(Visual visual, Rect rectangle)
+    {
+        var childIndex = InternalChildren.IndexOf(visual as UIElement);
+        if (childIndex < 0 || ItemContainerGenerator is null)
+        {
+            return Rect.Empty;
+        }
+
+        var itemIndex = ItemContainerGenerator.IndexFromGeneratorPosition(new GeneratorPosition(childIndex, 0));
+        if (itemIndex < 0)
+        {
+            return Rect.Empty;
+        }
+
+        var safeItemWidth = Math.Max(1, ItemWidth);
+        var safeItemHeight = Math.Max(1, ItemHeight);
+        var columns = Math.Max(1, (int)Math.Floor(Math.Max(1, viewport.Width) / safeItemWidth));
+        var row = itemIndex / columns;
+        var column = itemIndex % columns;
+        var itemRect = new Rect(column * safeItemWidth, row * safeItemHeight, safeItemWidth, safeItemHeight);
+        var targetRect = rectangle == Rect.Empty
+            ? itemRect
+            : new Rect(
+                itemRect.X + rectangle.X,
+                itemRect.Y + rectangle.Y,
+                Math.Min(rectangle.Width, itemRect.Width),
+                Math.Min(rectangle.Height, itemRect.Height));
+
+        if (targetRect.Left < HorizontalOffset)
+        {
+            SetHorizontalOffset(targetRect.Left);
+        }
+        else if (targetRect.Right > HorizontalOffset + ViewportWidth)
+        {
+            SetHorizontalOffset(targetRect.Right - ViewportWidth);
+        }
+
+        if (targetRect.Top < VerticalOffset)
+        {
+            SetVerticalOffset(targetRect.Top);
+        }
+        else if (targetRect.Bottom > VerticalOffset + ViewportHeight)
+        {
+            SetVerticalOffset(targetRect.Bottom - ViewportHeight);
+        }
+
+        return new Rect(
+            targetRect.X - HorizontalOffset,
+            targetRect.Y - VerticalOffset,
+            targetRect.Width,
+            targetRect.Height);
+    }
+
+    private static Size CoerceFiniteSize(Size size) =>
+        new(
+            double.IsInfinity(size.Width) ? 0 : Math.Max(0, size.Width),
+            double.IsInfinity(size.Height) ? 0 : Math.Max(0, size.Height));
 
     private void CleanupItems(int firstIndex, int lastIndex)
     {

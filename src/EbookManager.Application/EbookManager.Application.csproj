@@ -1,10 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <Content Include="appicon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EbookManager.Domain\EbookManager.Domain.csproj" />
   </ItemGroup>
 
@@ -14,7 +10,6 @@
     <Nullable>enable</Nullable>
     <AssemblyVersion>2026.7.24.2</AssemblyVersion>
     <FileVersion>2026.7.24.2</FileVersion>
-    <ApplicationIcon>appicon.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>

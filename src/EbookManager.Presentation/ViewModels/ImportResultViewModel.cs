@@ -22,23 +22,26 @@ public sealed partial class ImportResultViewModel : ObservableObject
     public ImportResultViewModel(
         ImportRunResult result,
         Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null,
-        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
-        : this(new ImportBatchResult(result.Id, result.Items), retryFailedAsync, linkSuggestionAsync)
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null,
+        Func<string, string>? phaseNameLocalizer = null)
+        : this(new ImportBatchResult(result.Id, result.Items), retryFailedAsync, linkSuggestionAsync, phaseNameLocalizer)
     {
     }
 
     public ImportResultViewModel(
         ImportBatchResult result,
         Func<IReadOnlyList<string>, CancellationToken, Task>? retryFailedAsync = null,
-        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null,
+        Func<string, string>? phaseNameLocalizer = null)
     {
         this.retryFailedAsync = retryFailedAsync;
+        var resolvedPhaseNameLocalizer = phaseNameLocalizer ?? DefaultPhaseName;
         RunId = result.RunId;
         Items = result.Items
-            .Select(item => new ImportResultItemViewModel(item, linkSuggestionAsync))
+            .Select(item => new ImportResultItemViewModel(item, linkSuggestionAsync, resolvedPhaseNameLocalizer))
             .ToList()
             .AsReadOnly();
-        PhaseSummaries = CreatePhaseSummaries(result.Items);
+        PhaseSummaries = CreatePhaseSummaries(result.Items, resolvedPhaseNameLocalizer);
         OutcomeFilterOptions = Enum.GetValues<ImportResultOutcomeFilter>();
         retryFailedCommand = new AsyncRelayCommand(RetryFailedImportsAsync, () => CanRetryFailedImports);
         RefreshVisibleItems();
@@ -64,7 +67,7 @@ public sealed partial class ImportResultViewModel : ObservableObject
     public bool HasPhaseSummaries => PhaseSummaries.Count > 0;
     public string PhaseSummaryText => string.Join(
         "; ",
-        PhaseSummaries.Select(summary => $"{summary.Name} {summary.DurationText} ({summary.PercentageText})"));
+        PhaseSummaries.Select(summary => $"{summary.DisplayName} {summary.DurationText} ({summary.PercentageText})"));
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -135,7 +138,9 @@ public sealed partial class ImportResultViewModel : ObservableObject
         VisibleItems.ReplaceAll(query.ToArray());
     }
 
-    private static IReadOnlyList<ImportPhaseSummaryViewModel> CreatePhaseSummaries(IEnumerable<ImportItemResult> items)
+    private static IReadOnlyList<ImportPhaseSummaryViewModel> CreatePhaseSummaries(
+        IEnumerable<ImportItemResult> items,
+        Func<string, string> phaseNameLocalizer)
     {
         var totals = new Dictionary<string, TimeSpan>(StringComparer.Ordinal)
         {
@@ -172,6 +177,7 @@ public sealed partial class ImportResultViewModel : ObservableObject
             .OrderByDescending(total => total.Value)
             .Select(total => new ImportPhaseSummaryViewModel(
                 total.Key,
+                phaseNameLocalizer(total.Key),
                 total.Value,
                 total.Value.TotalMilliseconds / totalMilliseconds * 100))
             .ToList()
@@ -185,11 +191,26 @@ public sealed partial class ImportResultViewModel : ObservableObject
             }
         }
     }
+
+    internal static string DefaultPhaseName(string name) =>
+        name switch
+        {
+            "local" => "File availability",
+            "size" => "File size",
+            "hash" => "File recognition",
+            "meta" => "Metadata",
+            "dup" => "Duplicate check",
+            "copy" => "Copy to library",
+            "db" => "Save data",
+            "cleanup" => "Cleanup",
+            _ => name
+        };
 }
 
-public sealed class ImportPhaseSummaryViewModel(string name, TimeSpan duration, double percentage)
+public sealed class ImportPhaseSummaryViewModel(string name, string displayName, TimeSpan duration, double percentage)
 {
     public string Name { get; } = name;
+    public string DisplayName { get; } = displayName;
     public TimeSpan Duration { get; } = duration;
     public double Percentage { get; } = percentage;
     public string DurationText { get; } = ImportResultFormatting.FormatDuration(duration);
@@ -242,7 +263,8 @@ public sealed class ImportResultItemViewModel : ObservableObject
 
     public ImportResultItemViewModel(
         ImportItemResult item,
-        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null)
+        Func<Guid, Guid, CancellationToken, Task>? linkSuggestionAsync = null,
+        Func<string, string>? phaseNameLocalizer = null)
     {
         this.linkSuggestionAsync = linkSuggestionAsync;
         bookId = item.BookId;
@@ -252,7 +274,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
         FormatText = item.Diagnostics?.Format?.ToString().ToUpperInvariant() ?? string.Empty;
         SizeText = FormatSize(item.Diagnostics?.SizeBytes);
         DurationText = ImportResultFormatting.FormatDuration(item.Diagnostics?.Duration);
-        PhaseTimingsText = FormatPhaseTimings(item.Diagnostics?.PhaseTimings);
+        PhaseTimingsText = FormatPhaseTimings(item.Diagnostics?.PhaseTimings, phaseNameLocalizer ?? ImportResultViewModel.DefaultPhaseName);
         SizeBytesSort = item.Diagnostics?.SizeBytes ?? -1;
         DurationMillisecondsSort = item.Diagnostics?.Duration.TotalMilliseconds ?? -1;
         Outcome = item.Outcome;
@@ -363,7 +385,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
             : $"{value.ToString("0.#", CultureInfo.CurrentCulture)} {units[unitIndex]}";
     }
 
-    private static string FormatPhaseTimings(ImportPhaseTimings? timings)
+    private static string FormatPhaseTimings(ImportPhaseTimings? timings, Func<string, string> phaseNameLocalizer)
     {
         if (timings is null)
         {
@@ -382,7 +404,7 @@ public sealed class ImportResultItemViewModel : ObservableObject
                 ("cleanup", timings.Cleanup)
             }
             .Where(part => part.Item2 is not null)
-            .Select(part => $"{part.Item1} {ImportResultFormatting.FormatDuration(part.Item2)}")
+            .Select(part => $"{phaseNameLocalizer(part.Item1)} {ImportResultFormatting.FormatDuration(part.Item2)}")
             .ToArray();
 
         return string.Join("; ", parts);

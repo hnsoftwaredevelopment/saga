@@ -320,7 +320,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     partial void OnSelectedViewChanged(LibraryView value)
     {
-        RefreshActiveGroupOptions();
+        RefreshActiveGroupOptions(notifyActiveViewSources: false);
         RefreshGroupingOnly();
     }
 
@@ -567,7 +567,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             () =>
             {
                 viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
-                RefreshActiveGroupOptions();
+                RefreshActiveGroupOptions(notifyActiveViewSources: false);
             });
         var visibleCount = RefreshGroupingOnly(performance);
         performance.Measure("settings-schedule", QueueGroupingSettingsSave);
@@ -590,7 +590,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             () =>
             {
                 viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
-                RefreshActiveGroupOptions();
+                RefreshActiveGroupOptions(notifyActiveViewSources: false);
                 SelectNextAvailableGroupOption();
             });
         var visibleCount = RefreshGroupingOnly(performance);
@@ -618,7 +618,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 viewGroupings[SelectedView] = viewGroupings[SelectedView]
                     .Where(existing => existing != option)
                     .ToList();
-                RefreshActiveGroupOptions();
+                RefreshActiveGroupOptions(notifyActiveViewSources: false);
             });
         var visibleCount = RefreshGroupingOnly(performance);
         performance.Measure("settings-schedule", QueueGroupingSettingsSave);
@@ -626,7 +626,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         await Task.CompletedTask;
     }
 
-    private void RefreshActiveGroupOptions()
+    private void RefreshActiveGroupOptions(bool notifyActiveViewSources = true)
     {
         var desiredOptions = NormalizeGroupOptions(viewGroupings.GetValueOrDefault(SelectedView) ?? []);
         for (var index = ActiveGroupOptions.Count - 1; index >= 0; index--)
@@ -654,7 +654,10 @@ public sealed partial class LibraryViewModel : ObservableObject
         addGroupingCommand?.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(IsBookshelfGrouped));
         OnPropertyChanged(nameof(IsLibraryGrouped));
-        NotifyActiveViewSourcesChanged();
+        if (notifyActiveViewSources)
+        {
+            NotifyActiveViewSourcesChanged();
+        }
     }
 
     private void SelectNextAvailableGroupOption()
@@ -699,21 +702,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(ListGroupedLibraryNodesSource));
     }
 
-    private async Task SaveGroupingSettingsAsync(CancellationToken cancellationToken)
-    {
-        if (settingsStore is null)
-        {
-            return;
-        }
-
-        var settings = await settingsStore.LoadAsync(cancellationToken);
-        await settingsStore.SaveAsync(
-            settings with
-            {
-                LibraryGroupings = CreateGroupingSettings()
-            },
-            cancellationToken);
-    }
+    public bool HasPendingGroupingSettingsSave => !pendingGroupingSettingsSave.IsCompleted;
 
     public Task WaitForPendingGroupingSettingsSaveAsync() => pendingGroupingSettingsSave;
 
@@ -1633,10 +1622,24 @@ public sealed partial class LibraryViewModel : ObservableObject
     }
 
     private ImportResultViewModel CreateImportResultViewModel(ImportBatchResult result) =>
-        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync);
+        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync, LocalizeImportPhaseName);
 
     private ImportResultViewModel CreateImportResultViewModel(ImportRunResult result) =>
-        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync);
+        new(result, RetryFailedImportsAsync, LinkImportSuggestionAsync, LocalizeImportPhaseName);
+
+    private string LocalizeImportPhaseName(string phaseName) =>
+        phaseName switch
+        {
+            "local" => localize("ImportPhaseLocal"),
+            "size" => localize("ImportPhaseSize"),
+            "hash" => localize("ImportPhaseHash"),
+            "meta" => localize("ImportPhaseMetadata"),
+            "dup" => localize("ImportPhaseDuplicate"),
+            "copy" => localize("ImportPhaseCopy"),
+            "db" => localize("ImportPhaseDatabase"),
+            "cleanup" => localize("ImportPhaseCleanup"),
+            _ => phaseName
+        };
 
     private Task RetryFailedImportsAsync(IReadOnlyList<string> paths, CancellationToken cancellationToken) =>
         ImportFilesAsync(paths, cancellationToken, ImportRunContext.FileImport);

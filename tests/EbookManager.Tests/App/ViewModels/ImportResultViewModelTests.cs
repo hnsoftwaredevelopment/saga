@@ -49,8 +49,8 @@ public sealed class ImportResultViewModelTests
         item.FormatText.Should().Be("CBR");
         item.SizeText.Should().Be("1,5 MB");
         item.DurationText.Should().Be("1,2 s");
-        item.PhaseTimingsText.Should().Contain("hash 25 ms");
-        item.PhaseTimingsText.Should().Contain("meta 1,3 s");
+        item.PhaseTimingsText.Should().Contain("File recognition 25 ms");
+        item.PhaseTimingsText.Should().Contain("Metadata 1,3 s");
     }
 
     [Fact]
@@ -86,8 +86,29 @@ public sealed class ImportResultViewModelTests
                 ("db", TimeSpan.FromMilliseconds(80)),
                 ("meta", TimeSpan.FromMilliseconds(70)),
                 ("hash", TimeSpan.FromMilliseconds(50)));
-        viewModel.PhaseSummaryText.Should().Contain("db 80 ms");
-        viewModel.PhaseSummaryText.Should().Contain("hash 50 ms");
+        viewModel.PhaseSummaryText.Should().Contain("Save data 80 ms");
+        viewModel.PhaseSummaryText.Should().Contain("File recognition 50 ms");
+    }
+
+    [Fact]
+    public void Import_result_uses_supplied_phase_labels()
+    {
+        var viewModel = new ImportResultViewModel(
+            new ImportBatchResult(
+                Guid.NewGuid(),
+                [
+                    new ImportItemResult(
+                        "book.epub",
+                        ImportOutcome.Added,
+                        "added",
+                        Diagnostics: new ImportItemDiagnostics(
+                            TimeSpan.FromMilliseconds(100),
+                            PhaseTimings: new ImportPhaseTimings(Hashing: TimeSpan.FromMilliseconds(100))))
+                ]),
+            phaseNameLocalizer: phase => phase == "hash" ? "Bestandsherkenning" : phase);
+
+        viewModel.Items.Single().PhaseTimingsText.Should().Be("Bestandsherkenning 100 ms");
+        viewModel.PhaseSummaryText.Should().Contain("Bestandsherkenning 100 ms");
     }
 
     [Fact]

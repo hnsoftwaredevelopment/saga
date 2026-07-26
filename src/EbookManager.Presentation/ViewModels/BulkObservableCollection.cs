@@ -11,11 +11,12 @@ public sealed class BulkObservableCollection<T> : ObservableCollection<T>
     {
         ArgumentNullException.ThrowIfNull(items);
 
+        var replacement = new List<T>(items);
         suppressNotifications = true;
         try
         {
             Items.Clear();
-            foreach (var item in items)
+            foreach (var item in replacement)
             {
                 Items.Add(item);
             }

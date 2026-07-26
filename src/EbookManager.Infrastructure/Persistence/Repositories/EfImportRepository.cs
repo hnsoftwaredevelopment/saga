@@ -174,15 +174,32 @@ public sealed class EfImportRepository(
             TimeSpan.FromMilliseconds(item.DurationMilliseconds ?? 0),
             item.SizeBytes,
             item.Format,
-            new ImportPhaseTimings(
-                FromMilliseconds(item.AvailabilityCheckMilliseconds),
-                FromMilliseconds(item.SizeReadMilliseconds),
-                FromMilliseconds(item.HashingMilliseconds),
-                FromMilliseconds(item.MetadataReadMilliseconds),
-                FromMilliseconds(item.DuplicateCheckMilliseconds),
-                FromMilliseconds(item.ManagedCopyMilliseconds),
-                FromMilliseconds(item.DatabaseSaveMilliseconds),
-                FromMilliseconds(item.CleanupMilliseconds)));
+            ToPhaseTimings(item));
+    }
+
+    private static ImportPhaseTimings? ToPhaseTimings(ImportItemEntity item)
+    {
+        if (item.AvailabilityCheckMilliseconds is null &&
+            item.SizeReadMilliseconds is null &&
+            item.HashingMilliseconds is null &&
+            item.MetadataReadMilliseconds is null &&
+            item.DuplicateCheckMilliseconds is null &&
+            item.ManagedCopyMilliseconds is null &&
+            item.DatabaseSaveMilliseconds is null &&
+            item.CleanupMilliseconds is null)
+        {
+            return null;
+        }
+
+        return new ImportPhaseTimings(
+            FromMilliseconds(item.AvailabilityCheckMilliseconds),
+            FromMilliseconds(item.SizeReadMilliseconds),
+            FromMilliseconds(item.HashingMilliseconds),
+            FromMilliseconds(item.MetadataReadMilliseconds),
+            FromMilliseconds(item.DuplicateCheckMilliseconds),
+            FromMilliseconds(item.ManagedCopyMilliseconds),
+            FromMilliseconds(item.DatabaseSaveMilliseconds),
+            FromMilliseconds(item.CleanupMilliseconds));
     }
 
     private static long? ToMilliseconds(TimeSpan? duration) =>
