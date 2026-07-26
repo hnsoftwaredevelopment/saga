@@ -53,6 +53,43 @@ public sealed class ImportResultViewModelTests
     }
 
     [Fact]
+    public void Import_result_summarizes_phase_timings_across_items()
+    {
+        var viewModel = new ImportResultViewModel(new ImportBatchResult(
+            Guid.NewGuid(),
+            [
+                new ImportItemResult(
+                    "first.epub",
+                    ImportOutcome.Added,
+                    "added",
+                    Diagnostics: new ImportItemDiagnostics(
+                        TimeSpan.FromMilliseconds(100),
+                        PhaseTimings: new ImportPhaseTimings(
+                            Hashing: TimeSpan.FromMilliseconds(30),
+                            MetadataRead: TimeSpan.FromMilliseconds(70)))),
+                new ImportItemResult(
+                    "second.epub",
+                    ImportOutcome.Added,
+                    "added",
+                    Diagnostics: new ImportItemDiagnostics(
+                        TimeSpan.FromMilliseconds(100),
+                        PhaseTimings: new ImportPhaseTimings(
+                            Hashing: TimeSpan.FromMilliseconds(20),
+                            DatabaseSave: TimeSpan.FromMilliseconds(80))))
+            ]));
+
+        viewModel.HasPhaseSummaries.Should().BeTrue();
+        viewModel.PhaseSummaries.Select(summary => (summary.Name, summary.Duration))
+            .Should()
+            .Equal(
+                ("db", TimeSpan.FromMilliseconds(80)),
+                ("meta", TimeSpan.FromMilliseconds(70)),
+                ("hash", TimeSpan.FromMilliseconds(50)));
+        viewModel.PhaseSummaryText.Should().Contain("db 80 ms");
+        viewModel.PhaseSummaryText.Should().Contain("hash 50 ms");
+    }
+
+    [Fact]
     public void Visible_items_can_be_filtered_by_search_text_and_outcome()
     {
         var viewModel = new ImportResultViewModel(new ImportBatchResult(

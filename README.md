@@ -57,6 +57,7 @@ Milestone 10 builds on version `0.1` with import performance diagnostics and lar
 - Syncfusion-based compact List view with real columns, sorting, and grouping surface
 - Detailed view exposes the standard details-pane metadata fields as grid columns
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
+- aggregate import phase summaries in import result details
 
 ## Prerequisites
 

@@ -5,6 +5,7 @@
 - [ ] Import a small EPUB or PDF and open the import result details.
 - [ ] Confirm the details grid shows total duration and the new phase timing column.
 - [ ] Confirm phase timings include useful parts such as `hash`, `meta`, `dup`, `copy`, or `db`.
+- [ ] Confirm the import result details show an aggregate phase summary ordered by the phases that took the most total time.
 - [ ] Open the same import from import history and confirm the phase timings are still available.
 - [ ] Import or scan a folder with multiple formats and confirm phase timings appear per row.
 - [ ] Search the import result details for a phase label such as `meta` or `copy` and confirm matching rows remain visible.

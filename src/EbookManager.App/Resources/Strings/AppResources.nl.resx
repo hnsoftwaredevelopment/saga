@@ -66,6 +66,7 @@
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Import bezig</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Mogelijk duplicaat</value></data>
   <data name="ImportPhases" xml:space="preserve"><value>Fases</value></data>
+  <data name="ImportPhaseSummary" xml:space="preserve"><value>Fasesamenvatting</value></data>
   <data name="ImportPossibleShort" xml:space="preserve"><value>Mogelijk</value></data>
   <data name="ImportResults" xml:space="preserve"><value>Importresultaten</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Toegevoegd</value></data>

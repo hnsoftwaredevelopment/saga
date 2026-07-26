@@ -21,10 +21,10 @@ Large imports can expose performance problems that are invisible in small librar
 - Import item diagnostics now store phase timings for availability check, size read, hashing, metadata read, duplicate check, managed copy, database save, and cleanup.
 - Import result details show a compact phase timing column.
 - Phase timing diagnostics are persisted in SQLite import history.
+- Import result details show an aggregate phase summary across all imported files, ordered by total time spent per phase.
 
 ## Remaining Slices
 
-- Add aggregate phase summaries per import run.
 - Use phase diagnostics to identify and optimize the slowest path in large scans.
 - Improve user-facing import progress for files that take unusually long.
 - Consider safe optional cloud-file hydration as a later opt-in behavior.

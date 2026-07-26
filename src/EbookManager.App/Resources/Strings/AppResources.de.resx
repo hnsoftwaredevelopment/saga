@@ -407,6 +407,7 @@
   <data name="Rename" xml:space="preserve"><value>Umbenennen</value></data>
   <data name="ImportDuplicates" xml:space="preserve"><value>Duplikate</value></data>
   <data name="ImportPhases" xml:space="preserve"><value>Phasen</value></data>
+  <data name="ImportPhaseSummary" xml:space="preserve"><value>Phasenzusammenfassung</value></data>
   <data name="ImportPossibleShort" xml:space="preserve"><value>Möglich</value></data>
   <data name="ImportOutcomeAdded" xml:space="preserve"><value>Hinzugefügt</value></data>
   <data name="ImportOutcomePossibleDuplicate" xml:space="preserve"><value>Wahrscheinlich bereits vorhanden</value></data>

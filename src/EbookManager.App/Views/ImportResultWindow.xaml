@@ -54,6 +54,60 @@
           </StackPanel>
         </Border>
       </UniformGrid>
+      <Border Background="{DynamicResource AppBackgroundBrush}"
+              CornerRadius="10"
+              Padding="10"
+              Margin="0,12,0,0"
+              ToolTip="{Binding PhaseSummaryText}">
+        <Border.Style>
+          <Style TargetType="Border">
+            <Setter Property="Visibility" Value="Visible" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding HasPhaseSummaries}" Value="False">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <StackPanel>
+          <TextBlock Text="{loc:Loc ImportPhaseSummary}"
+                     FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     Margin="0,0,0,8" />
+          <ItemsControl ItemsSource="{Binding PhaseSummaries}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Grid Width="170"
+                      Margin="0,0,12,8">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+                  <DockPanel>
+                    <TextBlock Text="{Binding PercentageText}"
+                               DockPanel.Dock="Right"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock Text="{Binding Name}"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                  </DockPanel>
+                  <ProgressBar Grid.Row="1"
+                               Height="6"
+                               Margin="0,4,0,0"
+                               Minimum="0"
+                               Maximum="100"
+                               Value="{Binding Percentage}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
       <DockPanel Margin="0,12,0,0">
         <ComboBox DockPanel.Dock="Right"
                   Width="180"
