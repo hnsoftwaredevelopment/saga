@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress as Milestone 9.
+In progress as Milestone 12.
 
 ## Context
 
@@ -100,7 +100,32 @@ Detailed view should expose all standard metadata fields available in the detail
 - List view keeps the same standard metadata columns as Detailed view, minus the cover.
 - Grouping updates reuse the existing visible book rows so adding or removing grouping does not rebuild the filtered list.
 
-## Remaining Slices
+## Milestone 12 Scope
 
-- User-defined view settings should eventually remember grouping, sorting, and visible columns per view.
-- User-defined column visibility still needs a separate design.
+The current milestone focuses on finishing the grid experience created by Milestone 11 column visibility.
+
+### Slice 1: Fixed Grouped Headers
+
+- Detailed and List grouped views should keep a visible column header while grouped.
+- The grouped header should use the same visible-column model as the rows.
+- Hidden columns should disappear from both the header and row layout.
+- The header should remain understandable even when the grouped tree is scrolled.
+
+### Slice 2: Column Width Foundation
+
+- Capture current column widths per view.
+- Persist width changes for Detailed and List views.
+- Keep the defaults identical to the current layout when no custom widths exist.
+
+### Slice 3: Column Order Foundation
+
+- Prepare the column model for user-defined order.
+- Keep order per view.
+- Defer drag/drop UI if it would make the milestone too large.
+
+## Deferred
+
+- User-defined views.
+- Custom metadata columns.
+- Full custom grid replacement.
+- Import/cloud performance hardening.
