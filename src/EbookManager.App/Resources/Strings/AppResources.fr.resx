@@ -395,6 +395,8 @@
   </data>
   <data name="AppName" xml:space="preserve"><value>Saga</value></data>
   <data name="Close" xml:space="preserve"><value>Fermer</value></data>
+  <data name="Columns" xml:space="preserve"><value>Colonnes</value></data>
+  <data name="ColumnsTooltip" xml:space="preserve"><value>Choisissez les colonnes visibles pour cette vue</value></data>
   <data name="Cover" xml:space="preserve"><value>Couverture</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Créer une nouvelle bibliothèque</value></data>
   <data name="File" xml:space="preserve"><value>Fichier</value></data>

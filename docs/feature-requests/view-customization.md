@@ -24,6 +24,7 @@ The first milestone slice adds a shared column model and persists visible column
 - Added `LibraryColumnSettings` to app settings for Detailed and List views.
 - Added `LibraryViewModel` APIs to read and update visible columns per view.
 - Bound the standard Detailed and List grids to the persisted visible-column model.
+- Added a live column chooser in the library side panel for Detailed and List views.
 - Added settings round-trip and viewmodel persistence tests.
 
 ## Current Findings
@@ -32,6 +33,5 @@ The first milestone slice adds a shared column model and persists visible column
 
 ## Remaining Slices
 
-- Add a user-facing column chooser for Detailed and List views.
 - Decide whether column order should be user-editable in this milestone or deferred.
-- Add manual test coverage once the UI is available.
+- Decide whether grouped Detailed and List templates should follow hidden columns in this milestone or as part of the future grid/view makeover.

@@ -4,8 +4,8 @@
 
 - [ ] Open Saga and confirm Detailed view still shows the current default columns.
 - [ ] Switch to List view and confirm it still shows the current default columns without the cover column.
-- [ ] After column chooser UI is added, hide a column in Detailed view and confirm it disappears immediately.
-- [ ] After column chooser UI is added, hide a column in List view and confirm it disappears immediately.
+- [ ] Open the Columns section in Detailed view, hide a column and confirm it disappears immediately.
+- [ ] Open the Columns section in List view, hide a column and confirm it disappears immediately.
 - [ ] Switch to List view and confirm Detailed column choices do not affect List.
 - [ ] Restart Saga and confirm saved column visibility is restored.
 - [ ] Confirm Bookshelf remains cover-first and does not show normal grid column customization.

@@ -111,6 +111,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public BulkObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
     public ObservableCollection<LibraryGroupOption> ActiveGroupOptions { get; } = [];
     public ObservableCollection<LibraryColumnOption> ActiveColumnOptions { get; } = [];
+    public ObservableCollection<LibraryColumnChoiceViewModel> ColumnChoices { get; } = [];
     public IReadOnlyList<LibraryGroupOption> AvailableGroupOptions { get; } =
     [
         LibraryGroupOption.Author,
@@ -143,6 +144,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     public BookDetailsViewModel Details { get; }
 
     public ImportJobViewModel? ImportJob => importAgent?.Job;
+
+    public bool HasColumnChoices => ColumnChoices.Count > 0;
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -257,6 +260,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         removeLanguageFilterCommand ??= new AsyncRelayCommand<FacetFilterViewModel>(filter => RemoveFilterValueAsync(filter, MetadataFilterKind.Language));
     public IAsyncRelayCommand NormalizeLanguageMetadataCommand =>
         normalizeLanguageMetadataCommand ??= new AsyncRelayCommand(NormalizeLanguageMetadataAsync);
+    public IAsyncRelayCommand<LibraryColumnChoiceViewModel> ToggleColumnCommand =>
+        toggleColumnCommand ??= new AsyncRelayCommand<LibraryColumnChoiceViewModel>(ToggleColumnAsync);
 
     private AsyncRelayCommand? refreshCommand;
     private AsyncRelayCommand? addBooksCommand;
@@ -279,6 +284,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand<FacetFilterViewModel>? renameLanguageFilterCommand;
     private AsyncRelayCommand<FacetFilterViewModel>? removeLanguageFilterCommand;
     private AsyncRelayCommand? normalizeLanguageMetadataCommand;
+    private AsyncRelayCommand<LibraryColumnChoiceViewModel>? toggleColumnCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -855,6 +861,50 @@ public sealed partial class LibraryViewModel : ObservableObject
                 ActiveColumnOptions.Move(currentIndex, desiredIndex);
             }
         }
+
+        RefreshColumnChoices();
+    }
+
+    private void RefreshColumnChoices()
+    {
+        var availableOptions = GetDefaultColumns(SelectedView);
+        var visibleOptions = GetVisibleColumns(SelectedView).ToHashSet();
+        ColumnChoices.Clear();
+        foreach (var option in availableOptions)
+        {
+            ColumnChoices.Add(new LibraryColumnChoiceViewModel(option, visibleOptions.Contains(option)));
+        }
+
+        OnPropertyChanged(nameof(HasColumnChoices));
+    }
+
+    private async Task ToggleColumnAsync(LibraryColumnChoiceViewModel? choice, CancellationToken cancellationToken)
+    {
+        if (choice is null || SelectedView == LibraryView.Bookshelf)
+        {
+            return;
+        }
+
+        var columns = GetVisibleColumns(SelectedView).ToList();
+        if (choice.IsSelected)
+        {
+            if (!columns.Contains(choice.Option))
+            {
+                columns.Add(choice.Option);
+            }
+        }
+        else
+        {
+            columns.Remove(choice.Option);
+        }
+
+        if (columns.Count == 0)
+        {
+            choice.IsSelected = true;
+            return;
+        }
+
+        await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
     }
 
     private async Task SaveColumnSettingsAsync(CancellationToken cancellationToken)
