@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress as Milestone 10.
+Ready for review as Milestone 10.
 
 ## Context
 
@@ -22,9 +22,18 @@ Large imports can expose performance problems that are invisible in small librar
 - Import result details show a compact phase timing column.
 - Phase timing diagnostics are persisted in SQLite import history.
 - Import result details show an aggregate phase summary across all imported files, ordered by total time spent per phase.
+- Import phase labels and aggregate summaries are localized and use user-facing names instead of internal diagnostic codes.
+- Import result details can handle large import histories without crashing by using bulk refreshes and DataGrid virtualization.
+- File hashing uses a shared large-buffer implementation to reduce overhead during large imports.
+- Large-library view updates were hardened so grouping, sorting, and bookshelf rendering stay responsive with thousands of books.
+
+## Current Findings
+
+- Exact duplicate detection remains intentionally hash-based. This keeps duplicate handling reliable, but large imports with many already-known books will still spend most time in file recognition.
+- OneDrive/cloud-only or unreliable cloud files can still fail when the file provider reports a local file but cannot actually hydrate it. Saga currently treats those as safe failed imports instead of forcing cloud hydration.
+- Slow individual files can be investigated by sorting the import details grid by duration.
 
 ## Remaining Slices
 
-- Use phase diagnostics to identify and optimize the slowest path in large scans.
-- Improve user-facing import progress for files that take unusually long.
 - Consider safe optional cloud-file hydration as a later opt-in behavior.
+- Consider a help or information affordance for the import phase summary if users need more explanation inside the app.
