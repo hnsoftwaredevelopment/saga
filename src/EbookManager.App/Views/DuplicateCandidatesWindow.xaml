@@ -174,7 +174,7 @@
                 GridLinesVisibility="Horizontal"
                 HeadersVisibility="Column"
                 EnableRowVirtualization="True"
-                EnableColumnVirtualization="True"
+                EnableColumnVirtualization="False"
                 SelectionMode="Extended"
                 SelectionUnit="FullRow"
                 SelectionChanged="DuplicateRowsSelectionChanged"

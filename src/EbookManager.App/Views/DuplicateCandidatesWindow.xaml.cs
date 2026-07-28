@@ -347,11 +347,12 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         Dispatcher.BeginInvoke(
             () =>
             {
+                DuplicateRowsGrid.Items.Refresh();
                 DuplicateRowsGrid.InvalidateMeasure();
                 DuplicateRowsGrid.InvalidateArrange();
                 DuplicateRowsGrid.UpdateLayout();
             },
-            DispatcherPriority.Loaded);
+            DispatcherPriority.ContextIdle);
     }
 
     private async Task SaveColumnWidthsAsync(CancellationToken cancellationToken)

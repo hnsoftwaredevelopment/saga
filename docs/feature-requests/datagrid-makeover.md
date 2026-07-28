@@ -143,6 +143,8 @@ Status: implemented. Detailed and List views allow header-based column resizing,
 
 Duplicate candidates row actions use compact icon-only buttons with localized tooltips so action columns can remain narrow while content columns stay resizable. Merge uses a success color, details uses an information color, and delete uses the existing danger color.
 
+Column virtualization is disabled for the duplicate candidates grid because the narrow icon action columns should render immediately without requiring a manual column resize.
+
 ### Slice 3: Column Order Foundation
 
 - Prepare the column model for user-defined order.
