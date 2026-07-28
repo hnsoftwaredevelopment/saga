@@ -135,10 +135,11 @@ Status: implemented by refreshing Bookshelf layout after relevant view/source ch
 
 - Capture current column widths per view.
 - Persist width changes for Detailed and List views.
+- Allow users to resize Detailed and List grid columns directly in the header.
 - Keep the defaults identical to the current layout when no custom widths exist.
 - Use the same settings foundation later for the duplicate candidates view, where the default columns can be too narrow and user resizing should be remembered.
 
-Status: in progress. Detailed and List views persist resized Syncfusion column widths and grouped rows reuse the same width snapshot. Duplicate candidates is documented as the next consumer of the same foundation.
+Status: in progress. Detailed and List views allow header-based column resizing, persist resized Syncfusion column widths, and grouped rows reuse the same width snapshot. Duplicate candidates is documented as the next consumer of the same foundation.
 
 ### Slice 3: Column Order Foundation
 

@@ -152,6 +152,7 @@
                          AllowEditing="False"
                          AllowSorting="True"
                          AllowTriStateSorting="True"
+                         AllowResizingColumns="True"
                          AllowGrouping="False"
                          ShowGroupDropArea="False"
                          NavigationMode="Row"
