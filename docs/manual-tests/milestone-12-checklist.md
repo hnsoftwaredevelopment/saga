@@ -17,5 +17,7 @@
 
 - [ ] Grouping by Author and Series still works.
 - [ ] Multi-value grouping, such as Authors or Tags, still shows books under individual values.
+- [ ] Start Saga with Bookshelf as default view and confirm covers appear without resizing the window.
+- [ ] In Bookshelf, sort by Author, group by Tags and Series, then expand groups and confirm counted books are visible.
 - [ ] Column visibility remains separate between Detailed and List.
 - [ ] Large libraries remain responsive when grouping is added or removed.

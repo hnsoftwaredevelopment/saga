@@ -99,6 +99,7 @@ Detailed view should expose all standard metadata fields available in the detail
 - Detailed grouped view keeps all standard details-pane metadata columns visible.
 - List view keeps the same standard metadata columns as Detailed view, minus the cover.
 - Grouping updates reuse the existing visible book rows so adding or removing grouping does not rebuild the filtered list.
+- Bookshelf layout refreshes itself after loading, view changes, grouping source changes, and group expansion so covers appear without requiring a manual window resize.
 
 ## Milestone 12 Scope
 
@@ -121,6 +122,14 @@ Status: implemented as a visually distinct fixed header row for grouped Detailed
 - Header labels should align with the column content, use theme-aware vertical separator lines, and stand out through a subtle theme-aware background.
 
 Status: implemented by styling the native `SfDataGrid.HeaderStyle`, preserving Syncfusion sorting behavior. Standard headers are left aligned, use a dedicated theme-aware header background, use the theme accent color for vertical separator lines, and enable Syncfusion tri-state sorting.
+
+### Slice 1c: Bookshelf Group Rendering Stability
+
+- Bookshelf should show covers immediately after startup when it is the default view.
+- Bookshelf grouped headers should render their books when expanded, including multi-level grouping such as tags and series.
+- Fixes should not remove virtualization from the main ungrouped Bookshelf surface.
+
+Status: implemented by refreshing Bookshelf layout after relevant view/source changes and using stable wrap layout for expanded grouped cover rows while preserving virtualization for the main Bookshelf.
 
 ### Slice 2: Column Width Foundation
 
