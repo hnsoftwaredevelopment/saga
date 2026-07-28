@@ -168,6 +168,7 @@
                 SelectionUnit="FullRow"
                 SelectionChanged="DuplicateRowsSelectionChanged"
                 ScrollViewer.CanContentScroll="True"
+                ScrollViewer.HorizontalScrollBarVisibility="Auto"
                 VirtualizingPanel.IsVirtualizing="True"
                 VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                 VirtualizingPanel.VirtualizationMode="Recycling">
@@ -219,7 +220,7 @@
           </ContextMenu>
         </DataGrid.ContextMenu>
         <DataGrid.Columns>
-          <DataGridTemplateColumn Header="{loc:Loc Cover}" Width="74">
+          <DataGridTemplateColumn Header="{loc:Loc Cover}" SortMemberPath="Cover" CanUserSort="False" Width="74">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Border Width="38"
@@ -234,14 +235,14 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="2*" />
-          <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" Width="2*" />
-          <DataGridTextColumn Header="{loc:Loc FileType}" Binding="{Binding FormatText}" Width="110" />
-          <DataGridTextColumn Header="{loc:Loc Match}" Binding="{Binding MatchKind, Converter={StaticResource DuplicateMatchKindToLocalizedStringConverter}}" Width="120" />
-          <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" Width="1.4*" />
-          <DataGridTextColumn Header="{loc:Loc Language}" Binding="{Binding Language}" Width="90" />
-          <DataGridTextColumn Header="{loc:Loc Status}" Binding="{Binding Status}" Width="110" />
-          <DataGridTemplateColumn Header="{loc:Loc Merge}" Width="120">
+          <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" SortMemberPath="Title" Width="260" />
+          <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" SortMemberPath="Authors" Width="220" />
+          <DataGridTextColumn Header="{loc:Loc FileType}" Binding="{Binding FormatText}" SortMemberPath="FormatText" Width="110" />
+          <DataGridTextColumn Header="{loc:Loc Match}" Binding="{Binding MatchKind, Converter={StaticResource DuplicateMatchKindToLocalizedStringConverter}}" SortMemberPath="MatchKind" Width="120" />
+          <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" SortMemberPath="Series" Width="180" />
+          <DataGridTextColumn Header="{loc:Loc Language}" Binding="{Binding Language}" SortMemberPath="Language" Width="90" />
+          <DataGridTextColumn Header="{loc:Loc Status}" Binding="{Binding Status}" SortMemberPath="Status" Width="110" />
+          <DataGridTemplateColumn Header="{loc:Loc Merge}" SortMemberPath="Merge" CanUserSort="False" Width="120">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Button Content="{loc:Loc Merge}"
@@ -250,7 +251,7 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          <DataGridTemplateColumn Header="{loc:Loc Action}" Width="160">
+          <DataGridTemplateColumn Header="{loc:Loc Action}" SortMemberPath="Action" CanUserSort="False" Width="160">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Button Content="{loc:Loc DeleteDuplicate}"
@@ -259,7 +260,7 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          <DataGridTemplateColumn Header="{loc:Loc Details}" Width="90">
+          <DataGridTemplateColumn Header="{loc:Loc Details}" SortMemberPath="Details" CanUserSort="False" Width="90">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Button Content="{loc:Loc Details}"

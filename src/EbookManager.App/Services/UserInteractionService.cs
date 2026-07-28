@@ -1,13 +1,17 @@
 using EbookManager.Presentation.Abstractions;
 using EbookManager.Presentation.ViewModels;
 using EbookManager.App.Views;
+using EbookManager.Domain.Abstractions;
 using Microsoft.Win32;
 
 namespace EbookManager.App.Services;
 
-public sealed class UserInteractionService(DeleteConfirmationService deleteConfirmationService) : IUserInteractionService
+public sealed class UserInteractionService(
+    DeleteConfirmationService deleteConfirmationService,
+    IAppSettingsStore settingsStore) : IUserInteractionService
 {
     private readonly DeleteConfirmationService deleteConfirmationService = deleteConfirmationService;
+    private readonly IAppSettingsStore settingsStore = settingsStore;
 
     public Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken)
     {
@@ -128,7 +132,7 @@ public sealed class UserInteractionService(DeleteConfirmationService deleteConfi
     public Task ShowDuplicateCandidatesAsync(DuplicateCandidatesViewModel candidates, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var window = new DuplicateCandidatesWindow(candidates);
+        var window = new DuplicateCandidatesWindow(candidates, settingsStore);
         if (System.Windows.Application.Current?.MainWindow is { } owner)
         {
             window.Owner = owner;

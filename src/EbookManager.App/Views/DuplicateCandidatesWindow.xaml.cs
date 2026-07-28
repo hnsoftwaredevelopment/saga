@@ -1,9 +1,13 @@
 using EbookManager.Presentation.ViewModels;
 using EbookManager.App.Localization;
+using EbookManager.Domain.Abstractions;
+using EbookManager.Domain.Settings;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -14,20 +18,39 @@ namespace EbookManager.App.Views;
 public partial class DuplicateCandidatesWindow : System.Windows.Window
 {
     private static readonly TimeSpan MergeSuccessMessageDuration = TimeSpan.FromSeconds(4);
+    private static readonly TimeSpan ColumnWidthSaveDelay = TimeSpan.FromMilliseconds(700);
+    private readonly IAppSettingsStore settingsStore;
     private readonly DispatcherTimer mergeSuccessMessageTimer;
+    private readonly DispatcherTimer columnWidthSaveTimer;
+    private readonly EventHandler columnWidthChangedHandler;
     private bool isMergingCandidate;
+    private bool isApplyingColumnWidths;
 
-    public DuplicateCandidatesWindow(DuplicateCandidatesViewModel viewModel)
+    public DuplicateCandidatesWindow(DuplicateCandidatesViewModel viewModel, IAppSettingsStore settingsStore)
     {
         InitializeComponent();
         DataContext = viewModel;
+        this.settingsStore = settingsStore;
+        columnWidthChangedHandler = (_, _) => ScheduleColumnWidthSave();
         mergeSuccessMessageTimer = new DispatcherTimer
         {
             Interval = MergeSuccessMessageDuration
         };
+        columnWidthSaveTimer = new DispatcherTimer
+        {
+            Interval = ColumnWidthSaveDelay
+        };
         mergeSuccessMessageTimer.Tick += MergeSuccessMessageTimerTick;
+        columnWidthSaveTimer.Tick += ColumnWidthSaveTimerTick;
         viewModel.PropertyChanged += ViewModelPropertyChanged;
+        Loaded += DuplicateCandidatesWindowLoaded;
         Closed += DuplicateCandidatesWindowClosed;
+    }
+
+    private async void DuplicateCandidatesWindowLoaded(object sender, RoutedEventArgs e)
+    {
+        AttachColumnWidthTracking();
+        await ApplyColumnWidthsAsync(CancellationToken.None);
     }
 
     private void CloseClicked(object sender, System.Windows.RoutedEventArgs e)
@@ -223,13 +246,142 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         }
     }
 
-    private void DuplicateCandidatesWindowClosed(object? sender, EventArgs e)
+    private async void ColumnWidthSaveTimerTick(object? sender, EventArgs e)
     {
+        columnWidthSaveTimer.Stop();
+        await SaveColumnWidthsAsync(CancellationToken.None);
+    }
+
+    private async void DuplicateCandidatesWindowClosed(object? sender, EventArgs e)
+    {
+        Loaded -= DuplicateCandidatesWindowLoaded;
         mergeSuccessMessageTimer.Stop();
+        columnWidthSaveTimer.Stop();
         mergeSuccessMessageTimer.Tick -= MergeSuccessMessageTimerTick;
+        columnWidthSaveTimer.Tick -= ColumnWidthSaveTimerTick;
+        DetachColumnWidthTracking();
         if (DataContext is DuplicateCandidatesViewModel viewModel)
         {
             viewModel.PropertyChanged -= ViewModelPropertyChanged;
         }
+
+        await SaveColumnWidthsAsync(CancellationToken.None);
     }
+
+    private void AttachColumnWidthTracking()
+    {
+        var descriptor = DependencyPropertyDescriptor.FromProperty(
+            DataGridColumn.WidthProperty,
+            typeof(DataGridColumn));
+        if (descriptor is null)
+        {
+            return;
+        }
+
+        foreach (var column in DuplicateRowsGrid.Columns)
+        {
+            descriptor.RemoveValueChanged(column, columnWidthChangedHandler);
+            descriptor.AddValueChanged(column, columnWidthChangedHandler);
+        }
+    }
+
+    private void DetachColumnWidthTracking()
+    {
+        var descriptor = DependencyPropertyDescriptor.FromProperty(
+            DataGridColumn.WidthProperty,
+            typeof(DataGridColumn));
+        if (descriptor is null)
+        {
+            return;
+        }
+
+        foreach (var column in DuplicateRowsGrid.Columns)
+        {
+            descriptor.RemoveValueChanged(column, columnWidthChangedHandler);
+        }
+    }
+
+    private void ScheduleColumnWidthSave()
+    {
+        if (isApplyingColumnWidths)
+        {
+            return;
+        }
+
+        columnWidthSaveTimer.Stop();
+        columnWidthSaveTimer.Start();
+    }
+
+    private async Task ApplyColumnWidthsAsync(CancellationToken cancellationToken)
+    {
+        var settings = await settingsStore.LoadAsync(cancellationToken);
+        var widths = settings.LibraryColumnWidths?.DuplicateCandidates;
+        if (widths is null || widths.Count == 0)
+        {
+            return;
+        }
+
+        isApplyingColumnWidths = true;
+        try
+        {
+            foreach (var column in DuplicateRowsGrid.Columns)
+            {
+                var key = GetColumnKey(column);
+                if (key is not null &&
+                    widths.TryGetValue(key, out var width) &&
+                    IsUsableColumnWidth(width))
+                {
+                    column.Width = new DataGridLength(width);
+                }
+            }
+        }
+        finally
+        {
+            isApplyingColumnWidths = false;
+        }
+    }
+
+    private async Task SaveColumnWidthsAsync(CancellationToken cancellationToken)
+    {
+        var widths = CaptureColumnWidths();
+        if (widths.Count == 0)
+        {
+            return;
+        }
+
+        var settings = await settingsStore.LoadAsync(cancellationToken);
+        await settingsStore.SaveAsync(
+            settings with
+            {
+                LibraryColumnWidths = new LibraryColumnWidthSettings(
+                    settings.LibraryColumnWidths?.Detailed,
+                    settings.LibraryColumnWidths?.List,
+                    widths)
+            },
+            cancellationToken);
+    }
+
+    private IReadOnlyDictionary<string, double> CaptureColumnWidths()
+    {
+        var widths = new Dictionary<string, double>(StringComparer.Ordinal);
+        foreach (var column in DuplicateRowsGrid.Columns)
+        {
+            var key = GetColumnKey(column);
+            var width = column.ActualWidth > 0 ? column.ActualWidth : column.Width.DisplayValue;
+            if (key is not null && IsUsableColumnWidth(width))
+            {
+                widths[key] = Math.Round(width, 2);
+            }
+        }
+
+        return widths;
+    }
+
+    private static string? GetColumnKey(DataGridColumn column) =>
+        string.IsNullOrWhiteSpace(column.SortMemberPath)
+            ? null
+            : column.SortMemberPath;
+
+    private static bool IsUsableColumnWidth(double width) =>
+        double.IsFinite(width) && width >= 24 && width <= 2000;
 }
