@@ -4,12 +4,12 @@
 
 - [ ] Open Detailed view without grouping and confirm the normal header is visible.
 - [ ] Click a Detailed view column header and confirm sorting cycles through ascending, descending, and no sorting.
-- [ ] Confirm Detailed view headers are left aligned and use theme-aware separator lines.
+- [ ] Confirm Detailed view headers are left aligned, use a subtle theme-aware background, and only show vertical separator lines.
 - [ ] Add grouping in Detailed view and confirm the grouped layout still shows a visible column header.
 - [ ] Hide a column in Detailed view and confirm the grouped header and grouped rows both hide it.
 - [ ] Open List view without grouping and confirm the normal header is visible.
 - [ ] Click a List view column header and confirm sorting cycles through ascending, descending, and no sorting.
-- [ ] Confirm List view headers are left aligned and use theme-aware separator lines.
+- [ ] Confirm List view headers are left aligned, use a subtle theme-aware background, and only show vertical separator lines.
 - [ ] Add grouping in List view and confirm the grouped layout still shows a visible column header.
 - [ ] Hide a column in List view and confirm the grouped header and grouped rows both hide it.
 

@@ -4,6 +4,7 @@
   <sys:Boolean x:Key="EbookManagerTheme">True</sys:Boolean>
   <Color x:Key="AppBackgroundColor">#FFF1F2</Color>
   <Color x:Key="PanelBackgroundColor">#FFFFFF</Color>
+  <Color x:Key="GridHeaderBackgroundColor">#FFE4E6</Color>
   <Color x:Key="TextPrimaryColor">#34151B</Color>
   <Color x:Key="TextSecondaryColor">#75424C</Color>
   <Color x:Key="AccentColor">#DC2626</Color>
@@ -11,6 +12,7 @@
   <Color x:Key="SearchHighlightColor">#FFC4C4</Color>
   <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource AppBackgroundColor}" />
   <SolidColorBrush x:Key="PanelBackgroundBrush" Color="{StaticResource PanelBackgroundColor}" />
+  <SolidColorBrush x:Key="GridHeaderBackgroundBrush" Color="{StaticResource GridHeaderBackgroundColor}" />
   <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
   <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
   <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
