@@ -20,6 +20,7 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
         true,
         new DuplicateMergeDefaultSettings(),
         null,
+        null,
         null);
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {

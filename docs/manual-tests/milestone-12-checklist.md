@@ -19,5 +19,8 @@
 - [ ] Multi-value grouping, such as Authors or Tags, still shows books under individual values.
 - [ ] Start Saga with Bookshelf as default view and confirm covers appear without resizing the window.
 - [ ] In Bookshelf, sort by Author, group by Tags and Series, then expand groups and confirm counted books are visible.
+- [ ] Resize columns in Detailed view, restart Saga, and confirm the widths are restored.
+- [ ] Resize columns in List view, restart Saga, and confirm the widths are restored.
+- [ ] Resize columns, enable grouping, and confirm grouped headers and rows use the same widths.
 - [ ] Column visibility remains separate between Detailed and List.
 - [ ] Large libraries remain responsive when grouping is added or removed.

@@ -754,6 +754,32 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Column_widths_are_saved_per_grid_view()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.SetColumnWidthAsync(LibraryView.Detailed, LibraryColumnOption.Title, 345.678);
+        await viewModel.SetColumnWidthAsync(LibraryView.List, LibraryColumnOption.Format, 98.25);
+
+        viewModel.GetColumnWidth(LibraryView.Detailed, LibraryColumnOption.Title, 220).Should().Be(345.68);
+        viewModel.GetColumnWidth(LibraryView.List, LibraryColumnOption.Format, 130).Should().Be(98.25);
+        viewModel.GetColumnWidth(LibraryView.Detailed, LibraryColumnOption.Authors, 220).Should().Be(220);
+        settingsStore.Settings.LibraryColumnWidths.Should().NotBeNull();
+        settingsStore.Settings.LibraryColumnWidths!.Detailed.Should().Contain("Title", 345.68);
+        settingsStore.Settings.LibraryColumnWidths.List.Should().Contain("Format", 98.25);
+
+        var reloadedViewModel = CreateViewModel(
+            [CreateBook("Book", ["Author"])],
+            settingsStore: settingsStore);
+        await reloadedViewModel.RefreshAsync();
+
+        reloadedViewModel.GetColumnWidth(LibraryView.Detailed, LibraryColumnOption.Title, 220).Should().Be(345.68);
+        reloadedViewModel.GetColumnWidth(LibraryView.List, LibraryColumnOption.Format, 130).Should().Be(98.25);
+    }
+
+    [Fact]
     public async Task Grouping_refresh_preserves_expanded_group_nodes()
     {
         var book = CreateBook("Book", ["Author"], series: "Series");

@@ -9,6 +9,7 @@ internal sealed class LibraryGridColumnVisibility
     private readonly SfDataGrid grid;
     private readonly LibraryView view;
     private LibraryViewModel? viewModel;
+    private bool isApplyingLayout;
 
     public LibraryGridColumnVisibility(SfDataGrid grid, LibraryView view)
     {
@@ -30,6 +31,7 @@ internal sealed class LibraryGridColumnVisibility
         if (viewModel is not null)
         {
             viewModel.ActiveColumnOptions.CollectionChanged += ActiveColumnOptionsChanged;
+            grid.ResizingColumns += GridResizingColumns;
         }
 
         Apply();
@@ -40,6 +42,7 @@ internal sealed class LibraryGridColumnVisibility
         if (viewModel is not null)
         {
             viewModel.ActiveColumnOptions.CollectionChanged -= ActiveColumnOptionsChanged;
+            grid.ResizingColumns -= GridResizingColumns;
             viewModel = null;
         }
     }
@@ -51,20 +54,50 @@ internal sealed class LibraryGridColumnVisibility
             return;
         }
 
-        var visibleColumns = viewModel.GetVisibleColumns(view).ToHashSet();
-
-        foreach (var column in grid.Columns)
+        isApplyingLayout = true;
+        try
         {
-            if (TryGetColumnOption(column.MappingName, out var option))
+            var visibleColumns = viewModel.GetVisibleColumns(view).ToHashSet();
+
+            foreach (var column in grid.Columns)
             {
-                column.IsHidden = !visibleColumns.Contains(option);
+                if (TryGetColumnOption(column.MappingName, out var option))
+                {
+                    column.IsHidden = !visibleColumns.Contains(option);
+                    column.Width = viewModel.GetColumnWidth(view, option, column.Width);
+                }
             }
+        }
+        finally
+        {
+            isApplyingLayout = false;
         }
     }
 
     private void ActiveColumnOptionsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         Apply();
+    }
+
+    private async void GridResizingColumns(object? sender, ResizingColumnsEventArgs e)
+    {
+        if (isApplyingLayout ||
+            e.Reason != ColumnResizingReason.Resized ||
+            viewModel is null ||
+            e.ColumnIndex < 0 ||
+            e.ColumnIndex >= grid.Columns.Count)
+        {
+            return;
+        }
+
+        var column = grid.Columns[e.ColumnIndex];
+        if (!TryGetColumnOption(column.MappingName, out var option))
+        {
+            return;
+        }
+
+        var width = e.Width > 0 ? e.Width : column.ActualWidth;
+        await viewModel.SetColumnWidthAsync(view, option, width, CancellationToken.None);
     }
 
     private static bool TryGetColumnOption(string mappingName, out LibraryColumnOption option)
