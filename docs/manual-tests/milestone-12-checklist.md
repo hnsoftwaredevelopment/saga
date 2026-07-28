@@ -23,5 +23,6 @@
 - [ ] Resize columns in List view by dragging the header edge, restart Saga, and confirm the widths are restored.
 - [ ] Resize columns, enable grouping, and confirm grouped headers and rows use the same widths.
 - [ ] Resize columns in the duplicate candidates window, close and reopen the window, and confirm the widths are restored.
+- [ ] Confirm duplicate candidate row actions use compact icons with tooltips for merge, delete, and details.
 - [ ] Column visibility remains separate between Detailed and List.
 - [ ] Large libraries remain responsive when grouping is added or removed.
