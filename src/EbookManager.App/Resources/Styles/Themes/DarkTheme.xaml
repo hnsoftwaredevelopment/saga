@@ -8,6 +8,8 @@
   <Color x:Key="TextPrimaryColor">#F9FAFB</Color>
   <Color x:Key="TextSecondaryColor">#CBD5E1</Color>
   <Color x:Key="AccentColor">#7C93FF</Color>
+  <Color x:Key="InfoColor">#60A5FA</Color>
+  <Color x:Key="SuccessColor">#4ADE80</Color>
   <Color x:Key="DangerColor">#FF6B6B</Color>
   <Color x:Key="SearchHighlightColor">#6B5F1F</Color>
   <SolidColorBrush x:Key="AppBackgroundBrush" Color="{StaticResource AppBackgroundColor}" />
@@ -16,6 +18,8 @@
   <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
   <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
   <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+  <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}" />
+  <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
   <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
   <SolidColorBrush x:Key="SearchHighlightBrush" Color="{StaticResource SearchHighlightColor}" />
 </ResourceDictionary>

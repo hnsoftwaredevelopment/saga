@@ -141,7 +141,7 @@ Status: implemented by refreshing Bookshelf layout after relevant view/source ch
 
 Status: implemented. Detailed and List views allow header-based column resizing, persist resized Syncfusion column widths, and grouped rows reuse the same width snapshot. Duplicate candidates now uses the same settings foundation for its WPF DataGrid column widths.
 
-Duplicate candidates row actions use compact icon-only buttons with localized tooltips so action columns can remain narrow while content columns stay resizable.
+Duplicate candidates row actions use compact icon-only buttons with localized tooltips so action columns can remain narrow while content columns stay resizable. Merge uses a success color, details uses an information color, and delete uses the existing danger color.
 
 ### Slice 3: Column Order Foundation
 

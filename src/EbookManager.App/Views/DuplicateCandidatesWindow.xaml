@@ -12,20 +12,12 @@
     <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
     <converters:DuplicateMatchKindToLocalizedStringConverter x:Key="DuplicateMatchKindToLocalizedStringConverter" />
     <Style x:Key="DuplicateIconButtonStyle" TargetType="{x:Type Button}">
-      <Setter Property="Width" Value="32" />
-      <Setter Property="Height" Value="28" />
-      <Setter Property="Padding" Value="5" />
+      <Setter Property="Width" Value="30" />
+      <Setter Property="Height" Value="26" />
+      <Setter Property="Padding" Value="2" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Cursor" Value="Hand" />
-    </Style>
-    <Style x:Key="DuplicateIconPathStyle" TargetType="{x:Type Path}">
-      <Setter Property="Width" Value="18" />
-      <Setter Property="Height" Value="18" />
-      <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="Stroke" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="StrokeThickness" Value="0" />
-      <Setter Property="Stretch" Value="Uniform" />
     </Style>
     <Style x:Key="DuplicateFilterToggleStyle" TargetType="{x:Type ToggleButton}">
       <Setter Property="Background" Value="Transparent" />
@@ -92,9 +84,10 @@
                 Command="{Binding DeleteSelectedCandidatesCommand}"
                 Style="{StaticResource DuplicateIconButtonStyle}"
                 ToolTip="{loc:Loc DeleteSelectedDuplicatesTooltip}">
-          <Path Data="{StaticResource DeleteIconGeometry}"
-                Style="{StaticResource DuplicateIconPathStyle}"
-                Fill="{DynamicResource DangerBrush}" />
+          <Viewbox Width="22" Height="22">
+            <Path Data="{StaticResource DeleteIconGeometry}"
+                  Fill="{DynamicResource DangerBrush}" />
+          </Viewbox>
         </Button>
         <ToggleButton DockPanel.Dock="Right"
                       Content="{loc:Loc ExactMatchesOnly}"
@@ -260,39 +253,44 @@
           <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" SortMemberPath="Series" Width="180" />
           <DataGridTextColumn Header="{loc:Loc Language}" Binding="{Binding Language}" SortMemberPath="Language" Width="90" />
           <DataGridTextColumn Header="{loc:Loc Status}" Binding="{Binding Status}" SortMemberPath="Status" Width="110" />
-          <DataGridTemplateColumn Header="{loc:Loc Merge}" SortMemberPath="Merge" CanUserSort="False" Width="58" MinWidth="58" MaxWidth="58">
+          <DataGridTemplateColumn Header="{loc:Loc Merge}" SortMemberPath="Merge" CanUserSort="False" Width="52" MinWidth="52" MaxWidth="52">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Button Style="{StaticResource DuplicateIconButtonStyle}"
                         ToolTip="{loc:Loc Merge}"
                         Click="MergeCandidateButtonClicked">
-                  <Path Data="{StaticResource MergePreviewMergeIconGeometry}"
-                        Style="{StaticResource DuplicateIconPathStyle}" />
+                  <Viewbox Width="22" Height="22">
+                    <Path Data="{StaticResource MergePreviewMergeIconGeometry}"
+                          Fill="{DynamicResource SuccessBrush}" />
+                  </Viewbox>
                 </Button>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          <DataGridTemplateColumn Header="{loc:Loc Action}" SortMemberPath="Action" CanUserSort="False" Width="58" MinWidth="58" MaxWidth="58">
+          <DataGridTemplateColumn Header="{loc:Loc Delete}" SortMemberPath="Action" CanUserSort="False" Width="52" MinWidth="52" MaxWidth="52">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Button Style="{StaticResource DuplicateIconButtonStyle}"
                         ToolTip="{loc:Loc DeleteDuplicate}"
                         Click="DeleteCandidateButtonClicked">
-                  <Path Data="{StaticResource DeleteIconGeometry}"
-                        Style="{StaticResource DuplicateIconPathStyle}"
-                        Fill="{DynamicResource DangerBrush}" />
+                  <Viewbox Width="22" Height="22">
+                    <Path Data="{StaticResource DeleteIconGeometry}"
+                          Fill="{DynamicResource DangerBrush}" />
+                  </Viewbox>
                 </Button>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          <DataGridTemplateColumn Header="{loc:Loc Details}" SortMemberPath="Details" CanUserSort="False" Width="58" MinWidth="58" MaxWidth="58">
+          <DataGridTemplateColumn Header="{loc:Loc Details}" SortMemberPath="Details" CanUserSort="False" Width="52" MinWidth="52" MaxWidth="52">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Button Style="{StaticResource DuplicateIconButtonStyle}"
                         ToolTip="{loc:Loc Details}"
                         Click="ShowDetailsClicked">
-                  <Path Data="{StaticResource OpenFileIconGeometry}"
-                        Style="{StaticResource DuplicateIconPathStyle}" />
+                  <Viewbox Width="22" Height="22">
+                    <Path Data="{StaticResource OpenFileIconGeometry}"
+                          Fill="{DynamicResource InfoBrush}" />
+                  </Viewbox>
                 </Button>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>

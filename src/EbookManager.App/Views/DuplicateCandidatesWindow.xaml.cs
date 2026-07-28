@@ -51,6 +51,7 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
     {
         AttachColumnWidthTracking();
         await ApplyColumnWidthsAsync(CancellationToken.None);
+        QueueDuplicateGridLayoutRefresh();
     }
 
     private void CloseClicked(object sender, System.Windows.RoutedEventArgs e)
@@ -339,6 +340,18 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         {
             isApplyingColumnWidths = false;
         }
+    }
+
+    private void QueueDuplicateGridLayoutRefresh()
+    {
+        Dispatcher.BeginInvoke(
+            () =>
+            {
+                DuplicateRowsGrid.InvalidateMeasure();
+                DuplicateRowsGrid.InvalidateArrange();
+                DuplicateRowsGrid.UpdateLayout();
+            },
+            DispatcherPriority.Loaded);
     }
 
     private async Task SaveColumnWidthsAsync(CancellationToken cancellationToken)
