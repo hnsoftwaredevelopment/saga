@@ -131,16 +131,6 @@
 
           <Border Grid.Row="2"
                   Grid.ColumnSpan="2">
-            <Border.Style>
-              <Style TargetType="Border">
-                <Setter Property="Visibility" Value="Visible" />
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding SelectedView}" Value="Bookshelf">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
             <Grid>
               <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -149,6 +139,16 @@
               <ScrollViewer Grid.Row="0"
                             MaxHeight="230"
                             VerticalScrollBarVisibility="Auto">
+                <ScrollViewer.Style>
+                  <Style TargetType="ScrollViewer">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding SelectedView}" Value="Bookshelf">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </ScrollViewer.Style>
                 <ItemsControl ItemsSource="{Binding ColumnChoices}">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>

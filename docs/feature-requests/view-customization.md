@@ -50,7 +50,7 @@ Status: implemented.
 
 ## Current Findings
 
-- With a very large library, the Bookshelf can briefly render empty during startup or immediately after removing grouping while the virtualized view rebuilds. This is acceptable for now as long as the UI remains responsive and the view repopulates within a few seconds.
+- With a large library, the Bookshelf can briefly render empty during startup or immediately after removing grouping while the virtualized view rebuilds. This is acceptable for now as long as the UI remains responsive and the view repopulates within a few seconds.
 - Grouped Detailed and List views use Saga's custom grouped layout. It now supports visible columns, fixed headers, resizing, and saved column widths.
 
 ### Later
@@ -65,9 +65,9 @@ Status: implemented.
 Status: implemented.
 
 - The active view can be reset from Settings > Views.
-- Reset clears sorting and grouping for the active view.
-- Reset restores default columns and clears saved column widths for Detailed and List.
-- Reset does not change the saved layout of the other views.
+- Sorting and grouping are cleared for the active view.
+- Detailed and List return to their default columns and default column widths.
+- Layouts saved for other views are left unchanged.
 
 ### Slice 3: Column Visibility In Settings
 

@@ -1025,6 +1025,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private async Task ResetCurrentViewLayoutAsync(CancellationToken cancellationToken)
     {
+        Interlocked.Increment(ref groupingSettingsSaveVersion);
         viewGroupings[SelectedView] = [];
         viewSortOptions[SelectedView] = LibrarySortOption.None;
         if (SelectedView != LibraryView.Bookshelf)
@@ -1098,9 +1099,11 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
+            System.Diagnostics.Debug.WriteLine("Saving library sort settings was canceled.");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"Failed to persist library sort settings: {ex}");
         }
     }
 
@@ -1136,6 +1139,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
+        Interlocked.Increment(ref groupingSettingsSaveVersion);
         await settingsSaveLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {

@@ -868,6 +868,48 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Reset_current_view_layout_invalidates_pending_grouping_settings_save()
+    {
+        var settingsStore = new BlockingAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        settingsStore.BlockNextLoad();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author]);
+        await settingsStore.BlockedLoadStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        var resetTask = viewModel.ResetCurrentViewLayoutCommand.ExecuteAsync(null);
+        settingsStore.ReleaseBlockedLoad();
+
+        await resetTask.WaitAsync(TimeSpan.FromSeconds(5));
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync().WaitAsync(TimeSpan.FromSeconds(5));
+
+        settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
+        settingsStore.Settings.LibraryGroupings!.Detailed.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Reset_current_view_layout_can_clear_bookshelf_sorting_and_grouping()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedView = LibraryView.Bookshelf;
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Tag]);
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+
+        await viewModel.ResetCurrentViewLayoutCommand.ExecuteAsync(null);
+
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.None);
+        viewModel.ActiveGroupOptions.Should().BeEmpty();
+        settingsStore.Settings.LibrarySorts!.Bookshelf.Should().Be(nameof(LibrarySortOption.None));
+        settingsStore.Settings.LibraryGroupings!.Bookshelf.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Grouping_refresh_preserves_expanded_group_nodes()
     {
         var book = CreateBook("Book", ["Author"], series: "Series");
@@ -2033,6 +2075,102 @@ public sealed class LibraryViewModelTests
         }
 
         public void ReleaseRemainingPages() => releaseRemainingPages.TrySetResult();
+    }
+
+    private sealed class BlockingAppSettingsStore : IAppSettingsStore
+    {
+        private readonly object syncRoot = new();
+        private TaskCompletionSource? blockedLoadRelease;
+        private bool blockNextLoad;
+
+        public AppSettings Settings { get; private set; } = new(
+            null,
+            "en-US",
+            "Light",
+            "Detailed",
+            true,
+            true,
+            AuthorSortStrategy.DisplayName,
+            true,
+            true,
+            new DuplicateMergeDefaultSettings(),
+            null,
+            null,
+            null,
+            null);
+
+        public List<LibraryDescriptor> Libraries { get; private set; } = [];
+
+        public TaskCompletionSource BlockedLoadStarted { get; private set; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public void BlockNextLoad()
+        {
+            lock (syncRoot)
+            {
+                blockNextLoad = true;
+                blockedLoadRelease = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                BlockedLoadStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
+        }
+
+        public void ReleaseBlockedLoad()
+        {
+            TaskCompletionSource? release;
+            lock (syncRoot)
+            {
+                release = blockedLoadRelease;
+            }
+
+            release?.TrySetResult();
+        }
+
+        public Task<AppSettings> LoadAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            TaskCompletionSource? release = null;
+            lock (syncRoot)
+            {
+                if (blockNextLoad)
+                {
+                    blockNextLoad = false;
+                    release = blockedLoadRelease;
+                }
+            }
+
+            return release is null
+                ? Task.FromResult(Settings)
+                : LoadAfterReleaseAsync(release, cancellationToken);
+        }
+
+        public Task SaveAsync(AppSettings settings, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Settings = settings;
+            return Task.CompletedTask;
+        }
+
+        public Task<IReadOnlyList<LibraryDescriptor>> ListLibrariesAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult<IReadOnlyList<LibraryDescriptor>>(Libraries);
+        }
+
+        public Task SaveLibrariesAsync(IReadOnlyList<LibraryDescriptor> libraries, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Libraries = [.. libraries];
+            return Task.CompletedTask;
+        }
+
+        private async Task<AppSettings> LoadAfterReleaseAsync(
+            TaskCompletionSource release,
+            CancellationToken cancellationToken)
+        {
+            BlockedLoadStarted.TrySetResult();
+            await release.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+            return Settings;
+        }
     }
 
     private sealed class NoopLibraryFileStore : ILibraryFileStore

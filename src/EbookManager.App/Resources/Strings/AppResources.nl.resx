@@ -15,7 +15,7 @@
   <data name="BookSaveConflict" xml:space="preserve"><value>Er bestaat al een boek met dezelfde titel en auteur.</value></data>
   <data name="BookSaveFailed" xml:space="preserve"><value>De wijzigingen konden niet worden opgeslagen.</value></data>
   <data name="BookshelfView" xml:space="preserve"><value>Boekenplank</value></data>
-  <data name="BookshelfUsesCoversOnly" xml:space="preserve"><value>Boekenplank gebruikt alleen omslagen.</value></data>
+  <data name="BookshelfUsesCoversOnly" xml:space="preserve"><value>De boekenplank gebruikt alleen omslagen.</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuleren</value></data>
   <data name="Close" xml:space="preserve"><value>Sluiten</value></data>
   <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Vragen voordat boeken worden verwijderd</value></data>

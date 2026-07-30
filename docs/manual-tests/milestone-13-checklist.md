@@ -20,6 +20,7 @@
 
 - [ ] Customize Detailed with Sort by, grouping, hidden columns, and changed column widths.
 - [ ] Open Settings > Views, select Detailed, click Reset view, and confirm Detailed returns to no sorting, no grouping, default columns, and default widths.
+- [ ] Open Settings > Views, select Bookshelf, click Reset view, and confirm Bookshelf sorting and grouping are cleared.
 - [ ] Confirm Bookshelf and List keep their own saved sorting and grouping.
 - [ ] Restart Saga and confirm the reset Detailed layout is still restored.
 
@@ -27,6 +28,6 @@
 
 - [ ] Confirm the library side panel no longer contains the Columns expander or Reset view action.
 - [ ] Open Settings > Views and switch between Bookshelf, Detailed, and List.
-- [ ] Confirm Bookshelf shows the disabled text "Boekenplank gebruikt alleen omslagen" in Dutch.
+- [ ] Confirm Bookshelf shows the disabled text "De boekenplank gebruikt alleen omslagen" in Dutch.
 - [ ] Confirm Detailed and List show column checkboxes and changes apply to the selected view.
 - [ ] Confirm changing Detailed columns does not change List columns, and the other way around.
