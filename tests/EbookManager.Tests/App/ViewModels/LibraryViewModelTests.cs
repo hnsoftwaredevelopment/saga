@@ -780,6 +780,32 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Column_width_saves_preserve_duplicate_candidate_widths()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                LibraryColumnWidths = new LibraryColumnWidthSettings(
+                    DuplicateCandidates: new Dictionary<string, double>(StringComparer.Ordinal)
+                    {
+                        ["Title"] = 360,
+                        ["Authors"] = 280
+                    })
+            },
+            CancellationToken.None);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.SetColumnWidthAsync(LibraryView.Detailed, LibraryColumnOption.Title, 345.678);
+
+        settingsStore.Settings.LibraryColumnWidths.Should().NotBeNull();
+        settingsStore.Settings.LibraryColumnWidths!.Detailed.Should().Contain("Title", 345.68);
+        settingsStore.Settings.LibraryColumnWidths.DuplicateCandidates.Should().Contain("Title", 360);
+        settingsStore.Settings.LibraryColumnWidths.DuplicateCandidates.Should().Contain("Authors", 280);
+    }
+
+    [Fact]
     public async Task Grouping_refresh_preserves_expanded_group_nodes()
     {
         var book = CreateBook("Book", ["Author"], series: "Series");

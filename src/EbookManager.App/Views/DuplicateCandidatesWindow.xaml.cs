@@ -23,6 +23,7 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
     private readonly DispatcherTimer mergeSuccessMessageTimer;
     private readonly DispatcherTimer columnWidthSaveTimer;
     private readonly EventHandler columnWidthChangedHandler;
+    private Task columnWidthsLoadedTask = Task.CompletedTask;
     private bool isMergingCandidate;
     private bool isApplyingColumnWidths;
 
@@ -50,7 +51,8 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
     private async void DuplicateCandidatesWindowLoaded(object sender, RoutedEventArgs e)
     {
         AttachColumnWidthTracking();
-        await ApplyColumnWidthsAsync(CancellationToken.None);
+        columnWidthsLoadedTask = ApplyColumnWidthsAsync(CancellationToken.None);
+        await IgnoreColumnWidthSettingsFailureAsync(columnWidthsLoadedTask);
         QueueDuplicateGridLayoutRefresh();
     }
 
@@ -250,7 +252,7 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
     private async void ColumnWidthSaveTimerTick(object? sender, EventArgs e)
     {
         columnWidthSaveTimer.Stop();
-        await SaveColumnWidthsAsync(CancellationToken.None);
+        await SaveColumnWidthsBestEffortAsync(CancellationToken.None);
     }
 
     private async void DuplicateCandidatesWindowClosed(object? sender, EventArgs e)
@@ -260,13 +262,14 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         columnWidthSaveTimer.Stop();
         mergeSuccessMessageTimer.Tick -= MergeSuccessMessageTimerTick;
         columnWidthSaveTimer.Tick -= ColumnWidthSaveTimerTick;
+        await IgnoreColumnWidthSettingsFailureAsync(columnWidthsLoadedTask);
         DetachColumnWidthTracking();
         if (DataContext is DuplicateCandidatesViewModel viewModel)
         {
             viewModel.PropertyChanged -= ViewModelPropertyChanged;
         }
 
-        await SaveColumnWidthsAsync(CancellationToken.None);
+        await SaveColumnWidthsBestEffortAsync(CancellationToken.None);
     }
 
     private void AttachColumnWidthTracking()
@@ -373,6 +376,34 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
                     widths)
             },
             cancellationToken);
+    }
+
+    private async Task SaveColumnWidthsBestEffortAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await SaveColumnWidthsAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    private static async Task IgnoreColumnWidthSettingsFailureAsync(Task task)
+    {
+        try
+        {
+            await task;
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception)
+        {
+        }
     }
 
     private IReadOnlyDictionary<string, double> CaptureColumnWidths()

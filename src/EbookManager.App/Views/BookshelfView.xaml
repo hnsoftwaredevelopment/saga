@@ -101,9 +101,9 @@
                  controls:MouseWheelScrollAssist.BubbleToParent="True">
           <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
-              <WrapPanel IsItemsHost="True"
-                         ItemWidth="170"
-                         ItemHeight="285" />
+              <controls:VirtualizingWrapPanel IsItemsHost="True"
+                                               ItemWidth="170"
+                                               ItemHeight="285" />
             </ItemsPanelTemplate>
           </ListBox.ItemsPanel>
         </ListBox>

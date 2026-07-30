@@ -96,8 +96,17 @@ internal sealed class LibraryGridColumnVisibility
             return;
         }
 
-        var width = e.Width > 0 ? e.Width : column.ActualWidth;
-        await viewModel.SetColumnWidthAsync(view, option, width, CancellationToken.None);
+        try
+        {
+            var width = e.Width > 0 ? e.Width : column.ActualWidth;
+            await viewModel.SetColumnWidthAsync(view, option, width, CancellationToken.None);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception)
+        {
+        }
     }
 
     private static bool TryGetColumnOption(string mappingName, out LibraryColumnOption option)

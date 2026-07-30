@@ -121,7 +121,7 @@ Status: implemented as a visually distinct fixed header row for grouped Detailed
 - Header sorting should support the normal three-state cycle: ascending, descending, and no sorting.
 - Header labels should align with the column content, use theme-aware vertical separator lines, and stand out through a subtle theme-aware background.
 
-Status: implemented by styling the native `SfDataGrid.HeaderStyle`, preserving Syncfusion sorting behavior. Standard headers are left aligned, use a dedicated theme-aware header background, use the theme accent color for vertical separator lines, and enable Syncfusion tri-state sorting.
+Status: implemented by styling the native `SfDataGrid.HeaderStyle`, preserving Syncfusion sorting behavior. Standard headers are left-aligned, use a dedicated theme-aware header background, use the theme accent color for vertical separator lines, and enable Syncfusion tri-state sorting.
 
 ### Slice 1c: Bookshelf Group Rendering Stability
 

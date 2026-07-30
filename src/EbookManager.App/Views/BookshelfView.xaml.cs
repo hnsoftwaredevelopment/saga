@@ -113,12 +113,6 @@ public partial class BookshelfView : UserControl
             }
         }
 
-        if (root is FrameworkElement frameworkElement)
-        {
-            frameworkElement.InvalidateMeasure();
-            frameworkElement.InvalidateArrange();
-        }
-
         var childCount = VisualTreeHelper.GetChildrenCount(root);
         for (var index = 0; index < childCount; index++)
         {

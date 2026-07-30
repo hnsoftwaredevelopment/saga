@@ -868,10 +868,12 @@ public sealed partial class LibraryViewModel : ObservableObject
         RefreshActiveColumnOptions();
     }
 
-    private LibraryColumnWidthSettings CreateColumnWidthSettings() =>
+    private LibraryColumnWidthSettings CreateColumnWidthSettings(
+        IReadOnlyDictionary<string, double>? duplicateCandidates = null) =>
         new(
             ToColumnWidthSettingValues(viewColumnWidths[LibraryView.Detailed]),
-            ToColumnWidthSettingValues(viewColumnWidths[LibraryView.List]));
+            ToColumnWidthSettingValues(viewColumnWidths[LibraryView.List]),
+            duplicateCandidates);
 
     private void LoadColumnWidthSettings(LibraryColumnWidthSettings? settings)
     {
@@ -1018,7 +1020,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             await settingsStore.SaveAsync(
                     settings with
                     {
-                        LibraryColumnWidths = CreateColumnWidthSettings()
+                        LibraryColumnWidths = CreateColumnWidthSettings(settings.LibraryColumnWidths?.DuplicateCandidates)
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
