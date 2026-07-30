@@ -42,6 +42,9 @@
   <data name="BookshelfView" xml:space="preserve">
     <value>Scaffale</value>
   </data>
+  <data name="BookshelfUsesCoversOnly" xml:space="preserve">
+    <value>Lo scaffale usa solo le copertine.</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Annulla</value>
   </data>
@@ -318,6 +321,9 @@
   <data name="SettingsAppearanceSection" xml:space="preserve">
     <value>Aspetto</value>
   </data>
+  <data name="SettingsViewsSection" xml:space="preserve">
+    <value>Viste</value>
+  </data>
   <data name="SettingsImportSection" xml:space="preserve">
     <value>Importazione</value>
   </data>
@@ -384,6 +390,9 @@
   <data name="Type" xml:space="preserve">
     <value>Tipo</value>
   </data>
+  <data name="View" xml:space="preserve">
+    <value>Vista</value>
+  </data>
   <data name="Undo" xml:space="preserve">
     <value>Annulla</value>
   </data>
@@ -397,6 +406,8 @@
   <data name="Close" xml:space="preserve"><value>Chiudi</value></data>
   <data name="Columns" xml:space="preserve"><value>Colonne</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Scegli le colonne visibili per questa vista</value></data>
+  <data name="ResetView" xml:space="preserve"><value>Ripristina vista</value></data>
+  <data name="ResetViewTooltip" xml:space="preserve"><value>Ripristina vista per: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Copertina</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Crea una nuova biblioteca</value></data>
   <data name="File" xml:space="preserve"><value>File</value></data>

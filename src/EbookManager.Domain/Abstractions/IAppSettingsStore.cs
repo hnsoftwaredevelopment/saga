@@ -16,7 +16,8 @@ public sealed record AppSettings(
     DuplicateMergeDefaultSettings? DuplicateMergeDefaults = null,
     LibraryGroupingSettings? LibraryGroupings = null,
     LibraryColumnSettings? LibraryColumns = null,
-    LibraryColumnWidthSettings? LibraryColumnWidths = null);
+    LibraryColumnWidthSettings? LibraryColumnWidths = null,
+    LibrarySortSettings? LibrarySorts = null);
 
 public interface IAppSettingsStore
 {

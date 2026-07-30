@@ -682,6 +682,34 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Sort_options_are_saved_per_view()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel(
+            [
+                CreateBook("C", ["Charlie"]),
+                CreateBook("A", ["Alice"]),
+                CreateBook("B", ["Bob"])
+            ],
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Title;
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+        viewModel.SelectedView = LibraryView.Bookshelf;
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+
+        viewModel.SelectedView = LibraryView.Detailed;
+
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.Title);
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("A", "B", "C");
+        settingsStore.Settings.LibrarySorts.Should().NotBeNull();
+        settingsStore.Settings.LibrarySorts!.Detailed.Should().Be(nameof(LibrarySortOption.Title));
+        settingsStore.Settings.LibrarySorts.Bookshelf.Should().Be(nameof(LibrarySortOption.Author));
+    }
+
+    [Fact]
     public async Task Removing_grouping_preserves_remaining_grouping_chips()
     {
         var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])]);
@@ -803,6 +831,82 @@ public sealed class LibraryViewModelTests
         settingsStore.Settings.LibraryColumnWidths!.Detailed.Should().Contain("Title", 345.68);
         settingsStore.Settings.LibraryColumnWidths.DuplicateCandidates.Should().Contain("Title", 360);
         settingsStore.Settings.LibraryColumnWidths.DuplicateCandidates.Should().Contain("Authors", 280);
+    }
+
+    [Fact]
+    public async Task Reset_current_view_layout_restores_defaults_without_changing_other_views()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Title;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author]);
+        await viewModel.SetVisibleColumnsAsync(LibraryView.Detailed, [LibraryColumnOption.Title, LibraryColumnOption.Authors]);
+        await viewModel.SetColumnWidthAsync(LibraryView.Detailed, LibraryColumnOption.Title, 360);
+        viewModel.SelectedView = LibraryView.List;
+        viewModel.SelectedSortOption = LibrarySortOption.Category;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Tag]);
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+
+        viewModel.SelectedView = LibraryView.Detailed;
+        await viewModel.ResetCurrentViewLayoutCommand.ExecuteAsync(null);
+
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.None);
+        viewModel.ActiveGroupOptions.Should().BeEmpty();
+        viewModel.GetVisibleColumns(LibraryView.Detailed).Should().Equal(DefaultDetailedColumnOptions());
+        viewModel.GetColumnWidth(LibraryView.Detailed, LibraryColumnOption.Title, 220).Should().Be(220);
+        viewModel.SelectedView = LibraryView.List;
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.Category);
+        viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Tag);
+        settingsStore.Settings.LibrarySorts!.Detailed.Should().Be(nameof(LibrarySortOption.None));
+        settingsStore.Settings.LibrarySorts.List.Should().Be(nameof(LibrarySortOption.Category));
+        settingsStore.Settings.LibraryGroupings!.Detailed.Should().BeEmpty();
+        settingsStore.Settings.LibraryGroupings.List.Should().Equal(nameof(LibraryGroupOption.Tag));
+        settingsStore.Settings.LibraryColumnWidths!.Detailed.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Reset_current_view_layout_invalidates_pending_grouping_settings_save()
+    {
+        var settingsStore = new BlockingAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        settingsStore.BlockNextLoad();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author]);
+        await settingsStore.BlockedLoadStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        var resetTask = viewModel.ResetCurrentViewLayoutCommand.ExecuteAsync(null);
+        settingsStore.ReleaseBlockedLoad();
+
+        await resetTask.WaitAsync(TimeSpan.FromSeconds(5));
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync().WaitAsync(TimeSpan.FromSeconds(5));
+
+        settingsStore.Settings.LibraryGroupings.Should().NotBeNull();
+        settingsStore.Settings.LibraryGroupings!.Detailed.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Reset_current_view_layout_can_clear_bookshelf_sorting_and_grouping()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedView = LibraryView.Bookshelf;
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Tag]);
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+
+        await viewModel.ResetCurrentViewLayoutCommand.ExecuteAsync(null);
+
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.None);
+        viewModel.ActiveGroupOptions.Should().BeEmpty();
+        settingsStore.Settings.LibrarySorts!.Bookshelf.Should().Be(nameof(LibrarySortOption.None));
+        settingsStore.Settings.LibraryGroupings!.Bookshelf.Should().BeEmpty();
     }
 
     [Fact]
@@ -1678,6 +1782,26 @@ public sealed class LibraryViewModelTests
     private static BookRowViewModel CreateRow(string title) =>
         new(CreateBook(title, ["Author"]));
 
+    private static IReadOnlyList<LibraryColumnOption> DefaultDetailedColumnOptions() =>
+    [
+        LibraryColumnOption.Cover,
+        LibraryColumnOption.Title,
+        LibraryColumnOption.Authors,
+        LibraryColumnOption.Format,
+        LibraryColumnOption.Series,
+        LibraryColumnOption.SeriesNumber,
+        LibraryColumnOption.Status,
+        LibraryColumnOption.Language,
+        LibraryColumnOption.Publisher,
+        LibraryColumnOption.PublicationDate,
+        LibraryColumnOption.Tags,
+        LibraryColumnOption.Isbn,
+        LibraryColumnOption.Description,
+        LibraryColumnOption.DateAdded,
+        LibraryColumnOption.LastModified,
+        LibraryColumnOption.EReader
+    ];
+
     private sealed class CapturingLibraryPerformanceReporter : ILibraryPerformanceReporter
     {
         public List<LibraryPerformanceSnapshot> Snapshots { get; } = [];
@@ -1951,6 +2075,102 @@ public sealed class LibraryViewModelTests
         }
 
         public void ReleaseRemainingPages() => releaseRemainingPages.TrySetResult();
+    }
+
+    private sealed class BlockingAppSettingsStore : IAppSettingsStore
+    {
+        private readonly object syncRoot = new();
+        private TaskCompletionSource? blockedLoadRelease;
+        private bool blockNextLoad;
+
+        public AppSettings Settings { get; private set; } = new(
+            null,
+            "en-US",
+            "Light",
+            "Detailed",
+            true,
+            true,
+            AuthorSortStrategy.DisplayName,
+            true,
+            true,
+            new DuplicateMergeDefaultSettings(),
+            null,
+            null,
+            null,
+            null);
+
+        public List<LibraryDescriptor> Libraries { get; private set; } = [];
+
+        public TaskCompletionSource BlockedLoadStarted { get; private set; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public void BlockNextLoad()
+        {
+            lock (syncRoot)
+            {
+                blockNextLoad = true;
+                blockedLoadRelease = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                BlockedLoadStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
+        }
+
+        public void ReleaseBlockedLoad()
+        {
+            TaskCompletionSource? release;
+            lock (syncRoot)
+            {
+                release = blockedLoadRelease;
+            }
+
+            release?.TrySetResult();
+        }
+
+        public Task<AppSettings> LoadAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            TaskCompletionSource? release = null;
+            lock (syncRoot)
+            {
+                if (blockNextLoad)
+                {
+                    blockNextLoad = false;
+                    release = blockedLoadRelease;
+                }
+            }
+
+            return release is null
+                ? Task.FromResult(Settings)
+                : LoadAfterReleaseAsync(release, cancellationToken);
+        }
+
+        public Task SaveAsync(AppSettings settings, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Settings = settings;
+            return Task.CompletedTask;
+        }
+
+        public Task<IReadOnlyList<LibraryDescriptor>> ListLibrariesAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return Task.FromResult<IReadOnlyList<LibraryDescriptor>>(Libraries);
+        }
+
+        public Task SaveLibrariesAsync(IReadOnlyList<LibraryDescriptor> libraries, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Libraries = [.. libraries];
+            return Task.CompletedTask;
+        }
+
+        private async Task<AppSettings> LoadAfterReleaseAsync(
+            TaskCompletionSource release,
+            CancellationToken cancellationToken)
+        {
+            BlockedLoadStarted.TrySetResult();
+            await release.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+            return Settings;
+        }
     }
 
     private sealed class NoopLibraryFileStore : ILibraryFileStore

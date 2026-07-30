@@ -15,11 +15,14 @@
   <data name="BookSaveConflict" xml:space="preserve"><value>Er bestaat al een boek met dezelfde titel en auteur.</value></data>
   <data name="BookSaveFailed" xml:space="preserve"><value>De wijzigingen konden niet worden opgeslagen.</value></data>
   <data name="BookshelfView" xml:space="preserve"><value>Boekenplank</value></data>
+  <data name="BookshelfUsesCoversOnly" xml:space="preserve"><value>De boekenplank gebruikt alleen omslagen.</value></data>
   <data name="Cancel" xml:space="preserve"><value>Annuleren</value></data>
   <data name="Close" xml:space="preserve"><value>Sluiten</value></data>
   <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Vragen voordat boeken worden verwijderd</value></data>
   <data name="Columns" xml:space="preserve"><value>Kolommen</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Kies welke kolommen zichtbaar zijn in deze weergave</value></data>
+  <data name="ResetView" xml:space="preserve"><value>Weergave herstellen</value></data>
+  <data name="ResetViewTooltip" xml:space="preserve"><value>Weergave herstellen voor: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Omslag</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Maak een nieuwe bibliotheek</value></data>
   <data name="CreateLibrary" xml:space="preserve"><value>Nieuwe bibliotheek</value></data>
@@ -170,6 +173,7 @@
   <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="SettingsGeneralSection" xml:space="preserve"><value>Algemeen</value></data>
   <data name="SettingsAppearanceSection" xml:space="preserve"><value>Weergave</value></data>
+  <data name="SettingsViewsSection" xml:space="preserve"><value>Weergaven</value></data>
   <data name="SettingsImportSection" xml:space="preserve"><value>Import</value></data>
   <data name="SettingsMetadataSection" xml:space="preserve"><value>Metadata</value></data>
   <data name="SettingsDuplicatesSection" xml:space="preserve"><value>Duplicaten</value></data>
@@ -224,6 +228,7 @@
   <data name="Theme" xml:space="preserve"><value>Thema</value></data>
   <data name="Title" xml:space="preserve"><value>Titel</value></data>
   <data name="Type" xml:space="preserve"><value>Type</value></data>
+  <data name="View" xml:space="preserve"><value>Weergave</value></data>
   <data name="Undo" xml:space="preserve"><value>Ongedaan maken</value></data>
   <data name="Unread" xml:space="preserve"><value>Ongelezen</value></data>
   <data name="UnsavedChanges" xml:space="preserve"><value>Er zijn niet-opgeslagen wijzigingen.</value></data>
