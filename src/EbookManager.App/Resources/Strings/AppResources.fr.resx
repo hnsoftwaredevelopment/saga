@@ -398,7 +398,7 @@
   <data name="Columns" xml:space="preserve"><value>Colonnes</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Choisissez les colonnes visibles pour cette vue</value></data>
   <data name="ResetView" xml:space="preserve"><value>Réinitialiser la vue</value></data>
-  <data name="ResetViewTooltip" xml:space="preserve"><value>Réinitialiser le tri, le regroupement, les colonnes et les largeurs pour cette vue</value></data>
+  <data name="ResetViewTooltip" xml:space="preserve"><value>Réinitialiser la vue pour : {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Couverture</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Créer une nouvelle bibliothèque</value></data>
   <data name="File" xml:space="preserve"><value>Fichier</value></data>

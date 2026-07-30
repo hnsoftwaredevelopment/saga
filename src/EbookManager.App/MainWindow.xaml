@@ -19,6 +19,7 @@
       <converters:NullOrWhiteSpaceFallbackConverter x:Key="NullOrWhiteSpaceFallbackConverter" />
       <converters:LibraryGroupOptionToLocalizedStringConverter x:Key="LibraryGroupOptionToLocalizedStringConverter" />
       <converters:LibraryColumnOptionToLocalizedStringConverter x:Key="LibraryColumnOptionToLocalizedStringConverter" />
+      <converters:ResetViewTooltipConverter x:Key="ResetViewTooltipConverter" />
       <Style x:Key="ToolbarIconButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="42" />
         <Setter Property="Height" Value="40" />
@@ -269,12 +270,24 @@
               </ItemsControl>
             </ScrollViewer>
           </Expander>
-          <Button Content="{loc:Loc ResetView}"
-                  Command="{Binding ResetCurrentViewLayoutCommand}"
-                  ToolTip="{loc:Loc ResetViewTooltip}"
+          <Button Command="{Binding ResetCurrentViewLayoutCommand}"
+                  Width="34"
+                  Height="32"
                   Margin="0,0,0,12"
-                  Padding="8,4"
-                  HorizontalAlignment="Stretch" />
+                  Padding="7"
+                  HorizontalAlignment="Left">
+            <Button.ToolTip>
+              <MultiBinding Converter="{StaticResource ResetViewTooltipConverter}">
+                <Binding Source="{x:Static loc:LocalizedStrings.Current}" Path="[ResetViewTooltip]" />
+                <Binding Path="SelectedView" />
+              </MultiBinding>
+            </Button.ToolTip>
+            <Path Data="{StaticResource ResetViewIconGeometry}"
+                  Fill="{DynamicResource AccentBrush}"
+                  Width="18"
+                  Height="18"
+                  Stretch="Uniform" />
+          </Button>
           <Expander Header="{loc:Loc Authors}" IsExpanded="False" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="180"
                           VerticalScrollBarVisibility="Auto">

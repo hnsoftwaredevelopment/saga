@@ -36,6 +36,11 @@
     <Geometry>M19.4 13.5c.08-.48.08-.52.08-1s0-.52-.08-1l2.02-1.55-2-3.46-2.38.96a7.73 7.73 0 0 0-1.73-1l-.36-2.56h-4l-.36 2.56c-.62.25-1.2.58-1.73 1L6.48 6.5l-2 3.46L6.5 11.5c-.08.48-.08.52-.08 1s0 .52.08 1l-2.02 1.55 2 3.46 2.38-.96c.53.42 1.11.75 1.73 1l.36 2.56h4l.36-2.56c.62-.25 1.2-.58 1.73-1l2.38.96 2-3.46-2.02-1.55ZM13 15.5a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z</Geometry>
   </GeometryGroup>
 
+  <GeometryGroup x:Key="ResetViewIconGeometry">
+    <Geometry>M12 4a8 8 0 1 1-7.75 10h2.1A6 6 0 1 0 8 7.76V11H6V4h7v2H9.42A5.98 5.98 0 0 1 12 4Z</Geometry>
+    <Geometry>M11 9h2v4h4v2h-6V9Z</Geometry>
+  </GeometryGroup>
+
   <GeometryGroup x:Key="SaveIconGeometry">
     <Geometry>M5 3h12l2 2v16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 2v6h9V5H7Zm0 14h10v-6H7v6Zm2-12h5v2H9V7Z</Geometry>
   </GeometryGroup>
