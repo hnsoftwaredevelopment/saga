@@ -21,6 +21,8 @@
   <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Vragen voordat boeken worden verwijderd</value></data>
   <data name="Columns" xml:space="preserve"><value>Kolommen</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Kies welke kolommen zichtbaar zijn in deze weergave</value></data>
+  <data name="MoveColumnUpTooltip" xml:space="preserve"><value>Kolom omhoog verplaatsen</value></data>
+  <data name="MoveColumnDownTooltip" xml:space="preserve"><value>Kolom omlaag verplaatsen</value></data>
   <data name="ResetView" xml:space="preserve"><value>Weergave herstellen</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Weergave herstellen voor: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Omslag</value></data>
@@ -173,7 +175,7 @@
   <data name="Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="SettingsGeneralSection" xml:space="preserve"><value>Algemeen</value></data>
   <data name="SettingsAppearanceSection" xml:space="preserve"><value>Weergave</value></data>
-  <data name="SettingsViewsSection" xml:space="preserve"><value>Weergaven</value></data>
+  <data name="SettingsViewsSection" xml:space="preserve"><value>Kolominstellingen</value></data>
   <data name="SettingsImportSection" xml:space="preserve"><value>Import</value></data>
   <data name="SettingsMetadataSection" xml:space="preserve"><value>Metadata</value></data>
   <data name="SettingsDuplicatesSection" xml:space="preserve"><value>Duplicaten</value></data>

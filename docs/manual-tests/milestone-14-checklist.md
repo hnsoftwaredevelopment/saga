@@ -7,8 +7,16 @@
 - [ ] Restart Saga and confirm the Detailed layout is restored.
 - [ ] Change sorting and grouping for Bookshelf.
 - [ ] Restart Saga and confirm the Bookshelf layout is restored.
-- [ ] Confirm Settings > Views still changes visible columns live for Detailed and List.
-- [ ] Confirm Settings > Views still shows the disabled covers-only explanation for Bookshelf.
+- [ ] Confirm Settings > Column settings still changes visible columns live for Detailed and List.
+- [ ] Confirm Settings > Column settings still shows the disabled covers-only explanation for Bookshelf.
+
+## Column Settings
+
+- [ ] Confirm the settings tab is named Column settings in English and Kolominstellingen in Dutch.
+- [ ] Open Settings > Column settings and select Detailed.
+- [ ] Move a visible column up and down and confirm the Detailed grid updates immediately behind the settings window.
+- [ ] Hide a column, move another visible column, save, restart Saga, and confirm both visibility and order are restored.
+- [ ] Select Bookshelf and confirm column movement is not available and the covers-only explanation is shown.
 
 ## Regression
 

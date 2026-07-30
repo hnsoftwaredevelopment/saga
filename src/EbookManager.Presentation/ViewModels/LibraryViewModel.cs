@@ -260,6 +260,10 @@ public sealed partial class LibraryViewModel : ObservableObject
         normalizeLanguageMetadataCommand ??= new AsyncRelayCommand(NormalizeLanguageMetadataAsync);
     public IAsyncRelayCommand<LibraryColumnChoiceViewModel> ToggleColumnCommand =>
         toggleColumnCommand ??= new AsyncRelayCommand<LibraryColumnChoiceViewModel>(ToggleColumnAsync);
+    public IAsyncRelayCommand<LibraryColumnChoiceViewModel> MoveColumnUpCommand =>
+        moveColumnUpCommand ??= new AsyncRelayCommand<LibraryColumnChoiceViewModel>(MoveColumnUpAsync);
+    public IAsyncRelayCommand<LibraryColumnChoiceViewModel> MoveColumnDownCommand =>
+        moveColumnDownCommand ??= new AsyncRelayCommand<LibraryColumnChoiceViewModel>(MoveColumnDownAsync);
     public IAsyncRelayCommand ResetCurrentViewLayoutCommand =>
         resetCurrentViewLayoutCommand ??= new AsyncRelayCommand(ResetCurrentViewLayoutAsync);
 
@@ -285,6 +289,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand<FacetFilterViewModel>? removeLanguageFilterCommand;
     private AsyncRelayCommand? normalizeLanguageMetadataCommand;
     private AsyncRelayCommand<LibraryColumnChoiceViewModel>? toggleColumnCommand;
+    private AsyncRelayCommand<LibraryColumnChoiceViewModel>? moveColumnUpCommand;
+    private AsyncRelayCommand<LibraryColumnChoiceViewModel>? moveColumnDownCommand;
     private AsyncRelayCommand? resetCurrentViewLayoutCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
@@ -1027,19 +1033,24 @@ public sealed partial class LibraryViewModel : ObservableObject
     private void RefreshColumnChoices()
     {
         var availableOptions = GetDefaultColumns(SelectedView);
-        var visibleOptions = GetVisibleColumns(SelectedView).ToHashSet();
+        var visibleColumns = GetVisibleColumns(SelectedView);
+        var visibleOptions = visibleColumns.ToHashSet();
+        var orderedOptions = visibleColumns
+            .Concat(availableOptions.Where(option => !visibleOptions.Contains(option)))
+            .Where(availableOptions.Contains)
+            .ToArray();
 
         for (var index = ColumnChoices.Count - 1; index >= 0; index--)
         {
-            if (!availableOptions.Contains(ColumnChoices[index].Option))
+            if (!orderedOptions.Contains(ColumnChoices[index].Option))
             {
                 ColumnChoices.RemoveAt(index);
             }
         }
 
-        for (var desiredIndex = 0; desiredIndex < availableOptions.Count; desiredIndex++)
+        for (var desiredIndex = 0; desiredIndex < orderedOptions.Length; desiredIndex++)
         {
-            var option = availableOptions[desiredIndex];
+            var option = orderedOptions[desiredIndex];
             var choice = ColumnChoices.FirstOrDefault(existing => existing.Option == option);
             if (choice is null)
             {
@@ -1084,6 +1095,34 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
+        await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
+    }
+
+    private Task MoveColumnUpAsync(LibraryColumnChoiceViewModel? choice, CancellationToken cancellationToken) =>
+        MoveColumnAsync(choice, -1, cancellationToken);
+
+    private Task MoveColumnDownAsync(LibraryColumnChoiceViewModel? choice, CancellationToken cancellationToken) =>
+        MoveColumnAsync(choice, 1, cancellationToken);
+
+    private async Task MoveColumnAsync(
+        LibraryColumnChoiceViewModel? choice,
+        int direction,
+        CancellationToken cancellationToken)
+    {
+        if (choice is null || SelectedView == LibraryView.Bookshelf || !choice.IsSelected)
+        {
+            return;
+        }
+
+        var columns = GetVisibleColumns(SelectedView).ToList();
+        var currentIndex = columns.IndexOf(choice.Option);
+        var newIndex = currentIndex + direction;
+        if (currentIndex < 0 || newIndex < 0 || newIndex >= columns.Count)
+        {
+            return;
+        }
+
+        (columns[currentIndex], columns[newIndex]) = (columns[newIndex], columns[currentIndex]);
         await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
     }
 

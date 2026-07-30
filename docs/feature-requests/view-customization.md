@@ -98,3 +98,12 @@ Status: implemented.
 - Add column order persistence for Detailed and List.
 - Introduce a view-definition model that can represent built-in views and future user-created views.
 - Add view copy/duplicate behavior before allowing fully custom view creation.
+
+### Slice 2: Column Settings Tab And Column Order
+
+Status: implemented.
+
+- Renamed the Settings tab from Views to Column settings to avoid confusion with Appearance.
+- Detailed and List columns can be moved up and down from Settings.
+- Column order changes are applied live to the active grid.
+- Bookshelf keeps the covers-only explanation and does not expose column ordering.

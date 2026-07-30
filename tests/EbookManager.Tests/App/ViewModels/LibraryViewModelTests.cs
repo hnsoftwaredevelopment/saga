@@ -782,6 +782,50 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Column_choices_can_reorder_visible_columns()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Title, LibraryColumnOption.Authors, LibraryColumnOption.Series]);
+
+        var seriesChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Series);
+        await viewModel.MoveColumnUpCommand.ExecuteAsync(seriesChoice);
+        await viewModel.MoveColumnUpCommand.ExecuteAsync(seriesChoice);
+
+        viewModel.ActiveColumnOptions.Should().Equal(
+            LibraryColumnOption.Series,
+            LibraryColumnOption.Title,
+            LibraryColumnOption.Authors);
+        settingsStore.Settings.LibraryColumns!.Detailed.Should().Equal("Series", "Title", "Authors");
+        settingsStore.Settings.LibraryViewLayouts!.Views![nameof(LibraryView.Detailed)]
+            .Columns.Should().Equal("Series", "Title", "Authors");
+    }
+
+    [Fact]
+    public async Task Hidden_column_choices_are_not_moved_into_visible_columns()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Title, LibraryColumnOption.Authors]);
+
+        var seriesChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Series);
+        await viewModel.MoveColumnUpCommand.ExecuteAsync(seriesChoice);
+        await viewModel.MoveColumnDownCommand.ExecuteAsync(seriesChoice);
+
+        viewModel.ActiveColumnOptions.Should().Equal(
+            LibraryColumnOption.Title,
+            LibraryColumnOption.Authors);
+    }
+
+    [Fact]
     public async Task Column_widths_are_saved_per_grid_view()
     {
         var settingsStore = new InMemoryAppSettingsStore();

@@ -152,12 +152,39 @@
                 <ItemsControl ItemsSource="{Binding ColumnChoices}">
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                      <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                Command="{Binding LibraryViewModel.ToggleColumnCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                      <Grid Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="*" />
+                          <ColumnDefinition Width="Auto" />
+                          <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <CheckBox Grid.Column="0"
+                                  IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Command="{Binding LibraryViewModel.ToggleColumnCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                  CommandParameter="{Binding}"
+                                  VerticalAlignment="Center">
+                          <TextBlock Text="{Binding Converter={StaticResource LibraryColumnOptionToLocalizedStringConverter}}" />
+                        </CheckBox>
+                        <Button Grid.Column="1"
+                                Command="{Binding LibraryViewModel.MoveColumnUpCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                 CommandParameter="{Binding}"
-                                Margin="0,2">
-                        <TextBlock Text="{Binding Converter={StaticResource LibraryColumnOptionToLocalizedStringConverter}}" />
-                      </CheckBox>
+                                IsEnabled="{Binding IsSelected}"
+                                Width="28"
+                                Height="24"
+                                Margin="8,0,2,0"
+                                Padding="0"
+                                Content="^"
+                                ToolTip="{loc:Loc MoveColumnUpTooltip}" />
+                        <Button Grid.Column="2"
+                                Command="{Binding LibraryViewModel.MoveColumnDownCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"
+                                IsEnabled="{Binding IsSelected}"
+                                Width="28"
+                                Height="24"
+                                Padding="0"
+                                Content="v"
+                                ToolTip="{loc:Loc MoveColumnDownTooltip}" />
+                      </Grid>
                     </DataTemplate>
                   </ItemsControl.ItemTemplate>
                 </ItemsControl>
