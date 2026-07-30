@@ -147,13 +147,18 @@ public partial class SettingsWindow : System.Windows.Window
     private async void ColumnChoiceDrop(object sender, System.Windows.DragEventArgs e)
     {
         if (!e.Data.GetDataPresent(ColumnChoiceDragFormat) ||
-            e.Data.GetData(ColumnChoiceDragFormat) is not LibraryColumnChoiceViewModel draggedChoice ||
-            sender is not System.Windows.FrameworkElement { DataContext: LibraryColumnChoiceViewModel targetChoice })
+            e.Data.GetData(ColumnChoiceDragFormat) is not LibraryColumnChoiceViewModel draggedChoice)
         {
             return;
         }
 
+        var targetChoice = sender is System.Windows.Controls.ListBoxItem item
+            ? item.DataContext as LibraryColumnChoiceViewModel
+            : null;
+        var insertAfter = sender is System.Windows.Controls.ListBoxItem targetItem &&
+            e.GetPosition(targetItem).Y > targetItem.ActualHeight / 2;
+
         e.Handled = true;
-        await libraryViewModel.ReorderColumnChoiceAsync(draggedChoice, targetChoice);
+        await libraryViewModel.ReorderColumnChoiceAsync(draggedChoice, targetChoice, insertAfter);
     }
 }

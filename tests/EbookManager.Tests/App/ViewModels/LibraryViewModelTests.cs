@@ -828,6 +828,50 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Column_choices_can_be_dropped_after_inactive_columns_to_move_to_visible_end()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Title, LibraryColumnOption.Authors, LibraryColumnOption.Series]);
+
+        var titleChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Title);
+        var formatChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Format);
+        formatChoice.IsSelected.Should().BeFalse();
+        await viewModel.ReorderColumnChoiceAsync(titleChoice, formatChoice);
+
+        viewModel.ActiveColumnOptions.Should().Equal(
+            LibraryColumnOption.Authors,
+            LibraryColumnOption.Series,
+            LibraryColumnOption.Title);
+        settingsStore.Settings.LibraryColumns!.Detailed.Should().Equal("Authors", "Series", "Title");
+    }
+
+    [Fact]
+    public async Task Column_choices_can_be_dropped_on_empty_list_space_to_move_to_visible_end()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Title, LibraryColumnOption.Authors, LibraryColumnOption.Series]);
+
+        var titleChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Title);
+        await viewModel.ReorderColumnChoiceAsync(titleChoice, targetChoice: null);
+
+        viewModel.ActiveColumnOptions.Should().Equal(
+            LibraryColumnOption.Authors,
+            LibraryColumnOption.Series,
+            LibraryColumnOption.Title);
+        settingsStore.Settings.LibraryColumns!.Detailed.Should().Equal("Authors", "Series", "Title");
+    }
+
+    [Fact]
     public async Task Hidden_column_choices_are_not_moved_into_visible_columns()
     {
         var settingsStore = new InMemoryAppSettingsStore();

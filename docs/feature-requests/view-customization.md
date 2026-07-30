@@ -107,4 +107,5 @@ Status: implemented.
 - Detailed and List columns can be reordered by dragging the column grip in Settings.
 - Column order changes are applied live to the active grid.
 - Standard Detailed and List grids physically reorder their columns to match the saved layout.
+- Hidden columns can be used as drop targets, and dropping below the list moves a visible column to the end.
 - Bookshelf keeps the covers-only explanation and does not expose column ordering.

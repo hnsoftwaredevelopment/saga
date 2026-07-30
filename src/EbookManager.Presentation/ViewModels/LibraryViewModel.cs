@@ -1107,33 +1107,52 @@ public sealed partial class LibraryViewModel : ObservableObject
     public async Task ReorderColumnChoiceAsync(
         LibraryColumnChoiceViewModel? draggedChoice,
         LibraryColumnChoiceViewModel? targetChoice,
+        bool insertAfterTarget = false,
         CancellationToken cancellationToken = default)
     {
         if (draggedChoice is null ||
-            targetChoice is null ||
-            ReferenceEquals(draggedChoice, targetChoice) ||
             SelectedView == LibraryView.Bookshelf ||
-            !draggedChoice.IsSelected ||
-            !targetChoice.IsSelected)
+            !draggedChoice.IsSelected)
         {
             return;
         }
 
-        var columns = GetVisibleColumns(SelectedView).ToList();
-        var currentIndex = columns.IndexOf(draggedChoice.Option);
-        var targetIndex = columns.IndexOf(targetChoice.Option);
-        if (currentIndex < 0 || targetIndex < 0 || currentIndex == targetIndex)
+        var orderedOptions = ColumnChoices.Select(choice => choice.Option).ToList();
+        var currentIndex = orderedOptions.IndexOf(draggedChoice.Option);
+        if (currentIndex < 0)
         {
             return;
         }
 
-        columns.RemoveAt(currentIndex);
+        var targetIndex = targetChoice is null
+            ? orderedOptions.Count
+            : orderedOptions.IndexOf(targetChoice.Option);
+        if (targetIndex < 0 || ReferenceEquals(draggedChoice, targetChoice))
+        {
+            return;
+        }
+
+        orderedOptions.RemoveAt(currentIndex);
         if (currentIndex < targetIndex)
         {
             targetIndex--;
         }
 
-        columns.Insert(targetIndex, draggedChoice.Option);
+        if (insertAfterTarget && targetChoice is not null)
+        {
+            targetIndex++;
+        }
+
+        targetIndex = Math.Clamp(targetIndex, 0, orderedOptions.Count);
+        orderedOptions.Insert(targetIndex, draggedChoice.Option);
+
+        var selectedOptions = ColumnChoices
+            .Where(choice => choice.IsSelected)
+            .Select(choice => choice.Option)
+            .ToHashSet();
+        var columns = orderedOptions
+            .Where(selectedOptions.Contains)
+            .ToList();
         await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
     }
 

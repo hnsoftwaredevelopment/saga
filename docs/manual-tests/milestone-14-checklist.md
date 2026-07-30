@@ -15,6 +15,8 @@
 - [ ] Confirm the settings tab is named Column settings in English and Kolominstellingen in Dutch.
 - [ ] Open Settings > Column settings and select Detailed.
 - [ ] Drag a visible column by its grip and confirm the Detailed grid updates immediately behind the settings window.
+- [ ] Drag a visible column onto an inactive column and confirm the dragged column moves to the intended visible position.
+- [ ] Drag a visible column to empty space below the column list and confirm it moves to the end of the visible columns.
 - [ ] Hide a column, move another visible column, save, restart Saga, and confirm both visibility and order are restored.
 - [ ] Select Bookshelf and confirm column movement is not available and the covers-only explanation is shown.
 

@@ -151,7 +151,10 @@
                 </ScrollViewer.Style>
                 <ListBox ItemsSource="{Binding ColumnChoices}"
                          BorderThickness="0"
-                         Background="Transparent">
+                         Background="Transparent"
+                         AllowDrop="True"
+                         DragOver="ColumnChoiceDragOver"
+                         Drop="ColumnChoiceDrop">
                   <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                       <Setter Property="AllowDrop" Value="True" />
