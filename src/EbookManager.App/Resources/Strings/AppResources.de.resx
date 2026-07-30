@@ -42,6 +42,9 @@
   <data name="BookshelfView" xml:space="preserve">
     <value>Buecherregal</value>
   </data>
+  <data name="BookshelfUsesCoversOnly" xml:space="preserve">
+    <value>Das Buecherregal verwendet nur Cover.</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
@@ -318,6 +321,9 @@
   <data name="SettingsAppearanceSection" xml:space="preserve">
     <value>Darstellung</value>
   </data>
+  <data name="SettingsViewsSection" xml:space="preserve">
+    <value>Ansichten</value>
+  </data>
   <data name="SettingsImportSection" xml:space="preserve">
     <value>Import</value>
   </data>
@@ -383,6 +389,9 @@
   </data>
   <data name="Type" xml:space="preserve">
     <value>Typ</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Ansicht</value>
   </data>
   <data name="Undo" xml:space="preserve">
     <value>Rueckgaengig</value>

@@ -15,6 +15,7 @@
   <data name="BookSaveConflict" xml:space="preserve"><value>A book with the same title and author already exists.</value></data>
   <data name="BookSaveFailed" xml:space="preserve"><value>The changes could not be saved.</value></data>
   <data name="BookshelfView" xml:space="preserve"><value>Bookshelf</value></data>
+  <data name="BookshelfUsesCoversOnly" xml:space="preserve"><value>Bookshelf uses covers only.</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Close" xml:space="preserve"><value>Close</value></data>
   <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Ask before deleting books</value></data>
@@ -172,6 +173,7 @@
   <data name="Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="SettingsGeneralSection" xml:space="preserve"><value>General</value></data>
   <data name="SettingsAppearanceSection" xml:space="preserve"><value>Appearance</value></data>
+  <data name="SettingsViewsSection" xml:space="preserve"><value>Views</value></data>
   <data name="SettingsImportSection" xml:space="preserve"><value>Import</value></data>
   <data name="SettingsMetadataSection" xml:space="preserve"><value>Metadata</value></data>
   <data name="SettingsDuplicatesSection" xml:space="preserve"><value>Duplicates</value></data>
@@ -226,6 +228,7 @@
   <data name="Theme" xml:space="preserve"><value>Theme</value></data>
   <data name="Title" xml:space="preserve"><value>Title</value></data>
   <data name="Type" xml:space="preserve"><value>Type</value></data>
+  <data name="View" xml:space="preserve"><value>View</value></data>
   <data name="Undo" xml:space="preserve"><value>Undo</value></data>
   <data name="Unread" xml:space="preserve"><value>Unread</value></data>
   <data name="UnsavedChanges" xml:space="preserve"><value>There are unsaved changes.</value></data>

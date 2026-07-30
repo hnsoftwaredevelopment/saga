@@ -29,6 +29,8 @@ public partial class SettingsWindow : System.Windows.Window
         Loaded += OnLoaded;
     }
 
+    public LibraryViewModel LibraryViewModel => libraryViewModel;
+
     private async void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
     {
         Loaded -= OnLoaded;

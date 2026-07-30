@@ -32,6 +32,8 @@ Saga views should remember the choices a user makes inside each view, without fo
 - Detailed and List can remember column widths.
 - Duplicate candidates can remember column widths.
 - Bookshelf, Detailed, and List can each have their own grouping.
+- Visible column selection is managed from Settings per view.
+- Bookshelf is shown in the view settings but explains that it uses covers only.
 
 ## Milestone 13
 
@@ -62,7 +64,17 @@ Status: implemented.
 
 Status: implemented.
 
-- The active view can be reset from the side panel.
+- The active view can be reset from Settings > Views.
 - Reset clears sorting and grouping for the active view.
 - Reset restores default columns and clears saved column widths for Detailed and List.
 - Reset does not change the saved layout of the other views.
+
+### Slice 3: Column Visibility In Settings
+
+Status: implemented.
+
+- Column visibility is no longer shown in the library side panel.
+- Settings has a Views section with a view selector.
+- Detailed and List show their available columns as checkboxes.
+- Bookshelf shows a disabled explanation because it only uses covers.
+- Reset view lives with these view settings, so restoring default columns is explicit.
