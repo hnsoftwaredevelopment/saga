@@ -26,6 +26,7 @@ internal static class LibraryGroupedHeaderResize
                 VerticalAlignment = VerticalAlignment.Stretch,
                 Cursor = Cursors.SizeWE,
                 Background = System.Windows.Media.Brushes.Transparent,
+                Template = CreateResizeThumbTemplate(),
                 Tag = new ResizeState(view, option)
             };
 
@@ -35,6 +36,18 @@ internal static class LibraryGroupedHeaderResize
             thumb.DragCompleted += HeaderResizeDragCompleted;
             headerGrid.Children.Add(thumb);
         }
+    }
+
+    private static ControlTemplate CreateResizeThumbTemplate()
+    {
+        var border = new FrameworkElementFactory(typeof(Border));
+        border.SetValue(Border.BackgroundProperty, System.Windows.Media.Brushes.Transparent);
+        border.SetValue(Border.BorderBrushProperty, new DynamicResourceExtension("AccentBrush"));
+        border.SetValue(Border.BorderThicknessProperty, new Thickness(0, 0, 1, 0));
+        return new ControlTemplate(typeof(Thumb))
+        {
+            VisualTree = border
+        };
     }
 
     private static void HeaderResizeDragDelta(object sender, DragDeltaEventArgs e)
