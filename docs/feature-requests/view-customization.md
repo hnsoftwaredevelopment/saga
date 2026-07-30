@@ -57,3 +57,12 @@ Status: implemented.
 - Optional view names and duplicate/copy view actions.
 - A richer view-management screen when the number of view settings grows.
 - User-editable column order.
+
+### Slice 2: Reset Current View Layout
+
+Status: implemented.
+
+- The active view can be reset from the side panel.
+- Reset clears sorting and grouping for the active view.
+- Reset restores default columns and clears saved column widths for Detailed and List.
+- Reset does not change the saved layout of the other views.

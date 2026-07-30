@@ -260,6 +260,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         normalizeLanguageMetadataCommand ??= new AsyncRelayCommand(NormalizeLanguageMetadataAsync);
     public IAsyncRelayCommand<LibraryColumnChoiceViewModel> ToggleColumnCommand =>
         toggleColumnCommand ??= new AsyncRelayCommand<LibraryColumnChoiceViewModel>(ToggleColumnAsync);
+    public IAsyncRelayCommand ResetCurrentViewLayoutCommand =>
+        resetCurrentViewLayoutCommand ??= new AsyncRelayCommand(ResetCurrentViewLayoutAsync);
 
     private AsyncRelayCommand? refreshCommand;
     private AsyncRelayCommand? addBooksCommand;
@@ -283,6 +285,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand<FacetFilterViewModel>? removeLanguageFilterCommand;
     private AsyncRelayCommand? normalizeLanguageMetadataCommand;
     private AsyncRelayCommand<LibraryColumnChoiceViewModel>? toggleColumnCommand;
+    private AsyncRelayCommand? resetCurrentViewLayoutCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -1020,6 +1023,23 @@ public sealed partial class LibraryViewModel : ObservableObject
         await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
     }
 
+    private async Task ResetCurrentViewLayoutAsync(CancellationToken cancellationToken)
+    {
+        viewGroupings[SelectedView] = [];
+        viewSortOptions[SelectedView] = LibrarySortOption.None;
+        if (SelectedView != LibraryView.Bookshelf)
+        {
+            viewColumns[SelectedView] = GetDefaultColumns(SelectedView).ToList();
+            viewColumnWidths[SelectedView] = [];
+        }
+
+        RefreshActiveGroupOptions(notifyActiveViewSources: false);
+        RefreshActiveColumnOptions();
+        ApplySelectedViewSortOption();
+        ApplyFilter();
+        await SaveViewCustomizationSettingsAsync(cancellationToken);
+    }
+
     private async Task SaveColumnSettingsAsync(CancellationToken cancellationToken)
     {
         if (settingsStore is null)
@@ -1098,6 +1118,34 @@ public sealed partial class LibraryViewModel : ObservableObject
             await settingsStore.SaveAsync(
                     settings with
                     {
+                        LibrarySorts = CreateSortSettings()
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            settingsSaveLock.Release();
+        }
+    }
+
+    private async Task SaveViewCustomizationSettingsAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        await settingsSaveLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var settings = await settingsStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            await settingsStore.SaveAsync(
+                    settings with
+                    {
+                        LibraryGroupings = CreateGroupingSettings(),
+                        LibraryColumns = CreateColumnSettings(),
+                        LibraryColumnWidths = CreateColumnWidthSettings(settings.LibraryColumnWidths?.DuplicateCandidates),
                         LibrarySorts = CreateSortSettings()
                     },
                     cancellationToken)

@@ -397,6 +397,8 @@
   <data name="Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Columns" xml:space="preserve"><value>Spalten</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Wählen Sie die sichtbaren Spalten für diese Ansicht</value></data>
+  <data name="ResetView" xml:space="preserve"><value>Ansicht zurücksetzen</value></data>
+  <data name="ResetViewTooltip" xml:space="preserve"><value>Sortierung, Gruppierung, Spalten und Breiten für diese Ansicht zurücksetzen</value></data>
   <data name="Cover" xml:space="preserve"><value>Umschlag</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Neue Bibliothek erstellen</value></data>
   <data name="File" xml:space="preserve"><value>Datei</value></data>

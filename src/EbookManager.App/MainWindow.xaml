@@ -269,6 +269,12 @@
               </ItemsControl>
             </ScrollViewer>
           </Expander>
+          <Button Content="{loc:Loc ResetView}"
+                  Command="{Binding ResetCurrentViewLayoutCommand}"
+                  ToolTip="{loc:Loc ResetViewTooltip}"
+                  Margin="0,0,0,12"
+                  Padding="8,4"
+                  HorizontalAlignment="Stretch" />
           <Expander Header="{loc:Loc Authors}" IsExpanded="False" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="180"
                           VerticalScrollBarVisibility="Auto">

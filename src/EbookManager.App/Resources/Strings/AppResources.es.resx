@@ -397,6 +397,8 @@
   <data name="Close" xml:space="preserve"><value>Cerrar</value></data>
   <data name="Columns" xml:space="preserve"><value>Columnas</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Elija las columnas visibles para esta vista</value></data>
+  <data name="ResetView" xml:space="preserve"><value>Restablecer vista</value></data>
+  <data name="ResetViewTooltip" xml:space="preserve"><value>Restablecer orden, agrupación, columnas y anchos de esta vista</value></data>
   <data name="Cover" xml:space="preserve"><value>Portada</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Crear una biblioteca nueva</value></data>
   <data name="File" xml:space="preserve"><value>Archivo</value></data>

@@ -834,6 +834,40 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Reset_current_view_layout_restores_defaults_without_changing_other_views()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Title;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author]);
+        await viewModel.SetVisibleColumnsAsync(LibraryView.Detailed, [LibraryColumnOption.Title, LibraryColumnOption.Authors]);
+        await viewModel.SetColumnWidthAsync(LibraryView.Detailed, LibraryColumnOption.Title, 360);
+        viewModel.SelectedView = LibraryView.List;
+        viewModel.SelectedSortOption = LibrarySortOption.Category;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Tag]);
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+
+        viewModel.SelectedView = LibraryView.Detailed;
+        await viewModel.ResetCurrentViewLayoutCommand.ExecuteAsync(null);
+
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.None);
+        viewModel.ActiveGroupOptions.Should().BeEmpty();
+        viewModel.GetVisibleColumns(LibraryView.Detailed).Should().Equal(DefaultDetailedColumnOptions());
+        viewModel.GetColumnWidth(LibraryView.Detailed, LibraryColumnOption.Title, 220).Should().Be(220);
+        viewModel.SelectedView = LibraryView.List;
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.Category);
+        viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Tag);
+        settingsStore.Settings.LibrarySorts!.Detailed.Should().Be(nameof(LibrarySortOption.None));
+        settingsStore.Settings.LibrarySorts.List.Should().Be(nameof(LibrarySortOption.Category));
+        settingsStore.Settings.LibraryGroupings!.Detailed.Should().BeEmpty();
+        settingsStore.Settings.LibraryGroupings.List.Should().Equal(nameof(LibraryGroupOption.Tag));
+        settingsStore.Settings.LibraryColumnWidths!.Detailed.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Grouping_refresh_preserves_expanded_group_nodes()
     {
         var book = CreateBook("Book", ["Author"], series: "Series");
@@ -1705,6 +1739,26 @@ public sealed class LibraryViewModelTests
 
     private static BookRowViewModel CreateRow(string title) =>
         new(CreateBook(title, ["Author"]));
+
+    private static IReadOnlyList<LibraryColumnOption> DefaultDetailedColumnOptions() =>
+    [
+        LibraryColumnOption.Cover,
+        LibraryColumnOption.Title,
+        LibraryColumnOption.Authors,
+        LibraryColumnOption.Format,
+        LibraryColumnOption.Series,
+        LibraryColumnOption.SeriesNumber,
+        LibraryColumnOption.Status,
+        LibraryColumnOption.Language,
+        LibraryColumnOption.Publisher,
+        LibraryColumnOption.PublicationDate,
+        LibraryColumnOption.Tags,
+        LibraryColumnOption.Isbn,
+        LibraryColumnOption.Description,
+        LibraryColumnOption.DateAdded,
+        LibraryColumnOption.LastModified,
+        LibraryColumnOption.EReader
+    ];
 
     private sealed class CapturingLibraryPerformanceReporter : ILibraryPerformanceReporter
     {
