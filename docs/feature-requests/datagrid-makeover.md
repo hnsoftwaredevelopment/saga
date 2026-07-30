@@ -2,7 +2,7 @@
 
 ## Status
 
-In progress as Milestone 9.
+In progress as Milestone 12.
 
 ## Context
 
@@ -99,8 +99,61 @@ Detailed view should expose all standard metadata fields available in the detail
 - Detailed grouped view keeps all standard details-pane metadata columns visible.
 - List view keeps the same standard metadata columns as Detailed view, minus the cover.
 - Grouping updates reuse the existing visible book rows so adding or removing grouping does not rebuild the filtered list.
+- Bookshelf layout refreshes itself after loading, view changes, grouping source changes, and group expansion so covers appear without requiring a manual window resize.
 
-## Remaining Slices
+## Milestone 12 Scope
 
-- User-defined view settings should eventually remember grouping, sorting, and visible columns per view.
-- User-defined column visibility still needs a separate design.
+The current milestone focuses on finishing the grid experience created by Milestone 11 column visibility.
+
+### Slice 1: Fixed Grouped Headers
+
+- Detailed and List grouped views should keep a visible column header while grouped.
+- The grouped header should use the same visible-column model as the rows.
+- Hidden columns should disappear from both the header and row layout.
+- The header should remain understandable even when the grouped tree is scrolled.
+
+Status: implemented as a visually distinct fixed header row for grouped Detailed and List views.
+
+### Slice 1b: Standard Header Styling
+
+- Standard Detailed and List grid headers should visually match the grouped header style.
+- Native Syncfusion header sorting must remain active when clicking a column header.
+- Header sorting should support the normal three-state cycle: ascending, descending, and no sorting.
+- Header labels should align with the column content, use theme-aware vertical separator lines, and stand out through a subtle theme-aware background.
+
+Status: implemented by styling the native `SfDataGrid.HeaderStyle`, preserving Syncfusion sorting behavior. Standard headers are left-aligned, use a dedicated theme-aware header background, use the theme accent color for vertical separator lines, and enable Syncfusion tri-state sorting.
+
+### Slice 1c: Bookshelf Group Rendering Stability
+
+- Bookshelf should show covers immediately after startup when it is the default view.
+- Bookshelf grouped headers should render their books when expanded, including multi-level grouping such as tags and series.
+- Fixes should not remove virtualization from the main ungrouped Bookshelf surface.
+
+Status: implemented by refreshing Bookshelf layout after relevant view/source changes and using stable wrap layout for expanded grouped cover rows while preserving virtualization for the main Bookshelf.
+
+### Slice 2: Column Width Foundation
+
+- Capture current column widths per view.
+- Persist width changes for Detailed and List views.
+- Allow users to resize Detailed and List grid columns directly in the header.
+- Keep the defaults identical to the current layout when no custom widths exist.
+- Use the same settings foundation for the duplicate candidates view, where the default columns can be too narrow and user resizing should be remembered.
+
+Status: implemented. Detailed and List views allow header-based column resizing, persist resized Syncfusion column widths, and grouped rows reuse the same width snapshot. Duplicate candidates now uses the same settings foundation for its WPF DataGrid column widths.
+
+Duplicate candidates row actions use compact icon-only buttons with localized tooltips so action columns can remain narrow while content columns stay resizable. Merge uses a success color, details uses an information color, and delete uses the existing danger color.
+
+Column virtualization is disabled for the duplicate candidates grid because the narrow icon action columns should render immediately without requiring a manual column resize.
+
+### Slice 3: Column Order Foundation
+
+- Prepare the column model for user-defined order.
+- Keep order per view.
+- Defer drag/drop UI if it would make the milestone too large.
+
+## Deferred
+
+- User-defined views.
+- Custom metadata columns.
+- Full custom grid replacement.
+- Import/cloud performance hardening.

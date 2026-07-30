@@ -49,6 +49,7 @@
     <DataTemplate x:Key="BookshelfGroupNodeTemplate">
       <StackPanel Margin="0,0,0,10">
         <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}"
+                  Expanded="GroupExpanderExpanded"
                   Content="{Binding}">
           <Expander.Style>
             <Style TargetType="Expander">
@@ -110,7 +111,8 @@
     </DataTemplate>
   </UserControl.Resources>
   <Grid>
-    <ListBox ItemsSource="{Binding BookshelfVisibleBooksSource}"
+    <ListBox x:Name="BookshelfBooksList"
+             ItemsSource="{Binding BookshelfVisibleBooksSource}"
              SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
              ItemTemplate="{StaticResource BookTileTemplate}"
              BorderThickness="0"
@@ -138,7 +140,8 @@
       </ListBox.ItemsPanel>
     </ListBox>
 
-    <ListBox ItemsSource="{Binding BookshelfGroupedLibraryNodesSource}"
+    <ListBox x:Name="BookshelfGroupsList"
+             ItemsSource="{Binding BookshelfGroupedLibraryNodesSource}"
              ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}"
              BorderThickness="0"
              Background="Transparent"

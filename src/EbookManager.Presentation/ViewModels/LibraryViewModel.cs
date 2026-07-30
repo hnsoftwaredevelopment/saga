@@ -52,6 +52,13 @@ public sealed partial class LibraryViewModel : ObservableObject
             [LibraryView.Detailed] = DefaultDetailedColumns().ToList(),
             [LibraryView.List] = DefaultListColumns().ToList()
         };
+    private readonly Dictionary<LibraryView, Dictionary<LibraryColumnOption, double>> viewColumnWidths =
+        new()
+        {
+            [LibraryView.Bookshelf] = [],
+            [LibraryView.Detailed] = [],
+            [LibraryView.List] = []
+        };
 
     public LibraryViewModel(
         IBookRepository bookRepository,
@@ -130,6 +137,9 @@ public sealed partial class LibraryViewModel : ObservableObject
     public bool HasColumnChoices => ColumnChoices.Count > 0;
 
     public IReadOnlyList<LibraryColumnOption> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
+
+    public LibraryColumnLayoutSnapshot ActiveColumnLayoutSnapshot =>
+        new(ActiveColumnOptions.ToArray(), GetColumnWidths(SelectedView));
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -718,6 +728,43 @@ public sealed partial class LibraryViewModel : ObservableObject
     public bool IsColumnVisible(LibraryView view, LibraryColumnOption column) =>
         viewColumns.TryGetValue(view, out var columns) && columns.Contains(column);
 
+    public double GetColumnWidth(LibraryView view, LibraryColumnOption column, double defaultWidth) =>
+        viewColumnWidths.TryGetValue(view, out var widths) &&
+        widths.TryGetValue(column, out var width) &&
+        IsUsableColumnWidth(width)
+            ? width
+            : defaultWidth;
+
+    public async Task SetColumnWidthAsync(
+        LibraryView view,
+        LibraryColumnOption column,
+        double width,
+        CancellationToken cancellationToken = default)
+    {
+        if (view == LibraryView.Bookshelf || !IsUsableColumnWidth(width))
+        {
+            return;
+        }
+
+        var roundedWidth = Math.Round(width, 2);
+        if (!viewColumnWidths.TryGetValue(view, out var widths))
+        {
+            widths = [];
+            viewColumnWidths[view] = widths;
+        }
+
+        if (widths.TryGetValue(column, out var existingWidth) &&
+            Math.Abs(existingWidth - roundedWidth) < 0.01)
+        {
+            return;
+        }
+
+        widths[column] = roundedWidth;
+        await SaveColumnWidthSettingsAsync(cancellationToken);
+        OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
+        NotifyActiveViewSourcesChanged();
+    }
+
     public async Task SetVisibleColumnsAsync(
         LibraryView view,
         IEnumerable<LibraryColumnOption> columns,
@@ -821,6 +868,21 @@ public sealed partial class LibraryViewModel : ObservableObject
         RefreshActiveColumnOptions();
     }
 
+    private LibraryColumnWidthSettings CreateColumnWidthSettings(
+        IReadOnlyDictionary<string, double>? duplicateCandidates = null) =>
+        new(
+            ToColumnWidthSettingValues(viewColumnWidths[LibraryView.Detailed]),
+            ToColumnWidthSettingValues(viewColumnWidths[LibraryView.List]),
+            duplicateCandidates);
+
+    private void LoadColumnWidthSettings(LibraryColumnWidthSettings? settings)
+    {
+        viewColumnWidths[LibraryView.Bookshelf] = [];
+        viewColumnWidths[LibraryView.Detailed] = ParseColumnWidths(settings?.Detailed);
+        viewColumnWidths[LibraryView.List] = ParseColumnWidths(settings?.List);
+        OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
+    }
+
     private void RefreshActiveColumnOptions()
     {
         var desiredOptions = GetVisibleColumns(SelectedView);
@@ -848,7 +910,13 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         RefreshColumnChoices();
         OnPropertyChanged(nameof(ActiveColumnOptionsSnapshot));
+        OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
     }
+
+    private IReadOnlyDictionary<LibraryColumnOption, double> GetColumnWidths(LibraryView view) =>
+        viewColumnWidths.TryGetValue(view, out var widths)
+            ? new Dictionary<LibraryColumnOption, double>(widths)
+            : new Dictionary<LibraryColumnOption, double>();
 
     private void RefreshColumnChoices()
     {
@@ -938,6 +1006,31 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
+    private async Task SaveColumnWidthSettingsAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        await settingsSaveLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var settings = await settingsStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            await settingsStore.SaveAsync(
+                    settings with
+                    {
+                        LibraryColumnWidths = CreateColumnWidthSettings(settings.LibraryColumnWidths?.DuplicateCandidates)
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            settingsSaveLock.Release();
+        }
+    }
+
     private static IReadOnlyList<string> ToSettingValues(IEnumerable<LibraryGroupOption> options) =>
         NormalizeGroupOptions(options)
             .Select(option => option.ToString())
@@ -945,6 +1038,12 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private static IReadOnlyList<string> ToColumnSettingValues(IEnumerable<LibraryColumnOption> options) =>
         options.Select(option => option.ToString()).ToArray();
+
+    private static IReadOnlyDictionary<string, double> ToColumnWidthSettingValues(
+        IReadOnlyDictionary<LibraryColumnOption, double> widths) =>
+        widths
+            .Where(item => IsUsableColumnWidth(item.Value))
+            .ToDictionary(item => item.Key.ToString(), item => Math.Round(item.Value, 2), StringComparer.Ordinal);
 
     private static IReadOnlyList<LibraryGroupOption> ParseGroupOptions(IEnumerable<string>? values)
     {
@@ -961,6 +1060,31 @@ public sealed partial class LibraryViewModel : ObservableObject
         Enum.IsDefined(option)
             ? option
             : LibraryGroupOption.None;
+
+    private static Dictionary<LibraryColumnOption, double> ParseColumnWidths(
+        IReadOnlyDictionary<string, double>? values)
+    {
+        if (values is null)
+        {
+            return [];
+        }
+
+        var widths = new Dictionary<LibraryColumnOption, double>();
+        foreach (var (key, width) in values)
+        {
+            if (Enum.TryParse<LibraryColumnOption>(key, ignoreCase: true, out var option) &&
+                Enum.IsDefined(option) &&
+                IsUsableColumnWidth(width))
+            {
+                widths[option] = Math.Round(width, 2);
+            }
+        }
+
+        return widths;
+    }
+
+    private static bool IsUsableColumnWidth(double width) =>
+        double.IsFinite(width) && width >= 24 && width <= 2000;
 
     private static IReadOnlyList<LibraryGroupOption> NormalizeGroupOptions(IEnumerable<LibraryGroupOption> options)
     {
@@ -1768,6 +1892,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         authorSortStrategy = settings.AuthorSortStrategy;
         LoadGroupingSettings(settings.LibraryGroupings);
         LoadColumnSettings(settings.LibraryColumns);
+        LoadColumnWidthSettings(settings.LibraryColumnWidths);
         ApplyDefaultViewPreference(settings.DefaultView);
         RefreshActiveGroupOptions();
         RefreshActiveColumnOptions();

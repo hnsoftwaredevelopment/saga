@@ -15,7 +15,8 @@ public sealed record AppSettings(
     bool EnableDiagnosticDetails = true,
     DuplicateMergeDefaultSettings? DuplicateMergeDefaults = null,
     LibraryGroupingSettings? LibraryGroupings = null,
-    LibraryColumnSettings? LibraryColumns = null);
+    LibraryColumnSettings? LibraryColumns = null,
+    LibraryColumnWidthSettings? LibraryColumnWidths = null);
 
 public interface IAppSettingsStore
 {

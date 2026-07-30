@@ -228,6 +228,49 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task Settings_round_trip_library_column_widths()
+    {
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+        var settings = new AppSettings(
+            "C:\\Books",
+            "nl-NL",
+            "Sepia",
+            "Bookshelf",
+            true,
+            true,
+            EbookManager.Domain.Settings.AuthorSortStrategy.DisplayName,
+            true,
+            true,
+            new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings(),
+            null,
+            null,
+            new EbookManager.Domain.Settings.LibraryColumnWidthSettings(
+                new Dictionary<string, double>
+                {
+                    ["Title"] = 321.5,
+                    ["Authors"] = 242
+                },
+                new Dictionary<string, double>
+                {
+                    ["Format"] = 118.75
+                },
+                new Dictionary<string, double>
+                {
+                    ["Title"] = 360
+                }));
+
+        await store.SaveAsync(settings, CancellationToken.None);
+
+        var loaded = await new JsonAppSettingsStore(temporaryDirectory.DirectoryPath).LoadAsync(default);
+
+        loaded.LibraryColumnWidths.Should().NotBeNull();
+        loaded.LibraryColumnWidths!.Detailed.Should().Contain("Title", 321.5);
+        loaded.LibraryColumnWidths.Detailed.Should().Contain("Authors", 242);
+        loaded.LibraryColumnWidths.List.Should().Contain("Format", 118.75);
+        loaded.LibraryColumnWidths.DuplicateCandidates.Should().Contain("Title", 360);
+    }
+
+    [Fact]
     public async Task ListLibraries_quarantines_malformed_json_and_returns_empty_list()
     {
         var path = Path.Combine(temporaryDirectory.DirectoryPath, "libraries.json");
