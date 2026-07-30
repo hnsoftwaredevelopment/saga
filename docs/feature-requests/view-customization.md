@@ -110,3 +110,12 @@ Status: implemented.
 - Hidden columns can be used as drop targets, and dropping below the list moves a visible column to the end.
 - Dragging shows a subtle insertion line above or below the current drop target.
 - Bookshelf keeps the covers-only explanation and does not expose column ordering.
+
+### Slice 3: Grouped Views Follow Column Layout
+
+Status: implemented.
+
+- Grouped Detailed and List views use the same visible column order as their standard grid variants.
+- Grouped headers and grouped book rows are generated from `ActiveColumnLayoutSnapshot`.
+- Column width changes from grouped headers continue to save to the selected view layout.
+- The older fixed grouped-row templates were replaced by a reusable dynamic row/header control.

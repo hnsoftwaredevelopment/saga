@@ -26,3 +26,5 @@
 - [ ] Existing duplicate-candidate column widths are still restored.
 - [ ] Reset view still clears only the selected view.
 - [ ] Switching between Bookshelf, Detailed, and List keeps each view's own grouping and sorting.
+- [ ] Enable grouping in Detailed and confirm column visibility, order, and widths match the standard Detailed grid.
+- [ ] Enable grouping in List and confirm column visibility, order, and widths match the standard List grid.
