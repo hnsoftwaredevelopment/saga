@@ -834,6 +834,73 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Refresh_prefers_unified_view_layout_settings_when_available()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                LibraryGroupings = new LibraryGroupingSettings(Detailed: ["Author"]),
+                LibraryColumns = new LibraryColumnSettings(Detailed: ["Title", "Authors"]),
+                LibraryColumnWidths = new LibraryColumnWidthSettings(
+                    Detailed: new Dictionary<string, double>
+                    {
+                        ["Title"] = 111
+                    }),
+                LibrarySorts = new LibrarySortSettings(Detailed: "Author"),
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        [nameof(LibraryView.Detailed)] = new(
+                            Groupings: ["Tag"],
+                            Columns: ["Cover", "Title", "Series"],
+                            ColumnWidths: new Dictionary<string, double>
+                            {
+                                ["Title"] = 333
+                            },
+                            Sort: "Title")
+                    })
+            },
+            CancellationToken.None);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.ActiveGroupOptions.Should().Equal(LibraryGroupOption.Tag);
+        viewModel.ActiveColumnOptions.Should().Equal(
+            LibraryColumnOption.Cover,
+            LibraryColumnOption.Title,
+            LibraryColumnOption.Series);
+        viewModel.GetColumnWidth(LibraryView.Detailed, LibraryColumnOption.Title, 220).Should().Be(333);
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.Title);
+    }
+
+    [Fact]
+    public async Task View_customization_saves_unified_view_layout_settings()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Title;
+        viewModel.SetGroupingOptions([LibraryGroupOption.Tag]);
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Cover, LibraryColumnOption.Title, LibraryColumnOption.Series]);
+        await viewModel.SetColumnWidthAsync(LibraryView.Detailed, LibraryColumnOption.Title, 333);
+        await viewModel.WaitForPendingGroupingSettingsSaveAsync();
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+
+        settingsStore.Settings.LibraryViewLayouts.Should().NotBeNull();
+        var detailed = settingsStore.Settings.LibraryViewLayouts!.Views![nameof(LibraryView.Detailed)];
+        detailed.Groupings.Should().Equal(nameof(LibraryGroupOption.Tag));
+        detailed.Columns.Should().Equal("Cover", "Title", "Series");
+        detailed.ColumnWidths.Should().Contain("Title", 333);
+        detailed.Sort.Should().Be(nameof(LibrarySortOption.Title));
+    }
+
+    [Fact]
     public async Task Reset_current_view_layout_restores_defaults_without_changing_other_views()
     {
         var settingsStore = new InMemoryAppSettingsStore();

@@ -857,7 +857,8 @@ public sealed partial class LibraryViewModel : ObservableObject
                     await settingsStore.SaveAsync(
                             settings with
                             {
-                                LibraryGroupings = groupingSettings
+                                LibraryGroupings = groupingSettings,
+                                LibraryViewLayouts = CreateViewLayoutSettings()
                             },
                             CancellationToken.None)
                         .ConfigureAwait(false);
@@ -923,6 +924,69 @@ public sealed partial class LibraryViewModel : ObservableObject
         viewColumnWidths[LibraryView.Detailed] = ParseColumnWidths(settings?.Detailed);
         viewColumnWidths[LibraryView.List] = ParseColumnWidths(settings?.List);
         OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
+    }
+
+    private LibraryViewLayoutSettings CreateViewLayoutSettings() =>
+        new(new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+        {
+            [nameof(LibraryView.Bookshelf)] = new(
+                Groupings: ToSettingValues(viewGroupings[LibraryView.Bookshelf]),
+                Sort: viewSortOptions[LibraryView.Bookshelf].ToString()),
+            [nameof(LibraryView.Detailed)] = new(
+                Groupings: ToSettingValues(viewGroupings[LibraryView.Detailed]),
+                Columns: ToColumnSettingValues(viewColumns[LibraryView.Detailed]),
+                ColumnWidths: ToColumnWidthSettingValues(viewColumnWidths[LibraryView.Detailed]),
+                Sort: viewSortOptions[LibraryView.Detailed].ToString()),
+            [nameof(LibraryView.List)] = new(
+                Groupings: ToSettingValues(viewGroupings[LibraryView.List]),
+                Columns: ToColumnSettingValues(viewColumns[LibraryView.List]),
+                ColumnWidths: ToColumnWidthSettingValues(viewColumnWidths[LibraryView.List]),
+                Sort: viewSortOptions[LibraryView.List].ToString())
+        });
+
+    private void LoadViewLayoutSettings(AppSettings settings)
+    {
+        if (settings.LibraryViewLayouts?.Views?.Count > 0)
+        {
+            var layouts = settings.LibraryViewLayouts.Views;
+            foreach (var view in Enum.GetValues<LibraryView>())
+            {
+                var layout = GetViewLayout(layouts, view);
+                viewGroupings[view] = ParseGroupOptions(layout?.Groupings).ToList();
+                viewSortOptions[view] = ParseSortOption(layout?.Sort);
+                viewColumns[view] = view == LibraryView.Bookshelf
+                    ? []
+                    : ParseColumnOptions(view, layout?.Columns).ToList();
+                viewColumnWidths[view] = view == LibraryView.Bookshelf
+                    ? []
+                    : ParseColumnWidths(layout?.ColumnWidths);
+            }
+
+            RefreshActiveGroupOptions();
+            RefreshActiveColumnOptions();
+            ApplySelectedViewSortOption();
+            OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
+            return;
+        }
+
+        LoadGroupingSettings(settings.LibraryGroupings);
+        LoadColumnSettings(settings.LibraryColumns);
+        LoadColumnWidthSettings(settings.LibraryColumnWidths);
+        LoadSortSettings(settings.LibrarySorts);
+    }
+
+    private static LibraryViewLayoutSetting? GetViewLayout(
+        IReadOnlyDictionary<string, LibraryViewLayoutSetting> layouts,
+        LibraryView view)
+    {
+        if (layouts.TryGetValue(view.ToString(), out var exactLayout))
+        {
+            return exactLayout;
+        }
+
+        return layouts.TryGetValue(view.ToString().ToLowerInvariant(), out var lowerLayout)
+            ? lowerLayout
+            : null;
     }
 
     private void RefreshActiveColumnOptions()
@@ -1055,7 +1119,8 @@ public sealed partial class LibraryViewModel : ObservableObject
             await settingsStore.SaveAsync(
                     settings with
                     {
-                        LibraryColumns = CreateColumnSettings()
+                        LibraryColumns = CreateColumnSettings(),
+                        LibraryViewLayouts = CreateViewLayoutSettings()
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -1080,7 +1145,8 @@ public sealed partial class LibraryViewModel : ObservableObject
             await settingsStore.SaveAsync(
                     settings with
                     {
-                        LibraryColumnWidths = CreateColumnWidthSettings(settings.LibraryColumnWidths?.DuplicateCandidates)
+                        LibraryColumnWidths = CreateColumnWidthSettings(settings.LibraryColumnWidths?.DuplicateCandidates),
+                        LibraryViewLayouts = CreateViewLayoutSettings()
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -1121,7 +1187,8 @@ public sealed partial class LibraryViewModel : ObservableObject
             await settingsStore.SaveAsync(
                     settings with
                     {
-                        LibrarySorts = CreateSortSettings()
+                        LibrarySorts = CreateSortSettings(),
+                        LibraryViewLayouts = CreateViewLayoutSettings()
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -1150,7 +1217,8 @@ public sealed partial class LibraryViewModel : ObservableObject
                         LibraryGroupings = CreateGroupingSettings(),
                         LibraryColumns = CreateColumnSettings(),
                         LibraryColumnWidths = CreateColumnWidthSettings(settings.LibraryColumnWidths?.DuplicateCandidates),
-                        LibrarySorts = CreateSortSettings()
+                        LibrarySorts = CreateSortSettings(),
+                        LibraryViewLayouts = CreateViewLayoutSettings()
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -2046,10 +2114,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         hasAppliedDefaultView = true;
         var settings = await settingsStore.LoadAsync(cancellationToken);
         authorSortStrategy = settings.AuthorSortStrategy;
-        LoadGroupingSettings(settings.LibraryGroupings);
-        LoadColumnSettings(settings.LibraryColumns);
-        LoadColumnWidthSettings(settings.LibraryColumnWidths);
-        LoadSortSettings(settings.LibrarySorts);
+        LoadViewLayoutSettings(settings);
         ApplyDefaultViewPreference(settings.DefaultView);
         RefreshActiveGroupOptions();
         RefreshActiveColumnOptions();

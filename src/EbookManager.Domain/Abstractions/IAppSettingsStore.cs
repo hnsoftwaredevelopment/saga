@@ -17,7 +17,8 @@ public sealed record AppSettings(
     LibraryGroupingSettings? LibraryGroupings = null,
     LibraryColumnSettings? LibraryColumns = null,
     LibraryColumnWidthSettings? LibraryColumnWidths = null,
-    LibrarySortSettings? LibrarySorts = null);
+    LibrarySortSettings? LibrarySorts = null,
+    LibraryViewLayoutSettings? LibraryViewLayouts = null);
 
 public interface IAppSettingsStore
 {

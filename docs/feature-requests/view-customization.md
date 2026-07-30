@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented as Milestone 11, extended in Milestone 13.
+Implemented as Milestone 11, extended in Milestone 13 and Milestone 14.
 
 ## Context
 
@@ -78,3 +78,23 @@ Status: implemented.
 - Detailed and List show their available columns as checkboxes.
 - Bookshelf shows a disabled explanation because it only uses covers.
 - Reset view lives with these view settings, so restoring default columns is explicit.
+
+## Milestone 14
+
+Milestone 14 prepares Saga for user-created views without exposing that workflow yet. The goal is to move from separate per-feature settings toward a single layout model per view.
+
+### Slice 1: Unified View Layout Settings
+
+Status: implemented.
+
+- Added `LibraryViewLayoutSettings` as the canonical storage shape for view layout data.
+- Each built-in view can store grouping, sorting, columns, and column widths in one layout record.
+- Saga still reads the older `LibraryGroupings`, `LibraryColumns`, `LibraryColumnWidths`, and `LibrarySorts` settings for migration.
+- Saving view customization writes both the new unified layout settings and the older settings for now.
+- This creates a stable path toward user-created views with names, copied layouts, and custom presets.
+
+### Next Slices
+
+- Add column order persistence for Detailed and List.
+- Introduce a view-definition model that can represent built-in views and future user-created views.
+- Add view copy/duplicate behavior before allowing fully custom view creation.
