@@ -1104,6 +1104,39 @@ public sealed partial class LibraryViewModel : ObservableObject
     private Task MoveColumnDownAsync(LibraryColumnChoiceViewModel? choice, CancellationToken cancellationToken) =>
         MoveColumnAsync(choice, 1, cancellationToken);
 
+    public async Task ReorderColumnChoiceAsync(
+        LibraryColumnChoiceViewModel? draggedChoice,
+        LibraryColumnChoiceViewModel? targetChoice,
+        CancellationToken cancellationToken = default)
+    {
+        if (draggedChoice is null ||
+            targetChoice is null ||
+            ReferenceEquals(draggedChoice, targetChoice) ||
+            SelectedView == LibraryView.Bookshelf ||
+            !draggedChoice.IsSelected ||
+            !targetChoice.IsSelected)
+        {
+            return;
+        }
+
+        var columns = GetVisibleColumns(SelectedView).ToList();
+        var currentIndex = columns.IndexOf(draggedChoice.Option);
+        var targetIndex = columns.IndexOf(targetChoice.Option);
+        if (currentIndex < 0 || targetIndex < 0 || currentIndex == targetIndex)
+        {
+            return;
+        }
+
+        columns.RemoveAt(currentIndex);
+        if (currentIndex < targetIndex)
+        {
+            targetIndex--;
+        }
+
+        columns.Insert(targetIndex, draggedChoice.Option);
+        await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
+    }
+
     private async Task MoveColumnAsync(
         LibraryColumnChoiceViewModel? choice,
         int direction,

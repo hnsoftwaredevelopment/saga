@@ -406,8 +406,7 @@
   <data name="Close" xml:space="preserve"><value>Chiudi</value></data>
   <data name="Columns" xml:space="preserve"><value>Colonne</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Scegli le colonne visibili per questa vista</value></data>
-  <data name="MoveColumnUpTooltip" xml:space="preserve"><value>Sposta colonna in alto</value></data>
-  <data name="MoveColumnDownTooltip" xml:space="preserve"><value>Sposta colonna in basso</value></data>
+  <data name="DragColumnTooltip" xml:space="preserve"><value>Trascina per cambiare l'ordine delle colonne</value></data>
   <data name="ResetView" xml:space="preserve"><value>Ripristina vista</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Ripristina vista per: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Copertina</value></data>

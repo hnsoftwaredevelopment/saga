@@ -806,6 +806,28 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Column_choices_can_be_reordered_by_drag_target()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Title, LibraryColumnOption.Authors, LibraryColumnOption.Series]);
+
+        var seriesChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Series);
+        var titleChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Title);
+        await viewModel.ReorderColumnChoiceAsync(seriesChoice, titleChoice);
+
+        viewModel.ActiveColumnOptions.Should().Equal(
+            LibraryColumnOption.Series,
+            LibraryColumnOption.Title,
+            LibraryColumnOption.Authors);
+        settingsStore.Settings.LibraryColumns!.Detailed.Should().Equal("Series", "Title", "Authors");
+    }
+
+    [Fact]
     public async Task Hidden_column_choices_are_not_moved_into_visible_columns()
     {
         var settingsStore = new InMemoryAppSettingsStore();

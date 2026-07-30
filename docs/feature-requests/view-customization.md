@@ -104,6 +104,7 @@ Status: implemented.
 Status: implemented.
 
 - Renamed the Settings tab from Views to Column settings to avoid confusion with Appearance.
-- Detailed and List columns can be moved up and down from Settings.
+- Detailed and List columns can be reordered by dragging the column grip in Settings.
 - Column order changes are applied live to the active grid.
+- Standard Detailed and List grids physically reorder their columns to match the saved layout.
 - Bookshelf keeps the covers-only explanation and does not expose column ordering.

@@ -57,7 +57,8 @@ internal sealed class LibraryGridColumnVisibility
         isApplyingLayout = true;
         try
         {
-            var visibleColumns = viewModel.GetVisibleColumns(view).ToHashSet();
+            var orderedVisibleColumns = viewModel.GetVisibleColumns(view);
+            var visibleColumns = orderedVisibleColumns.ToHashSet();
 
             foreach (var column in grid.Columns)
             {
@@ -67,6 +68,8 @@ internal sealed class LibraryGridColumnVisibility
                     column.Width = viewModel.GetColumnWidth(view, option, column.Width);
                 }
             }
+
+            ApplyColumnOrder(orderedVisibleColumns);
         }
         finally
         {
@@ -77,6 +80,37 @@ internal sealed class LibraryGridColumnVisibility
     private void ActiveColumnOptionsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         Apply();
+    }
+
+    private void ApplyColumnOrder(IReadOnlyList<LibraryColumnOption> orderedVisibleColumns)
+    {
+        for (var desiredIndex = 0; desiredIndex < orderedVisibleColumns.Count; desiredIndex++)
+        {
+            var option = orderedVisibleColumns[desiredIndex];
+            var currentIndex = FindColumnIndex(option);
+            if (currentIndex < 0 || currentIndex == desiredIndex)
+            {
+                continue;
+            }
+
+            var column = grid.Columns[currentIndex];
+            grid.Columns.RemoveAt(currentIndex);
+            grid.Columns.Insert(desiredIndex, column);
+        }
+    }
+
+    private int FindColumnIndex(LibraryColumnOption option)
+    {
+        for (var index = 0; index < grid.Columns.Count; index++)
+        {
+            if (TryGetColumnOption(grid.Columns[index].MappingName, out var columnOption) &&
+                columnOption == option)
+            {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     private async void GridResizingColumns(object? sender, ResizingColumnsEventArgs e)

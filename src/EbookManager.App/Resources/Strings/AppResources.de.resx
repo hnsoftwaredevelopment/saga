@@ -406,8 +406,7 @@
   <data name="Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Columns" xml:space="preserve"><value>Spalten</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Wählen Sie die sichtbaren Spalten für diese Ansicht</value></data>
-  <data name="MoveColumnUpTooltip" xml:space="preserve"><value>Spalte nach oben verschieben</value></data>
-  <data name="MoveColumnDownTooltip" xml:space="preserve"><value>Spalte nach unten verschieben</value></data>
+  <data name="DragColumnTooltip" xml:space="preserve"><value>Ziehen, um die Spaltenreihenfolge zu aendern</value></data>
   <data name="ResetView" xml:space="preserve"><value>Ansicht zurücksetzen</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Ansicht zurücksetzen für: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Umschlag</value></data>

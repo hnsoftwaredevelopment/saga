@@ -21,8 +21,7 @@
   <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Ask before deleting books</value></data>
   <data name="Columns" xml:space="preserve"><value>Columns</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Choose the visible columns for this view</value></data>
-  <data name="MoveColumnUpTooltip" xml:space="preserve"><value>Move column up</value></data>
-  <data name="MoveColumnDownTooltip" xml:space="preserve"><value>Move column down</value></data>
+  <data name="DragColumnTooltip" xml:space="preserve"><value>Drag to change the column order</value></data>
   <data name="ResetView" xml:space="preserve"><value>Reset view</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Reset view for: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Cover</value></data>

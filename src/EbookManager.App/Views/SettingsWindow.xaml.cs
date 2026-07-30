@@ -5,6 +5,7 @@ namespace EbookManager.App.Views;
 
 public partial class SettingsWindow : System.Windows.Window
 {
+    private const string ColumnChoiceDragFormat = "Saga.LibraryColumnChoice";
     private readonly SettingsViewModel viewModel;
     private readonly LibraryViewModel libraryViewModel;
     private readonly LocalizationService localizationService;
@@ -119,5 +120,40 @@ public partial class SettingsWindow : System.Windows.Window
                 completedControl.IsEnabled = true;
             }
         }
+    }
+
+    private void ColumnDragGripPreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed ||
+            sender is not System.Windows.FrameworkElement { DataContext: LibraryColumnChoiceViewModel { IsSelected: true } choice })
+        {
+            return;
+        }
+
+        System.Windows.DragDrop.DoDragDrop(
+            (System.Windows.DependencyObject)sender,
+            new System.Windows.DataObject(ColumnChoiceDragFormat, choice),
+            System.Windows.DragDropEffects.Move);
+    }
+
+    private void ColumnChoiceDragOver(object sender, System.Windows.DragEventArgs e)
+    {
+        e.Effects = e.Data.GetDataPresent(ColumnChoiceDragFormat)
+            ? System.Windows.DragDropEffects.Move
+            : System.Windows.DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private async void ColumnChoiceDrop(object sender, System.Windows.DragEventArgs e)
+    {
+        if (!e.Data.GetDataPresent(ColumnChoiceDragFormat) ||
+            e.Data.GetData(ColumnChoiceDragFormat) is not LibraryColumnChoiceViewModel draggedChoice ||
+            sender is not System.Windows.FrameworkElement { DataContext: LibraryColumnChoiceViewModel targetChoice })
+        {
+            return;
+        }
+
+        e.Handled = true;
+        await libraryViewModel.ReorderColumnChoiceAsync(draggedChoice, targetChoice);
     }
 }

@@ -149,45 +149,60 @@
                     </Style.Triggers>
                   </Style>
                 </ScrollViewer.Style>
-                <ItemsControl ItemsSource="{Binding ColumnChoices}">
-                  <ItemsControl.ItemTemplate>
+                <ListBox ItemsSource="{Binding ColumnChoices}"
+                         BorderThickness="0"
+                         Background="Transparent">
+                  <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                      <Setter Property="AllowDrop" Value="True" />
+                      <EventSetter Event="DragOver" Handler="ColumnChoiceDragOver" />
+                      <EventSetter Event="Drop" Handler="ColumnChoiceDrop" />
+                    </Style>
+                  </ListBox.ItemContainerStyle>
+                  <ListBox.ItemTemplate>
                     <DataTemplate>
                       <Grid Margin="0,2">
                         <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="Auto" />
                           <ColumnDefinition Width="*" />
-                          <ColumnDefinition Width="Auto" />
-                          <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <CheckBox Grid.Column="0"
+                        <Border Grid.Column="0"
+                                Width="28"
+                                Height="24"
+                                Margin="0,0,8,0"
+                                CornerRadius="4"
+                                Background="{DynamicResource GridHeaderBackgroundBrush}"
+                                ToolTip="{loc:Loc DragColumnTooltip}"
+                                PreviewMouseMove="ColumnDragGripPreviewMouseMove">
+                          <Border.Style>
+                            <Style TargetType="Border">
+                              <Setter Property="Cursor" Value="SizeAll" />
+                              <Setter Property="Opacity" Value="1" />
+                              <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                                  <Setter Property="Cursor" Value="Arrow" />
+                                  <Setter Property="Opacity" Value="0.45" />
+                                </DataTrigger>
+                              </Style.Triggers>
+                            </Style>
+                          </Border.Style>
+                          <TextBlock Text="☰"
+                                     FontSize="14"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Border>
+                        <CheckBox Grid.Column="1"
                                   IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   Command="{Binding LibraryViewModel.ToggleColumnCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                   CommandParameter="{Binding}"
                                   VerticalAlignment="Center">
                           <TextBlock Text="{Binding Converter={StaticResource LibraryColumnOptionToLocalizedStringConverter}}" />
                         </CheckBox>
-                        <Button Grid.Column="1"
-                                Command="{Binding LibraryViewModel.MoveColumnUpCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                CommandParameter="{Binding}"
-                                IsEnabled="{Binding IsSelected}"
-                                Width="28"
-                                Height="24"
-                                Margin="8,0,2,0"
-                                Padding="0"
-                                Content="^"
-                                ToolTip="{loc:Loc MoveColumnUpTooltip}" />
-                        <Button Grid.Column="2"
-                                Command="{Binding LibraryViewModel.MoveColumnDownCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                CommandParameter="{Binding}"
-                                IsEnabled="{Binding IsSelected}"
-                                Width="28"
-                                Height="24"
-                                Padding="0"
-                                Content="v"
-                                ToolTip="{loc:Loc MoveColumnDownTooltip}" />
                       </Grid>
                     </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                  </ListBox.ItemTemplate>
+                </ListBox>
               </ScrollViewer>
               <Button Grid.Row="1"
                       Command="{Binding ResetCurrentViewLayoutCommand}"
