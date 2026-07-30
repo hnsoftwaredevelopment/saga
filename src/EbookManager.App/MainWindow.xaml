@@ -288,10 +288,10 @@
                     Height="512.398">
                 <Path Data="{StaticResource ResetViewIconBackgroundGeometry}"
                       Fill="{DynamicResource AccentBrush}"
-                      Stretch="Fill" />
+                      Stretch="None" />
                 <Path Data="{StaticResource ResetViewIconForegroundGeometry}"
-                      Fill="{DynamicResource GridHeaderBackgroundBrush}"
-                      Stretch="Fill" />
+                      Fill="{DynamicResource InfoBrush}"
+                      Stretch="None" />
               </Grid>
             </Viewbox>
           </Button>
