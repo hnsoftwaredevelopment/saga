@@ -392,7 +392,8 @@
               BorderThickness="0,0,0,1"
               Panel.ZIndex="1"
               SnapsToDevicePixels="True">
-        <Grid MinHeight="40">
+        <Grid x:Name="GroupedHeaderGrid"
+              MinHeight="40">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Cover|80}" />
             <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Title|220}" />
