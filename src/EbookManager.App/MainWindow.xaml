@@ -282,11 +282,18 @@
                 <Binding Path="SelectedView" />
               </MultiBinding>
             </Button.ToolTip>
-            <Path Data="{StaticResource ResetViewIconGeometry}"
-                  Fill="{DynamicResource AccentBrush}"
-                  Width="18"
-                  Height="18"
-                  Stretch="Uniform" />
+            <Viewbox Width="18"
+                     Height="18">
+              <Grid Width="441"
+                    Height="512.398">
+                <Path Data="{StaticResource ResetViewIconBackgroundGeometry}"
+                      Fill="{DynamicResource AccentBrush}"
+                      Stretch="Fill" />
+                <Path Data="{StaticResource ResetViewIconForegroundGeometry}"
+                      Fill="{DynamicResource GridHeaderBackgroundBrush}"
+                      Stretch="Fill" />
+              </Grid>
+            </Viewbox>
           </Button>
           <Expander Header="{loc:Loc Authors}" IsExpanded="False" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="180"
