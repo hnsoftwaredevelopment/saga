@@ -682,6 +682,34 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Sort_options_are_saved_per_view()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var viewModel = CreateViewModel(
+            [
+                CreateBook("C", ["Charlie"]),
+                CreateBook("A", ["Alice"]),
+                CreateBook("B", ["Bob"])
+            ],
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Title;
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+        viewModel.SelectedView = LibraryView.Bookshelf;
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+
+        viewModel.SelectedView = LibraryView.Detailed;
+
+        viewModel.SelectedSortOption.Should().Be(LibrarySortOption.Title);
+        viewModel.VisibleBooks.Select(row => row.Title).Should().Equal("A", "B", "C");
+        settingsStore.Settings.LibrarySorts.Should().NotBeNull();
+        settingsStore.Settings.LibrarySorts!.Detailed.Should().Be(nameof(LibrarySortOption.Title));
+        settingsStore.Settings.LibrarySorts.Bookshelf.Should().Be(nameof(LibrarySortOption.Author));
+    }
+
+    [Fact]
     public async Task Removing_grouping_preserves_remaining_grouping_chips()
     {
         var viewModel = CreateViewModel([CreateBook("Book", ["Author"], tags: ["Tag"])]);

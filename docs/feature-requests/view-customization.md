@@ -2,13 +2,15 @@
 
 ## Status
 
-Implemented as Milestone 11.
+Implemented as Milestone 11, extended in Milestone 13.
 
 ## Context
 
 Saga now has strong built-in views with sorting and grouping. The next step is allowing users to shape those views without creating custom metadata columns yet.
 
 The first milestone slice adds a shared column model and persists visible columns per grid view. UI controls can then use the same column identifiers instead of each view inventing its own column list.
+
+Saga views should remember the choices a user makes inside each view, without forcing those choices onto the other views.
 
 ## Goals
 
@@ -27,15 +29,31 @@ The first milestone slice adds a shared column model and persists visible column
 - Added a live column chooser in the library side panel for Detailed and List views.
 - Grouped Detailed and List templates now collapse hidden columns as well.
 - Added settings round-trip and viewmodel persistence tests.
+- Detailed and List can remember column widths.
+- Duplicate candidates can remember column widths.
+- Bookshelf, Detailed, and List can each have their own grouping.
+
+## Milestone 13
+
+Milestone 13 finishes the current view-customization foundation before custom user-created views are introduced.
+
+### Slice 1: Per-view Sort Persistence
+
+Status: implemented.
+
+- Changing Sort by updates only the active view.
+- Switching views restores the Sort by option last used in that view.
+- Saved sort choices are stored in app settings as `LibrarySorts`.
+- Invalid or missing stored values fall back to no sorting.
 
 ## Current Findings
 
 - With a very large library, the Bookshelf can briefly render empty during startup or immediately after removing grouping while the virtualized view rebuilds. This is acceptable for now as long as the UI remains responsive and the view repopulates within a few seconds.
-- Grouped Detailed and List views currently use a custom grouped layout. Hidden columns are respected, but a fixed visible grouped column header is deferred to the future grid/view makeover.
+- Grouped Detailed and List views use Saga's custom grouped layout. It now supports visible columns, fixed headers, resizing, and saved column widths.
 
-## Deferred
+### Later
 
+- User-created views with their own column, grouping, sort, and layout presets.
+- Optional view names and duplicate/copy view actions.
+- A richer view-management screen when the number of view settings grows.
 - User-editable column order.
-- User-editable column widths.
-- Fixed grouped column headers.
-- User-defined views.

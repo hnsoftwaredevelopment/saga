@@ -39,12 +39,16 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly SemaphoreSlim settingsSaveLock = new(1, 1);
     private IReadOnlyList<Book> books = [];
     private Task pendingGroupingSettingsSave = Task.CompletedTask;
+    private Task pendingSortSettingsSave = Task.CompletedTask;
     private long groupingSettingsSaveVersion;
+    private bool isApplyingViewSortOption;
     private bool hasAppliedDefaultView;
     private int selectionVersion;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
     private readonly Dictionary<LibraryView, List<LibraryGroupOption>> viewGroupings =
         Enum.GetValues<LibraryView>().ToDictionary(view => view, _ => new List<LibraryGroupOption>());
+    private readonly Dictionary<LibraryView, LibrarySortOption> viewSortOptions =
+        Enum.GetValues<LibraryView>().ToDictionary(view => view, _ => LibrarySortOption.None);
     private readonly Dictionary<LibraryView, List<LibraryColumnOption>> viewColumns =
         new()
         {
@@ -349,10 +353,27 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         RefreshActiveGroupOptions(notifyActiveViewSources: false);
         RefreshActiveColumnOptions();
-        RefreshGroupingOnly();
+        if (ApplySelectedViewSortOption())
+        {
+            ApplyFilter();
+        }
+        else
+        {
+            RefreshGroupingOnly();
+        }
     }
 
-    partial void OnSelectedSortOptionChanged(LibrarySortOption value) => ApplyFilter();
+    partial void OnSelectedSortOptionChanged(LibrarySortOption value)
+    {
+        if (isApplyingViewSortOption)
+        {
+            return;
+        }
+
+        viewSortOptions[SelectedView] = value;
+        pendingSortSettingsSave = SaveSortSettingsBestEffortAsync(CancellationToken.None);
+        ApplyFilter();
+    }
 
     partial void OnSelectedGroupOptionToAddChanged(LibraryGroupOption value)
     {
@@ -799,6 +820,10 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public Task WaitForPendingGroupingSettingsSaveAsync() => pendingGroupingSettingsSave;
 
+    public bool HasPendingSortSettingsSave => !pendingSortSettingsSave.IsCompleted;
+
+    public Task WaitForPendingSortSettingsSaveAsync() => pendingSortSettingsSave;
+
     private void QueueGroupingSettingsSave()
     {
         if (settingsStore is null)
@@ -853,6 +878,20 @@ public sealed partial class LibraryViewModel : ObservableObject
         viewGroupings[LibraryView.Detailed] = ParseGroupOptions(settings?.Detailed).ToList();
         viewGroupings[LibraryView.List] = ParseGroupOptions(settings?.List).ToList();
         RefreshActiveGroupOptions();
+    }
+
+    private LibrarySortSettings CreateSortSettings() =>
+        new(
+            viewSortOptions[LibraryView.Bookshelf].ToString(),
+            viewSortOptions[LibraryView.Detailed].ToString(),
+            viewSortOptions[LibraryView.List].ToString());
+
+    private void LoadSortSettings(LibrarySortSettings? settings)
+    {
+        viewSortOptions[LibraryView.Bookshelf] = ParseSortOption(settings?.Bookshelf);
+        viewSortOptions[LibraryView.Detailed] = ParseSortOption(settings?.Detailed);
+        viewSortOptions[LibraryView.List] = ParseSortOption(settings?.List);
+        ApplySelectedViewSortOption();
     }
 
     private LibraryColumnSettings CreateColumnSettings() =>
@@ -1031,6 +1070,45 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
+    private async Task SaveSortSettingsBestEffortAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await SaveSortSettingsAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    private async Task SaveSortSettingsAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        await settingsSaveLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var settings = await settingsStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            await settingsStore.SaveAsync(
+                    settings with
+                    {
+                        LibrarySorts = CreateSortSettings()
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            settingsSaveLock.Release();
+        }
+    }
+
     private static IReadOnlyList<string> ToSettingValues(IEnumerable<LibraryGroupOption> options) =>
         NormalizeGroupOptions(options)
             .Select(option => option.ToString())
@@ -1060,6 +1138,32 @@ public sealed partial class LibraryViewModel : ObservableObject
         Enum.IsDefined(option)
             ? option
             : LibraryGroupOption.None;
+
+    private static LibrarySortOption ParseSortOption(string? value) =>
+        Enum.TryParse<LibrarySortOption>(value, ignoreCase: true, out var option) &&
+        Enum.IsDefined(option)
+            ? option
+            : LibrarySortOption.None;
+
+    private bool ApplySelectedViewSortOption()
+    {
+        var sortOption = viewSortOptions.GetValueOrDefault(SelectedView, LibrarySortOption.None);
+        if (SelectedSortOption == sortOption)
+        {
+            return false;
+        }
+
+        isApplyingViewSortOption = true;
+        try
+        {
+            SelectedSortOption = sortOption;
+            return true;
+        }
+        finally
+        {
+            isApplyingViewSortOption = false;
+        }
+    }
 
     private static Dictionary<LibraryColumnOption, double> ParseColumnWidths(
         IReadOnlyDictionary<string, double>? values)
@@ -1893,9 +1997,11 @@ public sealed partial class LibraryViewModel : ObservableObject
         LoadGroupingSettings(settings.LibraryGroupings);
         LoadColumnSettings(settings.LibraryColumns);
         LoadColumnWidthSettings(settings.LibraryColumnWidths);
+        LoadSortSettings(settings.LibrarySorts);
         ApplyDefaultViewPreference(settings.DefaultView);
         RefreshActiveGroupOptions();
         RefreshActiveColumnOptions();
+        ApplySelectedViewSortOption();
     }
 
     private void RefreshLibraryDisplay()

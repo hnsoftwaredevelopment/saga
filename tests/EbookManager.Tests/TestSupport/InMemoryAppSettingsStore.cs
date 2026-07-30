@@ -19,6 +19,7 @@ public sealed class InMemoryAppSettingsStore : IAppSettingsStore
         new DuplicateMergeDefaultSettings(),
         null,
         null,
+        null,
         null);
 
     public List<LibraryDescriptor> Libraries { get; private set; } = [];
