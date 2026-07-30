@@ -108,4 +108,5 @@ Status: implemented.
 - Column order changes are applied live to the active grid.
 - Standard Detailed and List grids physically reorder their columns to match the saved layout.
 - Hidden columns can be used as drop targets, and dropping below the list moves a visible column to the end.
+- Dragging shows a subtle insertion line above or below the current drop target.
 - Bookshelf keeps the covers-only explanation and does not expose column ordering.

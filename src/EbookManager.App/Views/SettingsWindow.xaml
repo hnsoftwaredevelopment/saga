@@ -154,11 +154,16 @@
                          Background="Transparent"
                          AllowDrop="True"
                          DragOver="ColumnChoiceDragOver"
+                         DragLeave="ColumnChoiceDragLeave"
                          Drop="ColumnChoiceDrop">
                   <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                       <Setter Property="AllowDrop" Value="True" />
+                      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                      <Setter Property="BorderThickness" Value="0" />
+                      <Setter Property="Padding" Value="0" />
                       <EventSetter Event="DragOver" Handler="ColumnChoiceDragOver" />
+                      <EventSetter Event="DragLeave" Handler="ColumnChoiceDragLeave" />
                       <EventSetter Event="Drop" Handler="ColumnChoiceDrop" />
                     </Style>
                   </ListBox.ItemContainerStyle>
