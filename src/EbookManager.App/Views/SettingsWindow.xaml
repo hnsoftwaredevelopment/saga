@@ -223,6 +223,20 @@
                         ToolTip="{loc:Loc CopyViewTooltip}">
                   <TextBlock Text="{loc:Loc CopyView}" />
                 </Button>
+                <Button Command="{Binding RenameCurrentViewCommand}"
+                        MinWidth="160"
+                        Margin="0,0,8,0"
+                        Padding="8,4"
+                        ToolTip="{loc:Loc RenameViewTooltip}">
+                  <TextBlock Text="{loc:Loc RenameView}" />
+                </Button>
+                <Button Command="{Binding DeleteCurrentViewCommand}"
+                        MinWidth="160"
+                        Margin="0,0,8,0"
+                        Padding="8,4"
+                        ToolTip="{loc:Loc DeleteViewTooltip}">
+                  <TextBlock Text="{loc:Loc DeleteView}" />
+                </Button>
                 <Button Command="{Binding ResetCurrentViewLayoutCommand}"
                         MinWidth="160"
                         Padding="8,4">

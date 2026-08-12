@@ -135,7 +135,6 @@ Status: implemented.
 
 ### Next Slices
 
-- Add lightweight rename/delete management for custom views.
 - Allow custom views based on Bookshelf if that becomes a deliberate user-facing choice.
 - Add a richer view-management screen when custom views outgrow the column settings tab.
 
@@ -158,3 +157,13 @@ Status: implemented.
 - The copied view keeps its own layout key and starts with the source view's current grouping, sorting, visible column order, and column widths.
 - Built-in view definitions remain immutable; only custom view definitions are written to `LibraryViewDefinitionSettings`.
 - Bookshelf is not copied in this first version because it has a different covers-only layout model.
+
+### Slice 4: Lightweight Custom View Management
+
+Status: implemented.
+
+- Settings > Column settings can rename the selected custom view.
+- Settings > Column settings can delete the selected custom view.
+- Built-in views cannot be renamed or deleted.
+- Renaming keeps the custom view id and layout key stable.
+- Deleting a custom view removes its custom layout data and selects the underlying built-in base view.

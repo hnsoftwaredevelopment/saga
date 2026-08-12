@@ -411,7 +411,13 @@
   <data name="CopyViewPromptMessage" xml:space="preserve"><value>Nome per una copia di "{0}":</value></data>
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Copia vista</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Copia la vista selezionata in una nuova vista personalizzata</value></data>
+  <data name="DeleteView" xml:space="preserve"><value>Elimina vista</value></data>
+  <data name="DeleteViewTooltip" xml:space="preserve"><value>Elimina la vista personalizzata selezionata</value></data>
   <data name="DragColumnTooltip" xml:space="preserve"><value>Trascina per cambiare l'ordine delle colonne</value></data>
+  <data name="RenameView" xml:space="preserve"><value>Rinomina vista</value></data>
+  <data name="RenameViewPromptMessage" xml:space="preserve"><value>Rinomina "{0}" in:</value></data>
+  <data name="RenameViewPromptTitle" xml:space="preserve"><value>Rinomina vista</value></data>
+  <data name="RenameViewTooltip" xml:space="preserve"><value>Rinomina la vista personalizzata selezionata</value></data>
   <data name="ResetView" xml:space="preserve"><value>Ripristina vista</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Ripristina vista per: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Copertina</value></data>

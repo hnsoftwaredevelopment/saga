@@ -143,6 +143,10 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool HasColumnChoices => ColumnChoices.Count > 0;
 
+    public bool CanManageSelectedViewDefinition =>
+        ViewDefinitions.FirstOrDefault(definition =>
+            definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase)) is { IsBuiltIn: false };
+
     public IReadOnlyList<LibraryColumnOption> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
 
     public LibraryColumnLayoutSnapshot ActiveColumnLayoutSnapshot =>
@@ -277,6 +281,10 @@ public sealed partial class LibraryViewModel : ObservableObject
         resetCurrentViewLayoutCommand ??= new AsyncRelayCommand(ResetCurrentViewLayoutAsync);
     public IAsyncRelayCommand CopyCurrentViewCommand =>
         copyCurrentViewCommand ??= new AsyncRelayCommand(CopyCurrentViewAsync, CanCopyCurrentView);
+    public IAsyncRelayCommand RenameCurrentViewCommand =>
+        renameCurrentViewCommand ??= new AsyncRelayCommand(RenameCurrentViewAsync, CanManageCurrentView);
+    public IAsyncRelayCommand DeleteCurrentViewCommand =>
+        deleteCurrentViewCommand ??= new AsyncRelayCommand(DeleteCurrentViewAsync, CanManageCurrentView);
 
     private AsyncRelayCommand? refreshCommand;
     private AsyncRelayCommand? addBooksCommand;
@@ -304,6 +312,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand<LibraryColumnChoiceViewModel>? moveColumnDownCommand;
     private AsyncRelayCommand? resetCurrentViewLayoutCommand;
     private AsyncRelayCommand? copyCurrentViewCommand;
+    private AsyncRelayCommand? renameCurrentViewCommand;
+    private AsyncRelayCommand? deleteCurrentViewCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -374,7 +384,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         ActiveViewLayoutKey = value.ToString();
         SelectedViewDefinitionId = value.ToString();
-        copyCurrentViewCommand?.NotifyCanExecuteChanged();
+        NotifyViewDefinitionCommandStateChanged();
         RefreshActiveGroupOptions(notifyActiveViewSources: false);
         RefreshActiveColumnOptions();
         if (ApplySelectedViewSortOption())
@@ -401,11 +411,11 @@ public sealed partial class LibraryViewModel : ObservableObject
             SelectedView = definition.BaseView;
             ActiveViewLayoutKey = definition.LayoutKey;
             SelectedViewDefinitionId = definition.Id;
-            copyCurrentViewCommand?.NotifyCanExecuteChanged();
+            NotifyViewDefinitionCommandStateChanged();
             return;
         }
 
-        copyCurrentViewCommand?.NotifyCanExecuteChanged();
+        NotifyViewDefinitionCommandStateChanged();
         RefreshActiveGroupOptions(notifyActiveViewSources: false);
         RefreshActiveColumnOptions();
         if (ApplySelectedViewSortOption())
@@ -1415,6 +1425,19 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private bool CanCopyCurrentView() => SelectedView is LibraryView.Detailed or LibraryView.List;
 
+    private bool CanManageCurrentView() =>
+        ViewDefinitions.Any(definition =>
+            definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase) &&
+            !definition.IsBuiltIn);
+
+    private void NotifyViewDefinitionCommandStateChanged()
+    {
+        OnPropertyChanged(nameof(CanManageSelectedViewDefinition));
+        copyCurrentViewCommand?.NotifyCanExecuteChanged();
+        renameCurrentViewCommand?.NotifyCanExecuteChanged();
+        deleteCurrentViewCommand?.NotifyCanExecuteChanged();
+    }
+
     private async Task CopyCurrentViewAsync(CancellationToken cancellationToken)
     {
         if (settingsStore is null || !CanCopyCurrentView())
@@ -1460,6 +1483,76 @@ public sealed partial class LibraryViewModel : ObservableObject
         ViewDefinitions.Add(definition);
         await SaveViewDefinitionSettingsAsync(cancellationToken);
         SelectedViewDefinitionId = definition.Id;
+    }
+
+    private async Task RenameCurrentViewAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        var index = IndexOfSelectedCustomView();
+        if (index < 0)
+        {
+            return;
+        }
+
+        var currentDefinition = ViewDefinitions[index];
+        var name = await userInteraction.PromptTextAsync(
+            localize("RenameViewPromptTitle"),
+            string.Format(CultureInfo.CurrentCulture, localize("RenameViewPromptMessage"), currentDefinition.Name),
+            currentDefinition.Name,
+            cancellationToken);
+        name = name?.Trim();
+        if (string.IsNullOrWhiteSpace(name) ||
+            string.Equals(name, currentDefinition.Name, StringComparison.CurrentCulture))
+        {
+            return;
+        }
+
+        ViewDefinitions[index] = currentDefinition with { Name = name };
+        await SaveViewDefinitionSettingsAsync(cancellationToken);
+        SelectedViewDefinitionId = currentDefinition.Id;
+    }
+
+    private async Task DeleteCurrentViewAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        var index = IndexOfSelectedCustomView();
+        if (index < 0)
+        {
+            return;
+        }
+
+        var definition = ViewDefinitions[index];
+        ViewDefinitions.RemoveAt(index);
+        viewGroupings.Remove(definition.LayoutKey);
+        viewSortOptions.Remove(definition.LayoutKey);
+        viewColumns.Remove(definition.LayoutKey);
+        viewColumnWidths.Remove(definition.LayoutKey);
+
+        SelectedViewDefinitionId = definition.BaseView.ToString();
+        await SaveViewDefinitionSettingsAsync(cancellationToken);
+    }
+
+    private int IndexOfSelectedCustomView()
+    {
+        for (var index = 0; index < ViewDefinitions.Count; index++)
+        {
+            var definition = ViewDefinitions[index];
+            if (definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase) &&
+                !definition.IsBuiltIn)
+            {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     private async Task SaveColumnSettingsAsync(CancellationToken cancellationToken)
