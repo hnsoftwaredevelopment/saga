@@ -304,6 +304,53 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task Settings_round_trip_library_view_layouts()
+    {
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+        var settings = new AppSettings(
+            "C:\\Books",
+            "nl-NL",
+            "Sepia",
+            "Detailed",
+            true,
+            LibraryViewLayouts: new EbookManager.Domain.Settings.LibraryViewLayoutSettings(
+                new Dictionary<string, EbookManager.Domain.Settings.LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                {
+                    ["Bookshelf"] = new(
+                        Groupings: ["Author", "Series"],
+                        Sort: "Author"),
+                    ["Detailed"] = new(
+                        Groupings: ["Tag"],
+                        Columns: ["Cover", "Title", "Authors"],
+                        ColumnWidths: new Dictionary<string, double>
+                        {
+                            ["Title"] = 320
+                        },
+                        Sort: "Title"),
+                    ["List"] = new(
+                        Groupings: ["Language"],
+                        Columns: ["Title", "Format"],
+                        ColumnWidths: new Dictionary<string, double>
+                        {
+                            ["Format"] = 120
+                        },
+                        Sort: "Category")
+                }));
+
+        await store.SaveAsync(settings, CancellationToken.None);
+
+        var loaded = await new JsonAppSettingsStore(temporaryDirectory.DirectoryPath).LoadAsync(default);
+
+        loaded.LibraryViewLayouts.Should().NotBeNull();
+        loaded.LibraryViewLayouts!.Views.Should().NotBeNull();
+        loaded.LibraryViewLayouts.Views!["Bookshelf"].Groupings.Should().Equal("Author", "Series");
+        loaded.LibraryViewLayouts.Views["Bookshelf"].Sort.Should().Be("Author");
+        loaded.LibraryViewLayouts.Views["Detailed"].Columns.Should().Equal("Cover", "Title", "Authors");
+        loaded.LibraryViewLayouts.Views["Detailed"].ColumnWidths.Should().Contain("Title", 320);
+        loaded.LibraryViewLayouts.Views["List"].Sort.Should().Be("Category");
+    }
+
+    [Fact]
     public async Task ListLibraries_quarantines_malformed_json_and_returns_empty_list()
     {
         var path = Path.Combine(temporaryDirectory.DirectoryPath, "libraries.json");

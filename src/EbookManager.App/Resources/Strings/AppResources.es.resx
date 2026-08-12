@@ -322,7 +322,7 @@
     <value>Apariencia</value>
   </data>
   <data name="SettingsViewsSection" xml:space="preserve">
-    <value>Vistas</value>
+    <value>Configuracion de columnas</value>
   </data>
   <data name="SettingsImportSection" xml:space="preserve">
     <value>Importacion</value>
@@ -406,6 +406,7 @@
   <data name="Close" xml:space="preserve"><value>Cerrar</value></data>
   <data name="Columns" xml:space="preserve"><value>Columnas</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Elija las columnas visibles para esta vista</value></data>
+  <data name="DragColumnTooltip" xml:space="preserve"><value>Arrastre para cambiar el orden de las columnas</value></data>
   <data name="ResetView" xml:space="preserve"><value>Restablecer vista</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Restablecer vista para: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Portada</value></data>

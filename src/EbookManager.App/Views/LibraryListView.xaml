@@ -28,68 +28,12 @@
       <Setter Property="Padding" Value="8,0" />
     </Style>
     <DataTemplate x:Key="ListBookRowTemplate">
-      <Grid MinHeight="34"
-            Margin="0,0,0,1"
-            Background="{DynamicResource PanelBackgroundBrush}"
-            MouseLeftButtonDown="BookRowMouseLeftButtonDown">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Title|260}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Authors|220}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Series|170}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=SeriesNumber|110}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Status|120}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Language|130}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Format|130}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Publisher|170}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=PublicationDate|130}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Tags|220}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Isbn|140}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Description|320}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=DateAdded|150}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=LastModified|150}" />
-          <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=EReader|120}" />
-        </Grid.ColumnDefinitions>
-        <controls:HighlightedTextBlock Grid.Column="0"
-                                       HighlightedText="{Binding Title}"
-                                       SearchText="{Binding SearchText}"
-                                       HighlightBrush="{DynamicResource SearchHighlightBrush}"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
-                                       VerticalAlignment="Center"
-                                       Margin="8,0" />
-        <controls:HighlightedTextBlock Grid.Column="1"
-                                       HighlightedText="{Binding Authors}"
-                                       SearchText="{Binding SearchText}"
-                                       HighlightBrush="{DynamicResource SearchHighlightBrush}"
-                                       Foreground="{DynamicResource TextPrimaryBrush}"
-                                       VerticalAlignment="Center"
-                                       Margin="8,0" />
-        <controls:HighlightedTextBlock Grid.Column="2"
-                                       HighlightedText="{Binding Series}"
-                                       SearchText="{Binding SearchText}"
-                                       HighlightBrush="{DynamicResource SearchHighlightBrush}"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       VerticalAlignment="Center"
-                                       Margin="8,0" />
-        <TextBlock Grid.Column="3" Text="{Binding SeriesNumberText}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <TextBlock Grid.Column="4" Text="{Binding ReadingStatus}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <TextBlock Grid.Column="5" Text="{Binding Language}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <controls:HighlightedTextBlock Grid.Column="6"
-                                       HighlightedText="{Binding Formats}"
-                                       SearchText="{Binding SearchText}"
-                                       HighlightBrush="{DynamicResource SearchHighlightBrush}"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       VerticalAlignment="Center"
-                                       Margin="8,0" />
-        <TextBlock Grid.Column="7" Text="{Binding Publisher}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <TextBlock Grid.Column="8" Text="{Binding PublicationDate}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <TextBlock Grid.Column="9" Text="{Binding Tags}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <TextBlock Grid.Column="10" Text="{Binding Isbn}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <TextBlock Grid.Column="11" Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" TextTrimming="CharacterEllipsis" />
-        <TextBlock Grid.Column="12" Text="{Binding DateAdded}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <TextBlock Grid.Column="13" Text="{Binding LastModified}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-        <TextBlock Grid.Column="14" Text="{Binding EReader}" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="8,0" />
-      </Grid>
+      <controls:LibraryColumnRowGrid MinHeight="34"
+                                     Margin="0,0,0,1"
+                                     Background="{DynamicResource PanelBackgroundBrush}"
+                                     BookRow="{Binding}"
+                                     LayoutSnapshot="{Binding DataContext.ActiveColumnLayoutSnapshot, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                     MouseLeftButtonDown="BookRowMouseLeftButtonDown" />
     </DataTemplate>
     <DataTemplate x:Key="ListGroupNodeTemplate">
       <StackPanel Margin="0,0,0,4">
@@ -377,41 +321,10 @@
                 BorderThickness="0,0,0,1"
                 Panel.ZIndex="1"
                 SnapsToDevicePixels="True">
-          <Grid x:Name="GroupedHeaderGrid"
-                MinHeight="40">
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Title|260}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Authors|220}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Series|170}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=SeriesNumber|110}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Status|120}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Language|130}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Format|130}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Publisher|170}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=PublicationDate|130}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Tags|220}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Isbn|140}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=Description|320}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=DateAdded|150}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=LastModified|150}" />
-              <ColumnDefinition Width="{Binding Data.ActiveColumnLayoutSnapshot, Source={StaticResource LibraryViewModelProxy}, Converter={StaticResource LibraryColumnGridLengthConverter}, ConverterParameter=EReader|120}" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="{loc:Loc Title}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="1" Text="{loc:Loc Authors}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="2" Text="{loc:Loc Series}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="3" Text="{loc:Loc SeriesNumber}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="4" Text="{loc:Loc Status}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="5" Text="{loc:Loc Language}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="6" Text="{loc:Loc Type}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="7" Text="{loc:Loc Publisher}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="8" Text="{loc:Loc PublicationDate}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="9" Text="{loc:Loc Tags}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="10" Text="{loc:Loc Isbn}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="11" Text="{loc:Loc Description}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="12" Text="{loc:Loc DateAdded}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="13" Text="{loc:Loc LastModified}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-            <TextBlock Grid.Column="14" Text="{loc:Loc EReader}" Style="{StaticResource GroupedColumnHeaderTextStyle}" />
-          </Grid>
+          <controls:LibraryColumnRowGrid MinHeight="40"
+                                         IsHeader="True"
+                                         View="List"
+                                         LayoutSnapshot="{Binding ActiveColumnLayoutSnapshot}" />
         </Border>
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding ListGroupedLibraryNodesSource}"
