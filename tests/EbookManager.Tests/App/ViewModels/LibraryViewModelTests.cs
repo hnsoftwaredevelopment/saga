@@ -189,6 +189,17 @@ public sealed class LibraryViewModelTests
         settingsStore.Settings.LibraryViewLayouts.Views["Detailed"].Columns
             .Should()
             .Equal("Title", "Authors");
+
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Title, LibraryColumnOption.Authors, LibraryColumnOption.Format]);
+
+        settingsStore.Settings.LibraryViewLayouts.Views["custom:thrillers"].Columns
+            .Should()
+            .Equal("Title", "Authors", "Format");
+        settingsStore.Settings.LibraryViewLayouts.Views["Detailed"].Columns
+            .Should()
+            .Equal("Title", "Authors");
     }
 
     [Fact]
@@ -334,6 +345,37 @@ public sealed class LibraryViewModelTests
         viewModel.ViewDefinitions.Should().NotContain(view => view.Id == "thrillers");
         settingsStore.Settings.LibraryViewDefinitions!.CustomViews.Should().BeEmpty();
         settingsStore.Settings.LibraryViewLayouts!.Views.Should().NotContainKey("custom:thrillers");
+    }
+
+    [Fact]
+    public async Task Delete_current_custom_view_keeps_definition_when_confirmation_is_declined()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var interaction = new ScriptedUserInteractionService { ConfirmDeleteViewResult = false };
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ]),
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        ["custom:thrillers"] = new(Columns: ["Title"])
+                    })
+            },
+            default);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], interaction, settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.DeleteCurrentViewCommand.ExecuteAsync(null);
+
+        viewModel.SelectedViewDefinitionId.Should().Be("thrillers");
+        viewModel.ViewDefinitions.Should().Contain(view => view.Id == "thrillers");
+        settingsStore.Settings.LibraryViewDefinitions!.CustomViews.Should().ContainSingle(view => view.Id == "thrillers");
+        settingsStore.Settings.LibraryViewLayouts!.Views.Should().ContainKey("custom:thrillers");
     }
 
     [Fact]
@@ -2628,6 +2670,7 @@ public sealed class LibraryViewModelTests
         public string? LibraryDirectory { get; init; }
         public string? ScanFolder { get; init; }
         public string? PromptTextResult { get; init; }
+        public bool ConfirmDeleteViewResult { get; init; } = true;
         public bool ConfirmMetadataValueRemovalResult { get; init; }
         public bool ConfirmLanguageNormalizationResult { get; init; }
         public int? ConfirmLanguageNormalizationAffectedCount { get; private set; }
@@ -2651,6 +2694,8 @@ public sealed class LibraryViewModelTests
             Task.FromResult(LibraryDirectory);
 
         public Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken) => Task.FromResult(true);
+        public Task<bool> ConfirmDeleteViewAsync(string viewName, CancellationToken cancellationToken) =>
+            Task.FromResult(ConfirmDeleteViewResult);
         public Task<string?> PromptTextAsync(
             string title,
             string message,

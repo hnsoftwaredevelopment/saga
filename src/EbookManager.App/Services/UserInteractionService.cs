@@ -56,6 +56,21 @@ public sealed class UserInteractionService(
     public Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken) =>
         deleteConfirmationService.ConfirmAsync(title, cancellationToken);
 
+    public Task<bool> ConfirmDeleteViewAsync(string viewName, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var message = string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            EbookManager.App.Localization.LocalizedStrings.Current["DeleteViewConfirmationMessage"],
+            viewName);
+        var result = System.Windows.MessageBox.Show(
+            message,
+            EbookManager.App.Localization.LocalizedStrings.Current["DeleteViewConfirmationTitle"],
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+        return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
+    }
+
     public Task<string?> PromptTextAsync(
         string title,
         string message,

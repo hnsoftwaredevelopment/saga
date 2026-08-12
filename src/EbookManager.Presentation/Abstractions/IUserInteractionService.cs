@@ -9,6 +9,7 @@ public interface IUserInteractionService
     Task<string?> PickScanFolderAsync(CancellationToken cancellationToken);
     Task<string?> PickLibraryDirectoryAsync(string title, CancellationToken cancellationToken);
     Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken);
+    Task<bool> ConfirmDeleteViewAsync(string viewName, CancellationToken cancellationToken);
     Task<string?> PromptTextAsync(
         string title,
         string message,

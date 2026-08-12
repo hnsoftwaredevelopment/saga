@@ -412,6 +412,8 @@
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Ansicht kopieren</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Kopiert die ausgewählte Ansicht in eine neue eigene Ansicht</value></data>
   <data name="DeleteView" xml:space="preserve"><value>Ansicht löschen</value></data>
+  <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Eigene Ansicht „{0}“ löschen?</value></data>
+  <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Eigene Ansicht löschen</value></data>
   <data name="DeleteViewTooltip" xml:space="preserve"><value>Löscht die ausgewählte eigene Ansicht</value></data>
   <data name="DragColumnTooltip" xml:space="preserve"><value>Ziehen, um die Spaltenreihenfolge zu aendern</value></data>
   <data name="RenameView" xml:space="preserve"><value>Ansicht umbenennen</value></data>

@@ -27,6 +27,8 @@
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Copy view</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Copy the selected view to a new custom view</value></data>
   <data name="DeleteView" xml:space="preserve"><value>Delete view</value></data>
+  <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Delete the custom view "{0}"?</value></data>
+  <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Delete custom view</value></data>
   <data name="DeleteViewTooltip" xml:space="preserve"><value>Delete the selected custom view</value></data>
   <data name="DragColumnTooltip" xml:space="preserve"><value>Drag to change the column order</value></data>
   <data name="RenameView" xml:space="preserve"><value>Rename view</value></data>

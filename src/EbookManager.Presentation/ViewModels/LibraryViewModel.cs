@@ -44,6 +44,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private Task pendingSortSettingsSave = Task.CompletedTask;
     private long groupingSettingsSaveVersion;
     private bool isApplyingViewSortOption;
+    private bool isApplyingViewDefinition;
     private bool hasAppliedDefaultView;
     private int selectionVersion;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
@@ -153,7 +154,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IReadOnlyList<LibraryColumnOption> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
 
     public LibraryColumnLayoutSnapshot ActiveColumnLayoutSnapshot =>
-        new(ActiveColumnOptions.ToArray(), GetColumnWidths(ActiveViewLayoutKey));
+        new(ActiveColumnOptions.ToArray(), GetColumnWidths(SelectedLayoutKey));
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -385,6 +386,11 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     partial void OnSelectedViewChanged(LibraryView value)
     {
+        if (isApplyingViewDefinition)
+        {
+            return;
+        }
+
         ActiveViewLayoutKey = value.ToString();
         SelectedViewDefinitionId = value.ToString();
         NotifyViewDefinitionCommandStateChanged();
@@ -411,11 +417,17 @@ public sealed partial class LibraryViewModel : ObservableObject
         ActiveViewLayoutKey = definition.LayoutKey;
         if (SelectedView != definition.BaseView)
         {
-            SelectedView = definition.BaseView;
+            isApplyingViewDefinition = true;
+            try
+            {
+                SelectedView = definition.BaseView;
+            }
+            finally
+            {
+                isApplyingViewDefinition = false;
+            }
+
             ActiveViewLayoutKey = definition.LayoutKey;
-            SelectedViewDefinitionId = definition.Id;
-            NotifyViewDefinitionCommandStateChanged();
-            return;
         }
 
         NotifyViewDefinitionCommandStateChanged();
@@ -876,7 +888,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        await SetVisibleColumnsAsync(ViewKey(view), view, columns, cancellationToken);
+        await SetVisibleColumnsAsync(LayoutKeyOrViewKey(view), view, columns, cancellationToken);
     }
 
     private async Task SetVisibleColumnsAsync(
@@ -1534,6 +1546,11 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var definition = ViewDefinitions[index];
+        if (!await userInteraction.ConfirmDeleteViewAsync(definition.Name, cancellationToken))
+        {
+            return;
+        }
+
         ViewDefinitions.RemoveAt(index);
         viewGroupings.Remove(definition.LayoutKey);
         viewSortOptions.Remove(definition.LayoutKey);
@@ -2198,8 +2215,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var newValue = await userInteraction.PromptTextAsync(
-            "Rename metadata value",
-            $"Rename '{filter.Name}' to:",
+            localize("FilterRenameTitle"),
+            string.Format(CultureInfo.CurrentCulture, localize("FilterRenameMessage"), filter.Name),
             filter.Name,
             CancellationToken.None);
         if (string.IsNullOrWhiteSpace(newValue) ||

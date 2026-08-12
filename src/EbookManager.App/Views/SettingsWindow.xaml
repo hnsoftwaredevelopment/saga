@@ -216,9 +216,8 @@
                   </ListBox.ItemTemplate>
                 </ListBox>
               </ScrollViewer>
-              <StackPanel Grid.Row="1"
-                          Orientation="Horizontal"
-                          Margin="0,12,0,0">
+              <WrapPanel Grid.Row="1"
+                         Margin="0,12,0,0">
                 <Button Command="{Binding CopyCurrentViewCommand}"
                         MinWidth="160"
                         Margin="0,0,8,0"
@@ -266,7 +265,7 @@
                     <TextBlock Text="{loc:Loc ResetView}" />
                   </StackPanel>
                 </Button>
-              </StackPanel>
+              </WrapPanel>
             </Grid>
           </Border>
         </Grid>

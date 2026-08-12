@@ -27,6 +27,8 @@
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Weergave kopiëren</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Kopieer de geselecteerde weergave naar een nieuwe eigen weergave</value></data>
   <data name="DeleteView" xml:space="preserve"><value>Weergave verwijderen</value></data>
+  <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Wilt u de eigen weergave "{0}" verwijderen?</value></data>
+  <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Eigen weergave verwijderen</value></data>
   <data name="DeleteViewTooltip" xml:space="preserve"><value>Verwijder de geselecteerde eigen weergave</value></data>
   <data name="DragColumnTooltip" xml:space="preserve"><value>Sleep om de kolomvolgorde te wijzigen</value></data>
   <data name="RenameView" xml:space="preserve"><value>Weergave hernoemen</value></data>
