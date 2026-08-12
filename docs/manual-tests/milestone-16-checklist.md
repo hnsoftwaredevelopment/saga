@@ -13,7 +13,10 @@
 - [ ] Delete a custom metadata field and confirm it disappears from the field list.
 - [ ] Try to create a custom metadata field with the same name twice and confirm Saga shows a clear message.
 - [ ] Switch the app language and confirm the custom metadata field type labels are translated.
-- [ ] Edit custom metadata values in Details and confirm Save/Undo works.
+- [ ] Select a book and confirm the custom metadata fields appear in Details.
+- [ ] Edit custom metadata values in Details and confirm Save works.
+- [ ] Clear a custom metadata value, save, reselect the book, and confirm the value stays empty.
+- [ ] Edit a custom metadata value and confirm Undo restores the original value.
 - [ ] Restart Saga and confirm custom fields and values are restored.
 - [ ] Add a custom metadata field as a column in a custom view.
 - [ ] Search for a value stored in custom metadata.

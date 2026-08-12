@@ -7,6 +7,7 @@
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
     <converters:BookSaveErrorToLocalizedStringConverter x:Key="BookSaveErrorToLocalizedStringConverter" />
+    <converters:CustomMetadataFieldTypeToLocalizedStringConverter x:Key="CustomMetadataFieldTypeToLocalizedStringConverter" />
     <converters:FormatExportStatusToLocalizedStringConverter x:Key="FormatExportStatusToLocalizedStringConverter" />
     <Style x:Key="FormatMenuIconStyle" TargetType="Path">
       <Setter Property="Width" Value="14" />
@@ -250,6 +251,39 @@
         <ComboBoxItem Content="{loc:Loc Reading}" Tag="{x:Static books:ReadingStatus.Reading}" />
         <ComboBoxItem Content="{loc:Loc Read}" Tag="{x:Static books:ReadingStatus.Read}" />
       </ComboBox>
+      <StackPanel Margin="0,8,0,10">
+        <StackPanel.Style>
+          <Style TargetType="StackPanel">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding HasCustomMetadataValues}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </StackPanel.Style>
+        <TextBlock Text="{loc:Loc CustomMetadataFields}"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,8" />
+        <ItemsControl ItemsSource="{Binding CustomMetadataValues}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Margin="0,0,0,10">
+                <DockPanel Margin="0,0,0,4">
+                  <TextBlock Text="{Binding Type, Converter={StaticResource CustomMetadataFieldTypeToLocalizedStringConverter}}"
+                             DockPanel.Dock="Right"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             FontSize="11"
+                             Margin="8,0,0,0" />
+                  <TextBlock Text="{Binding Name}"
+                             FontWeight="SemiBold" />
+                </DockPanel>
+                <TextBox Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}" />
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
       <TextBlock Text="{loc:Loc DateAdded}" FontWeight="SemiBold" />
       <TextBox Text="{Binding CreatedUtcText, Mode=OneWay}"
                IsReadOnly="True"

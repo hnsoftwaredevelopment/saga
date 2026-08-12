@@ -54,9 +54,19 @@ Status: implemented.
 - Added localized field type names and status feedback.
 - Added SettingsViewModel tests for field type options and create/rename/delete flow.
 
+### Slice 3: Details Display And Editing
+
+Status: implemented.
+
+- Added custom metadata values to the Details pane.
+- Loads field definitions and existing values for the selected book.
+- Supports editing custom values and saving them through the typed repository.
+- Blank custom values are removed from storage.
+- Custom metadata edits participate in unsaved-changes detection.
+- Added BookDetailsViewModel tests for loading, dirty-state detection, and saving custom metadata values.
+
 ### Next Slices
 
-- Add Details pane display and editing for custom metadata values.
 - Include custom metadata values in search.
 - Make custom fields available as columns in custom views.
 - Add filters for useful custom field types.

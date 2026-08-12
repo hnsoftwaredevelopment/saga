@@ -475,6 +475,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             Details.Load(fullBook);
             await Details.LoadFormatDetailsAsync(fullBook.Id, CancellationToken.None);
+            await Details.LoadCustomMetadataValuesAsync(fullBook.Id, CancellationToken.None);
         }
     }
 
@@ -2416,6 +2417,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             persistedById.GetValueOrDefault(selected.Id) is { } selectedChangedBook)
         {
             Details.Load(selectedChangedBook);
+            _ = Details.LoadCustomMetadataValuesAsync(selectedChangedBook.Id, CancellationToken.None);
         }
 
         RefreshFacetFilters();

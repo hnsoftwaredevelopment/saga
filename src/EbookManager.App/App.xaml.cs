@@ -128,7 +128,8 @@ public partial class App : System.Windows.Application
         services.AddTransient(provider => new BookDetailsViewModel(
             provider.GetRequiredService<BookService>(),
             provider.GetRequiredService<BookFileExportService>(),
-            provider.GetRequiredService<IBookFileInteractionService>()));
+            provider.GetRequiredService<IBookFileInteractionService>(),
+            provider.GetRequiredService<ICustomMetadataRepository>()));
         services.AddTransient(provider => new LibraryViewModel(
             provider.GetRequiredService<IBookRepository>(),
             provider.GetRequiredService<BookSearchService>(),
