@@ -118,6 +118,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<BookFileExportService>();
         services.AddSingleton<IBookFileInteractionService, BookFileInteractionService>();
         services.AddSingleton<IBookRepository, CurrentLibraryBookRepository>();
+        services.AddSingleton<ICustomMetadataRepository, CurrentLibraryCustomMetadataRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();
         services.AddTransient<BookService>();
         services.AddSingleton<ImportService>();

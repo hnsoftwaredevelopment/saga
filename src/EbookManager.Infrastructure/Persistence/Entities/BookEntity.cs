@@ -23,4 +23,5 @@ public sealed class BookEntity
     public ICollection<BookAuthorEntity> BookAuthors { get; set; } = [];
     public ICollection<BookTagEntity> BookTags { get; set; } = [];
     public ICollection<BookFileEntity> Files { get; set; } = [];
+    public ICollection<CustomMetadataValueEntity> CustomMetadataValues { get; set; } = [];
 }
