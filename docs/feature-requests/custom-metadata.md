@@ -61,6 +61,8 @@ Status: implemented.
 - Added custom metadata values to the Details pane.
 - Loads field definitions and existing values for the selected book.
 - Supports editing custom values and saving them through the typed repository.
+- Added typed Details editors for number, date, and yes/no fields.
+- Added localized validation feedback for custom metadata values.
 - Blank custom values are removed from storage.
 - Custom metadata edits participate in unsaved-changes detection.
 - Added BookDetailsViewModel tests for loading, dirty-state detection, and saving custom metadata values.

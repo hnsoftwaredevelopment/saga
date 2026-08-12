@@ -252,6 +252,7 @@
     <value>Entrambi i libri hanno gia lo stesso valore per questo campo.</value>
   </data>
   <data name="Name" xml:space="preserve"><value>Nome</value></data>
+  <data name="No" xml:space="preserve"><value>No</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve">
     <value>Libro unito.</value>
   </data>
@@ -429,6 +430,9 @@
   <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Campo metadati rinominato.</value></data>
   <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Campo metadati eliminato.</value></data>
   <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Esiste gia un campo metadati con questo nome.</value></data>
+  <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} deve essere un numero.</value></data>
+  <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} deve essere una data.</value></data>
+  <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} deve essere sì o no.</value></data>
   <data name="DeleteView" xml:space="preserve"><value>Elimina vista</value></data>
   <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Eliminare la vista personalizzata "{0}"?</value></data>
   <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Elimina vista personalizzata</value></data>
@@ -530,4 +534,5 @@
   <data name="SplashVersionFormat" xml:space="preserve"><value>Versione {0}</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Avvio di Saga non riuscito</value></data>
   <data name="NoLibrarySelected" xml:space="preserve"><value>Nessuna biblioteca selezionata</value></data>
+  <data name="Yes" xml:space="preserve"><value>Sì</value></data>
 </root>

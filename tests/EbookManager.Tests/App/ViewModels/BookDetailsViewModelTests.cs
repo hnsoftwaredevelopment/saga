@@ -119,6 +119,66 @@ public sealed class BookDetailsViewModelTests
         viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 
+    [Theory]
+    [InlineData("Ja", true)]
+    [InlineData("Nein", false)]
+    [InlineData("Oui", true)]
+    [InlineData("No", false)]
+    [InlineData("Sì", true)]
+    public async Task Boolean_custom_metadata_accepts_supported_localized_yes_no_values(
+        string input,
+        bool expected)
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        var definition = customMetadataRepository.AddDefinition("Gelezen", CustomMetadataFieldType.Boolean);
+        var viewModel = CreateViewModel(out _, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+        viewModel.CustomMetadataValues.Single().ValueText = input;
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        customMetadataRepository.Values[(book.Id, definition.Id)].BooleanValue.Should().Be(expected);
+    }
+
+    [Fact]
+    public async Task Invalid_custom_metadata_value_does_not_save_standard_metadata()
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        customMetadataRepository.AddDefinition("Cijfer", CustomMetadataFieldType.Number);
+        var viewModel = CreateViewModel(out var repository, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+        viewModel.Title = "Changed";
+        viewModel.CustomMetadataValues.Single().ValueText = "abc";
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        repository.UpdatedBook.Should().BeNull();
+        viewModel.SaveErrorMessage.Should().Be("CustomMetadataValidationNumber|Cijfer");
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Undo_restores_custom_metadata_values()
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        var definition = customMetadataRepository.AddDefinition("Leesprioriteit", CustomMetadataFieldType.Text);
+        var viewModel = CreateViewModel(out _, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+        customMetadataRepository.SeedValue(new CustomMetadataValue(book.Id, definition.Id, TextValue: "Later"));
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+        viewModel.CustomMetadataValues.Single().ValueText = "Nu";
+        viewModel.UndoCommand.Execute(null);
+
+        viewModel.CustomMetadataValues.Single().ValueText.Should().Be("Later");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
     [Fact]
     public void Loading_a_book_cleans_html_description_without_setting_dirty_state()
     {

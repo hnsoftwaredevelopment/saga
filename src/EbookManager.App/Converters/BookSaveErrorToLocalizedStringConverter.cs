@@ -19,10 +19,24 @@ public sealed class BookSaveErrorToLocalizedStringConverter : IValueConverter
                 LocalizedStrings.Current["BookSaveConflict"],
             "The changes could not be saved." =>
                 LocalizedStrings.Current["BookSaveFailed"],
+            _ when TryFormatParameterizedMessage(message, out var formatted) => formatted,
             _ => message
         };
     }
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         Binding.DoNothing;
+
+    private static bool TryFormatParameterizedMessage(string message, out string formatted)
+    {
+        var parts = message.Split('|', 2);
+        if (parts.Length == 2 && parts[0].StartsWith("CustomMetadataValidation", StringComparison.Ordinal))
+        {
+            formatted = string.Format(CultureInfo.CurrentCulture, LocalizedStrings.Current[parts[0]], parts[1]);
+            return true;
+        }
+
+        formatted = string.Empty;
+        return false;
+    }
 }

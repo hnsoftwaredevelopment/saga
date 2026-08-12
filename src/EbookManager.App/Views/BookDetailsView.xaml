@@ -278,7 +278,62 @@
                   <TextBlock Text="{Binding Name}"
                              FontWeight="SemiBold" />
                 </DockPanel>
-                <TextBox Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}" />
+                <Grid>
+                  <TextBox Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}">
+                    <TextBox.Style>
+                      <Style TargetType="TextBox">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsTextEditor}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </TextBox.Style>
+                  </TextBox>
+                  <TextBox Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}"
+                           HorizontalContentAlignment="Right"
+                           PreviewTextInput="NumericCustomMetadataPreviewTextInput"
+                           DataObject.Pasting="NumericCustomMetadataPasting">
+                    <TextBox.Style>
+                      <Style TargetType="TextBox">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsNumberEditor}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </TextBox.Style>
+                  </TextBox>
+                  <DatePicker SelectedDate="{Binding DateValue, UpdateSourceTrigger=PropertyChanged}">
+                    <DatePicker.Style>
+                      <Style TargetType="DatePicker">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsDateEditor}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </DatePicker.Style>
+                  </DatePicker>
+                  <ComboBox SelectedValue="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}"
+                            SelectedValuePath="Tag">
+                    <ComboBox.Style>
+                      <Style TargetType="ComboBox">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsBooleanEditor}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </ComboBox.Style>
+                    <ComboBoxItem Content="{loc:Loc Yes}" Tag="True" />
+                    <ComboBoxItem Content="{loc:Loc No}" Tag="False" />
+                  </ComboBox>
+                </Grid>
               </StackPanel>
             </DataTemplate>
           </ItemsControl.ItemTemplate>

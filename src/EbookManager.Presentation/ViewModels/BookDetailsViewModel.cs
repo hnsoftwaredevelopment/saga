@@ -199,10 +199,16 @@ public sealed partial class BookDetailsViewModel(
             return;
         }
 
+        var customMetadataChanges = TryCreateCustomMetadataChanges(book.Id);
+        if (customMetadataChanges is null)
+        {
+            return;
+        }
+
         LastSaveResult = await bookService.SaveAsync(book, cancellationToken);
         if (LastSaveResult.Status == BookSaveStatus.Succeeded)
         {
-            var customMetadataSaved = await SaveCustomMetadataValuesAsync(book.Id, cancellationToken);
+            var customMetadataSaved = await SaveCustomMetadataValuesAsync(customMetadataChanges, cancellationToken);
             if (!customMetadataSaved)
             {
                 return;
@@ -247,6 +253,13 @@ public sealed partial class BookDetailsViewModel(
         }
 
         Apply(originalBook);
+        ApplyValues(() =>
+        {
+            foreach (var value in CustomMetadataValues)
+            {
+                value.ValueText = originalCustomMetadataValues.GetValueOrDefault(value.FieldId);
+            }
+        });
         LastSaveResult = null;
         RefreshDirtyState();
     }
@@ -483,7 +496,31 @@ public sealed partial class BookDetailsViewModel(
     private static string FormatDateTime(DateTimeOffset value) =>
         value.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
 
-    private async Task<bool> SaveCustomMetadataValuesAsync(Guid bookId, CancellationToken cancellationToken)
+    private IReadOnlyList<CustomMetadataValueChange>? TryCreateCustomMetadataChanges(Guid bookId)
+    {
+        try
+        {
+            return CustomMetadataValues
+                .Select(value => string.IsNullOrWhiteSpace(value.ValueText)
+                    ? new CustomMetadataValueChange(bookId, value.FieldId, null)
+                    : new CustomMetadataValueChange(bookId, value.FieldId, CreateCustomMetadataValue(bookId, value)))
+                .ToList();
+        }
+        catch (FormatException exception)
+        {
+            LastSaveResult = new BookSaveResult(BookSaveStatus.Failed, [], exception.Message);
+            return null;
+        }
+        catch (InvalidOperationException exception)
+        {
+            LastSaveResult = new BookSaveResult(BookSaveStatus.Failed, [], exception.Message);
+            return null;
+        }
+    }
+
+    private async Task<bool> SaveCustomMetadataValuesAsync(
+        IReadOnlyList<CustomMetadataValueChange> changes,
+        CancellationToken cancellationToken)
     {
         if (customMetadataRepository is null)
         {
@@ -492,23 +529,16 @@ public sealed partial class BookDetailsViewModel(
 
         try
         {
-            foreach (var value in CustomMetadataValues)
+            foreach (var change in changes)
             {
-                if (string.IsNullOrWhiteSpace(value.ValueText))
+                if (change.Value is null)
                 {
-                    await customMetadataRepository.DeleteValueAsync(bookId, value.FieldId, cancellationToken);
+                    await customMetadataRepository.DeleteValueAsync(change.BookId, change.FieldId, cancellationToken);
                     continue;
                 }
 
-                await customMetadataRepository.SetValueAsync(
-                    CreateCustomMetadataValue(bookId, value),
-                    cancellationToken);
+                await customMetadataRepository.SetValueAsync(change.Value, cancellationToken);
             }
-        }
-        catch (FormatException exception)
-        {
-            LastSaveResult = new BookSaveResult(BookSaveStatus.Failed, [], exception.Message);
-            return false;
         }
         catch (InvalidOperationException exception)
         {
@@ -556,15 +586,15 @@ public sealed partial class BookDetailsViewModel(
             CustomMetadataFieldType.Number =>
                 decimal.TryParse(value.ValueText, NumberStyles.Number, CultureInfo.CurrentCulture, out var number)
                     ? new CustomMetadataValue(bookId, value.FieldId, NumberValue: number)
-                    : throw new FormatException($"'{value.Name}' must be a number."),
+                    : throw new FormatException($"CustomMetadataValidationNumber|{value.Name}"),
             CustomMetadataFieldType.Date =>
-                DateOnly.TryParse(value.ValueText, CultureInfo.CurrentCulture, out var date)
+                TryParseDate(value.ValueText, out var date)
                     ? new CustomMetadataValue(bookId, value.FieldId, DateValue: date)
-                    : throw new FormatException($"'{value.Name}' must be a date."),
+                    : throw new FormatException($"CustomMetadataValidationDate|{value.Name}"),
             CustomMetadataFieldType.Boolean =>
                 TryParseBoolean(value.ValueText, out var boolean)
                     ? new CustomMetadataValue(bookId, value.FieldId, BooleanValue: boolean)
-                    : throw new FormatException($"'{value.Name}' must be yes or no."),
+                    : throw new FormatException($"CustomMetadataValidationBoolean|{value.Name}"),
             _ => throw new InvalidOperationException($"Unsupported custom metadata field type '{value.Type}'.")
         };
 
@@ -583,7 +613,12 @@ public sealed partial class BookDetailsViewModel(
         }
 
         if (string.Equals(normalized, "yes", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "true", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(normalized, "ja", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "oui", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "si", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "sí", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "sì", StringComparison.OrdinalIgnoreCase) ||
             normalized == "1")
         {
             result = true;
@@ -591,7 +626,10 @@ public sealed partial class BookDetailsViewModel(
         }
 
         if (string.Equals(normalized, "no", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "false", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(normalized, "nee", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "nein", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "non", StringComparison.OrdinalIgnoreCase) ||
             normalized == "0")
         {
             result = false;
@@ -601,7 +639,24 @@ public sealed partial class BookDetailsViewModel(
         result = false;
         return false;
     }
+
+    private static bool TryParseDate(string? value, out DateOnly result)
+    {
+        if (DateOnly.TryParse(value, CultureInfo.CurrentCulture, out result))
+        {
+            return true;
+        }
+
+        return DateOnly.TryParseExact(
+            value,
+            "yyyy-MM-dd",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out result);
+    }
 }
+
+public sealed record CustomMetadataValueChange(Guid BookId, Guid FieldId, CustomMetadataValue? Value);
 
 public sealed partial class CustomMetadataValueViewModel(
     Guid fieldId,
@@ -612,9 +667,43 @@ public sealed partial class CustomMetadataValueViewModel(
     public Guid FieldId { get; } = fieldId;
     public string Name { get; } = name;
     public CustomMetadataFieldType Type { get; } = type;
+    public bool IsTextEditor =>
+        Type is CustomMetadataFieldType.Text or CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect;
+    public bool IsNumberEditor => Type == CustomMetadataFieldType.Number;
+    public bool IsDateEditor => Type == CustomMetadataFieldType.Date;
+    public bool IsBooleanEditor => Type == CustomMetadataFieldType.Boolean;
 
     [ObservableProperty]
     private string? valueText = valueText;
+
+    public bool? BooleanValue
+    {
+        get => bool.TryParse(ValueText, out var value) ? value : null;
+        set => ValueText = value?.ToString(CultureInfo.InvariantCulture);
+    }
+
+    public DateTime? DateValue
+    {
+        get
+        {
+            if (DateOnly.TryParse(ValueText, CultureInfo.CurrentCulture, out var date) ||
+                DateOnly.TryParseExact(ValueText, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+            {
+                return date.ToDateTime(TimeOnly.MinValue);
+            }
+
+            return null;
+        }
+        set => ValueText = value is null
+            ? null
+            : DateOnly.FromDateTime(value.Value).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    }
+
+    partial void OnValueTextChanged(string? value)
+    {
+        OnPropertyChanged(nameof(BooleanValue));
+        OnPropertyChanged(nameof(DateValue));
+    }
 }
 
 public sealed partial class BookFormatDetailsViewModel : ObservableObject
