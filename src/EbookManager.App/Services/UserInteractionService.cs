@@ -146,7 +146,7 @@ public sealed class UserInteractionService(
     {
         var window = new System.Windows.Window
         {
-            Title = EbookManager.App.Localization.LocalizedStrings.Current["FilterRenameTitle"],
+            Title = title,
             Width = 420,
             Height = 190,
             ResizeMode = System.Windows.ResizeMode.NoResize,
@@ -159,10 +159,7 @@ public sealed class UserInteractionService(
         };
         panel.Children.Add(new System.Windows.Controls.TextBlock
         {
-            Text = string.Format(
-                System.Globalization.CultureInfo.InvariantCulture,
-                EbookManager.App.Localization.LocalizedStrings.Current["FilterRenameMessage"],
-                initialValue),
+            Text = message,
             TextWrapping = System.Windows.TextWrapping.Wrap,
             Margin = new System.Windows.Thickness(0, 0, 0, 8)
         });

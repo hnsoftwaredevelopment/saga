@@ -1,5 +1,7 @@
-using System.Diagnostics;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
@@ -273,6 +275,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         moveColumnDownCommand ??= new AsyncRelayCommand<LibraryColumnChoiceViewModel>(MoveColumnDownAsync);
     public IAsyncRelayCommand ResetCurrentViewLayoutCommand =>
         resetCurrentViewLayoutCommand ??= new AsyncRelayCommand(ResetCurrentViewLayoutAsync);
+    public IAsyncRelayCommand CopyCurrentViewCommand =>
+        copyCurrentViewCommand ??= new AsyncRelayCommand(CopyCurrentViewAsync, CanCopyCurrentView);
 
     private AsyncRelayCommand? refreshCommand;
     private AsyncRelayCommand? addBooksCommand;
@@ -299,6 +303,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand<LibraryColumnChoiceViewModel>? moveColumnUpCommand;
     private AsyncRelayCommand<LibraryColumnChoiceViewModel>? moveColumnDownCommand;
     private AsyncRelayCommand? resetCurrentViewLayoutCommand;
+    private AsyncRelayCommand? copyCurrentViewCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -369,6 +374,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         ActiveViewLayoutKey = value.ToString();
         SelectedViewDefinitionId = value.ToString();
+        copyCurrentViewCommand?.NotifyCanExecuteChanged();
         RefreshActiveGroupOptions(notifyActiveViewSources: false);
         RefreshActiveColumnOptions();
         if (ApplySelectedViewSortOption())
@@ -395,9 +401,11 @@ public sealed partial class LibraryViewModel : ObservableObject
             SelectedView = definition.BaseView;
             ActiveViewLayoutKey = definition.LayoutKey;
             SelectedViewDefinitionId = definition.Id;
+            copyCurrentViewCommand?.NotifyCanExecuteChanged();
             return;
         }
 
+        copyCurrentViewCommand?.NotifyCanExecuteChanged();
         RefreshActiveGroupOptions(notifyActiveViewSources: false);
         RefreshActiveColumnOptions();
         if (ApplySelectedViewSortOption())
@@ -1090,6 +1098,17 @@ public sealed partial class LibraryViewModel : ObservableObject
                 ColumnWidths: ToColumnWidthSettingValues(GetColumnWidthOptions(layoutKey)),
                 Sort: GetSortOption(layoutKey).ToString());
 
+    private LibraryViewDefinitionSettings CreateViewDefinitionSettings() =>
+        new(
+            ViewDefinitions
+                .Where(definition => !definition.IsBuiltIn)
+                .Select(definition => new LibraryViewDefinitionSetting(
+                    definition.Id,
+                    definition.Name,
+                    definition.BaseView.ToString(),
+                    definition.LayoutKey))
+                .ToArray());
+
     private void LoadViewLayoutSettings(AppSettings settings)
     {
         RefreshViewDefinitions(settings.LibraryViewDefinitions);
@@ -1394,6 +1413,55 @@ public sealed partial class LibraryViewModel : ObservableObject
         await SaveViewCustomizationSettingsAsync(cancellationToken);
     }
 
+    private bool CanCopyCurrentView() => SelectedView is LibraryView.Detailed or LibraryView.List;
+
+    private async Task CopyCurrentViewAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null || !CanCopyCurrentView())
+        {
+            return;
+        }
+
+        var currentDefinition = ViewDefinitions.FirstOrDefault(definition =>
+                definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase)) ??
+            ViewDefinitions.FirstOrDefault(definition =>
+                definition.Id.Equals(SelectedView.ToString(), StringComparison.OrdinalIgnoreCase));
+        var currentName = currentDefinition?.Name ?? SelectedView.ToString();
+        var defaultName = string.Format(
+            CultureInfo.CurrentCulture,
+            localize("CopyOfViewName"),
+            currentName);
+        var name = await userInteraction.PromptTextAsync(
+                localize("CopyViewPromptTitle"),
+                string.Format(CultureInfo.CurrentCulture, localize("CopyViewPromptMessage"), currentName),
+                defaultName,
+                cancellationToken);
+        name = name?.Trim();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return;
+        }
+
+        var id = CreateUniqueCustomViewId(name);
+        var layoutKey = $"custom:{id}";
+        var definition = new LibraryViewDefinitionViewModel(
+            id,
+            name,
+            SelectedView,
+            layoutKey,
+            IsBuiltIn: false);
+
+        viewGroupings[layoutKey] = GetGroupings(SelectedLayoutKey).ToList();
+        viewSortOptions[layoutKey] = GetSortOption(SelectedLayoutKey);
+        viewColumns[layoutKey] = GetColumnOptions(SelectedLayoutKey, SelectedView).ToList();
+        viewColumnWidths[layoutKey] = new Dictionary<LibraryColumnOption, double>(
+            GetColumnWidthOptions(SelectedLayoutKey));
+
+        ViewDefinitions.Add(definition);
+        await SaveViewDefinitionSettingsAsync(cancellationToken);
+        SelectedViewDefinitionId = definition.Id;
+    }
+
     private async Task SaveColumnSettingsAsync(CancellationToken cancellationToken)
     {
         if (settingsStore is null)
@@ -1516,6 +1584,75 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             settingsSaveLock.Release();
         }
+    }
+
+    private async Task SaveViewDefinitionSettingsAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        Interlocked.Increment(ref groupingSettingsSaveVersion);
+        await settingsSaveLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var settings = await settingsStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            await settingsStore.SaveAsync(
+                    settings with
+                    {
+                        LibraryViewDefinitions = CreateViewDefinitionSettings(),
+                        LibraryViewLayouts = CreateViewLayoutSettings()
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            settingsSaveLock.Release();
+        }
+    }
+
+    private string CreateUniqueCustomViewId(string name)
+    {
+        var baseId = CreateCustomViewId(name);
+        var id = baseId;
+        var suffix = 2;
+        var existingIds = ViewDefinitions.Select(definition => definition.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        while (existingIds.Contains(id))
+        {
+            id = $"{baseId}-{suffix}";
+            suffix++;
+        }
+
+        return id;
+    }
+
+    private static string CreateCustomViewId(string name)
+    {
+        var builder = new StringBuilder();
+        foreach (var character in name.Trim().ToLowerInvariant().Normalize(NormalizationForm.FormD))
+        {
+            var category = CharUnicodeInfo.GetUnicodeCategory(character);
+            if (category == UnicodeCategory.NonSpacingMark)
+            {
+                continue;
+            }
+
+            if (char.IsLetterOrDigit(character))
+            {
+                builder.Append(character);
+                continue;
+            }
+
+            if (builder.Length > 0 && builder[^1] != '-')
+            {
+                builder.Append('-');
+            }
+        }
+
+        var id = builder.ToString().Trim('-');
+        return id.Length == 0 ? "view" : id;
     }
 
     private static IReadOnlyList<string> ToSettingValues(IEnumerable<LibraryGroupOption> options) =>

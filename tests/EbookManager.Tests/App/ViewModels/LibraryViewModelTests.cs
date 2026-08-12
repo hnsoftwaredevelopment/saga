@@ -192,6 +192,58 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Copy_current_view_creates_selected_custom_view_with_copied_layout()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "Mijn thrillers" };
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        ["Detailed"] = new(
+                            Groupings: ["Author"],
+                            Columns: ["Title", "Authors", "Series"],
+                            ColumnWidths: new Dictionary<string, double>
+                            {
+                                ["Title"] = 330
+                            })
+                    })
+            },
+            default);
+        var viewModel = CreateViewModel(
+            [CreateBook("Book", ["Author"], series: "Series")],
+            interaction,
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+        await viewModel.CopyCurrentViewCommand.ExecuteAsync(null);
+
+        viewModel.SelectedViewDefinitionId.Should().Be("mijn-thrillers");
+        viewModel.ActiveViewLayoutKey.Should().Be("custom:mijn-thrillers");
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.ViewDefinitions.Should().Contain(view =>
+            view.Id == "mijn-thrillers" &&
+            view.Name == "Mijn thrillers" &&
+            view.BaseView == LibraryView.Detailed &&
+            view.LayoutKey == "custom:mijn-thrillers");
+        settingsStore.Settings.LibraryViewDefinitions!.CustomViews.Should().ContainSingle(view =>
+            view.Id == "mijn-thrillers" &&
+            view.Name == "Mijn thrillers" &&
+            view.BaseView == "Detailed" &&
+            view.LayoutKey == "custom:mijn-thrillers");
+        settingsStore.Settings.LibraryViewLayouts!.Views!["custom:mijn-thrillers"].Columns
+            .Should()
+            .Equal("Title", "Authors", "Series");
+        settingsStore.Settings.LibraryViewLayouts.Views["custom:mijn-thrillers"].Sort.Should().Be("Author");
+        settingsStore.Settings.LibraryViewLayouts.Views["custom:mijn-thrillers"].Groupings.Should().Equal("Author");
+        settingsStore.Settings.LibraryViewLayouts.Views["custom:mijn-thrillers"].ColumnWidths.Should().Contain("Title", 330);
+    }
+
+    [Fact]
     public async Task SearchText_is_exposed_on_visible_rows_for_highlighting()
     {
         var book = CreateBook("The Hobbit", ["Tolkien"]);

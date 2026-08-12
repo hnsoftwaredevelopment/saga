@@ -406,6 +406,11 @@
   <data name="Close" xml:space="preserve"><value>Fermer</value></data>
   <data name="Columns" xml:space="preserve"><value>Colonnes</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Choisissez les colonnes visibles pour cette vue</value></data>
+  <data name="CopyOfViewName" xml:space="preserve"><value>Copie de {0}</value></data>
+  <data name="CopyView" xml:space="preserve"><value>Copier la vue</value></data>
+  <data name="CopyViewPromptMessage" xml:space="preserve"><value>Nom pour une copie de "{0}" :</value></data>
+  <data name="CopyViewPromptTitle" xml:space="preserve"><value>Copier la vue</value></data>
+  <data name="CopyViewTooltip" xml:space="preserve"><value>Copier la vue sélectionnée vers une nouvelle vue personnalisée</value></data>
   <data name="DragColumnTooltip" xml:space="preserve"><value>Faites glisser pour changer l'ordre des colonnes</value></data>
   <data name="ResetView" xml:space="preserve"><value>Réinitialiser la vue</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Réinitialiser la vue pour : {0}</value></data>

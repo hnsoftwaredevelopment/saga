@@ -135,10 +135,9 @@ Status: implemented.
 
 ### Next Slices
 
-- Expose built-in and custom view definitions in the view switcher.
-- Add a copy/duplicate action that creates a custom view from the currently selected built-in or custom view.
-- Allow custom views based on Detailed and List first; keep Bookshelf as a later explicit decision.
-- Persist custom view layout changes independently from the source view.
+- Add lightweight rename/delete management for custom views.
+- Allow custom views based on Bookshelf if that becomes a deliberate user-facing choice.
+- Add a richer view-management screen when custom views outgrow the column settings tab.
 
 ### Slice 2: View Definition Selection
 
@@ -149,3 +148,13 @@ Status: implemented.
 - The main view switcher and Settings > Column settings can show custom views next to built-in views.
 - Built-in view names remain localized; custom view names are shown as user-entered names.
 - Custom view layout changes are saved under the custom layout key instead of overwriting the source built-in view.
+
+### Slice 3: Copy Current View
+
+Status: implemented.
+
+- Settings > Column settings can copy the selected Detailed or List view into a named custom view.
+- The new custom view is selected immediately after creation.
+- The copied view keeps its own layout key and starts with the source view's current grouping, sorting, visible column order, and column widths.
+- Built-in view definitions remain immutable; only custom view definitions are written to `LibraryViewDefinitionSettings`.
+- Bookshelf is not copied in this first version because it has a different covers-only layout model.

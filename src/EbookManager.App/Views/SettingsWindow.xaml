@@ -213,35 +213,43 @@
                   </ListBox.ItemTemplate>
                 </ListBox>
               </ScrollViewer>
-              <Button Grid.Row="1"
-                      Command="{Binding ResetCurrentViewLayoutCommand}"
-                      MinWidth="160"
-                      Margin="0,12,0,0"
-                      Padding="8,4"
-                      HorizontalAlignment="Left">
-                <Button.ToolTip>
-                  <MultiBinding Converter="{StaticResource ResetViewTooltipConverter}">
-                    <Binding Source="{x:Static loc:LocalizedStrings.Current}" Path="[ResetViewTooltip]" />
-                    <Binding Path="SelectedView" />
-                  </MultiBinding>
-                </Button.ToolTip>
-                <StackPanel Orientation="Horizontal">
-                  <Viewbox Width="16"
-                           Height="16"
-                           Margin="0,0,6,0">
-                    <Grid Width="441"
-                          Height="512.398">
-                      <Path Data="{StaticResource ResetViewIconBackgroundGeometry}"
-                            Fill="{DynamicResource AccentBrush}"
-                            Stretch="None" />
-                      <Path Data="{StaticResource ResetViewIconForegroundGeometry}"
-                            Fill="{DynamicResource InfoBrush}"
-                            Stretch="None" />
-                    </Grid>
-                  </Viewbox>
-                  <TextBlock Text="{loc:Loc ResetView}" />
-                </StackPanel>
-              </Button>
+              <StackPanel Grid.Row="1"
+                          Orientation="Horizontal"
+                          Margin="0,12,0,0">
+                <Button Command="{Binding CopyCurrentViewCommand}"
+                        MinWidth="160"
+                        Margin="0,0,8,0"
+                        Padding="8,4"
+                        ToolTip="{loc:Loc CopyViewTooltip}">
+                  <TextBlock Text="{loc:Loc CopyView}" />
+                </Button>
+                <Button Command="{Binding ResetCurrentViewLayoutCommand}"
+                        MinWidth="160"
+                        Padding="8,4">
+                  <Button.ToolTip>
+                    <MultiBinding Converter="{StaticResource ResetViewTooltipConverter}">
+                      <Binding Source="{x:Static loc:LocalizedStrings.Current}" Path="[ResetViewTooltip]" />
+                      <Binding Path="SelectedView" />
+                    </MultiBinding>
+                  </Button.ToolTip>
+                  <StackPanel Orientation="Horizontal">
+                    <Viewbox Width="16"
+                             Height="16"
+                             Margin="0,0,6,0">
+                      <Grid Width="441"
+                            Height="512.398">
+                        <Path Data="{StaticResource ResetViewIconBackgroundGeometry}"
+                              Fill="{DynamicResource AccentBrush}"
+                              Stretch="None" />
+                        <Path Data="{StaticResource ResetViewIconForegroundGeometry}"
+                              Fill="{DynamicResource InfoBrush}"
+                              Stretch="None" />
+                      </Grid>
+                    </Viewbox>
+                    <TextBlock Text="{loc:Loc ResetView}" />
+                  </StackPanel>
+                </Button>
+              </StackPanel>
             </Grid>
           </Border>
         </Grid>
