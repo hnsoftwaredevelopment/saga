@@ -5,6 +5,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="AddBooks" xml:space="preserve"><value>Boeken toevoegen</value></data>
+  <data name="Add" xml:space="preserve"><value>Toevoegen</value></data>
   <data name="Action" xml:space="preserve"><value>Actie</value></data>
   <data name="All" xml:space="preserve"><value>Alles</value></data>
   <data name="AppName" xml:space="preserve"><value>Saga</value></data>
@@ -26,6 +27,21 @@
   <data name="CopyViewPromptMessage" xml:space="preserve"><value>Naam voor een kopie van "{0}":</value></data>
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Weergave kopiëren</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Kopieer de geselecteerde weergave naar een nieuwe eigen weergave</value></data>
+  <data name="CustomMetadataFields" xml:space="preserve"><value>Eigen metadatavelden</value></data>
+  <data name="CustomMetadataFieldsDescription" xml:space="preserve"><value>Maak eigen metadatavelden voor deze bibliotheek. Deze definities worden opgeslagen in de actieve Saga-bibliotheek.</value></data>
+  <data name="CustomMetadataFieldTypeText" xml:space="preserve"><value>Tekst</value></data>
+  <data name="CustomMetadataFieldTypeNumber" xml:space="preserve"><value>Getal</value></data>
+  <data name="CustomMetadataFieldTypeDate" xml:space="preserve"><value>Datum</value></data>
+  <data name="CustomMetadataFieldTypeBoolean" xml:space="preserve"><value>Ja/nee</value></data>
+  <data name="CustomMetadataFieldTypeSingleSelect" xml:space="preserve"><value>Enkele keuze</value></data>
+  <data name="CustomMetadataFieldTypeMultiSelect" xml:space="preserve"><value>Meerdere keuzes</value></data>
+  <data name="CustomMetadataNewFieldNameTooltip" xml:space="preserve"><value>Naam van het nieuwe eigen metadataveld</value></data>
+  <data name="CustomMetadataSelectedFieldNameTooltip" xml:space="preserve"><value>Nieuwe naam voor het geselecteerde eigen metadataveld</value></data>
+  <data name="CustomMetadataDeleteTooltip" xml:space="preserve"><value>Verwijder het geselecteerde veld en de opgeslagen waarden</value></data>
+  <data name="CustomMetadataFieldAdded" xml:space="preserve"><value>Metadataveld toegevoegd.</value></data>
+  <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Metadataveld hernoemd.</value></data>
+  <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Metadataveld verwijderd.</value></data>
+  <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Er bestaat al een metadataveld met deze naam.</value></data>
   <data name="DeleteView" xml:space="preserve"><value>Weergave verwijderen</value></data>
   <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Wilt u de eigen weergave "{0}" verwijderen?</value></data>
   <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Eigen weergave verwijderen</value></data>
@@ -124,6 +140,7 @@
   <data name="ImportTotal" xml:space="preserve"><value>Totaal</value></data>
   <data name="IncludeScanSubdirectoriesSetting" xml:space="preserve"><value>Submappen meenemen bij scannen</value></data>
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
+  <data name="Key" xml:space="preserve"><value>Sleutel</value></data>
   <data name="Language" xml:space="preserve"><value>Taal</value></data>
   <data name="LastModified" xml:space="preserve"><value>Laatst gewijzigd</value></data>
   <data name="LinkSuggestion" xml:space="preserve"><value>Koppelen</value></data>
@@ -150,6 +167,7 @@
   <data name="MergeActionCopy" xml:space="preserve"><value>Waarde uit bronboek naar doelboek kopieren</value></data>
   <data name="MergeActionMerge" xml:space="preserve"><value>Waarde uit bronboek toevoegen aan doelboek</value></data>
   <data name="MergeActionDisabledSameValue" xml:space="preserve"><value>Beide boeken hebben al dezelfde waarde voor dit veld.</value></data>
+  <data name="Name" xml:space="preserve"><value>Naam</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve"><value>Boek samengevoegd.</value></data>
   <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is samengevoegd.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Samenvoegen mislukt</value></data>

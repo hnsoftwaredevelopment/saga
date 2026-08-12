@@ -15,6 +15,7 @@
   <data name="AddBooks" xml:space="preserve">
     <value>Buecher hinzufuegen</value>
   </data>
+  <data name="Add" xml:space="preserve"><value>Hinzufuegen</value></data>
   <data name="Action" xml:space="preserve">
     <value>Aktion</value>
   </data>
@@ -177,6 +178,7 @@
   <data name="Isbn" xml:space="preserve">
     <value>ISBN</value>
   </data>
+  <data name="Key" xml:space="preserve"><value>Schluessel</value></data>
   <data name="Language" xml:space="preserve">
     <value>Sprache</value>
   </data>
@@ -249,6 +251,7 @@
   <data name="MergeActionDisabledSameValue" xml:space="preserve">
     <value>Beide Buecher haben fuer dieses Feld bereits denselben Wert.</value>
   </data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve">
     <value>Buch zusammengefuehrt.</value>
   </data>
@@ -411,6 +414,21 @@
   <data name="CopyViewPromptMessage" xml:space="preserve"><value>Name für eine Kopie von "{0}":</value></data>
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Ansicht kopieren</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Kopiert die ausgewählte Ansicht in eine neue eigene Ansicht</value></data>
+  <data name="CustomMetadataFields" xml:space="preserve"><value>Eigene Metadatenfelder</value></data>
+  <data name="CustomMetadataFieldsDescription" xml:space="preserve"><value>Erstelle eigene Metadatenfelder fuer diese Bibliothek. Diese Definitionen werden in der aktiven Saga-Bibliothek gespeichert.</value></data>
+  <data name="CustomMetadataFieldTypeText" xml:space="preserve"><value>Text</value></data>
+  <data name="CustomMetadataFieldTypeNumber" xml:space="preserve"><value>Zahl</value></data>
+  <data name="CustomMetadataFieldTypeDate" xml:space="preserve"><value>Datum</value></data>
+  <data name="CustomMetadataFieldTypeBoolean" xml:space="preserve"><value>Ja/Nein</value></data>
+  <data name="CustomMetadataFieldTypeSingleSelect" xml:space="preserve"><value>Einzelauswahl</value></data>
+  <data name="CustomMetadataFieldTypeMultiSelect" xml:space="preserve"><value>Mehrfachauswahl</value></data>
+  <data name="CustomMetadataNewFieldNameTooltip" xml:space="preserve"><value>Name des neuen eigenen Metadatenfelds</value></data>
+  <data name="CustomMetadataSelectedFieldNameTooltip" xml:space="preserve"><value>Neuer Name fuer das ausgewaehlte eigene Metadatenfeld</value></data>
+  <data name="CustomMetadataDeleteTooltip" xml:space="preserve"><value>Das ausgewaehlte Feld und seine gespeicherten Werte loeschen</value></data>
+  <data name="CustomMetadataFieldAdded" xml:space="preserve"><value>Metadatenfeld hinzugefuegt.</value></data>
+  <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Metadatenfeld umbenannt.</value></data>
+  <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Metadatenfeld geloescht.</value></data>
+  <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Ein Metadatenfeld mit diesem Namen existiert bereits.</value></data>
   <data name="DeleteView" xml:space="preserve"><value>Ansicht löschen</value></data>
   <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Eigene Ansicht „{0}“ löschen?</value></data>
   <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Eigene Ansicht löschen</value></data>

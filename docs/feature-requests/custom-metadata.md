@@ -19,9 +19,8 @@ Custom metadata should make Saga powerful without turning the standard `BookMeta
 - Keep SQLite authoritative and migration-friendly.
 - Prepare for Details editing, custom view columns, search, filtering, and Calibre custom-column import.
 
-## Out Of Scope For First Slice
+## Out Of Scope For Initial Milestone
 
-- Full Settings UI for custom field management.
 - Editing custom values in the Details pane.
 - Showing custom metadata as grid columns.
 - Importing Calibre custom columns.
@@ -45,9 +44,18 @@ Status: implemented.
 - Added cascade cleanup from books and field definitions to custom values.
 - Added repository tests for definitions, values, rename stability, deletion, and type validation.
 
+### Slice 2: Settings Field Management
+
+Status: implemented.
+
+- Added a Metadata settings section for custom metadata fields.
+- Added UI to create fields with a name and type.
+- Added UI to rename and delete selected fields.
+- Added localized field type names and status feedback.
+- Added SettingsViewModel tests for field type options and create/rename/delete flow.
+
 ### Next Slices
 
-- Add Settings UI to create, rename, delete, and order custom field definitions.
 - Add Details pane display and editing for custom metadata values.
 - Include custom metadata values in search.
 - Make custom fields available as columns in custom views.

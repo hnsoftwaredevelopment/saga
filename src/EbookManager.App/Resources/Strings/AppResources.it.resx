@@ -15,6 +15,7 @@
   <data name="AddBooks" xml:space="preserve">
     <value>Aggiungi libri</value>
   </data>
+  <data name="Add" xml:space="preserve"><value>Aggiungi</value></data>
   <data name="Action" xml:space="preserve">
     <value>Azione</value>
   </data>
@@ -177,6 +178,7 @@
   <data name="Isbn" xml:space="preserve">
     <value>ISBN</value>
   </data>
+  <data name="Key" xml:space="preserve"><value>Chiave</value></data>
   <data name="Language" xml:space="preserve">
     <value>Lingua</value>
   </data>
@@ -249,6 +251,7 @@
   <data name="MergeActionDisabledSameValue" xml:space="preserve">
     <value>Entrambi i libri hanno gia lo stesso valore per questo campo.</value>
   </data>
+  <data name="Name" xml:space="preserve"><value>Nome</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve">
     <value>Libro unito.</value>
   </data>
@@ -411,6 +414,21 @@
   <data name="CopyViewPromptMessage" xml:space="preserve"><value>Nome per una copia di "{0}":</value></data>
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Copia vista</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Copia la vista selezionata in una nuova vista personalizzata</value></data>
+  <data name="CustomMetadataFields" xml:space="preserve"><value>Campi metadati personalizzati</value></data>
+  <data name="CustomMetadataFieldsDescription" xml:space="preserve"><value>Crea campi metadati personalizzati per questa libreria. Queste definizioni vengono salvate nella libreria Saga attiva.</value></data>
+  <data name="CustomMetadataFieldTypeText" xml:space="preserve"><value>Testo</value></data>
+  <data name="CustomMetadataFieldTypeNumber" xml:space="preserve"><value>Numero</value></data>
+  <data name="CustomMetadataFieldTypeDate" xml:space="preserve"><value>Data</value></data>
+  <data name="CustomMetadataFieldTypeBoolean" xml:space="preserve"><value>Si/no</value></data>
+  <data name="CustomMetadataFieldTypeSingleSelect" xml:space="preserve"><value>Scelta singola</value></data>
+  <data name="CustomMetadataFieldTypeMultiSelect" xml:space="preserve"><value>Scelte multiple</value></data>
+  <data name="CustomMetadataNewFieldNameTooltip" xml:space="preserve"><value>Nome del nuovo campo metadati personalizzato</value></data>
+  <data name="CustomMetadataSelectedFieldNameTooltip" xml:space="preserve"><value>Nuovo nome per il campo metadati personalizzato selezionato</value></data>
+  <data name="CustomMetadataDeleteTooltip" xml:space="preserve"><value>Elimina il campo selezionato e i valori salvati</value></data>
+  <data name="CustomMetadataFieldAdded" xml:space="preserve"><value>Campo metadati aggiunto.</value></data>
+  <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Campo metadati rinominato.</value></data>
+  <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Campo metadati eliminato.</value></data>
+  <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Esiste gia un campo metadati con questo nome.</value></data>
   <data name="DeleteView" xml:space="preserve"><value>Elimina vista</value></data>
   <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Eliminare la vista personalizzata "{0}"?</value></data>
   <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Elimina vista personalizzata</value></data>

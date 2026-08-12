@@ -5,6 +5,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="AddBooks" xml:space="preserve"><value>Add books</value></data>
+  <data name="Add" xml:space="preserve"><value>Add</value></data>
   <data name="Action" xml:space="preserve"><value>Action</value></data>
   <data name="All" xml:space="preserve"><value>All</value></data>
   <data name="AppName" xml:space="preserve"><value>Saga</value></data>
@@ -26,6 +27,21 @@
   <data name="CopyViewPromptMessage" xml:space="preserve"><value>Name for a copy of "{0}":</value></data>
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Copy view</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Copy the selected view to a new custom view</value></data>
+  <data name="CustomMetadataFields" xml:space="preserve"><value>Custom metadata fields</value></data>
+  <data name="CustomMetadataFieldsDescription" xml:space="preserve"><value>Create your own metadata fields for this library. These definitions are stored in the active Saga library.</value></data>
+  <data name="CustomMetadataFieldTypeText" xml:space="preserve"><value>Text</value></data>
+  <data name="CustomMetadataFieldTypeNumber" xml:space="preserve"><value>Number</value></data>
+  <data name="CustomMetadataFieldTypeDate" xml:space="preserve"><value>Date</value></data>
+  <data name="CustomMetadataFieldTypeBoolean" xml:space="preserve"><value>Yes/no</value></data>
+  <data name="CustomMetadataFieldTypeSingleSelect" xml:space="preserve"><value>Single choice</value></data>
+  <data name="CustomMetadataFieldTypeMultiSelect" xml:space="preserve"><value>Multiple choices</value></data>
+  <data name="CustomMetadataNewFieldNameTooltip" xml:space="preserve"><value>Name of the new custom metadata field</value></data>
+  <data name="CustomMetadataSelectedFieldNameTooltip" xml:space="preserve"><value>New name for the selected custom metadata field</value></data>
+  <data name="CustomMetadataDeleteTooltip" xml:space="preserve"><value>Delete the selected field and its stored values</value></data>
+  <data name="CustomMetadataFieldAdded" xml:space="preserve"><value>Metadata field added.</value></data>
+  <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Metadata field renamed.</value></data>
+  <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Metadata field deleted.</value></data>
+  <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>A metadata field with this name already exists.</value></data>
   <data name="DeleteView" xml:space="preserve"><value>Delete view</value></data>
   <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Delete the custom view "{0}"?</value></data>
   <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Delete custom view</value></data>
@@ -124,6 +140,7 @@
   <data name="ImportTotal" xml:space="preserve"><value>Total</value></data>
   <data name="IncludeScanSubdirectoriesSetting" xml:space="preserve"><value>Include subdirectories when scanning</value></data>
   <data name="Isbn" xml:space="preserve"><value>ISBN</value></data>
+  <data name="Key" xml:space="preserve"><value>Key</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
   <data name="LastModified" xml:space="preserve"><value>Last modified</value></data>
   <data name="LinkSuggestion" xml:space="preserve"><value>Link</value></data>
@@ -150,6 +167,7 @@
   <data name="MergeActionCopy" xml:space="preserve"><value>Copy source value to target</value></data>
   <data name="MergeActionMerge" xml:space="preserve"><value>Append source value to target</value></data>
   <data name="MergeActionDisabledSameValue" xml:space="preserve"><value>Both books already have the same value for this field.</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
   <data name="DuplicateMergeSucceededMessage" xml:space="preserve"><value>Book merged.</value></data>
   <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is merged.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Merge failed</value></data>
