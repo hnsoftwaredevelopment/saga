@@ -126,6 +126,9 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<LibraryColumnOption> ActiveColumnOptions { get; } = [];
     public ObservableCollection<LibraryColumnChoiceViewModel> ColumnChoices { get; } = [];
     public ObservableCollection<LibraryViewDefinitionViewModel> ViewDefinitions { get; } = [];
+    public LibraryViewDefinitionViewModel? SelectedViewDefinition =>
+        ViewDefinitions.FirstOrDefault(definition =>
+            definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase));
     public IReadOnlyList<LibraryGroupOption> AvailableGroupOptions { get; } =
     [
         LibraryGroupOption.Author,
@@ -1432,6 +1435,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void NotifyViewDefinitionCommandStateChanged()
     {
+        OnPropertyChanged(nameof(SelectedViewDefinition));
         OnPropertyChanged(nameof(CanManageSelectedViewDefinition));
         copyCurrentViewCommand?.NotifyCanExecuteChanged();
         renameCurrentViewCommand?.NotifyCanExecuteChanged();

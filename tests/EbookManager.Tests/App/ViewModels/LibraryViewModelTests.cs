@@ -281,6 +281,29 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Selected_view_definition_exposes_custom_view_name_for_view_settings()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Favoriete thrillers", "Detailed", "custom:thrillers")
+                ])
+            },
+            default);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedViewDefinition.Should().NotBeNull();
+        viewModel.SelectedViewDefinition!.Name.Should().Be("Favoriete thrillers");
+        viewModel.SelectedViewDefinition.IsBuiltIn.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Delete_current_custom_view_removes_definition_and_selects_base_view()
     {
         var settingsStore = new InMemoryAppSettingsStore();

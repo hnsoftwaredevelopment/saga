@@ -10,8 +10,8 @@ public sealed class ResetViewTooltipConverter : IMultiValueConverter
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
         var template = values.Length > 0 ? values[0]?.ToString() : null;
-        var viewName = values.Length > 1 && values[1] is LibraryView view
-            ? LocalizedStrings.Current[ViewResourceKey(view)]
+        var viewName = values.Length > 1
+            ? ViewName(values[1])
             : string.Empty;
 
         return string.Format(
@@ -30,5 +30,14 @@ public sealed class ResetViewTooltipConverter : IMultiValueConverter
             LibraryView.Detailed => "DetailedView",
             LibraryView.List => "ListView",
             _ => "DetailedView"
+        };
+
+    private static string ViewName(object? value) =>
+        value switch
+        {
+            LibraryViewDefinitionViewModel { IsBuiltIn: false } definition => definition.Name,
+            LibraryViewDefinitionViewModel definition => LocalizedStrings.Current[ViewResourceKey(definition.BaseView)],
+            LibraryView view => LocalizedStrings.Current[ViewResourceKey(view)],
+            _ => string.Empty
         };
 }

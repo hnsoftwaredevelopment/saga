@@ -18,9 +18,11 @@
 
 - [ ] Select a copied/custom view and confirm Rename view and Delete view are enabled.
 - [ ] Rename the custom view and confirm the new name appears in the main view switcher and Settings.
+- [ ] Confirm the reset button tooltip uses the custom view name, not only the built-in base view name.
 - [ ] Restart Saga and confirm the renamed view still exists with the same layout.
 - [ ] Delete the custom view and confirm Saga switches back to the underlying built-in view.
 - [ ] Confirm built-in Bookshelf, Detailed, and List cannot be renamed or deleted.
+- [ ] Set a custom view as the default startup view in Settings > Appearance, save, restart Saga, and confirm it opens with that custom view.
 
 ## Regression
 
