@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented as Milestone 11, extended in Milestone 13 and Milestone 14.
+Implemented as Milestone 11, extended in Milestone 13, Milestone 14, and Milestone 15.
 
 ## Context
 
@@ -119,3 +119,23 @@ Status: implemented.
 - Grouped headers and grouped book rows are generated from `ActiveColumnLayoutSnapshot`.
 - Column width changes from grouped headers continue to save to the selected view layout.
 - The older fixed grouped-row templates were replaced by a reusable dynamic row/header control.
+
+## Milestone 15
+
+Milestone 15 introduces the foundation for user-created views. The goal is to let users copy an existing built-in view into a named custom view before Saga later adds richer view management.
+
+### Slice 1: Custom View Definition Persistence
+
+Status: implemented.
+
+- Added `LibraryViewDefinitionSettings` as the storage shape for custom view definitions.
+- A custom view definition stores a stable id, user-visible name, base view, and layout key.
+- Custom view layout data continues to live in `LibraryViewLayoutSettings`, keyed by the custom view layout key.
+- Existing built-in view settings remain backward compatible.
+
+### Next Slices
+
+- Expose built-in and custom view definitions in the view switcher.
+- Add a copy/duplicate action that creates a custom view from the currently selected built-in or custom view.
+- Allow custom views based on Detailed and List first; keep Bookshelf as a later explicit decision.
+- Persist custom view layout changes independently from the source view.

@@ -18,7 +18,8 @@ public sealed record AppSettings(
     LibraryColumnSettings? LibraryColumns = null,
     LibraryColumnWidthSettings? LibraryColumnWidths = null,
     LibrarySortSettings? LibrarySorts = null,
-    LibraryViewLayoutSettings? LibraryViewLayouts = null);
+    LibraryViewLayoutSettings? LibraryViewLayouts = null,
+    LibraryViewDefinitionSettings? LibraryViewDefinitions = null);
 
 public interface IAppSettingsStore
 {
