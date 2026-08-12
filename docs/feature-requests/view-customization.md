@@ -139,3 +139,13 @@ Status: implemented.
 - Add a copy/duplicate action that creates a custom view from the currently selected built-in or custom view.
 - Allow custom views based on Detailed and List first; keep Bookshelf as a later explicit decision.
 - Persist custom view layout changes independently from the source view.
+
+### Slice 2: View Definition Selection
+
+Status: implemented.
+
+- `LibraryViewModel` exposes built-in and custom view definitions through one selectable list.
+- A custom view keeps a base view for rendering and a separate layout key for layout persistence.
+- The main view switcher and Settings > Column settings can show custom views next to built-in views.
+- Built-in view names remain localized; custom view names are shown as user-entered names.
+- Custom view layout changes are saved under the custom layout key instead of overwriting the source built-in view.

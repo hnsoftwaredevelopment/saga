@@ -19,6 +19,7 @@
       <converters:NullOrWhiteSpaceFallbackConverter x:Key="NullOrWhiteSpaceFallbackConverter" />
       <converters:LibraryGroupOptionToLocalizedStringConverter x:Key="LibraryGroupOptionToLocalizedStringConverter" />
       <converters:LibraryColumnOptionToLocalizedStringConverter x:Key="LibraryColumnOptionToLocalizedStringConverter" />
+      <converters:LibraryViewDefinitionToLocalizedStringConverter x:Key="LibraryViewDefinitionToLocalizedStringConverter" />
       <Style x:Key="ToolbarIconButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="42" />
         <Setter Property="Height" Value="40" />
@@ -132,17 +133,17 @@
             Padding="16,10"
             Background="{DynamicResource AppBackgroundBrush}">
       <DockPanel>
-        <ComboBox SelectedValue="{Binding SelectedView}"
-                  SelectedValuePath="Tag"
+        <ComboBox ItemsSource="{Binding ViewDefinitions}"
+                  SelectedValue="{Binding SelectedViewDefinitionId}"
+                  SelectedValuePath="Id"
                   Width="180"
                   Height="32"
                   DockPanel.Dock="Left">
-          <ComboBoxItem Content="{loc:Loc BookshelfView}"
-                        Tag="{x:Static viewModels:LibraryView.Bookshelf}" />
-          <ComboBoxItem Content="{loc:Loc DetailedView}"
-                        Tag="{x:Static viewModels:LibraryView.Detailed}" />
-          <ComboBoxItem Content="{loc:Loc ListView}"
-                        Tag="{x:Static viewModels:LibraryView.List}" />
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Converter={StaticResource LibraryViewDefinitionToLocalizedStringConverter}}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
         </ComboBox>
         <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                  Width="360"

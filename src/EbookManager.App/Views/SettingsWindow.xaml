@@ -14,6 +14,7 @@
     <Grid.Resources>
       <converters:LibraryColumnOptionToLocalizedStringConverter x:Key="LibraryColumnOptionToLocalizedStringConverter" />
       <converters:ResetViewTooltipConverter x:Key="ResetViewTooltipConverter" />
+      <converters:LibraryViewDefinitionToLocalizedStringConverter x:Key="LibraryViewDefinitionToLocalizedStringConverter" />
     </Grid.Resources>
     <Grid.RowDefinitions>
       <RowDefinition Height="*" />
@@ -95,15 +96,15 @@
                      Margin="0,0,12,12" />
           <ComboBox Grid.Row="0"
                     Grid.Column="1"
-                    SelectedValue="{Binding SelectedView}"
-                    SelectedValuePath="Tag"
+                    ItemsSource="{Binding ViewDefinitions}"
+                    SelectedValue="{Binding SelectedViewDefinitionId}"
+                    SelectedValuePath="Id"
                     Margin="0,0,0,12">
-            <ComboBoxItem Content="{loc:Loc BookshelfView}"
-                          Tag="{x:Static viewModels:LibraryView.Bookshelf}" />
-            <ComboBoxItem Content="{loc:Loc DetailedView}"
-                          Tag="{x:Static viewModels:LibraryView.Detailed}" />
-            <ComboBoxItem Content="{loc:Loc ListView}"
-                          Tag="{x:Static viewModels:LibraryView.List}" />
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Converter={StaticResource LibraryViewDefinitionToLocalizedStringConverter}}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
           </ComboBox>
 
           <TextBlock Text="{loc:Loc Columns}"

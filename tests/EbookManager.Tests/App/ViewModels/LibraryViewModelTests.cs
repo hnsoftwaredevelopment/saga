@@ -98,6 +98,100 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task First_refresh_exposes_builtin_and_custom_view_definitions()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ])
+            },
+            default);
+        var viewModel = CreateViewModel([], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.ViewDefinitions.Select(view => view.Id)
+            .Should()
+            .Equal("Bookshelf", "Detailed", "List", "thrillers");
+        viewModel.ViewDefinitions.Single(view => view.Id == "thrillers").Name.Should().Be("Thrillers");
+        viewModel.ViewDefinitions.Single(view => view.Id == "thrillers").BaseView.Should().Be(LibraryView.Detailed);
+        viewModel.ViewDefinitions.Single(view => view.Id == "thrillers").LayoutKey.Should().Be("custom:thrillers");
+    }
+
+    [Fact]
+    public async Task Default_view_can_select_custom_view_definition()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ])
+            },
+            default);
+        var viewModel = CreateViewModel([], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedViewDefinitionId.Should().Be("thrillers");
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.ActiveViewLayoutKey.Should().Be("custom:thrillers");
+    }
+
+    [Fact]
+    public async Task Custom_view_layout_changes_are_saved_separately_from_builtin_layout()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ]),
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        ["Detailed"] = new(
+                            Columns: ["Title", "Authors"],
+                            Sort: "Title"),
+                        ["custom:thrillers"] = new(
+                            Columns: ["Title", "Series"],
+                            Sort: "Series")
+                    })
+            },
+            default);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], series: "Series")], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedViewDefinitionId.Should().Be("thrillers");
+        viewModel.ActiveColumnOptions.Should().Equal(LibraryColumnOption.Title, LibraryColumnOption.Series);
+
+        var formatChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Format);
+        formatChoice.IsSelected = true;
+        await viewModel.ToggleColumnCommand.ExecuteAsync(formatChoice);
+        var seriesChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Series);
+        seriesChoice.IsSelected = false;
+        await viewModel.ToggleColumnCommand.ExecuteAsync(seriesChoice);
+
+        settingsStore.Settings.LibraryViewLayouts!.Views!["custom:thrillers"].Columns
+            .Should()
+            .Equal("Title", "Format");
+        settingsStore.Settings.LibraryViewLayouts.Views["Detailed"].Columns
+            .Should()
+            .Equal("Title", "Authors");
+    }
+
+    [Fact]
     public async Task SearchText_is_exposed_on_visible_rows_for_highlighting()
     {
         var book = CreateBook("The Hobbit", ["Tolkien"]);
