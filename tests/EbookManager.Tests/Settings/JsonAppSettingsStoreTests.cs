@@ -351,6 +351,50 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task Settings_round_trip_custom_library_view_definitions()
+    {
+        var store = new JsonAppSettingsStore(temporaryDirectory.DirectoryPath);
+        var settings = new AppSettings(
+            "C:\\Books",
+            "nl-NL",
+            "Sepia",
+            "custom:thrillers",
+            true,
+            LibraryViewLayouts: new EbookManager.Domain.Settings.LibraryViewLayoutSettings(
+                new Dictionary<string, EbookManager.Domain.Settings.LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                {
+                    ["custom:thrillers"] = new(
+                        Groupings: ["Author"],
+                        Columns: ["Title", "Authors", "Series"],
+                        ColumnWidths: new Dictionary<string, double>
+                        {
+                            ["Title"] = 340
+                        },
+                        Sort: "Series")
+                }),
+            LibraryViewDefinitions: new EbookManager.Domain.Settings.LibraryViewDefinitionSettings(
+            [
+                new(
+                    "thrillers",
+                    "Thrillers",
+                    "Detailed",
+                    "custom:thrillers")
+            ]));
+
+        await store.SaveAsync(settings, CancellationToken.None);
+
+        var loaded = await new JsonAppSettingsStore(temporaryDirectory.DirectoryPath).LoadAsync(default);
+
+        loaded.LibraryViewDefinitions.Should().NotBeNull();
+        var customView = loaded.LibraryViewDefinitions!.CustomViews.Should().ContainSingle().Which;
+        customView.Id.Should().Be("thrillers");
+        customView.Name.Should().Be("Thrillers");
+        customView.BaseView.Should().Be("Detailed");
+        customView.LayoutKey.Should().Be("custom:thrillers");
+        loaded.LibraryViewLayouts!.Views.Should().ContainKey("custom:thrillers");
+    }
+
+    [Fact]
     public async Task ListLibraries_quarantines_malformed_json_and_returns_empty_list()
     {
         var path = Path.Combine(temporaryDirectory.DirectoryPath, "libraries.json");

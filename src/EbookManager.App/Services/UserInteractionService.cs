@@ -56,6 +56,21 @@ public sealed class UserInteractionService(
     public Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken) =>
         deleteConfirmationService.ConfirmAsync(title, cancellationToken);
 
+    public Task<bool> ConfirmDeleteViewAsync(string viewName, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var message = string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            EbookManager.App.Localization.LocalizedStrings.Current["DeleteViewConfirmationMessage"],
+            viewName);
+        var result = System.Windows.MessageBox.Show(
+            message,
+            EbookManager.App.Localization.LocalizedStrings.Current["DeleteViewConfirmationTitle"],
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+        return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
+    }
+
     public Task<string?> PromptTextAsync(
         string title,
         string message,
@@ -146,7 +161,7 @@ public sealed class UserInteractionService(
     {
         var window = new System.Windows.Window
         {
-            Title = EbookManager.App.Localization.LocalizedStrings.Current["FilterRenameTitle"],
+            Title = title,
             Width = 420,
             Height = 190,
             ResizeMode = System.Windows.ResizeMode.NoResize,
@@ -159,10 +174,7 @@ public sealed class UserInteractionService(
         };
         panel.Children.Add(new System.Windows.Controls.TextBlock
         {
-            Text = string.Format(
-                System.Globalization.CultureInfo.InvariantCulture,
-                EbookManager.App.Localization.LocalizedStrings.Current["FilterRenameMessage"],
-                initialValue),
+            Text = message,
             TextWrapping = System.Windows.TextWrapping.Wrap,
             Margin = new System.Windows.Thickness(0, 0, 0, 8)
         });

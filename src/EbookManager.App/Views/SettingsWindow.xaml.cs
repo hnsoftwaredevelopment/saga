@@ -44,6 +44,11 @@ public partial class SettingsWindow : System.Windows.Window
             await viewModel.LoadAsync();
             originalTheme = viewModel.Theme;
             localizationService.ApplyCulture(viewModel.Culture);
+            if (!libraryViewModel.ViewDefinitions.Any(definition =>
+                    definition.Id.Equals(viewModel.DefaultView, StringComparison.OrdinalIgnoreCase)))
+            {
+                viewModel.DefaultView = libraryViewModel.SelectedViewDefinitionId;
+            }
         }
         finally
         {

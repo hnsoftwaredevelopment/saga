@@ -406,7 +406,20 @@
   <data name="Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Columns" xml:space="preserve"><value>Spalten</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Wählen Sie die sichtbaren Spalten für diese Ansicht</value></data>
+  <data name="CopyOfViewName" xml:space="preserve"><value>Kopie von {0}</value></data>
+  <data name="CopyView" xml:space="preserve"><value>Ansicht kopieren</value></data>
+  <data name="CopyViewPromptMessage" xml:space="preserve"><value>Name für eine Kopie von "{0}":</value></data>
+  <data name="CopyViewPromptTitle" xml:space="preserve"><value>Ansicht kopieren</value></data>
+  <data name="CopyViewTooltip" xml:space="preserve"><value>Kopiert die ausgewählte Ansicht in eine neue eigene Ansicht</value></data>
+  <data name="DeleteView" xml:space="preserve"><value>Ansicht löschen</value></data>
+  <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Eigene Ansicht „{0}“ löschen?</value></data>
+  <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Eigene Ansicht löschen</value></data>
+  <data name="DeleteViewTooltip" xml:space="preserve"><value>Löscht die ausgewählte eigene Ansicht</value></data>
   <data name="DragColumnTooltip" xml:space="preserve"><value>Ziehen, um die Spaltenreihenfolge zu aendern</value></data>
+  <data name="RenameView" xml:space="preserve"><value>Ansicht umbenennen</value></data>
+  <data name="RenameViewPromptMessage" xml:space="preserve"><value>„{0}“ umbenennen in:</value></data>
+  <data name="RenameViewPromptTitle" xml:space="preserve"><value>Ansicht umbenennen</value></data>
+  <data name="RenameViewTooltip" xml:space="preserve"><value>Benennt die ausgewählte eigene Ansicht um</value></data>
   <data name="ResetView" xml:space="preserve"><value>Ansicht zurücksetzen</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Ansicht zurücksetzen für: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Umschlag</value></data>

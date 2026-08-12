@@ -21,7 +21,20 @@
   <data name="ConfirmDeleteSetting" xml:space="preserve"><value>Vragen voordat boeken worden verwijderd</value></data>
   <data name="Columns" xml:space="preserve"><value>Kolommen</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Kies welke kolommen zichtbaar zijn in deze weergave</value></data>
+  <data name="CopyOfViewName" xml:space="preserve"><value>Kopie van {0}</value></data>
+  <data name="CopyView" xml:space="preserve"><value>Weergave kopiëren</value></data>
+  <data name="CopyViewPromptMessage" xml:space="preserve"><value>Naam voor een kopie van "{0}":</value></data>
+  <data name="CopyViewPromptTitle" xml:space="preserve"><value>Weergave kopiëren</value></data>
+  <data name="CopyViewTooltip" xml:space="preserve"><value>Kopieer de geselecteerde weergave naar een nieuwe eigen weergave</value></data>
+  <data name="DeleteView" xml:space="preserve"><value>Weergave verwijderen</value></data>
+  <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Wilt u de eigen weergave "{0}" verwijderen?</value></data>
+  <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Eigen weergave verwijderen</value></data>
+  <data name="DeleteViewTooltip" xml:space="preserve"><value>Verwijder de geselecteerde eigen weergave</value></data>
   <data name="DragColumnTooltip" xml:space="preserve"><value>Sleep om de kolomvolgorde te wijzigen</value></data>
+  <data name="RenameView" xml:space="preserve"><value>Weergave hernoemen</value></data>
+  <data name="RenameViewPromptMessage" xml:space="preserve"><value>Hernoem "{0}" naar:</value></data>
+  <data name="RenameViewPromptTitle" xml:space="preserve"><value>Weergave hernoemen</value></data>
+  <data name="RenameViewTooltip" xml:space="preserve"><value>Hernoem de geselecteerde eigen weergave</value></data>
   <data name="ResetView" xml:space="preserve"><value>Weergave herstellen</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Weergave herstellen voor: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Omslag</value></data>

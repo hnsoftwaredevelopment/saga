@@ -81,6 +81,20 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
+    public async Task Save_can_persist_custom_view_id_as_default_view()
+    {
+        var store = new InMemoryAppSettingsStore();
+        var viewModel = new SettingsViewModel(store);
+        await viewModel.LoadAsync();
+
+        viewModel.DefaultView = "favoriete-thrillers";
+        await viewModel.SaveAsync();
+
+        var settings = await store.LoadAsync(default);
+        settings.DefaultView.Should().Be("favoriete-thrillers");
+    }
+
+    [Fact]
     public async Task Save_preserves_last_library_path_while_updating_author_sort_strategy()
     {
         var store = new InMemoryAppSettingsStore();

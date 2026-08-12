@@ -406,7 +406,20 @@
   <data name="Close" xml:space="preserve"><value>Fermer</value></data>
   <data name="Columns" xml:space="preserve"><value>Colonnes</value></data>
   <data name="ColumnsTooltip" xml:space="preserve"><value>Choisissez les colonnes visibles pour cette vue</value></data>
+  <data name="CopyOfViewName" xml:space="preserve"><value>Copie de {0}</value></data>
+  <data name="CopyView" xml:space="preserve"><value>Copier la vue</value></data>
+  <data name="CopyViewPromptMessage" xml:space="preserve"><value>Nom pour une copie de "{0}" :</value></data>
+  <data name="CopyViewPromptTitle" xml:space="preserve"><value>Copier la vue</value></data>
+  <data name="CopyViewTooltip" xml:space="preserve"><value>Copier la vue sélectionnée vers une nouvelle vue personnalisée</value></data>
+  <data name="DeleteView" xml:space="preserve"><value>Supprimer la vue</value></data>
+  <data name="DeleteViewConfirmationMessage" xml:space="preserve"><value>Supprimer la vue personnalisée "{0}" ?</value></data>
+  <data name="DeleteViewConfirmationTitle" xml:space="preserve"><value>Supprimer la vue personnalisée</value></data>
+  <data name="DeleteViewTooltip" xml:space="preserve"><value>Supprimer la vue personnalisée sélectionnée</value></data>
   <data name="DragColumnTooltip" xml:space="preserve"><value>Faites glisser pour changer l'ordre des colonnes</value></data>
+  <data name="RenameView" xml:space="preserve"><value>Renommer la vue</value></data>
+  <data name="RenameViewPromptMessage" xml:space="preserve"><value>Renommer "{0}" en :</value></data>
+  <data name="RenameViewPromptTitle" xml:space="preserve"><value>Renommer la vue</value></data>
+  <data name="RenameViewTooltip" xml:space="preserve"><value>Renommer la vue personnalisée sélectionnée</value></data>
   <data name="ResetView" xml:space="preserve"><value>Réinitialiser la vue</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Réinitialiser la vue pour : {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Couverture</value></data>

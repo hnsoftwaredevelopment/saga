@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented as Milestone 11, extended in Milestone 13 and Milestone 14.
+Implemented as Milestone 11, extended in Milestone 13, Milestone 14, and Milestone 15.
 
 ## Context
 
@@ -119,3 +119,51 @@ Status: implemented.
 - Grouped headers and grouped book rows are generated from `ActiveColumnLayoutSnapshot`.
 - Column width changes from grouped headers continue to save to the selected view layout.
 - The older fixed grouped-row templates were replaced by a reusable dynamic row/header control.
+
+## Milestone 15
+
+Milestone 15 introduces the foundation for user-created views. The goal is to let users copy an existing built-in view into a named custom view before Saga later adds richer view management.
+
+### Slice 1: Custom View Definition Persistence
+
+Status: implemented.
+
+- Added `LibraryViewDefinitionSettings` as the storage shape for custom view definitions.
+- A custom view definition stores a stable id, user-visible name, base view, and layout key.
+- Custom view layout data continues to live in `LibraryViewLayoutSettings`, keyed by the custom view layout key.
+- Existing built-in view settings remain backward compatible.
+
+### Next Slices
+
+- Allow custom views based on Bookshelf if that becomes a deliberate user-facing choice.
+- Add a richer view-management screen when custom views outgrow the column settings tab.
+
+### Slice 2: View Definition Selection
+
+Status: implemented.
+
+- `LibraryViewModel` exposes built-in and custom view definitions through one selectable list.
+- A custom view keeps a base view for rendering and a separate layout key for layout persistence.
+- The main view switcher and Settings > Column settings can show custom views next to built-in views.
+- Built-in view names remain localized; custom view names are shown as user-entered names.
+- Custom view layout changes are saved under the custom layout key instead of overwriting the source built-in view.
+
+### Slice 3: Copy Current View
+
+Status: implemented.
+
+- Settings > Column settings can copy the selected Detailed or List view into a named custom view.
+- The new custom view is selected immediately after creation.
+- The copied view keeps its own layout key and starts with the source view's current grouping, sorting, visible column order, and column widths.
+- Built-in view definitions remain immutable; only custom view definitions are written to `LibraryViewDefinitionSettings`.
+- Bookshelf is not copied in this first version because it has a different covers-only layout model.
+
+### Slice 4: Lightweight Custom View Management
+
+Status: implemented.
+
+- Settings > Column settings can rename the selected custom view.
+- Settings > Column settings can delete the selected custom view.
+- Built-in views cannot be renamed or deleted.
+- Renaming keeps the custom view id and layout key stable.
+- Deleting a custom view removes its custom layout data and selects the underlying built-in base view.

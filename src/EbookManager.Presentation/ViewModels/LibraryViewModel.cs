@@ -1,5 +1,7 @@
-using System.Diagnostics;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
@@ -42,26 +44,27 @@ public sealed partial class LibraryViewModel : ObservableObject
     private Task pendingSortSettingsSave = Task.CompletedTask;
     private long groupingSettingsSaveVersion;
     private bool isApplyingViewSortOption;
+    private bool isApplyingViewDefinition;
     private bool hasAppliedDefaultView;
     private int selectionVersion;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
-    private readonly Dictionary<LibraryView, List<LibraryGroupOption>> viewGroupings =
-        Enum.GetValues<LibraryView>().ToDictionary(view => view, _ => new List<LibraryGroupOption>());
-    private readonly Dictionary<LibraryView, LibrarySortOption> viewSortOptions =
-        Enum.GetValues<LibraryView>().ToDictionary(view => view, _ => LibrarySortOption.None);
-    private readonly Dictionary<LibraryView, List<LibraryColumnOption>> viewColumns =
+    private readonly Dictionary<string, List<LibraryGroupOption>> viewGroupings =
+        BuiltInViewKeys().ToDictionary(key => key, _ => new List<LibraryGroupOption>(), StringComparer.Ordinal);
+    private readonly Dictionary<string, LibrarySortOption> viewSortOptions =
+        BuiltInViewKeys().ToDictionary(key => key, _ => LibrarySortOption.None, StringComparer.Ordinal);
+    private readonly Dictionary<string, List<LibraryColumnOption>> viewColumns =
         new()
         {
-            [LibraryView.Bookshelf] = [],
-            [LibraryView.Detailed] = DefaultDetailedColumns().ToList(),
-            [LibraryView.List] = DefaultListColumns().ToList()
+            [nameof(LibraryView.Bookshelf)] = [],
+            [nameof(LibraryView.Detailed)] = DefaultDetailedColumns().ToList(),
+            [nameof(LibraryView.List)] = DefaultListColumns().ToList()
         };
-    private readonly Dictionary<LibraryView, Dictionary<LibraryColumnOption, double>> viewColumnWidths =
+    private readonly Dictionary<string, Dictionary<LibraryColumnOption, double>> viewColumnWidths =
         new()
         {
-            [LibraryView.Bookshelf] = [],
-            [LibraryView.Detailed] = [],
-            [LibraryView.List] = []
+            [nameof(LibraryView.Bookshelf)] = [],
+            [nameof(LibraryView.Detailed)] = [],
+            [nameof(LibraryView.List)] = []
         };
 
     public LibraryViewModel(
@@ -123,6 +126,10 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<LibraryGroupOption> ActiveGroupOptions { get; } = [];
     public ObservableCollection<LibraryColumnOption> ActiveColumnOptions { get; } = [];
     public ObservableCollection<LibraryColumnChoiceViewModel> ColumnChoices { get; } = [];
+    public ObservableCollection<LibraryViewDefinitionViewModel> ViewDefinitions { get; } = [];
+    public LibraryViewDefinitionViewModel? SelectedViewDefinition =>
+        ViewDefinitions.FirstOrDefault(definition =>
+            definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase));
     public IReadOnlyList<LibraryGroupOption> AvailableGroupOptions { get; } =
     [
         LibraryGroupOption.Author,
@@ -140,16 +147,26 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool HasColumnChoices => ColumnChoices.Count > 0;
 
+    public bool CanManageSelectedViewDefinition =>
+        ViewDefinitions.FirstOrDefault(definition =>
+            definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase)) is { IsBuiltIn: false };
+
     public IReadOnlyList<LibraryColumnOption> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
 
     public LibraryColumnLayoutSnapshot ActiveColumnLayoutSnapshot =>
-        new(ActiveColumnOptions.ToArray(), GetColumnWidths(SelectedView));
+        new(ActiveColumnOptions.ToArray(), GetColumnWidths(SelectedLayoutKey));
 
     [ObservableProperty]
     private string searchText = string.Empty;
 
     [ObservableProperty]
     private LibraryView selectedView = LibraryView.Detailed;
+
+    [ObservableProperty]
+    private string selectedViewDefinitionId = nameof(LibraryView.Detailed);
+
+    [ObservableProperty]
+    private string activeViewLayoutKey = nameof(LibraryView.Detailed);
 
     [ObservableProperty]
     private LibrarySortOption selectedSortOption = LibrarySortOption.None;
@@ -266,6 +283,12 @@ public sealed partial class LibraryViewModel : ObservableObject
         moveColumnDownCommand ??= new AsyncRelayCommand<LibraryColumnChoiceViewModel>(MoveColumnDownAsync);
     public IAsyncRelayCommand ResetCurrentViewLayoutCommand =>
         resetCurrentViewLayoutCommand ??= new AsyncRelayCommand(ResetCurrentViewLayoutAsync);
+    public IAsyncRelayCommand CopyCurrentViewCommand =>
+        copyCurrentViewCommand ??= new AsyncRelayCommand(CopyCurrentViewAsync, CanCopyCurrentView);
+    public IAsyncRelayCommand RenameCurrentViewCommand =>
+        renameCurrentViewCommand ??= new AsyncRelayCommand(RenameCurrentViewAsync, CanManageCurrentView);
+    public IAsyncRelayCommand DeleteCurrentViewCommand =>
+        deleteCurrentViewCommand ??= new AsyncRelayCommand(DeleteCurrentViewAsync, CanManageCurrentView);
 
     private AsyncRelayCommand? refreshCommand;
     private AsyncRelayCommand? addBooksCommand;
@@ -292,6 +315,9 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand<LibraryColumnChoiceViewModel>? moveColumnUpCommand;
     private AsyncRelayCommand<LibraryColumnChoiceViewModel>? moveColumnDownCommand;
     private AsyncRelayCommand? resetCurrentViewLayoutCommand;
+    private AsyncRelayCommand? copyCurrentViewCommand;
+    private AsyncRelayCommand? renameCurrentViewCommand;
+    private AsyncRelayCommand? deleteCurrentViewCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -360,6 +386,51 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     partial void OnSelectedViewChanged(LibraryView value)
     {
+        if (isApplyingViewDefinition)
+        {
+            return;
+        }
+
+        ActiveViewLayoutKey = value.ToString();
+        SelectedViewDefinitionId = value.ToString();
+        NotifyViewDefinitionCommandStateChanged();
+        RefreshActiveGroupOptions(notifyActiveViewSources: false);
+        RefreshActiveColumnOptions();
+        if (ApplySelectedViewSortOption())
+        {
+            ApplyFilter();
+        }
+        else
+        {
+            RefreshGroupingOnly();
+        }
+    }
+
+    partial void OnSelectedViewDefinitionIdChanged(string value)
+    {
+        var definition = ViewDefinitions.FirstOrDefault(view => view.Id.Equals(value, StringComparison.OrdinalIgnoreCase));
+        if (definition is null)
+        {
+            return;
+        }
+
+        ActiveViewLayoutKey = definition.LayoutKey;
+        if (SelectedView != definition.BaseView)
+        {
+            isApplyingViewDefinition = true;
+            try
+            {
+                SelectedView = definition.BaseView;
+            }
+            finally
+            {
+                isApplyingViewDefinition = false;
+            }
+
+            ActiveViewLayoutKey = definition.LayoutKey;
+        }
+
+        NotifyViewDefinitionCommandStateChanged();
         RefreshActiveGroupOptions(notifyActiveViewSources: false);
         RefreshActiveColumnOptions();
         if (ApplySelectedViewSortOption())
@@ -379,7 +450,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        viewSortOptions[SelectedView] = value;
+        SetSortOption(SelectedLayoutKey, value);
         pendingSortSettingsSave = SaveSortSettingsBestEffortAsync(CancellationToken.None);
         ApplyFilter();
     }
@@ -624,7 +695,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             "active-groups",
             () =>
             {
-                viewGroupings[SelectedView] = NormalizeGroupOptions(options).ToList();
+                viewGroupings[SelectedLayoutKey] = NormalizeGroupOptions(options).ToList();
                 RefreshActiveGroupOptions(notifyActiveViewSources: false);
             });
         var visibleCount = RefreshGroupingOnly(performance);
@@ -647,7 +718,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             "active-groups",
             () =>
             {
-                viewGroupings[SelectedView].Add(SelectedGroupOptionToAdd);
+                GetGroupings(SelectedLayoutKey).Add(SelectedGroupOptionToAdd);
                 RefreshActiveGroupOptions(notifyActiveViewSources: false);
                 SelectNextAvailableGroupOption();
             });
@@ -673,7 +744,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             "active-groups",
             () =>
             {
-                viewGroupings[SelectedView] = viewGroupings[SelectedView]
+                viewGroupings[SelectedLayoutKey] = GetGroupings(SelectedLayoutKey)
                     .Where(existing => existing != option)
                     .ToList();
                 RefreshActiveGroupOptions(notifyActiveViewSources: false);
@@ -686,7 +757,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void RefreshActiveGroupOptions(bool notifyActiveViewSources = true)
     {
-        var desiredOptions = NormalizeGroupOptions(viewGroupings.GetValueOrDefault(SelectedView) ?? []);
+        var desiredOptions = NormalizeGroupOptions(GetGroupings(SelectedLayoutKey));
         for (var index = ActiveGroupOptions.Count - 1; index >= 0; index--)
         {
             if (!desiredOptions.Contains(ActiveGroupOptions[index]))
@@ -751,15 +822,21 @@ public sealed partial class LibraryViewModel : ObservableObject
     }
 
     public IReadOnlyList<LibraryColumnOption> GetVisibleColumns(LibraryView view) =>
-        viewColumns.TryGetValue(view, out var columns)
+        GetVisibleColumns(LayoutKeyOrViewKey(view), view);
+
+    private IReadOnlyList<LibraryColumnOption> GetVisibleColumns(string layoutKey, LibraryView baseView) =>
+        viewColumns.TryGetValue(layoutKey, out var columns)
             ? columns.ToArray()
-            : [];
+            : GetDefaultColumns(baseView);
 
     public bool IsColumnVisible(LibraryView view, LibraryColumnOption column) =>
-        viewColumns.TryGetValue(view, out var columns) && columns.Contains(column);
+        viewColumns.TryGetValue(LayoutKeyOrViewKey(view), out var columns) && columns.Contains(column);
 
     public double GetColumnWidth(LibraryView view, LibraryColumnOption column, double defaultWidth) =>
-        viewColumnWidths.TryGetValue(view, out var widths) &&
+        GetColumnWidth(LayoutKeyOrViewKey(view), column, defaultWidth);
+
+    private double GetColumnWidth(string layoutKey, LibraryColumnOption column, double defaultWidth) =>
+        viewColumnWidths.TryGetValue(layoutKey, out var widths) &&
         widths.TryGetValue(column, out var width) &&
         IsUsableColumnWidth(width)
             ? width
@@ -771,17 +848,23 @@ public sealed partial class LibraryViewModel : ObservableObject
         double width,
         CancellationToken cancellationToken = default)
     {
-        if (view == LibraryView.Bookshelf || !IsUsableColumnWidth(width))
+        await SetColumnWidthAsync(LayoutKeyOrViewKey(view), view, column, width, cancellationToken);
+    }
+
+    private async Task SetColumnWidthAsync(
+        string layoutKey,
+        LibraryView baseView,
+        LibraryColumnOption column,
+        double width,
+        CancellationToken cancellationToken = default)
+    {
+        if (baseView == LibraryView.Bookshelf || !IsUsableColumnWidth(width))
         {
             return;
         }
 
         var roundedWidth = Math.Round(width, 2);
-        if (!viewColumnWidths.TryGetValue(view, out var widths))
-        {
-            widths = [];
-            viewColumnWidths[view] = widths;
-        }
+        var widths = GetColumnWidthOptions(layoutKey);
 
         if (widths.TryGetValue(column, out var existingWidth) &&
             Math.Abs(existingWidth - roundedWidth) < 0.01)
@@ -805,8 +888,22 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        viewColumns[view] = NormalizeColumnOptions(view, columns).ToList();
-        if (view == SelectedView)
+        await SetVisibleColumnsAsync(LayoutKeyOrViewKey(view), view, columns, cancellationToken);
+    }
+
+    private async Task SetVisibleColumnsAsync(
+        string layoutKey,
+        LibraryView baseView,
+        IEnumerable<LibraryColumnOption> columns,
+        CancellationToken cancellationToken = default)
+    {
+        if (baseView == LibraryView.Bookshelf)
+        {
+            return;
+        }
+
+        viewColumns[layoutKey] = NormalizeColumnOptions(baseView, columns).ToList();
+        if (layoutKey == SelectedLayoutKey)
         {
             RefreshActiveColumnOptions();
             NotifyActiveViewSourcesChanged();
@@ -832,6 +929,69 @@ public sealed partial class LibraryViewModel : ObservableObject
     public bool HasPendingSortSettingsSave => !pendingSortSettingsSave.IsCompleted;
 
     public Task WaitForPendingSortSettingsSaveAsync() => pendingSortSettingsSave;
+
+    private string SelectedLayoutKey => string.IsNullOrWhiteSpace(ActiveViewLayoutKey)
+        ? SelectedView.ToString()
+        : ActiveViewLayoutKey;
+
+    private static IReadOnlyList<string> BuiltInViewKeys() =>
+    [
+        nameof(LibraryView.Bookshelf),
+        nameof(LibraryView.Detailed),
+        nameof(LibraryView.List)
+    ];
+
+    private static string ViewKey(LibraryView view) => view.ToString();
+
+    private string LayoutKeyOrViewKey(LibraryView view)
+    {
+        var selectedDefinition = ViewDefinitions.FirstOrDefault(definition =>
+            definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase));
+        return selectedDefinition is not null && selectedDefinition.BaseView == view
+            ? selectedDefinition.LayoutKey
+            : ViewKey(view);
+    }
+
+    private List<LibraryGroupOption> GetGroupings(string layoutKey)
+    {
+        if (!viewGroupings.TryGetValue(layoutKey, out var groupings))
+        {
+            groupings = [];
+            viewGroupings[layoutKey] = groupings;
+        }
+
+        return groupings;
+    }
+
+    private LibrarySortOption GetSortOption(string layoutKey) =>
+        viewSortOptions.TryGetValue(layoutKey, out var sortOption)
+            ? sortOption
+            : LibrarySortOption.None;
+
+    private void SetSortOption(string layoutKey, LibrarySortOption sortOption) =>
+        viewSortOptions[layoutKey] = sortOption;
+
+    private List<LibraryColumnOption> GetColumnOptions(string layoutKey, LibraryView baseView)
+    {
+        if (!viewColumns.TryGetValue(layoutKey, out var columns))
+        {
+            columns = GetDefaultColumns(baseView).ToList();
+            viewColumns[layoutKey] = columns;
+        }
+
+        return columns;
+    }
+
+    private Dictionary<LibraryColumnOption, double> GetColumnWidthOptions(string layoutKey)
+    {
+        if (!viewColumnWidths.TryGetValue(layoutKey, out var widths))
+        {
+            widths = [];
+            viewColumnWidths[layoutKey] = widths;
+        }
+
+        return widths;
+    }
 
     private void QueueGroupingSettingsSave()
     {
@@ -878,92 +1038,119 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private LibraryGroupingSettings CreateGroupingSettings() =>
         new(
-            ToSettingValues(viewGroupings[LibraryView.Bookshelf]),
-            ToSettingValues(viewGroupings[LibraryView.Detailed]),
-            ToSettingValues(viewGroupings[LibraryView.List]));
+            ToSettingValues(GetGroupings(nameof(LibraryView.Bookshelf))),
+            ToSettingValues(GetGroupings(nameof(LibraryView.Detailed))),
+            ToSettingValues(GetGroupings(nameof(LibraryView.List))));
 
     private void LoadGroupingSettings(LibraryGroupingSettings? settings)
     {
-        viewGroupings[LibraryView.Bookshelf] = ParseGroupOptions(settings?.Bookshelf).ToList();
-        viewGroupings[LibraryView.Detailed] = ParseGroupOptions(settings?.Detailed).ToList();
-        viewGroupings[LibraryView.List] = ParseGroupOptions(settings?.List).ToList();
+        viewGroupings[nameof(LibraryView.Bookshelf)] = ParseGroupOptions(settings?.Bookshelf).ToList();
+        viewGroupings[nameof(LibraryView.Detailed)] = ParseGroupOptions(settings?.Detailed).ToList();
+        viewGroupings[nameof(LibraryView.List)] = ParseGroupOptions(settings?.List).ToList();
         RefreshActiveGroupOptions();
     }
 
     private LibrarySortSettings CreateSortSettings() =>
         new(
-            viewSortOptions[LibraryView.Bookshelf].ToString(),
-            viewSortOptions[LibraryView.Detailed].ToString(),
-            viewSortOptions[LibraryView.List].ToString());
+            GetSortOption(nameof(LibraryView.Bookshelf)).ToString(),
+            GetSortOption(nameof(LibraryView.Detailed)).ToString(),
+            GetSortOption(nameof(LibraryView.List)).ToString());
 
     private void LoadSortSettings(LibrarySortSettings? settings)
     {
-        viewSortOptions[LibraryView.Bookshelf] = ParseSortOption(settings?.Bookshelf);
-        viewSortOptions[LibraryView.Detailed] = ParseSortOption(settings?.Detailed);
-        viewSortOptions[LibraryView.List] = ParseSortOption(settings?.List);
+        viewSortOptions[nameof(LibraryView.Bookshelf)] = ParseSortOption(settings?.Bookshelf);
+        viewSortOptions[nameof(LibraryView.Detailed)] = ParseSortOption(settings?.Detailed);
+        viewSortOptions[nameof(LibraryView.List)] = ParseSortOption(settings?.List);
         ApplySelectedViewSortOption();
     }
 
     private LibraryColumnSettings CreateColumnSettings() =>
         new(
-            ToColumnSettingValues(viewColumns[LibraryView.Detailed]),
-            ToColumnSettingValues(viewColumns[LibraryView.List]));
+            ToColumnSettingValues(GetColumnOptions(nameof(LibraryView.Detailed), LibraryView.Detailed)),
+            ToColumnSettingValues(GetColumnOptions(nameof(LibraryView.List), LibraryView.List)));
 
     private void LoadColumnSettings(LibraryColumnSettings? settings)
     {
-        viewColumns[LibraryView.Bookshelf] = [];
-        viewColumns[LibraryView.Detailed] = ParseColumnOptions(LibraryView.Detailed, settings?.Detailed).ToList();
-        viewColumns[LibraryView.List] = ParseColumnOptions(LibraryView.List, settings?.List).ToList();
+        viewColumns[nameof(LibraryView.Bookshelf)] = [];
+        viewColumns[nameof(LibraryView.Detailed)] = ParseColumnOptions(LibraryView.Detailed, settings?.Detailed).ToList();
+        viewColumns[nameof(LibraryView.List)] = ParseColumnOptions(LibraryView.List, settings?.List).ToList();
         RefreshActiveColumnOptions();
     }
 
     private LibraryColumnWidthSettings CreateColumnWidthSettings(
         IReadOnlyDictionary<string, double>? duplicateCandidates = null) =>
         new(
-            ToColumnWidthSettingValues(viewColumnWidths[LibraryView.Detailed]),
-            ToColumnWidthSettingValues(viewColumnWidths[LibraryView.List]),
+            ToColumnWidthSettingValues(GetColumnWidthOptions(nameof(LibraryView.Detailed))),
+            ToColumnWidthSettingValues(GetColumnWidthOptions(nameof(LibraryView.List))),
             duplicateCandidates);
 
     private void LoadColumnWidthSettings(LibraryColumnWidthSettings? settings)
     {
-        viewColumnWidths[LibraryView.Bookshelf] = [];
-        viewColumnWidths[LibraryView.Detailed] = ParseColumnWidths(settings?.Detailed);
-        viewColumnWidths[LibraryView.List] = ParseColumnWidths(settings?.List);
+        viewColumnWidths[nameof(LibraryView.Bookshelf)] = [];
+        viewColumnWidths[nameof(LibraryView.Detailed)] = ParseColumnWidths(settings?.Detailed);
+        viewColumnWidths[nameof(LibraryView.List)] = ParseColumnWidths(settings?.List);
         OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
     }
 
-    private LibraryViewLayoutSettings CreateViewLayoutSettings() =>
-        new(new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+    private LibraryViewLayoutSettings CreateViewLayoutSettings()
+    {
+        var layouts = new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal);
+        foreach (var definition in ViewDefinitions)
         {
-            [nameof(LibraryView.Bookshelf)] = new(
-                Groupings: ToSettingValues(viewGroupings[LibraryView.Bookshelf]),
-                Sort: viewSortOptions[LibraryView.Bookshelf].ToString()),
-            [nameof(LibraryView.Detailed)] = new(
-                Groupings: ToSettingValues(viewGroupings[LibraryView.Detailed]),
-                Columns: ToColumnSettingValues(viewColumns[LibraryView.Detailed]),
-                ColumnWidths: ToColumnWidthSettingValues(viewColumnWidths[LibraryView.Detailed]),
-                Sort: viewSortOptions[LibraryView.Detailed].ToString()),
-            [nameof(LibraryView.List)] = new(
-                Groupings: ToSettingValues(viewGroupings[LibraryView.List]),
-                Columns: ToColumnSettingValues(viewColumns[LibraryView.List]),
-                ColumnWidths: ToColumnWidthSettingValues(viewColumnWidths[LibraryView.List]),
-                Sort: viewSortOptions[LibraryView.List].ToString())
-        });
+            layouts[definition.LayoutKey] = CreateViewLayoutSetting(definition.LayoutKey, definition.BaseView);
+        }
+
+        foreach (var key in BuiltInViewKeys())
+        {
+            if (!layouts.ContainsKey(key) &&
+                Enum.TryParse<LibraryView>(key, out var baseView))
+            {
+                layouts[key] = CreateViewLayoutSetting(key, baseView);
+            }
+        }
+
+        return new(layouts);
+    }
+
+    private LibraryViewLayoutSetting CreateViewLayoutSetting(string layoutKey, LibraryView baseView) =>
+        baseView == LibraryView.Bookshelf
+            ? new(
+                Groupings: ToSettingValues(GetGroupings(layoutKey)),
+                Sort: GetSortOption(layoutKey).ToString())
+            : new(
+                Groupings: ToSettingValues(GetGroupings(layoutKey)),
+                Columns: ToColumnSettingValues(GetColumnOptions(layoutKey, baseView)),
+                ColumnWidths: ToColumnWidthSettingValues(GetColumnWidthOptions(layoutKey)),
+                Sort: GetSortOption(layoutKey).ToString());
+
+    private LibraryViewDefinitionSettings CreateViewDefinitionSettings() =>
+        new(
+            ViewDefinitions
+                .Where(definition => !definition.IsBuiltIn)
+                .Select(definition => new LibraryViewDefinitionSetting(
+                    definition.Id,
+                    definition.Name,
+                    definition.BaseView.ToString(),
+                    definition.LayoutKey))
+                .ToArray());
 
     private void LoadViewLayoutSettings(AppSettings settings)
     {
+        RefreshViewDefinitions(settings.LibraryViewDefinitions);
+
         if (settings.LibraryViewLayouts?.Views?.Count > 0)
         {
             var layouts = settings.LibraryViewLayouts.Views;
-            foreach (var view in Enum.GetValues<LibraryView>())
+            foreach (var definition in ViewDefinitions)
             {
-                var layout = GetViewLayout(layouts, view);
-                viewGroupings[view] = ParseGroupOptions(layout?.Groupings).ToList();
-                viewSortOptions[view] = ParseSortOption(layout?.Sort);
-                viewColumns[view] = view == LibraryView.Bookshelf
+                var layout = GetViewLayout(layouts, definition.LayoutKey) ??
+                    GetViewLayout(layouts, definition.BaseView.ToString());
+                viewGroupings[definition.LayoutKey] = ParseGroupOptions(layout?.Groupings).ToList();
+                viewSortOptions[definition.LayoutKey] = ParseSortOption(layout?.Sort);
+                viewColumns[definition.LayoutKey] = definition.BaseView == LibraryView.Bookshelf
                     ? []
-                    : ParseColumnOptions(view, layout?.Columns).ToList();
-                viewColumnWidths[view] = view == LibraryView.Bookshelf
+                    : ParseColumnOptions(definition.BaseView, layout?.Columns).ToList();
+                viewColumnWidths[definition.LayoutKey] = definition.BaseView == LibraryView.Bookshelf
                     ? []
                     : ParseColumnWidths(layout?.ColumnWidths);
             }
@@ -981,23 +1168,75 @@ public sealed partial class LibraryViewModel : ObservableObject
         LoadSortSettings(settings.LibrarySorts);
     }
 
+    private void RefreshViewDefinitions(LibraryViewDefinitionSettings? settings)
+    {
+        ViewDefinitions.Clear();
+        ViewDefinitions.Add(new(
+            nameof(LibraryView.Bookshelf),
+            nameof(LibraryView.Bookshelf),
+            LibraryView.Bookshelf,
+            nameof(LibraryView.Bookshelf),
+            true));
+        ViewDefinitions.Add(new(
+            nameof(LibraryView.Detailed),
+            nameof(LibraryView.Detailed),
+            LibraryView.Detailed,
+            nameof(LibraryView.Detailed),
+            true));
+        ViewDefinitions.Add(new(
+            nameof(LibraryView.List),
+            nameof(LibraryView.List),
+            LibraryView.List,
+            nameof(LibraryView.List),
+            true));
+
+        if (settings?.CustomViews is null)
+        {
+            return;
+        }
+
+        foreach (var customView in settings.CustomViews)
+        {
+            if (string.IsNullOrWhiteSpace(customView.Id) ||
+                string.IsNullOrWhiteSpace(customView.Name) ||
+                string.IsNullOrWhiteSpace(customView.LayoutKey) ||
+                !Enum.TryParse<LibraryView>(customView.BaseView, ignoreCase: true, out var baseView) ||
+                !Enum.IsDefined(baseView))
+            {
+                continue;
+            }
+
+            if (ViewDefinitions.Any(view => view.Id.Equals(customView.Id, StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+
+            ViewDefinitions.Add(new(
+                customView.Id.Trim(),
+                customView.Name.Trim(),
+                baseView,
+                customView.LayoutKey.Trim(),
+                false));
+        }
+    }
+
     private static LibraryViewLayoutSetting? GetViewLayout(
         IReadOnlyDictionary<string, LibraryViewLayoutSetting> layouts,
-        LibraryView view)
+        string layoutKey)
     {
-        if (layouts.TryGetValue(view.ToString(), out var exactLayout))
+        if (layouts.TryGetValue(layoutKey, out var exactLayout))
         {
             return exactLayout;
         }
 
-        return layouts.TryGetValue(view.ToString().ToLowerInvariant(), out var lowerLayout)
+        return layouts.TryGetValue(layoutKey.ToLowerInvariant(), out var lowerLayout)
             ? lowerLayout
             : null;
     }
 
     private void RefreshActiveColumnOptions()
     {
-        var desiredOptions = GetVisibleColumns(SelectedView);
+        var desiredOptions = GetVisibleColumns(SelectedLayoutKey, SelectedView);
         for (var index = ActiveColumnOptions.Count - 1; index >= 0; index--)
         {
             if (!desiredOptions.Contains(ActiveColumnOptions[index]))
@@ -1026,14 +1265,17 @@ public sealed partial class LibraryViewModel : ObservableObject
     }
 
     private IReadOnlyDictionary<LibraryColumnOption, double> GetColumnWidths(LibraryView view) =>
-        viewColumnWidths.TryGetValue(view, out var widths)
+        GetColumnWidths(ViewKey(view));
+
+    private IReadOnlyDictionary<LibraryColumnOption, double> GetColumnWidths(string layoutKey) =>
+        viewColumnWidths.TryGetValue(layoutKey, out var widths)
             ? new Dictionary<LibraryColumnOption, double>(widths)
             : new Dictionary<LibraryColumnOption, double>();
 
     private void RefreshColumnChoices()
     {
         var availableOptions = GetDefaultColumns(SelectedView);
-        var visibleColumns = GetVisibleColumns(SelectedView);
+        var visibleColumns = GetVisibleColumns(SelectedLayoutKey, SelectedView);
         var visibleOptions = visibleColumns.ToHashSet();
         var orderedOptions = visibleColumns
             .Concat(availableOptions.Where(option => !visibleOptions.Contains(option)))
@@ -1076,7 +1318,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        var columns = GetVisibleColumns(SelectedView).ToList();
+        var columns = GetVisibleColumns(SelectedLayoutKey, SelectedView).ToList();
         if (choice.IsSelected)
         {
             if (!columns.Contains(choice.Option))
@@ -1095,7 +1337,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
+        await SetVisibleColumnsAsync(SelectedLayoutKey, SelectedView, columns, cancellationToken);
     }
 
     private Task MoveColumnUpAsync(LibraryColumnChoiceViewModel? choice, CancellationToken cancellationToken) =>
@@ -1153,7 +1395,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         var columns = orderedOptions
             .Where(selectedOptions.Contains)
             .ToList();
-        await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
+        await SetVisibleColumnsAsync(SelectedLayoutKey, SelectedView, columns, cancellationToken);
     }
 
     private async Task MoveColumnAsync(
@@ -1166,7 +1408,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        var columns = GetVisibleColumns(SelectedView).ToList();
+        var columns = GetVisibleColumns(SelectedLayoutKey, SelectedView).ToList();
         var currentIndex = columns.IndexOf(choice.Option);
         var newIndex = currentIndex + direction;
         if (currentIndex < 0 || newIndex < 0 || newIndex >= columns.Count)
@@ -1175,18 +1417,18 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         (columns[currentIndex], columns[newIndex]) = (columns[newIndex], columns[currentIndex]);
-        await SetVisibleColumnsAsync(SelectedView, columns, cancellationToken);
+        await SetVisibleColumnsAsync(SelectedLayoutKey, SelectedView, columns, cancellationToken);
     }
 
     private async Task ResetCurrentViewLayoutAsync(CancellationToken cancellationToken)
     {
         Interlocked.Increment(ref groupingSettingsSaveVersion);
-        viewGroupings[SelectedView] = [];
-        viewSortOptions[SelectedView] = LibrarySortOption.None;
+        viewGroupings[SelectedLayoutKey] = [];
+        viewSortOptions[SelectedLayoutKey] = LibrarySortOption.None;
         if (SelectedView != LibraryView.Bookshelf)
         {
-            viewColumns[SelectedView] = GetDefaultColumns(SelectedView).ToList();
-            viewColumnWidths[SelectedView] = [];
+            viewColumns[SelectedLayoutKey] = GetDefaultColumns(SelectedView).ToList();
+            viewColumnWidths[SelectedLayoutKey] = [];
         }
 
         RefreshActiveGroupOptions(notifyActiveViewSources: false);
@@ -1194,6 +1436,144 @@ public sealed partial class LibraryViewModel : ObservableObject
         ApplySelectedViewSortOption();
         ApplyFilter();
         await SaveViewCustomizationSettingsAsync(cancellationToken);
+    }
+
+    private bool CanCopyCurrentView() => SelectedView is LibraryView.Detailed or LibraryView.List;
+
+    private bool CanManageCurrentView() =>
+        ViewDefinitions.Any(definition =>
+            definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase) &&
+            !definition.IsBuiltIn);
+
+    private void NotifyViewDefinitionCommandStateChanged()
+    {
+        OnPropertyChanged(nameof(SelectedViewDefinition));
+        OnPropertyChanged(nameof(CanManageSelectedViewDefinition));
+        copyCurrentViewCommand?.NotifyCanExecuteChanged();
+        renameCurrentViewCommand?.NotifyCanExecuteChanged();
+        deleteCurrentViewCommand?.NotifyCanExecuteChanged();
+    }
+
+    private async Task CopyCurrentViewAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null || !CanCopyCurrentView())
+        {
+            return;
+        }
+
+        var currentDefinition = ViewDefinitions.FirstOrDefault(definition =>
+                definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase)) ??
+            ViewDefinitions.FirstOrDefault(definition =>
+                definition.Id.Equals(SelectedView.ToString(), StringComparison.OrdinalIgnoreCase));
+        var currentName = currentDefinition?.Name ?? SelectedView.ToString();
+        var defaultName = string.Format(
+            CultureInfo.CurrentCulture,
+            localize("CopyOfViewName"),
+            currentName);
+        var name = await userInteraction.PromptTextAsync(
+                localize("CopyViewPromptTitle"),
+                string.Format(CultureInfo.CurrentCulture, localize("CopyViewPromptMessage"), currentName),
+                defaultName,
+                cancellationToken);
+        name = name?.Trim();
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return;
+        }
+
+        var id = CreateUniqueCustomViewId(name);
+        var layoutKey = $"custom:{id}";
+        var definition = new LibraryViewDefinitionViewModel(
+            id,
+            name,
+            SelectedView,
+            layoutKey,
+            IsBuiltIn: false);
+
+        viewGroupings[layoutKey] = GetGroupings(SelectedLayoutKey).ToList();
+        viewSortOptions[layoutKey] = GetSortOption(SelectedLayoutKey);
+        viewColumns[layoutKey] = GetColumnOptions(SelectedLayoutKey, SelectedView).ToList();
+        viewColumnWidths[layoutKey] = new Dictionary<LibraryColumnOption, double>(
+            GetColumnWidthOptions(SelectedLayoutKey));
+
+        ViewDefinitions.Add(definition);
+        await SaveViewDefinitionSettingsAsync(cancellationToken);
+        SelectedViewDefinitionId = definition.Id;
+    }
+
+    private async Task RenameCurrentViewAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        var index = IndexOfSelectedCustomView();
+        if (index < 0)
+        {
+            return;
+        }
+
+        var currentDefinition = ViewDefinitions[index];
+        var name = await userInteraction.PromptTextAsync(
+            localize("RenameViewPromptTitle"),
+            string.Format(CultureInfo.CurrentCulture, localize("RenameViewPromptMessage"), currentDefinition.Name),
+            currentDefinition.Name,
+            cancellationToken);
+        name = name?.Trim();
+        if (string.IsNullOrWhiteSpace(name) ||
+            string.Equals(name, currentDefinition.Name, StringComparison.CurrentCulture))
+        {
+            return;
+        }
+
+        ViewDefinitions[index] = currentDefinition with { Name = name };
+        await SaveViewDefinitionSettingsAsync(cancellationToken);
+        SelectedViewDefinitionId = currentDefinition.Id;
+    }
+
+    private async Task DeleteCurrentViewAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        var index = IndexOfSelectedCustomView();
+        if (index < 0)
+        {
+            return;
+        }
+
+        var definition = ViewDefinitions[index];
+        if (!await userInteraction.ConfirmDeleteViewAsync(definition.Name, cancellationToken))
+        {
+            return;
+        }
+
+        ViewDefinitions.RemoveAt(index);
+        viewGroupings.Remove(definition.LayoutKey);
+        viewSortOptions.Remove(definition.LayoutKey);
+        viewColumns.Remove(definition.LayoutKey);
+        viewColumnWidths.Remove(definition.LayoutKey);
+
+        SelectedViewDefinitionId = definition.BaseView.ToString();
+        await SaveViewDefinitionSettingsAsync(cancellationToken);
+    }
+
+    private int IndexOfSelectedCustomView()
+    {
+        for (var index = 0; index < ViewDefinitions.Count; index++)
+        {
+            var definition = ViewDefinitions[index];
+            if (definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase) &&
+                !definition.IsBuiltIn)
+            {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     private async Task SaveColumnSettingsAsync(CancellationToken cancellationToken)
@@ -1320,6 +1700,75 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
+    private async Task SaveViewDefinitionSettingsAsync(CancellationToken cancellationToken)
+    {
+        if (settingsStore is null)
+        {
+            return;
+        }
+
+        Interlocked.Increment(ref groupingSettingsSaveVersion);
+        await settingsSaveLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var settings = await settingsStore.LoadAsync(cancellationToken).ConfigureAwait(false);
+            await settingsStore.SaveAsync(
+                    settings with
+                    {
+                        LibraryViewDefinitions = CreateViewDefinitionSettings(),
+                        LibraryViewLayouts = CreateViewLayoutSettings()
+                    },
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            settingsSaveLock.Release();
+        }
+    }
+
+    private string CreateUniqueCustomViewId(string name)
+    {
+        var baseId = CreateCustomViewId(name);
+        var id = baseId;
+        var suffix = 2;
+        var existingIds = ViewDefinitions.Select(definition => definition.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        while (existingIds.Contains(id))
+        {
+            id = $"{baseId}-{suffix}";
+            suffix++;
+        }
+
+        return id;
+    }
+
+    private static string CreateCustomViewId(string name)
+    {
+        var builder = new StringBuilder();
+        foreach (var character in name.Trim().ToLowerInvariant().Normalize(NormalizationForm.FormD))
+        {
+            var category = CharUnicodeInfo.GetUnicodeCategory(character);
+            if (category == UnicodeCategory.NonSpacingMark)
+            {
+                continue;
+            }
+
+            if (char.IsLetterOrDigit(character))
+            {
+                builder.Append(character);
+                continue;
+            }
+
+            if (builder.Length > 0 && builder[^1] != '-')
+            {
+                builder.Append('-');
+            }
+        }
+
+        var id = builder.ToString().Trim('-');
+        return id.Length == 0 ? "view" : id;
+    }
+
     private static IReadOnlyList<string> ToSettingValues(IEnumerable<LibraryGroupOption> options) =>
         NormalizeGroupOptions(options)
             .Select(option => option.ToString())
@@ -1358,7 +1807,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private bool ApplySelectedViewSortOption()
     {
-        var sortOption = viewSortOptions.GetValueOrDefault(SelectedView, LibrarySortOption.None);
+        var sortOption = GetSortOption(SelectedLayoutKey);
         if (SelectedSortOption == sortOption)
         {
             return false;
@@ -1766,8 +2215,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var newValue = await userInteraction.PromptTextAsync(
-            "Rename metadata value",
-            $"Rename '{filter.Name}' to:",
+            localize("FilterRenameTitle"),
+            string.Format(CultureInfo.CurrentCulture, localize("FilterRenameMessage"), filter.Name),
             filter.Name,
             CancellationToken.None);
         if (string.IsNullOrWhiteSpace(newValue) ||
@@ -2185,6 +2634,17 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool ApplyDefaultViewPreference(string? defaultView)
     {
+        if (!string.IsNullOrWhiteSpace(defaultView))
+        {
+            var definition = ViewDefinitions.FirstOrDefault(
+                view => view.Id.Equals(defaultView.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (definition is not null)
+            {
+                SelectedViewDefinitionId = definition.Id;
+                return true;
+            }
+        }
+
         if (!Enum.TryParse<LibraryView>(defaultView, ignoreCase: true, out var parsedView) ||
             !Enum.IsDefined(parsedView))
         {

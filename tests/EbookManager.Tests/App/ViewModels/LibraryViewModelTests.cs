@@ -98,6 +98,287 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task First_refresh_exposes_builtin_and_custom_view_definitions()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ])
+            },
+            default);
+        var viewModel = CreateViewModel([], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.ViewDefinitions.Select(view => view.Id)
+            .Should()
+            .Equal("Bookshelf", "Detailed", "List", "thrillers");
+        viewModel.ViewDefinitions.Single(view => view.Id == "thrillers").Name.Should().Be("Thrillers");
+        viewModel.ViewDefinitions.Single(view => view.Id == "thrillers").BaseView.Should().Be(LibraryView.Detailed);
+        viewModel.ViewDefinitions.Single(view => view.Id == "thrillers").LayoutKey.Should().Be("custom:thrillers");
+    }
+
+    [Fact]
+    public async Task Default_view_can_select_custom_view_definition()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ])
+            },
+            default);
+        var viewModel = CreateViewModel([], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedViewDefinitionId.Should().Be("thrillers");
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.ActiveViewLayoutKey.Should().Be("custom:thrillers");
+    }
+
+    [Fact]
+    public async Task Custom_view_layout_changes_are_saved_separately_from_builtin_layout()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ]),
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        ["Detailed"] = new(
+                            Columns: ["Title", "Authors"],
+                            Sort: "Title"),
+                        ["custom:thrillers"] = new(
+                            Columns: ["Title", "Series"],
+                            Sort: "Series")
+                    })
+            },
+            default);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"], series: "Series")], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedViewDefinitionId.Should().Be("thrillers");
+        viewModel.ActiveColumnOptions.Should().Equal(LibraryColumnOption.Title, LibraryColumnOption.Series);
+
+        var formatChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Format);
+        formatChoice.IsSelected = true;
+        await viewModel.ToggleColumnCommand.ExecuteAsync(formatChoice);
+        var seriesChoice = viewModel.ColumnChoices.Single(choice => choice.Option == LibraryColumnOption.Series);
+        seriesChoice.IsSelected = false;
+        await viewModel.ToggleColumnCommand.ExecuteAsync(seriesChoice);
+
+        settingsStore.Settings.LibraryViewLayouts!.Views!["custom:thrillers"].Columns
+            .Should()
+            .Equal("Title", "Format");
+        settingsStore.Settings.LibraryViewLayouts.Views["Detailed"].Columns
+            .Should()
+            .Equal("Title", "Authors");
+
+        await viewModel.SetVisibleColumnsAsync(
+            LibraryView.Detailed,
+            [LibraryColumnOption.Title, LibraryColumnOption.Authors, LibraryColumnOption.Format]);
+
+        settingsStore.Settings.LibraryViewLayouts.Views["custom:thrillers"].Columns
+            .Should()
+            .Equal("Title", "Authors", "Format");
+        settingsStore.Settings.LibraryViewLayouts.Views["Detailed"].Columns
+            .Should()
+            .Equal("Title", "Authors");
+    }
+
+    [Fact]
+    public async Task Copy_current_view_creates_selected_custom_view_with_copied_layout()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "Mijn thrillers" };
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        ["Detailed"] = new(
+                            Groupings: ["Author"],
+                            Columns: ["Title", "Authors", "Series"],
+                            ColumnWidths: new Dictionary<string, double>
+                            {
+                                ["Title"] = 330
+                            })
+                    })
+            },
+            default);
+        var viewModel = CreateViewModel(
+            [CreateBook("Book", ["Author"], series: "Series")],
+            interaction,
+            settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        viewModel.SelectedSortOption = LibrarySortOption.Author;
+        await viewModel.WaitForPendingSortSettingsSaveAsync();
+        await viewModel.CopyCurrentViewCommand.ExecuteAsync(null);
+
+        viewModel.SelectedViewDefinitionId.Should().Be("mijn-thrillers");
+        viewModel.ActiveViewLayoutKey.Should().Be("custom:mijn-thrillers");
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.ViewDefinitions.Should().Contain(view =>
+            view.Id == "mijn-thrillers" &&
+            view.Name == "Mijn thrillers" &&
+            view.BaseView == LibraryView.Detailed &&
+            view.LayoutKey == "custom:mijn-thrillers");
+        settingsStore.Settings.LibraryViewDefinitions!.CustomViews.Should().ContainSingle(view =>
+            view.Id == "mijn-thrillers" &&
+            view.Name == "Mijn thrillers" &&
+            view.BaseView == "Detailed" &&
+            view.LayoutKey == "custom:mijn-thrillers");
+        settingsStore.Settings.LibraryViewLayouts!.Views!["custom:mijn-thrillers"].Columns
+            .Should()
+            .Equal("Title", "Authors", "Series");
+        settingsStore.Settings.LibraryViewLayouts.Views["custom:mijn-thrillers"].Sort.Should().Be("Author");
+        settingsStore.Settings.LibraryViewLayouts.Views["custom:mijn-thrillers"].Groupings.Should().Equal("Author");
+        settingsStore.Settings.LibraryViewLayouts.Views["custom:mijn-thrillers"].ColumnWidths.Should().Contain("Title", 330);
+    }
+
+    [Fact]
+    public async Task Rename_current_custom_view_updates_name_without_changing_layout_key()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "Favoriete thrillers" };
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ]),
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        ["custom:thrillers"] = new(
+                            Groupings: ["Author"],
+                            Columns: ["Title", "Authors"],
+                            Sort: "Author")
+                    })
+            },
+            default);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], interaction, settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.RenameCurrentViewCommand.ExecuteAsync(null);
+
+        viewModel.SelectedViewDefinitionId.Should().Be("thrillers");
+        viewModel.ViewDefinitions.Single(view => view.Id == "thrillers").Name.Should().Be("Favoriete thrillers");
+        settingsStore.Settings.LibraryViewDefinitions!.CustomViews.Should().ContainSingle(view =>
+            view.Id == "thrillers" &&
+            view.Name == "Favoriete thrillers" &&
+            view.LayoutKey == "custom:thrillers");
+        settingsStore.Settings.LibraryViewLayouts!.Views.Should().ContainKey("custom:thrillers");
+    }
+
+    [Fact]
+    public async Task Selected_view_definition_exposes_custom_view_name_for_view_settings()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Favoriete thrillers", "Detailed", "custom:thrillers")
+                ])
+            },
+            default);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+
+        viewModel.SelectedViewDefinition.Should().NotBeNull();
+        viewModel.SelectedViewDefinition!.Name.Should().Be("Favoriete thrillers");
+        viewModel.SelectedViewDefinition.IsBuiltIn.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Delete_current_custom_view_removes_definition_and_selects_base_view()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ]),
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        ["Detailed"] = new(Columns: ["Title", "Authors"]),
+                        ["custom:thrillers"] = new(Columns: ["Title"])
+                    })
+            },
+            default);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.DeleteCurrentViewCommand.ExecuteAsync(null);
+
+        viewModel.SelectedViewDefinitionId.Should().Be("Detailed");
+        viewModel.ActiveViewLayoutKey.Should().Be("Detailed");
+        viewModel.SelectedView.Should().Be(LibraryView.Detailed);
+        viewModel.ViewDefinitions.Should().NotContain(view => view.Id == "thrillers");
+        settingsStore.Settings.LibraryViewDefinitions!.CustomViews.Should().BeEmpty();
+        settingsStore.Settings.LibraryViewLayouts!.Views.Should().NotContainKey("custom:thrillers");
+    }
+
+    [Fact]
+    public async Task Delete_current_custom_view_keeps_definition_when_confirmation_is_declined()
+    {
+        var settingsStore = new InMemoryAppSettingsStore();
+        var interaction = new ScriptedUserInteractionService { ConfirmDeleteViewResult = false };
+        await settingsStore.SaveAsync(
+            settingsStore.Settings with
+            {
+                DefaultView = "thrillers",
+                LibraryViewDefinitions = new LibraryViewDefinitionSettings(
+                [
+                    new("thrillers", "Thrillers", "Detailed", "custom:thrillers")
+                ]),
+                LibraryViewLayouts = new LibraryViewLayoutSettings(
+                    new Dictionary<string, LibraryViewLayoutSetting>(StringComparer.Ordinal)
+                    {
+                        ["custom:thrillers"] = new(Columns: ["Title"])
+                    })
+            },
+            default);
+        var viewModel = CreateViewModel([CreateBook("Book", ["Author"])], interaction, settingsStore: settingsStore);
+
+        await viewModel.RefreshAsync();
+        await viewModel.DeleteCurrentViewCommand.ExecuteAsync(null);
+
+        viewModel.SelectedViewDefinitionId.Should().Be("thrillers");
+        viewModel.ViewDefinitions.Should().Contain(view => view.Id == "thrillers");
+        settingsStore.Settings.LibraryViewDefinitions!.CustomViews.Should().ContainSingle(view => view.Id == "thrillers");
+        settingsStore.Settings.LibraryViewLayouts!.Views.Should().ContainKey("custom:thrillers");
+    }
+
+    [Fact]
     public async Task SearchText_is_exposed_on_visible_rows_for_highlighting()
     {
         var book = CreateBook("The Hobbit", ["Tolkien"]);
@@ -2389,6 +2670,7 @@ public sealed class LibraryViewModelTests
         public string? LibraryDirectory { get; init; }
         public string? ScanFolder { get; init; }
         public string? PromptTextResult { get; init; }
+        public bool ConfirmDeleteViewResult { get; init; } = true;
         public bool ConfirmMetadataValueRemovalResult { get; init; }
         public bool ConfirmLanguageNormalizationResult { get; init; }
         public int? ConfirmLanguageNormalizationAffectedCount { get; private set; }
@@ -2412,6 +2694,8 @@ public sealed class LibraryViewModelTests
             Task.FromResult(LibraryDirectory);
 
         public Task<bool> ConfirmDeleteAsync(string title, CancellationToken cancellationToken) => Task.FromResult(true);
+        public Task<bool> ConfirmDeleteViewAsync(string viewName, CancellationToken cancellationToken) =>
+            Task.FromResult(ConfirmDeleteViewResult);
         public Task<string?> PromptTextAsync(
             string title,
             string message,
