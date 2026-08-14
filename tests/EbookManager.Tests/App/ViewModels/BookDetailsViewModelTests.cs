@@ -151,6 +151,36 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public async Task Select_custom_metadata_uses_configured_options_and_persists_selected_values()
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        var single = customMetadataRepository.AddDefinition(
+            "Leesprioriteit",
+            CustomMetadataFieldType.SingleSelect,
+            ["Hoog", "Normaal", "Laag"]);
+        var multi = customMetadataRepository.AddDefinition(
+            "Genres",
+            CustomMetadataFieldType.MultiSelect,
+            ["Thriller", "Historisch", "Fantasy"]);
+        var viewModel = CreateViewModel(out _, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+        var singleValue = viewModel.CustomMetadataValues.Single(value => value.FieldId == single.Id);
+        singleValue.SingleSelectOptions.Should().Equal(null, "Hoog", "Normaal", "Laag");
+        singleValue.ValueText = "Hoog";
+        var multiValue = viewModel.CustomMetadataValues.Single(value => value.FieldId == multi.Id);
+        multiValue.MultiSelectOptions.Single(option => option.Value == "Thriller").IsSelected = true;
+        multiValue.MultiSelectOptions.Single(option => option.Value == "Fantasy").IsSelected = true;
+
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        customMetadataRepository.Values[(book.Id, single.Id)].TextValue.Should().Be("Hoog");
+        customMetadataRepository.Values[(book.Id, multi.Id)].TextValue.Should().Be("Thriller; Fantasy");
+    }
+
+    [Fact]
     public async Task Invalid_custom_metadata_value_does_not_save_standard_metadata()
     {
         var customMetadataRepository = new RecordingCustomMetadataRepository();
@@ -687,7 +717,10 @@ public sealed class BookDetailsViewModelTests
         private readonly List<CustomMetadataFieldDefinition> definitions = [];
         public Dictionary<(Guid BookId, Guid FieldId), CustomMetadataValue> Values { get; } = [];
 
-        public CustomMetadataFieldDefinition AddDefinition(string name, CustomMetadataFieldType type)
+        public CustomMetadataFieldDefinition AddDefinition(
+            string name,
+            CustomMetadataFieldType type,
+            IReadOnlyList<string>? options = null)
         {
             var now = DateTimeOffset.UtcNow;
             var definition = new CustomMetadataFieldDefinition(
@@ -695,6 +728,7 @@ public sealed class BookDetailsViewModelTests
                 name.ToLowerInvariant().Replace(' ', '-'),
                 name,
                 type,
+                options ?? [],
                 definitions.Count,
                 now,
                 now);
@@ -717,6 +751,12 @@ public sealed class BookDetailsViewModelTests
             Task.FromResult(AddDefinition(name, type));
 
         public Task RenameDefinitionAsync(Guid fieldId, string name, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task UpdateDefinitionOptionsAsync(
+            Guid fieldId,
+            IReadOnlyList<string> options,
+            CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
         public Task DeleteDefinitionAsync(Guid fieldId, CancellationToken cancellationToken) =>

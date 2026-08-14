@@ -115,9 +115,17 @@ public sealed partial class SettingsViewModel(
     private string customMetadataFieldName = string.Empty;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCustomMetadataOptionsCommand))]
+    private string customMetadataOptionsText = string.Empty;
+
+    public bool CanEditCustomMetadataOptions =>
+        SelectedCustomMetadataField?.CanHaveOptions == true;
+
+    [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddCustomMetadataFieldCommand))]
     [NotifyCanExecuteChangedFor(nameof(RenameCustomMetadataFieldCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteCustomMetadataFieldCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveCustomMetadataOptionsCommand))]
     private bool isCustomMetadataBusy;
 
     [ObservableProperty]
@@ -132,9 +140,13 @@ public sealed partial class SettingsViewModel(
     public IAsyncRelayCommand DeleteCustomMetadataFieldCommand =>
         deleteCustomMetadataFieldCommand ??= new AsyncRelayCommand(DeleteCustomMetadataFieldAsync, CanDeleteCustomMetadataField);
 
+    public IAsyncRelayCommand SaveCustomMetadataOptionsCommand =>
+        saveCustomMetadataOptionsCommand ??= new AsyncRelayCommand(SaveCustomMetadataOptionsAsync, CanSaveCustomMetadataOptions);
+
     private AsyncRelayCommand? addCustomMetadataFieldCommand;
     private AsyncRelayCommand? renameCustomMetadataFieldCommand;
     private AsyncRelayCommand? deleteCustomMetadataFieldCommand;
+    private AsyncRelayCommand? saveCustomMetadataOptionsCommand;
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -187,8 +199,13 @@ public sealed partial class SettingsViewModel(
     partial void OnSelectedCustomMetadataFieldChanged(CustomMetadataFieldViewModel? value)
     {
         CustomMetadataFieldName = value?.Name ?? string.Empty;
+        CustomMetadataOptionsText = value is null
+            ? string.Empty
+            : string.Join(Environment.NewLine, value.Options);
+        OnPropertyChanged(nameof(CanEditCustomMetadataOptions));
         RenameCustomMetadataFieldCommand.NotifyCanExecuteChanged();
         DeleteCustomMetadataFieldCommand.NotifyCanExecuteChanged();
+        SaveCustomMetadataOptionsCommand.NotifyCanExecuteChanged();
     }
 
     private async Task LoadCustomMetadataFieldsAsync(CancellationToken cancellationToken)
@@ -259,6 +276,32 @@ public sealed partial class SettingsViewModel(
         });
     }
 
+    private bool CanSaveCustomMetadataOptions() =>
+        customMetadataRepository is not null &&
+        !IsCustomMetadataBusy &&
+        SelectedCustomMetadataField?.CanHaveOptions == true;
+
+    private async Task SaveCustomMetadataOptionsAsync()
+    {
+        if (customMetadataRepository is null || SelectedCustomMetadataField is null)
+        {
+            return;
+        }
+
+        var fieldId = SelectedCustomMetadataField.Id;
+        await ExecuteCustomMetadataOperationAsync(async () =>
+        {
+            await customMetadataRepository.UpdateDefinitionOptionsAsync(
+                fieldId,
+                ParseOptions(CustomMetadataOptionsText),
+                default);
+            await LoadCustomMetadataFieldsAsync(default);
+            SelectedCustomMetadataField = CustomMetadataFields.FirstOrDefault(field => field.Id == fieldId);
+            CustomMetadataStatusMessage = "CustomMetadataOptionsSaved";
+            CustomMetadataFieldsChanged?.Invoke(this, EventArgs.Empty);
+        });
+    }
+
     private bool CanDeleteCustomMetadataField() =>
         customMetadataRepository is not null &&
         !IsCustomMetadataBusy &&
@@ -299,6 +342,24 @@ public sealed partial class SettingsViewModel(
             IsCustomMetadataBusy = false;
         }
     }
+
+    private static IReadOnlyList<string> ParseOptions(string optionsText)
+    {
+        var result = new List<string>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var option in optionsText
+                     .Split(["\r\n", "\n", "\r"], StringSplitOptions.None)
+                     .Select(value => value.Trim())
+                     .Where(value => value.Length > 0))
+        {
+            if (seen.Add(option))
+            {
+                result.Add(option);
+            }
+        }
+
+        return result.AsReadOnly();
+    }
 }
 
 public sealed class CustomMetadataFieldViewModel(CustomMetadataFieldDefinition definition)
@@ -307,4 +368,6 @@ public sealed class CustomMetadataFieldViewModel(CustomMetadataFieldDefinition d
     public string Key { get; } = definition.Key;
     public string Name { get; } = definition.Name;
     public CustomMetadataFieldType Type { get; } = definition.Type;
+    public IReadOnlyList<string> Options { get; } = definition.Options;
+    public bool CanHaveOptions => Type is CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect;
 }

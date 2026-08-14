@@ -14,6 +14,7 @@ Custom metadata should make Saga powerful without turning the standard `BookMeta
 
 - Let a library define its own custom metadata fields.
 - Support useful first field types: text, number, date, boolean, single-select, and multi-select.
+- Let single-select and multi-select fields define their own option lists.
 - Store definitions separately from book values.
 - Keep field keys stable when display names are renamed, so views and imports can refer to a durable identifier.
 - Keep SQLite authoritative and migration-friendly.
@@ -23,7 +24,6 @@ Custom metadata should make Saga powerful without turning the standard `BookMeta
 
 - Importing Calibre custom columns.
 - Native ebook metadata write-back.
-- Defining option lists for single-select and multi-select fields.
 
 ## Milestone 16
 
@@ -72,10 +72,21 @@ Status: implemented.
 - Make custom fields available as columns in custom views. Status: implemented.
 - Add filters for useful custom field types. Status: implemented for populated fields.
 - Use typed Details editors, including localized Syncfusion date pickers. Status: implemented.
+- Define selectable option lists for single-select and multi-select custom fields. Status: implemented as Milestone 17.
 - Add Calibre custom-column import after Saga's own model has proven stable.
 
 ### Deferred Follow-Up Candidates
 
-- Define selectable option lists for single-select and multi-select custom fields.
 - Add richer numeric field settings, such as integer-only and decimal fields.
 - Decide how Calibre custom columns should map into Saga custom metadata.
+
+## Milestone 17
+
+Milestone 17 completes the first selectable custom metadata workflow.
+
+- Single-select and multi-select field definitions can store option lists.
+- Settings exposes an option editor for selectable fields, using one option per line.
+- Duplicate and blank option names are normalized away when saved.
+- Details uses a combo box for single-select fields.
+- Details uses a checkbox list for multi-select fields.
+- Select values continue to use text storage so existing search, filters, columns, and future Calibre import mapping can build on the same value model.

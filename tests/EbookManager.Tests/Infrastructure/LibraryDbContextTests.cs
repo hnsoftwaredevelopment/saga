@@ -141,6 +141,8 @@ public sealed class LibraryDbContextTests
         var rating = await customRepository.AddDefinitionAsync("Mijn rating", CustomMetadataFieldType.Number, default);
         var readDate = await customRepository.AddDefinitionAsync("Gelezen op", CustomMetadataFieldType.Date, default);
         var favorite = await customRepository.AddDefinitionAsync("Favoriet", CustomMetadataFieldType.Boolean, default);
+        var priority = await customRepository.AddDefinitionAsync("Prioriteit", CustomMetadataFieldType.SingleSelect, default);
+        await customRepository.UpdateDefinitionOptionsAsync(priority.Id, ["Hoog", "Normaal", "hoog", "", "Laag"], default);
         await customRepository.SetValueAsync(new(book.Id, rating.Id, NumberValue: 4.5m), default);
         await customRepository.SetValueAsync(new(book.Id, readDate.Id, DateValue: new DateOnly(2026, 8, 12)), default);
         await customRepository.SetValueAsync(new(book.Id, favorite.Id, BooleanValue: true), default);
@@ -148,8 +150,12 @@ public sealed class LibraryDbContextTests
         var definitions = await customRepository.ListDefinitionsAsync(default);
         definitions.Select(definition => definition.Name)
             .Should()
-            .Equal("Mijn rating", "Gelezen op", "Favoriet");
+            .Equal("Mijn rating", "Gelezen op", "Favoriet", "Prioriteit");
         rating.Key.Should().Be("mijn-rating");
+        definitions.Single(definition => definition.Id == priority.Id)
+            .Options
+            .Should()
+            .Equal("Hoog", "Normaal", "Laag");
 
         var values = await customRepository.GetValuesAsync(book.Id, default);
         values.Should().Contain(value => value.FieldId == rating.Id && value.NumberValue == 4.5m);

@@ -10,6 +10,10 @@ public interface ICustomMetadataRepository
         CustomMetadataFieldType type,
         CancellationToken cancellationToken);
     Task RenameDefinitionAsync(Guid fieldId, string name, CancellationToken cancellationToken);
+    Task UpdateDefinitionOptionsAsync(
+        Guid fieldId,
+        IReadOnlyList<string> options,
+        CancellationToken cancellationToken);
     Task DeleteDefinitionAsync(Guid fieldId, CancellationToken cancellationToken);
     Task<IReadOnlyList<CustomMetadataValue>> GetValuesAsync(Guid bookId, CancellationToken cancellationToken);
     Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(

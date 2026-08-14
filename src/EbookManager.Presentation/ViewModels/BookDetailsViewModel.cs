@@ -323,6 +323,7 @@ public sealed partial class BookDetailsViewModel(
                     definition.Id,
                     definition.Name,
                     definition.Type,
+                    definition.Options,
                     FormatCustomMetadataValue(definition.Type, value));
                 item.PropertyChanged += (_, args) =>
                 {
@@ -683,23 +684,52 @@ public sealed partial class BookDetailsViewModel(
 
 public sealed record CustomMetadataValueChange(Guid BookId, Guid FieldId, CustomMetadataValue? Value);
 
-public sealed partial class CustomMetadataValueViewModel(
-    Guid fieldId,
-    string name,
-    CustomMetadataFieldType type,
-    string? valueText) : ObservableObject
+public sealed partial class CustomMetadataValueViewModel : ObservableObject
 {
-    public Guid FieldId { get; } = fieldId;
-    public string Name { get; } = name;
-    public CustomMetadataFieldType Type { get; } = type;
-    public bool IsTextEditor =>
-        Type is CustomMetadataFieldType.Text or CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect;
+    private bool isSynchronizingMultiSelectOptions;
+    public Guid FieldId { get; }
+    public string Name { get; }
+    public CustomMetadataFieldType Type { get; }
+    public IReadOnlyList<string> Options { get; }
+    public IReadOnlyList<string?> SingleSelectOptions { get; }
+    public ObservableCollection<CustomMetadataOptionValueViewModel> MultiSelectOptions { get; }
+    public bool IsTextEditor => Type == CustomMetadataFieldType.Text;
     public bool IsNumberEditor => Type == CustomMetadataFieldType.Number;
     public bool IsDateEditor => Type == CustomMetadataFieldType.Date;
     public bool IsBooleanEditor => Type == CustomMetadataFieldType.Boolean;
+    public bool IsSingleSelectEditor => Type == CustomMetadataFieldType.SingleSelect;
+    public bool IsMultiSelectEditor => Type == CustomMetadataFieldType.MultiSelect;
 
     [ObservableProperty]
-    private string? valueText = valueText;
+    private string? valueText;
+
+    public CustomMetadataValueViewModel(
+        Guid fieldId,
+        string name,
+        CustomMetadataFieldType type,
+        IReadOnlyList<string> options,
+        string? valueText)
+    {
+        FieldId = fieldId;
+        Name = name;
+        Type = type;
+        Options = options;
+        SingleSelectOptions = new string?[] { null }.Concat(options).ToArray();
+        MultiSelectOptions = new ObservableCollection<CustomMetadataOptionValueViewModel>(
+            options.Select(option => new CustomMetadataOptionValueViewModel(option)));
+        this.valueText = valueText;
+        SynchronizeMultiSelectOptionsFromValueText();
+        foreach (var option in MultiSelectOptions)
+        {
+            option.PropertyChanged += (_, args) =>
+            {
+                if (args.PropertyName == nameof(CustomMetadataOptionValueViewModel.IsSelected))
+                {
+                    UpdateValueTextFromMultiSelectOptions();
+                }
+            };
+        }
+    }
 
     public bool? BooleanValue
     {
@@ -728,7 +758,55 @@ public sealed partial class CustomMetadataValueViewModel(
     {
         OnPropertyChanged(nameof(BooleanValue));
         OnPropertyChanged(nameof(DateValue));
+        SynchronizeMultiSelectOptionsFromValueText();
     }
+
+    private void SynchronizeMultiSelectOptionsFromValueText()
+    {
+        if (Type != CustomMetadataFieldType.MultiSelect || isSynchronizingMultiSelectOptions)
+        {
+            return;
+        }
+
+        isSynchronizingMultiSelectOptions = true;
+        try
+        {
+            var selectedValues = ParseMultiSelectValues(ValueText).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            foreach (var option in MultiSelectOptions)
+            {
+                option.IsSelected = selectedValues.Contains(option.Value);
+            }
+        }
+        finally
+        {
+            isSynchronizingMultiSelectOptions = false;
+        }
+    }
+
+    private void UpdateValueTextFromMultiSelectOptions()
+    {
+        if (isSynchronizingMultiSelectOptions)
+        {
+            return;
+        }
+
+        ValueText = string.Join("; ", MultiSelectOptions
+            .Where(option => option.IsSelected)
+            .Select(option => option.Value));
+    }
+
+    private static IEnumerable<string> ParseMultiSelectValues(string? value) =>
+        string.IsNullOrWhiteSpace(value)
+            ? []
+            : value.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+}
+
+public sealed partial class CustomMetadataOptionValueViewModel(string value) : ObservableObject
+{
+    public string Value { get; } = value;
+
+    [ObservableProperty]
+    private bool isSelected;
 }
 
 public sealed partial class BookFormatDetailsViewModel : ObservableObject

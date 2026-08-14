@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.CustomMetadata;
 using EbookManager.Infrastructure.Persistence.Entities;
@@ -84,6 +85,28 @@ public sealed class EfCustomMetadataRepository(
             ?? throw new KeyNotFoundException($"Custom metadata field '{fieldId}' does not exist.");
         entity.Name = trimmedName;
         entity.NormalizedName = normalizedName;
+        entity.UpdatedUtc = DateTimeOffset.UtcNow;
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateDefinitionOptionsAsync(
+        Guid fieldId,
+        IReadOnlyList<string> options,
+        CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var entity = await context.CustomMetadataFields
+            .SingleOrDefaultAsync(field => field.Id == fieldId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Custom metadata field '{fieldId}' does not exist.");
+        if (entity.Type is not (CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect))
+        {
+            throw new InvalidOperationException("Options can only be configured for single-select and multi-select metadata fields.");
+        }
+
+        var normalizedOptions = NormalizeOptions(options);
+        entity.OptionsJson = normalizedOptions.Count == 0
+            ? null
+            : JsonSerializer.Serialize(normalizedOptions);
         entity.UpdatedUtc = DateTimeOffset.UtcNow;
         await context.SaveChangesAsync(cancellationToken);
     }
@@ -202,6 +225,7 @@ public sealed class EfCustomMetadataRepository(
             entity.Key,
             entity.Name,
             entity.Type,
+            DeserializeOptions(entity.OptionsJson),
             entity.SortOrder,
             entity.CreatedUtc,
             entity.UpdatedUtc);
@@ -264,6 +288,38 @@ public sealed class EfCustomMetadataRepository(
     {
         var trimmed = value?.Trim();
         return string.IsNullOrEmpty(trimmed) ? null : trimmed;
+    }
+
+    private static IReadOnlyList<string> NormalizeOptions(IEnumerable<string> options)
+    {
+        var result = new List<string>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var option in options.Select(NormalizeBlank).OfType<string>())
+        {
+            if (seen.Add(option))
+            {
+                result.Add(option);
+            }
+        }
+
+        return result.AsReadOnly();
+    }
+
+    private static IReadOnlyList<string> DeserializeOptions(string? optionsJson)
+    {
+        if (string.IsNullOrWhiteSpace(optionsJson))
+        {
+            return [];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<IReadOnlyList<string>>(optionsJson) ?? [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
     }
 
     private static async Task<string> CreateUniqueKeyAsync(
