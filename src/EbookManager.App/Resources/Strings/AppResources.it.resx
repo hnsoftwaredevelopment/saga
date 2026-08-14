@@ -436,6 +436,7 @@
   <data name="CustomMetadataOptions" xml:space="preserve"><value>Elenco opzioni</value></data>
   <data name="CustomMetadataOptionsDescription" xml:space="preserve"><value>Per i campi a scelta singola o multipla, inserisci un'opzione per riga.</value></data>
   <data name="CustomMetadataOptionsSaved" xml:space="preserve"><value>Elenco opzioni salvato.</value></data>
+  <data name="CustomMetadataOptionsSemicolonNotAllowed" xml:space="preserve"><value>Le opzioni non possono contenere punti e virgola.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} deve essere un numero.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} deve essere una data.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} deve essere sì o no.</value></data>
@@ -548,6 +549,7 @@
   <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Seleziona solo i campi da modificare. I campi selezionati e vuoti verranno cancellati.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Usa il punto e virgola per separare più valori.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>I campi non selezionati restano invariati.</value></data>
+  <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} libro/i selezionato/i sono stati saltati perché la combinazione titolo/autore modificata esiste già.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sì</value></data>
 </root>
 

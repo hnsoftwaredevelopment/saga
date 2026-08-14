@@ -436,6 +436,7 @@
   <data name="CustomMetadataOptions" xml:space="preserve"><value>Auswahlliste</value></data>
   <data name="CustomMetadataOptionsDescription" xml:space="preserve"><value>Geben Sie für Einfach- und Mehrfachauswahl eine Option pro Zeile ein.</value></data>
   <data name="CustomMetadataOptionsSaved" xml:space="preserve"><value>Auswahlliste gespeichert.</value></data>
+  <data name="CustomMetadataOptionsSemicolonNotAllowed" xml:space="preserve"><value>Optionen dürfen keine Semikolons enthalten.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} muss eine Zahl sein.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} muss ein Datum sein.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} muss Ja oder Nein sein.</value></data>
@@ -548,6 +549,7 @@
   <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Aktivieren Sie nur die Felder, die geändert werden sollen. Aktivierte leere Felder werden geleert.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Mehrere Werte mit Semikolon trennen.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Nicht aktivierte Felder bleiben unverändert.</value></data>
+  <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} ausgewählte(s) Buch/Bücher wurden übersprungen, weil die geänderte Titel-/Autor-Kombination bereits vorhanden ist.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
 </root>
 

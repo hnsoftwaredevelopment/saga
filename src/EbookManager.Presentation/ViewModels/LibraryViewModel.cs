@@ -174,6 +174,9 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool CanMultiEditSelectedBooks => SelectedBooks.Count > 0;
 
+    public string MetadataMultiEditMenuHeader =>
+        $"{localize("MetadataMultiEditTitle")} ({SelectedBookCount})";
+
     public IReadOnlyList<LibraryColumnKey> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
 
     public LibraryColumnLayoutSnapshot ActiveColumnLayoutSnapshot =>
@@ -874,8 +877,9 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public void SetSelectedBooks(IEnumerable<BookRowViewModel> selectedRows)
     {
+        var visibleIds = VisibleBooks.Select(visible => visible.Id).ToHashSet();
         var rows = selectedRows
-            .Where(row => VisibleBooks.Any(visible => visible.Id == row.Id))
+            .Where(row => visibleIds.Contains(row.Id))
             .GroupBy(row => row.Id)
             .Select(group => group.First())
             .ToList();
@@ -892,6 +896,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         OnPropertyChanged(nameof(SelectedBookCount));
         OnPropertyChanged(nameof(CanMultiEditSelectedBooks));
+        OnPropertyChanged(nameof(MetadataMultiEditMenuHeader));
         showMetadataMultiEditCommand?.NotifyCanExecuteChanged();
     }
 
@@ -2710,10 +2715,15 @@ public sealed partial class LibraryViewModel : ObservableObject
             var customChanges = TryCreateCustomMetadataMultiEditChanges(result);
             if (customChanges is null)
             {
+                await userInteraction.ShowMessageAsync(
+                    localize("MetadataMultiEditTitle"),
+                    MetadataCleanupStatusText,
+                    cancellationToken);
                 return;
             }
 
             var customMetadataChanged = false;
+            var skippedBookCount = 0;
             foreach (var bookId in selectedIds)
             {
                 var fullBook = await bookRepository.GetAsync(bookId, cancellationToken);
@@ -2730,6 +2740,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                         catch (BookConflictException)
                         {
                             // Keep conflicting books unchanged; later slices can expose skipped books in the dialog.
+                            skippedBookCount++;
                         }
                     }
 
@@ -2762,6 +2773,17 @@ public sealed partial class LibraryViewModel : ObservableObject
                 RefreshFacetFilters();
                 ApplyFilter();
             }
+
+            if (skippedBookCount > 0)
+            {
+                await userInteraction.ShowMessageAsync(
+                    localize("MetadataMultiEditTitle"),
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        localize("MetadataMultiEditSkippedConflicts"),
+                        skippedBookCount),
+                    cancellationToken);
+            }
         }
         finally
         {
@@ -2775,12 +2797,14 @@ public sealed partial class LibraryViewModel : ObservableObject
         var authors = result.UpdateAuthors ? SplitRequiredList(result.AuthorsText) : metadata.Authors;
         var tags = result.UpdateTags ? SplitNullableList(result.TagsText) : metadata.Tags;
         var series = result.UpdateSeries ? NormalizeBlank(result.SeriesText) : metadata.Series;
+        var seriesNumber = result.UpdateSeries && series is null ? null : metadata.SeriesNumber;
         var language = result.UpdateLanguage ? NormalizeBlank(result.LanguageText) : metadata.Language;
         var readingStatus = result.UpdateStatus ? result.Status : book.ReadingStatus;
 
         if (authors.SequenceEqual(metadata.Authors) &&
             NullableSequenceEqual(tags, metadata.Tags) &&
             series == metadata.Series &&
+            seriesNumber == metadata.SeriesNumber &&
             language == metadata.Language &&
             readingStatus == book.ReadingStatus)
         {
@@ -2789,7 +2813,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         return book with
         {
-            Metadata = CopyMetadata(metadata, authors, tags, series, language),
+            Metadata = CopyMetadata(metadata, authors, tags, series, language, seriesNumber),
             ReadingStatus = readingStatus,
             UpdatedUtc = DateTimeOffset.UtcNow
         };
@@ -2808,12 +2832,16 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
         catch (FormatException exception)
         {
-            MetadataCleanupStatusText = exception.Message;
+            MetadataCleanupStatusText = CustomMetadataValueParser.TryFormatValidationMessage(exception, localize, out var message)
+                ? message
+                : exception.Message;
             return null;
         }
         catch (InvalidOperationException exception)
         {
-            MetadataCleanupStatusText = exception.Message;
+            MetadataCleanupStatusText = CustomMetadataValueParser.TryFormatValidationMessage(exception, localize, out var message)
+                ? message
+                : exception.Message;
             return null;
         }
     }
@@ -2972,7 +3000,8 @@ public sealed partial class LibraryViewModel : ObservableObject
                     change.Original.Metadata.Authors,
                     change.Original.Metadata.Tags,
                     change.Original.Metadata.Series,
-                    change.NormalizedLanguage)
+                    change.NormalizedLanguage,
+                    change.Original.Metadata.SeriesNumber)
             })
             .ToArray();
 
@@ -3134,7 +3163,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     replacementValue,
                     remove,
                     out var authors)
-                ? book with { Metadata = CopyMetadata(metadata, authors, metadata.Tags, metadata.Series, metadata.Language) }
+                ? book with { Metadata = CopyMetadata(metadata, authors, metadata.Tags, metadata.Series, metadata.Language, metadata.SeriesNumber) }
                 : book,
             MetadataFilterKind.Tag => ReplaceListValue(
                     metadata.Tags ?? [],
@@ -3142,7 +3171,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     replacementValue,
                     remove,
                     out var tags)
-                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, tags.Count == 0 ? null : tags, metadata.Series, metadata.Language) }
+                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, tags.Count == 0 ? null : tags, metadata.Series, metadata.Language, metadata.SeriesNumber) }
                 : book,
             MetadataFilterKind.Series => ReplaceScalarValue(
                     metadata.Series,
@@ -3150,7 +3179,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     replacementValue,
                     remove,
                     out var series)
-                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, series, metadata.Language) }
+                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, series, metadata.Language, series is null ? null : metadata.SeriesNumber) }
                 : book,
             MetadataFilterKind.Language => ReplaceScalarValue(
                     metadata.Language,
@@ -3159,7 +3188,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     remove,
                     out var language,
                     LanguageDisplayService.FilterKey)
-                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, metadata.Series, language) }
+                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, metadata.Series, language, metadata.SeriesNumber) }
                 : book,
             _ => book
         };
@@ -3228,7 +3257,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         IReadOnlyList<string> authors,
         IReadOnlyList<string>? tags,
         string? series,
-        string? language) =>
+        string? language,
+        decimal? seriesNumber) =>
         new(
             metadata.Title,
             authors,
@@ -3238,30 +3268,24 @@ public sealed partial class LibraryViewModel : ObservableObject
             metadata.PublicationDate,
             tags,
             series,
-            metadata.SeriesNumber,
+            seriesNumber,
             metadata.Isbn,
             metadata.CoverBytes);
 
     private static IReadOnlyList<string> SplitRequiredList(string? value) =>
-        SplitList(value);
+        SplitList(value, distinct: true);
 
     private static IReadOnlyList<string>? SplitNullableList(string? value)
     {
-        var values = SplitList(value);
+        var values = SplitList(value, distinct: true);
         return values.Count == 0 ? null : values;
     }
 
-    private static IReadOnlyList<string> SplitList(string? value) =>
-        (value ?? string.Empty)
-            .Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
+    private static IReadOnlyList<string> SplitList(string? value, bool distinct = false) =>
+        CustomMetadataValueParser.SplitList(value, distinct);
 
     private static string? NormalizeBlank(string? value)
-    {
-        var trimmed = value?.Trim();
-        return string.IsNullOrWhiteSpace(trimmed) ? null : trimmed;
-    }
+        => CustomMetadataValueParser.NormalizeBlank(value);
 
     private static bool NullableSequenceEqual<T>(
         IReadOnlyList<T>? first,
@@ -3271,81 +3295,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private static CustomMetadataValue CreateCustomMetadataValue(
         Guid bookId,
         MetadataMultiEditCustomFieldResult value) =>
-        value.Type switch
-        {
-            CustomMetadataFieldType.Text or CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect =>
-                new CustomMetadataValue(bookId, value.FieldId, TextValue: NormalizeBlank(value.ValueText)),
-            CustomMetadataFieldType.Number =>
-                decimal.TryParse(value.ValueText, NumberStyles.Number, CultureInfo.CurrentCulture, out var number)
-                    ? new CustomMetadataValue(bookId, value.FieldId, NumberValue: number)
-                    : throw new FormatException($"CustomMetadataValidationNumber|{value.Name}"),
-            CustomMetadataFieldType.Date =>
-                TryParseDate(value.ValueText, out var date)
-                    ? new CustomMetadataValue(bookId, value.FieldId, DateValue: date)
-                    : throw new FormatException($"CustomMetadataValidationDate|{value.Name}"),
-            CustomMetadataFieldType.Boolean =>
-                TryParseBoolean(value.ValueText, out var boolean)
-                    ? new CustomMetadataValue(bookId, value.FieldId, BooleanValue: boolean)
-                    : throw new FormatException($"CustomMetadataValidationBoolean|{value.Name}"),
-            _ => throw new InvalidOperationException($"Unsupported custom metadata field type '{value.Type}'.")
-        };
-
-    private static bool TryParseBoolean(string? value, out bool result)
-    {
-        var normalized = NormalizeBlank(value);
-        if (normalized is null)
-        {
-            result = false;
-            return false;
-        }
-
-        if (bool.TryParse(normalized, out result))
-        {
-            return true;
-        }
-
-        if (string.Equals(normalized, "yes", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "true", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "ja", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "oui", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "si", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "sí", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "sì", StringComparison.OrdinalIgnoreCase) ||
-            normalized == "1")
-        {
-            result = true;
-            return true;
-        }
-
-        if (string.Equals(normalized, "no", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "false", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "nee", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "nein", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "non", StringComparison.OrdinalIgnoreCase) ||
-            normalized == "0")
-        {
-            result = false;
-            return true;
-        }
-
-        result = false;
-        return false;
-    }
-
-    private static bool TryParseDate(string? value, out DateOnly result)
-    {
-        if (DateOnly.TryParse(value, CultureInfo.CurrentCulture, out result))
-        {
-            return true;
-        }
-
-        return DateOnly.TryParseExact(
-            value,
-            "yyyy-MM-dd",
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.None,
-            out result);
-    }
+        CustomMetadataValueParser.Create(bookId, value.FieldId, value.Name, value.Type, value.ValueText);
 
     private static string? NormalizeStoredLanguageCode(string? value)
     {

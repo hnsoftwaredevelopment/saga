@@ -129,6 +129,24 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
+    public async Task SaveCustomMetadataOptions_rejects_semicolon_options()
+    {
+        var repository = new InMemoryCustomMetadataRepository();
+        var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore(), repository);
+        await viewModel.LoadAsync();
+        viewModel.NewCustomMetadataFieldName = "Genres";
+        viewModel.NewCustomMetadataFieldType = CustomMetadataFieldType.MultiSelect;
+        await viewModel.AddCustomMetadataFieldCommand.ExecuteAsync(null);
+
+        viewModel.CustomMetadataOptionsText = "Deel 1; deel 2";
+        await viewModel.SaveCustomMetadataOptionsCommand.ExecuteAsync(null);
+
+        viewModel.SelectedCustomMetadataField.Should().NotBeNull();
+        viewModel.SelectedCustomMetadataField!.Options.Should().BeEmpty();
+        viewModel.CustomMetadataStatusMessage.Should().Be("CustomMetadataOptionsSemicolonNotAllowed");
+    }
+
+    [Fact]
     public async Task Save_preserves_last_library_path_while_updating_preferences()
     {
         var store = new InMemoryAppSettingsStore();

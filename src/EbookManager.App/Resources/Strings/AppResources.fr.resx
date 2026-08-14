@@ -436,6 +436,7 @@
   <data name="CustomMetadataOptions" xml:space="preserve"><value>Liste de choix</value></data>
   <data name="CustomMetadataOptionsDescription" xml:space="preserve"><value>Pour les champs à choix unique ou multiple, saisissez une option par ligne.</value></data>
   <data name="CustomMetadataOptionsSaved" xml:space="preserve"><value>Liste de choix enregistrée.</value></data>
+  <data name="CustomMetadataOptionsSemicolonNotAllowed" xml:space="preserve"><value>Les options ne peuvent pas contenir de point-virgule.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} doit être un nombre.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} doit être une date.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} doit être oui ou non.</value></data>
@@ -548,6 +549,7 @@
   <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Cochez uniquement les champs à modifier. Les champs cochés et vides seront effacés.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Utilisez des points-virgules pour séparer plusieurs valeurs.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Les champs non cochés restent inchangés.</value></data>
+  <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} livre(s) sélectionné(s) ont été ignorés, car la combinaison titre/auteur modifiée existe déjà.</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>
 </root>
 

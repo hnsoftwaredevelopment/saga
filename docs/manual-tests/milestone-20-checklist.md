@@ -6,7 +6,9 @@ Use this checklist for the first metadata multi-edit slice.
 
 - [ ] Open Detailed view and select multiple books with Ctrl-click.
 - [ ] Confirm the Multi-Edit toolbar button becomes enabled.
+- [ ] Right-click a selected row in Detailed view and open Multi-Edit from the context menu.
 - [ ] Open List view and select multiple books with Ctrl-click.
+- [ ] Right-click a selected row in List view and open Multi-Edit from the context menu.
 - [ ] Confirm selecting a single row still updates the details pane.
 
 ## Multi-Edit

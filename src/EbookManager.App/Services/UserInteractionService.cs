@@ -118,6 +118,20 @@ public sealed class UserInteractionService(
         return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
     }
 
+    public Task ShowMessageAsync(
+        string title,
+        string message,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        System.Windows.MessageBox.Show(
+            message,
+            title,
+            System.Windows.MessageBoxButton.OK,
+            System.Windows.MessageBoxImage.Information);
+        return Task.CompletedTask;
+    }
+
     public Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();

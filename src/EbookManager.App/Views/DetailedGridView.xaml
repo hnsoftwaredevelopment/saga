@@ -104,13 +104,14 @@
                          NavigationMode="Row"
                          SelectionMode="Extended"
                          SelectionChanged="BooksGridSelectionChanged"
+                         PreviewMouseRightButtonDown="BooksGridPreviewMouseRightButtonDown"
                          HeaderRowHeight="40"
                          HeaderStyle="{StaticResource StandardGridHeaderCellStyle}"
                          RowHeight="42"
                          AllowDrop="True">
     <syncfusion:SfDataGrid.ContextMenu>
       <ContextMenu>
-        <MenuItem Header="{loc:Loc MetadataMultiEditTitle}"
+        <MenuItem Header="{Binding PlacementTarget.DataContext.MetadataMultiEditMenuHeader, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                   Command="{Binding PlacementTarget.DataContext.ShowMetadataMultiEditCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
       </ContextMenu>
     </syncfusion:SfDataGrid.ContextMenu>

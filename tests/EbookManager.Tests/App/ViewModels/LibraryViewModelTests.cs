@@ -1974,6 +1974,24 @@ public sealed class LibraryViewModelTests
             .HaveCount(2)
             .And
             .AllSatisfy(value => value.BooleanValue.Should().BeTrue());
+        customMetadataRepository.ValuesSnapshot
+            .Where(value => value.FieldId == numberField.Id)
+            .Should()
+            .HaveCount(2)
+            .And
+            .AllSatisfy(value => value.NumberValue.Should().Be(8.5m));
+        customMetadataRepository.ValuesSnapshot
+            .Where(value => value.FieldId == dateField.Id)
+            .Should()
+            .HaveCount(2)
+            .And
+            .AllSatisfy(value => value.DateValue.Should().Be(new DateOnly(2026, 8, 14)));
+        customMetadataRepository.ValuesSnapshot
+            .Where(value => value.FieldId == singleSelectField.Id)
+            .Should()
+            .HaveCount(2)
+            .And
+            .AllSatisfy(value => value.TextValue.Should().Be("Hoog"));
         viewModel.CustomMetadataFilterGroups
             .Single(group => group.FieldId == textField.Id)
             .Filters
@@ -1985,6 +2003,83 @@ public sealed class LibraryViewModelTests
             .Select(filter => filter.Name)
             .Should()
             .Equal("Fantasy", "Thriller");
+    }
+
+    [Fact]
+    public async Task Metadata_multi_edit_shows_validation_message_for_invalid_custom_value()
+    {
+        var book = CreateBook("First", ["Author"]);
+        var repository = new StaticBookRepository([book]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var numberField = customMetadataRepository.AddDefinition("Cijfer", CustomMetadataFieldType.Number);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new MetadataMultiEditResult(
+                UpdateAuthors: false,
+                AuthorsText: string.Empty,
+                UpdateSeries: false,
+                SeriesText: string.Empty,
+                UpdateTags: false,
+                TagsText: string.Empty,
+                UpdateLanguage: false,
+                LanguageText: string.Empty,
+                UpdateStatus: false,
+                Status: ReadingStatus.Unread,
+                CustomFields:
+                [
+                    new MetadataMultiEditCustomFieldResult(numberField.Id, numberField.Name, numberField.Type, "not a number")
+                ])
+        };
+        var viewModel = CreateViewModel(
+            [book],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            repository: repository,
+            customMetadataRepository: customMetadataRepository,
+            localize: key => key switch
+            {
+                "CustomMetadataValidationNumber" => "{0} must be a number.",
+                "MetadataMultiEditTitle" => "Multi-edit metadata",
+                _ => key
+            });
+
+        await viewModel.RefreshAsync();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks);
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        customMetadataRepository.ValuesSnapshot.Should().BeEmpty();
+        interaction.LastMessageTitle.Should().Be("Multi-edit metadata");
+        interaction.LastMessageText.Should().Be("Cijfer must be a number.");
+    }
+
+    [Fact]
+    public async Task Metadata_multi_edit_clearing_series_also_clears_series_number()
+    {
+        var book = CreateBook("First", ["Author"], series: "Old Series", seriesNumber: 3);
+        var repository = new StaticBookRepository([book]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new MetadataMultiEditResult(
+                UpdateAuthors: false,
+                AuthorsText: string.Empty,
+                UpdateSeries: true,
+                SeriesText: string.Empty,
+                UpdateTags: false,
+                TagsText: string.Empty,
+                UpdateLanguage: false,
+                LanguageText: string.Empty,
+                UpdateStatus: false,
+                Status: ReadingStatus.Unread)
+        };
+        var viewModel = CreateViewModel([book], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks);
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        var updated = repository.BooksSnapshot.Single();
+        updated.Metadata.Series.Should().BeNull();
+        updated.Metadata.SeriesNumber.Should().BeNull();
     }
 
     [Fact]
@@ -2621,12 +2716,13 @@ public sealed class LibraryViewModelTests
         ReadingStatus readingStatus = ReadingStatus.Unread,
         IReadOnlyList<EbookFormat>? formats = null,
         Guid? id = null,
-        byte[]? coverBytes = null)
+        byte[]? coverBytes = null,
+        decimal? seriesNumber = null)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
             id ?? Guid.NewGuid(),
-            new BookMetadata(title, authors, Language: language, Tags: tags, Series: series, CoverBytes: coverBytes),
+            new BookMetadata(title, authors, Language: language, Tags: tags, Series: series, SeriesNumber: seriesNumber, CoverBytes: coverBytes),
             readingStatus,
             null,
             now,
@@ -3251,6 +3347,8 @@ public sealed class LibraryViewModelTests
         public Guid? SelectedImportRunId { get; init; }
         public MetadataMultiEditResult? MetadataMultiEditResult { get; init; }
         public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
+        public string? LastMessageTitle { get; private set; }
+        public string? LastMessageText { get; private set; }
         public Func<DuplicateCandidatesViewModel, CancellationToken, Task>? OnShowDuplicateCandidatesAsync { get; init; }
         public int PickBookFilesCalls { get; private set; }
         public int PickScanFolderCalls { get; private set; }
@@ -3292,6 +3390,16 @@ public sealed class LibraryViewModelTests
         {
             ConfirmLanguageNormalizationAffectedCount = affectedBookCount;
             return Task.FromResult(ConfirmLanguageNormalizationResult);
+        }
+
+        public Task ShowMessageAsync(
+            string title,
+            string message,
+            CancellationToken cancellationToken)
+        {
+            LastMessageTitle = title;
+            LastMessageText = message;
+            return Task.CompletedTask;
         }
 
         public Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken)

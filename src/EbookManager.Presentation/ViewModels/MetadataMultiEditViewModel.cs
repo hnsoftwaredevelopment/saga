@@ -235,7 +235,5 @@ public sealed partial class MetadataMultiEditCustomFieldViewModel : ObservableOb
     }
 
     private static IEnumerable<string> ParseMultiSelectValues(string? value) =>
-        string.IsNullOrWhiteSpace(value)
-            ? []
-            : value.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        CustomMetadataValueParser.SplitList(value, distinct: true);
 }

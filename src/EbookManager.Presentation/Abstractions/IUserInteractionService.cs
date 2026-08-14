@@ -22,6 +22,10 @@ public interface IUserInteractionService
     Task<bool> ConfirmLanguageNormalizationAsync(
         int affectedBookCount,
         CancellationToken cancellationToken);
+    Task ShowMessageAsync(
+        string title,
+        string message,
+        CancellationToken cancellationToken);
     Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken);
     Task<Guid?> PickImportRunAsync(ImportHistoryViewModel history, CancellationToken cancellationToken);
     Task ShowDuplicateCandidatesAsync(DuplicateCandidatesViewModel candidates, CancellationToken cancellationToken);

@@ -10,6 +10,7 @@ Milestone 20 introduces the first testable multi-edit workflow:
 
 - Users can select multiple books in the Detailed and List views.
 - The library toolbar exposes a Multi-Edit action when one or more books are selected.
+- Detailed and List views also expose Multi-Edit through the row/grid context menu.
 - A Multi-Edit dialog shows the selected book count and safe editable standard fields.
 - The first editable fields are authors, series, tags, language, and reading status.
 - Each field has an explicit checkbox, so blank values are not accidentally applied.

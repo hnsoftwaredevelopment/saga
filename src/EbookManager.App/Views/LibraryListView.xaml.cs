@@ -19,6 +19,15 @@ public partial class LibraryListView : System.Windows.Controls.UserControl
             sender is System.Windows.FrameworkElement { DataContext: EbookManager.Presentation.ViewModels.BookRowViewModel row })
         {
             viewModel.SelectedBook = row;
+            viewModel.SetSelectedBooks([row]);
+        }
+    }
+
+    private void BooksGridPreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (DataContext is EbookManager.Presentation.ViewModels.LibraryViewModel viewModel)
+        {
+            LibraryGridSelectionHelper.SelectRowUnderPointer(BooksGrid, viewModel, e);
         }
     }
 

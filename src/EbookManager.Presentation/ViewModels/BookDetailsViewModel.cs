@@ -496,20 +496,13 @@ public sealed partial class BookDetailsViewModel(
     }
 
     private static IReadOnlyList<string> SplitList(string? value) =>
-        (value ?? string.Empty)
-            .Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        CustomMetadataValueParser.SplitList(value);
 
     private static IReadOnlyList<string>? SplitNullableList(string? value)
-    {
-        var values = SplitList(value);
-        return values.Count == 0 ? null : values;
-    }
+        => CustomMetadataValueParser.SplitNullableList(value);
 
     private static string? NormalizeBlank(string? value)
-    {
-        var normalized = value?.Trim();
-        return string.IsNullOrEmpty(normalized) ? null : normalized;
-    }
+        => CustomMetadataValueParser.NormalizeBlank(value);
 
     private static string? CleanDescription(string? value) =>
         DescriptionTextCleaner.Clean(value);
@@ -596,90 +589,10 @@ public sealed partial class BookDetailsViewModel(
     }
 
     private static string? FormatCustomMetadataValue(CustomMetadataFieldType type, CustomMetadataValue? value) =>
-        type switch
-        {
-            CustomMetadataFieldType.Number => value?.NumberValue?.ToString("0.#############################", CultureInfo.CurrentCulture),
-            CustomMetadataFieldType.Date => value?.DateValue?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-            CustomMetadataFieldType.Boolean => value?.BooleanValue?.ToString(),
-            _ => value?.TextValue
-        };
+        CustomMetadataValueParser.Format(type, value);
 
     private static CustomMetadataValue CreateCustomMetadataValue(Guid bookId, CustomMetadataValueViewModel value) =>
-        value.Type switch
-        {
-            CustomMetadataFieldType.Text or CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect =>
-                new CustomMetadataValue(bookId, value.FieldId, TextValue: NormalizeBlank(value.ValueText)),
-            CustomMetadataFieldType.Number =>
-                decimal.TryParse(value.ValueText, NumberStyles.Number, CultureInfo.CurrentCulture, out var number)
-                    ? new CustomMetadataValue(bookId, value.FieldId, NumberValue: number)
-                    : throw new FormatException($"CustomMetadataValidationNumber|{value.Name}"),
-            CustomMetadataFieldType.Date =>
-                TryParseDate(value.ValueText, out var date)
-                    ? new CustomMetadataValue(bookId, value.FieldId, DateValue: date)
-                    : throw new FormatException($"CustomMetadataValidationDate|{value.Name}"),
-            CustomMetadataFieldType.Boolean =>
-                TryParseBoolean(value.ValueText, out var boolean)
-                    ? new CustomMetadataValue(bookId, value.FieldId, BooleanValue: boolean)
-                    : throw new FormatException($"CustomMetadataValidationBoolean|{value.Name}"),
-            _ => throw new InvalidOperationException($"Unsupported custom metadata field type '{value.Type}'.")
-        };
-
-    private static bool TryParseBoolean(string? value, out bool result)
-    {
-        var normalized = NormalizeBlank(value);
-        if (normalized is null)
-        {
-            result = false;
-            return false;
-        }
-
-        if (bool.TryParse(normalized, out result))
-        {
-            return true;
-        }
-
-        if (string.Equals(normalized, "yes", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "true", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "ja", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "oui", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "si", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "sí", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "sì", StringComparison.OrdinalIgnoreCase) ||
-            normalized == "1")
-        {
-            result = true;
-            return true;
-        }
-
-        if (string.Equals(normalized, "no", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "false", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "nee", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "nein", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(normalized, "non", StringComparison.OrdinalIgnoreCase) ||
-            normalized == "0")
-        {
-            result = false;
-            return true;
-        }
-
-        result = false;
-        return false;
-    }
-
-    private static bool TryParseDate(string? value, out DateOnly result)
-    {
-        if (DateOnly.TryParse(value, CultureInfo.CurrentCulture, out result))
-        {
-            return true;
-        }
-
-        return DateOnly.TryParseExact(
-            value,
-            "yyyy-MM-dd",
-            CultureInfo.InvariantCulture,
-            DateTimeStyles.None,
-            out result);
-    }
+        CustomMetadataValueParser.Create(bookId, value.FieldId, value.Name, value.Type, value.ValueText);
 }
 
 public sealed record CustomMetadataValueChange(Guid BookId, Guid FieldId, CustomMetadataValue? Value);
