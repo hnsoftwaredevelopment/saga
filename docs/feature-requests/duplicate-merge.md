@@ -58,6 +58,13 @@ De keuzes die de gebruiker maakt, kunnen later als standaardinstellingen worden 
 
 Deze instellingen hoeven niet in de eerste versie van de merge-workflow te zitten, maar het ontwerp moet er wel rekening mee houden.
 
+## Verdere Optimalisaties Voor Later
+
+- Voeg een actie `Geen duplicaat` toe voor mogelijke duplicaten die dezelfde titel hebben maar toch verschillende boeken zijn.
+- Bewaar deze keuze per bibliotheek, bij voorkeur op basis van de betrokken boek-id's en de duplicate-matchgegevens, zodat dezelfde combinatie niet steeds opnieuw verschijnt.
+- Pas deze negeeractie alleen toe op mogelijke of fuzzy matches. Exacte hashduplicaten blijven technische duplicaten en moeten niet stilzwijgend genegeerd kunnen worden.
+- Toon genegeerde matches later eventueel in instellingen of een onderhoudsscherm, zodat de gebruiker een vergissing kan herstellen.
+
 ## Acceptatiecriteria
 
 - De gebruiker kan vanuit de duplicate finder een merge-workflow starten.

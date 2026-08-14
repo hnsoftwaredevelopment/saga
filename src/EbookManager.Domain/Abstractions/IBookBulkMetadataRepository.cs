@@ -1,3 +1,5 @@
+using EbookManager.Domain.Books;
+
 namespace EbookManager.Domain.Abstractions;
 
 public interface IBookBulkMetadataRepository
@@ -7,10 +9,21 @@ public interface IBookBulkMetadataRepository
         BookScalarMetadataField field,
         string? value,
         CancellationToken cancellationToken);
+
+    Task<int> UpdateListMetadataAsync(
+        IReadOnlyCollection<Book> books,
+        BookListMetadataField field,
+        CancellationToken cancellationToken);
 }
 
 public enum BookScalarMetadataField
 {
     Series,
     Language
+}
+
+public enum BookListMetadataField
+{
+    Authors,
+    Tags
 }

@@ -27,6 +27,34 @@
         <Setter Property="Padding" Value="9" />
         <Setter Property="ToolTipService.ShowDuration" Value="30000" />
       </Style>
+      <Style x:Key="FilterListBoxStyle" TargetType="ListBox">
+        <Setter Property="MaxHeight" Value="180" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel" />
+        <Setter Property="ItemsPanel">
+          <Setter.Value>
+            <ItemsPanelTemplate>
+              <VirtualizingStackPanel />
+            </ItemsPanelTemplate>
+          </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+          <Setter.Value>
+            <Style TargetType="ListBoxItem">
+              <Setter Property="Padding" Value="0" />
+              <Setter Property="Margin" Value="0" />
+              <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+              <Setter Property="Focusable" Value="False" />
+            </Style>
+          </Setter.Value>
+        </Setter>
+      </Style>
     </Grid.Resources>
     <Grid.Style>
       <Style TargetType="Grid">
@@ -243,10 +271,9 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
           <Expander Header="{loc:Loc Authors}" IsExpanded="False" Margin="0,0,0,6">
-            <ScrollViewer MaxHeight="180"
-                          VerticalScrollBarVisibility="Auto">
-              <ItemsControl ItemsSource="{Binding AuthorFilters}">
-                <ItemsControl.ItemTemplate>
+              <ListBox ItemsSource="{Binding AuthorFilters}"
+                       Style="{StaticResource FilterListBoxStyle}">
+                <ListBox.ItemTemplate>
                   <DataTemplate>
                     <DockPanel Margin="0,2">
                       <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -269,15 +296,14 @@
                       </TextBlock>
                     </DockPanel>
                   </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
+                </ListBox.ItemTemplate>
+              </ListBox>
           </Expander>
           <Expander Header="{loc:Loc Series}" Margin="0,0,0,6">
-            <ScrollViewer MaxHeight="120"
-                          VerticalScrollBarVisibility="Auto">
-              <ItemsControl ItemsSource="{Binding SeriesFilters}">
-                <ItemsControl.ItemTemplate>
+              <ListBox ItemsSource="{Binding SeriesFilters}"
+                       Style="{StaticResource FilterListBoxStyle}"
+                       MaxHeight="120">
+                <ListBox.ItemTemplate>
                   <DataTemplate>
                     <DockPanel Margin="0,2">
                       <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -300,15 +326,14 @@
                       </TextBlock>
                     </DockPanel>
                   </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
+                </ListBox.ItemTemplate>
+              </ListBox>
           </Expander>
           <Expander Header="{loc:Loc Tags}" Margin="0,0,0,6">
-            <ScrollViewer MaxHeight="120"
-                          VerticalScrollBarVisibility="Auto">
-              <ItemsControl ItemsSource="{Binding CategoryFilters}">
-                <ItemsControl.ItemTemplate>
+              <ListBox ItemsSource="{Binding CategoryFilters}"
+                       Style="{StaticResource FilterListBoxStyle}"
+                       MaxHeight="120">
+                <ListBox.ItemTemplate>
                   <DataTemplate>
                     <DockPanel Margin="0,2">
                       <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -331,9 +356,8 @@
                       </TextBlock>
                     </DockPanel>
                   </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
+                </ListBox.ItemTemplate>
+              </ListBox>
           </Expander>
           <Expander Header="{loc:Loc Status}" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="120"
@@ -366,10 +390,10 @@
             </ScrollViewer>
           </Expander>
           <Expander Header="{loc:Loc Language}" Margin="0,0,0,12">
-            <ScrollViewer MaxHeight="120"
-                          VerticalScrollBarVisibility="Auto">
-              <ItemsControl ItemsSource="{Binding LanguageFilters}">
-                <ItemsControl.ItemTemplate>
+              <ListBox ItemsSource="{Binding LanguageFilters}"
+                       Style="{StaticResource FilterListBoxStyle}"
+                       MaxHeight="120">
+                <ListBox.ItemTemplate>
                   <DataTemplate>
                     <DockPanel Margin="0,2">
                       <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
@@ -392,9 +416,8 @@
                       </TextBlock>
                     </DockPanel>
                   </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
+                </ListBox.ItemTemplate>
+              </ListBox>
           </Expander>
           <Expander Header="{loc:Loc Type}" Margin="0,0,0,12">
             <ScrollViewer MaxHeight="120"
@@ -425,19 +448,18 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Expander Header="{Binding Name}" Margin="0,0,0,12">
-                  <ScrollViewer MaxHeight="120"
-                                VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Filters}">
-                      <ItemsControl.ItemTemplate>
+                    <ListBox ItemsSource="{Binding Filters}"
+                             Style="{StaticResource FilterListBoxStyle}"
+                             MaxHeight="120">
+                      <ListBox.ItemTemplate>
                         <DataTemplate>
                           <CheckBox Content="{Binding DisplayName}"
                                     IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                     Margin="0,2"
                                     Foreground="{DynamicResource TextSecondaryBrush}" />
                         </DataTemplate>
-                      </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                  </ScrollViewer>
+                      </ListBox.ItemTemplate>
+                    </ListBox>
                 </Expander>
               </DataTemplate>
             </ItemsControl.ItemTemplate>

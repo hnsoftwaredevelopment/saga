@@ -290,6 +290,85 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Bulk_list_metadata_update_replaces_authors_and_updates_duplicate_key()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        var first = CreateBook("First", ["Ake Edwardson"]);
+        var second = CreateBook("Second", ["Ake Edwardson", "Other"]);
+        var third = CreateBook("Third", ["Unaffected"]);
+        await repository.AddAsync(first, CreateFile(first.Id, Hash('A')), default);
+        await repository.AddAsync(second, CreateFile(second.Id, Hash('B')), default);
+        await repository.AddAsync(third, CreateFile(third.Id, Hash('C')), default);
+        var firstUpdated = first with
+        {
+            Metadata = new BookMetadata(first.Metadata.Title, ["Åke Edwardson"])
+        };
+        var secondUpdated = second with
+        {
+            Metadata = new BookMetadata(second.Metadata.Title, ["Åke Edwardson", "Other"])
+        };
+
+        var updated = await repository.UpdateListMetadataAsync(
+            [firstUpdated, secondUpdated],
+            BookListMetadataField.Authors,
+            default);
+
+        updated.Should().Be(2);
+        var books = await repository.ListAsync(default);
+        books.Single(book => book.Id == first.Id).Metadata.Authors.Should().Equal("Åke Edwardson");
+        books.Single(book => book.Id == second.Id).Metadata.Authors.Should().Equal("Åke Edwardson", "Other");
+        books.Single(book => book.Id == third.Id).Metadata.Authors.Should().Equal("Unaffected");
+        await using var context = factory.Create(library.DirectoryPath);
+        var firstDuplicateKey = await context.Books
+            .Where(book => book.Id == first.Id)
+            .Select(book => book.DuplicateKey)
+            .SingleAsync();
+        firstDuplicateKey.Should().Be(DuplicateKeyNormalizer.BuildDuplicateKey("First", ["Åke Edwardson"]));
+        (await context.Authors.Select(author => author.Name).ToListAsync())
+            .Should()
+            .BeEquivalentTo("Åke Edwardson", "Other", "Unaffected");
+    }
+
+    [Fact]
+    public async Task Bulk_list_metadata_update_removes_tags_and_cleans_orphans()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        var first = CreateBook("First", ["Author"], ["Keep", "RemoveMe"]);
+        var second = CreateBook("Second", ["Author"], ["RemoveMe"]);
+        var third = CreateBook("Third", ["Author"], ["Unaffected"]);
+        await repository.AddAsync(first, CreateFile(first.Id, Hash('A')), default);
+        await repository.AddAsync(second, CreateFile(second.Id, Hash('B')), default);
+        await repository.AddAsync(third, CreateFile(third.Id, Hash('C')), default);
+        var firstUpdated = first with
+        {
+            Metadata = new BookMetadata(first.Metadata.Title, first.Metadata.Authors, Tags: ["Keep"])
+        };
+        var secondUpdated = second with
+        {
+            Metadata = new BookMetadata(second.Metadata.Title, second.Metadata.Authors)
+        };
+
+        var updated = await repository.UpdateListMetadataAsync(
+            [firstUpdated, secondUpdated],
+            BookListMetadataField.Tags,
+            default);
+
+        updated.Should().Be(2);
+        var books = await repository.ListAsync(default);
+        books.Single(book => book.Id == first.Id).Metadata.Tags.Should().Equal("Keep");
+        books.Single(book => book.Id == second.Id).Metadata.Tags.Should().BeEmpty();
+        books.Single(book => book.Id == third.Id).Metadata.Tags.Should().Equal("Unaffected");
+        await using var context = factory.Create(library.DirectoryPath);
+        (await context.Tags.Select(tag => tag.Name).ToListAsync())
+            .Should()
+            .BeEquivalentTo("Keep", "Unaffected");
+    }
+
+    [Fact]
     public async Task ListPageAsync_orders_by_normalized_title_for_indexed_library_loading()
     {
         using var library = new TemporaryLibrary();
