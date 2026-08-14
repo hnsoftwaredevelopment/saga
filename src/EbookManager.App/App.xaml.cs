@@ -110,6 +110,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IMetadataAdapter, CbzMetadataAdapter>();
         services.AddSingleton<IMetadataAdapterResolver, MetadataAdapterResolver>();
         services.AddSingleton<CalibreOpfMetadataSidecarStore>();
+        services.AddSingleton<IExternalCustomMetadataReader, CalibreCustomMetadataReader>();
         services.AddSingleton<IMetadataSourceResolver, MetadataSourceResolver>();
         services.AddSingleton<BookSearchService>();
         services.AddSingleton<DuplicateCandidateService>();

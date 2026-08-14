@@ -85,7 +85,9 @@ public sealed class ImportServiceFixture : IAsyncDisposable
 
     public ImportService CreateService(
         IBookRepository? bookRepository = null,
-        IMetadataSidecarStore? metadataSidecarStore = null)
+        IMetadataSidecarStore? metadataSidecarStore = null,
+        ICustomMetadataRepository? customMetadataRepository = null,
+        IExternalCustomMetadataReader? externalCustomMetadataReader = null)
     {
         var metadataSourceResolver = new MetadataSourceResolver(
             MetadataAdapterResolver,
@@ -98,7 +100,9 @@ public sealed class ImportServiceFixture : IAsyncDisposable
             FileStore,
             FileHasher,
             metadataSourceResolver,
-            ExceptionClassifier);
+            ExceptionClassifier,
+            externalCustomMetadataReader,
+            customMetadataRepository);
     }
 
     public string WriteSourceFile(string relativePath, string content) =>

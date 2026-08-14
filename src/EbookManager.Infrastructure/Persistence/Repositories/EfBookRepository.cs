@@ -105,9 +105,9 @@ public sealed class EfBookRepository(
     public async Task<BookDuplicateSnapshot> CreateDuplicateSnapshotAsync(CancellationToken cancellationToken)
     {
         await using var context = contextFactory.Create(libraryPath);
-        var hashes = await context.BookFiles
+        var hashRows = await context.BookFiles
             .AsNoTracking()
-            .Select(x => x.Sha256)
+            .Select(x => new { x.Sha256, x.BookId })
             .ToListAsync(cancellationToken);
         var duplicateKeys = await context.Books
             .AsNoTracking()
@@ -115,8 +115,13 @@ public sealed class EfBookRepository(
             .ToListAsync(cancellationToken);
 
         return new BookDuplicateSnapshot(
-            hashes.ToHashSet(StringComparer.Ordinal),
-            duplicateKeys.ToHashSet(StringComparer.Ordinal));
+            hashRows.Select(row => row.Sha256).ToHashSet(StringComparer.Ordinal),
+            duplicateKeys.ToHashSet(StringComparer.Ordinal))
+        {
+            BookIdsByFileHash = hashRows
+                .GroupBy(row => row.Sha256, StringComparer.Ordinal)
+                .ToDictionary(group => group.Key, group => group.First().BookId, StringComparer.Ordinal)
+        };
     }
 
     public async Task AddAsync(

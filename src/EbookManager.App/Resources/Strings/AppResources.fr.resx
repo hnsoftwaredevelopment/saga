@@ -486,6 +486,8 @@
   <data name="ImportMessageImportFailed" xml:space="preserve"><value>Échec de l’importation</value></data>
   <data name="ImportMessageCannotPersistResult" xml:space="preserve"><value>Impossible d’enregistrer le résultat de l’importation</value></data>
   <data name="ImportMessageCleanupIncomplete" xml:space="preserve"><value>Le nettoyage n’est pas entièrement terminé</value></data>
+  <data name="ImportMessageCalibreCustomMetadataImported" xml:space="preserve"><value>Métadonnées personnalisées Calibre importées</value></data>
+  <data name="ImportMessageCalibreCustomMetadataIgnored" xml:space="preserve"><value>Les métadonnées personnalisées Calibre n’ont pas pu être importées</value></data>
   <data name="ImportMessageMetadataWarning" xml:space="preserve"><value>Avertissement de métadonnées</value></data>
   <data name="ImportMetadataSourceCalibreOpf" xml:space="preserve"><value>Métadonnées chargées depuis Calibre metadata.opf</value></data>
   <data name="ImportMetadataSourceJson" xml:space="preserve"><value>Métadonnées chargées depuis Saga metadata.json</value></data>
@@ -542,3 +544,4 @@
   <data name="NoLibrarySelected" xml:space="preserve"><value>Aucune bibliothèque sélectionnée</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>
 </root>
+
