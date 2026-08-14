@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 using EbookManager.App.Controls;
+using EbookManager.App.Converters;
 using EbookManager.Presentation.ViewModels;
 using Syncfusion.UI.Xaml.Grid;
 
@@ -13,6 +14,7 @@ internal sealed class LibraryGridColumnVisibility
     private readonly SfDataGrid grid;
     private readonly LibraryView view;
     private const string CustomMappingPrefix = "CustomMetadata:";
+    private static readonly CustomMetadataValueConverter CustomMetadataValueConverter = new();
     private LibraryViewModel? viewModel;
     private bool isApplyingLayout;
 
@@ -164,6 +166,7 @@ internal sealed class LibraryGridColumnVisibility
             {
                 HeaderText = viewModel.GetColumnHeaderText(key),
                 MappingName = GetCustomMappingName(fieldId),
+                AllowSorting = false,
                 Width = viewModel.GetColumnWidth(view, key, 160),
                 CellTemplate = CreateCustomMetadataCellTemplate(fieldId)
             });
@@ -207,7 +210,11 @@ internal sealed class LibraryGridColumnVisibility
         text.SetResourceReference(HighlightedTextBlock.ForegroundProperty, "TextSecondaryBrush");
         text.SetBinding(
             HighlightedTextBlock.HighlightedTextProperty,
-            new Binding($"CustomMetadataValues[{fieldId:D}]"));
+            new Binding
+            {
+                Converter = CustomMetadataValueConverter,
+                ConverterParameter = fieldId.ToString("D")
+            });
         text.SetBinding(
             HighlightedTextBlock.SearchTextProperty,
             new Binding(nameof(BookRowViewModel.SearchText)));

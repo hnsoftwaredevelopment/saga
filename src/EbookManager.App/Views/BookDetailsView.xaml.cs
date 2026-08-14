@@ -46,6 +46,18 @@ public partial class BookDetailsView : System.Windows.Controls.UserControl
             return true;
         }
 
+        var decimalSeparator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+        if (!string.IsNullOrEmpty(decimalSeparator) &&
+            value.EndsWith(decimalSeparator, StringComparison.Ordinal) &&
+            decimal.TryParse(
+                value[..^decimalSeparator.Length],
+                System.Globalization.NumberStyles.Number,
+                System.Globalization.CultureInfo.CurrentCulture,
+                out _))
+        {
+            return true;
+        }
+
         return decimal.TryParse(
             value,
             System.Globalization.NumberStyles.Number,

@@ -560,9 +560,14 @@ public sealed partial class BookDetailsViewModel(
                 await customMetadataRepository.SetValueAsync(change.Value, cancellationToken);
             }
         }
-        catch (InvalidOperationException exception)
+        catch (Exception exception) when (exception is InvalidOperationException or FormatException)
         {
             LastSaveResult = new BookSaveResult(BookSaveStatus.Failed, [], exception.Message);
+            if (changes.Count > 0)
+            {
+                await LoadCustomMetadataValuesAsync(changes[0].BookId, cancellationToken);
+            }
+
             return false;
         }
 
@@ -593,8 +598,8 @@ public sealed partial class BookDetailsViewModel(
         type switch
         {
             CustomMetadataFieldType.Number => value?.NumberValue?.ToString("0.#############################", CultureInfo.CurrentCulture),
-            CustomMetadataFieldType.Date => value?.DateValue?.ToString("d", CultureInfo.CurrentCulture),
-            CustomMetadataFieldType.Boolean => value?.BooleanValue?.ToString(CultureInfo.CurrentCulture),
+            CustomMetadataFieldType.Date => value?.DateValue?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            CustomMetadataFieldType.Boolean => value?.BooleanValue?.ToString(),
             _ => value?.TextValue
         };
 

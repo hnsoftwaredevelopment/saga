@@ -178,7 +178,7 @@
   <data name="Isbn" xml:space="preserve">
     <value>ISBN</value>
   </data>
-  <data name="Key" xml:space="preserve"><value>Schluessel</value></data>
+  <data name="Key" xml:space="preserve"><value>Schlüssel</value></data>
   <data name="Language" xml:space="preserve">
     <value>Sprache</value>
   </data>
@@ -275,10 +275,10 @@
     <value>Bibliothek oeffnen</value>
   </data>
   <data name="PublicationDate" xml:space="preserve">
-    <value>Veroeffentlichungsdatum</value>
+    <value>Veröffentlichungsdatum</value>
   </data>
   <data name="SelectDate" xml:space="preserve">
-    <value>Datum auswaehlen</value>
+    <value>Datum auswählen</value>
   </data>
   <data name="Publisher" xml:space="preserve">
     <value>Verlag</value>
@@ -419,7 +419,7 @@
   <data name="CopyViewPromptTitle" xml:space="preserve"><value>Ansicht kopieren</value></data>
   <data name="CopyViewTooltip" xml:space="preserve"><value>Kopiert die ausgewählte Ansicht in eine neue eigene Ansicht</value></data>
   <data name="CustomMetadataFields" xml:space="preserve"><value>Eigene Metadatenfelder</value></data>
-  <data name="CustomMetadataFieldsDescription" xml:space="preserve"><value>Erstelle eigene Metadatenfelder fuer diese Bibliothek. Diese Definitionen werden in der aktiven Saga-Bibliothek gespeichert.</value></data>
+  <data name="CustomMetadataFieldsDescription" xml:space="preserve"><value>Erstelle eigene Metadatenfelder für diese Bibliothek. Diese Definitionen werden in der aktiven Saga-Bibliothek gespeichert.</value></data>
   <data name="CustomMetadataFieldTypeText" xml:space="preserve"><value>Text</value></data>
   <data name="CustomMetadataFieldTypeNumber" xml:space="preserve"><value>Zahl</value></data>
   <data name="CustomMetadataFieldTypeDate" xml:space="preserve"><value>Datum</value></data>
@@ -427,11 +427,11 @@
   <data name="CustomMetadataFieldTypeSingleSelect" xml:space="preserve"><value>Einzelauswahl</value></data>
   <data name="CustomMetadataFieldTypeMultiSelect" xml:space="preserve"><value>Mehrfachauswahl</value></data>
   <data name="CustomMetadataNewFieldNameTooltip" xml:space="preserve"><value>Name des neuen eigenen Metadatenfelds</value></data>
-  <data name="CustomMetadataSelectedFieldNameTooltip" xml:space="preserve"><value>Neuer Name fuer das ausgewaehlte eigene Metadatenfeld</value></data>
-  <data name="CustomMetadataDeleteTooltip" xml:space="preserve"><value>Das ausgewaehlte Feld und seine gespeicherten Werte loeschen</value></data>
-  <data name="CustomMetadataFieldAdded" xml:space="preserve"><value>Metadatenfeld hinzugefuegt.</value></data>
+  <data name="CustomMetadataSelectedFieldNameTooltip" xml:space="preserve"><value>Neuer Name für das ausgewählte eigene Metadatenfeld</value></data>
+  <data name="CustomMetadataDeleteTooltip" xml:space="preserve"><value>Das ausgewählte Feld und seine gespeicherten Werte löschen</value></data>
+  <data name="CustomMetadataFieldAdded" xml:space="preserve"><value>Metadatenfeld hinzugefügt.</value></data>
   <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Metadatenfeld umbenannt.</value></data>
-  <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Metadatenfeld geloescht.</value></data>
+  <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Metadatenfeld gelöscht.</value></data>
   <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Ein Metadatenfeld mit diesem Namen existiert bereits.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} muss eine Zahl sein.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} muss ein Datum sein.</value></data>

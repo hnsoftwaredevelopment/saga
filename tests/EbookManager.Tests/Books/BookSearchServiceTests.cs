@@ -108,6 +108,23 @@ public sealed class BookSearchServiceTests
         result.Should().ContainSingle().Which.Id.Should().Be(book.Id);
     }
 
+    [Fact]
+    public void Filter_treats_null_extra_values_as_no_match()
+    {
+        var service = new BookSearchService();
+        var book = new Book(
+            Guid.NewGuid(),
+            new BookMetadata("Plain title", ["Author"]),
+            ReadingStatus.Unread,
+            null,
+            DateTimeOffset.UtcNow,
+            DateTimeOffset.UtcNow);
+
+        var result = service.Filter([book], "reading club", _ => null!);
+
+        result.Should().BeEmpty();
+    }
+
     private static IReadOnlyList<Book> CreateBooks()
     {
         var now = new DateTime(2026, 7, 10, 12, 0, 0, DateTimeKind.Local);

@@ -124,10 +124,11 @@ public sealed class LibraryColumnRowGrid : Grid
             Margin = new Thickness(8, 0, 8, 0)
         };
         textBlock.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
-        if (key.CustomFieldId is { } fieldId &&
-            LayoutSnapshot?.CustomMetadataFields.TryGetValue(fieldId, out var field) == true)
+        if (key.CustomFieldId is { } fieldId)
         {
-            textBlock.Text = field.Name;
+            textBlock.Text = LayoutSnapshot?.CustomMetadataFields.TryGetValue(fieldId, out var field) == true
+                ? field.Name
+                : string.Empty;
         }
         else
         {
@@ -185,6 +186,18 @@ public sealed class LibraryColumnRowGrid : Grid
     private TextBlock CreateTextElement(LibraryColumnKey key)
     {
         var option = key.StandardOption;
+        if (key.CustomFieldId is { } fieldId)
+        {
+            var highlighted = new HighlightedTextBlock();
+            highlighted.SetResourceReference(HighlightedTextBlock.HighlightBrushProperty, "SearchHighlightBrush");
+            highlighted.HighlightedText = BookRow!.GetCustomMetadataValue(fieldId);
+            BindingOperations.SetBinding(
+                highlighted,
+                HighlightedTextBlock.SearchTextProperty,
+                new Binding(nameof(BookRowViewModel.SearchText)) { Source = BookRow });
+            return highlighted;
+        }
+
         if (option is LibraryColumnOption.Title or LibraryColumnOption.Authors or LibraryColumnOption.Series or LibraryColumnOption.Format)
         {
             var highlighted = new HighlightedTextBlock();
@@ -204,9 +217,7 @@ public sealed class LibraryColumnRowGrid : Grid
         BindingOperations.SetBinding(
             textBlock,
             TextBlock.TextProperty,
-            key.CustomFieldId is { } fieldId
-                ? new Binding($"CustomMetadataValues[{fieldId:D}]") { Source = BookRow }
-                : new Binding(GetRowProperty(option ?? LibraryColumnOption.Title)) { Source = BookRow });
+            new Binding(GetRowProperty(option ?? LibraryColumnOption.Title)) { Source = BookRow });
         if (option == LibraryColumnOption.Description)
         {
             textBlock.TextTrimming = TextTrimming.CharacterEllipsis;

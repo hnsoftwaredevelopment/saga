@@ -24,5 +24,12 @@ public sealed record LibraryColumnKey(string Value)
 
     public static implicit operator LibraryColumnKey(LibraryColumnOption option) => FromStandard(option);
 
+    public bool Equals(LibraryColumnKey? other) =>
+        other is not null &&
+        string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+
+    public override int GetHashCode() =>
+        StringComparer.OrdinalIgnoreCase.GetHashCode(Value);
+
     public override string ToString() => Value;
 }

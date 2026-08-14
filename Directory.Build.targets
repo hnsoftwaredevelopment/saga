@@ -21,6 +21,7 @@
     </PropertyGroup>
     <WriteLinesToFile File="$(SagaGeneratedAssemblyInfo)"
                       Overwrite="true"
+                      WriteOnlyWhenDifferent="true"
                       Lines="// &lt;auto-generated /&gt;&#xD;&#xA;using System.Reflection%3B&#xD;&#xA;[assembly: AssemblyVersion(&quot;$(SagaDailyBuildVersion)&quot;)]&#xD;&#xA;[assembly: AssemblyFileVersion(&quot;$(SagaDailyBuildVersion)&quot;)]&#xD;&#xA;[assembly: AssemblyInformationalVersion(&quot;$(SagaDailyBuildVersion)&quot;)]" />
     <ItemGroup>
       <Compile Include="$(SagaGeneratedAssemblyInfo)" />

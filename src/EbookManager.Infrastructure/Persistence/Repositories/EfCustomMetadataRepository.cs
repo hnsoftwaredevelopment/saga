@@ -31,6 +31,11 @@ public sealed class EfCustomMetadataRepository(
         CustomMetadataFieldType type,
         CancellationToken cancellationToken)
     {
+        if (!Enum.IsDefined(type))
+        {
+            throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported custom metadata field type.");
+        }
+
         var trimmedName = NormalizeDisplayName(name);
         var now = DateTimeOffset.UtcNow;
         await using var context = contextFactory.Create(libraryPath);

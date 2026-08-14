@@ -46,7 +46,7 @@ public sealed class BookSearchService
         MatchesDateTime(book.CreatedUtc, searchText) ||
         MatchesDateTime(book.UpdatedUtc, searchText) ||
         MatchesReadingStatus(book.ReadingStatus, searchText) ||
-        (extraValuesSelector?.Invoke(book).Any(value => Contains(value, searchText)) ?? false);
+        (extraValuesSelector?.Invoke(book)?.Any(value => Contains(value, searchText)) ?? false);
 
     private static bool Contains(string? value, string searchText) =>
         !string.IsNullOrWhiteSpace(value) &&

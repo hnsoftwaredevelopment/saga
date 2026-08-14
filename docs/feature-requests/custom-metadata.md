@@ -2,7 +2,7 @@
 
 ## Status
 
-Milestone 16 started.
+Milestone 16 implemented.
 
 ## Context
 

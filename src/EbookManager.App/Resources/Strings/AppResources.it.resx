@@ -423,7 +423,7 @@
   <data name="CustomMetadataFieldTypeText" xml:space="preserve"><value>Testo</value></data>
   <data name="CustomMetadataFieldTypeNumber" xml:space="preserve"><value>Numero</value></data>
   <data name="CustomMetadataFieldTypeDate" xml:space="preserve"><value>Data</value></data>
-  <data name="CustomMetadataFieldTypeBoolean" xml:space="preserve"><value>Si/no</value></data>
+  <data name="CustomMetadataFieldTypeBoolean" xml:space="preserve"><value>Sì/no</value></data>
   <data name="CustomMetadataFieldTypeSingleSelect" xml:space="preserve"><value>Scelta singola</value></data>
   <data name="CustomMetadataFieldTypeMultiSelect" xml:space="preserve"><value>Scelte multiple</value></data>
   <data name="CustomMetadataNewFieldNameTooltip" xml:space="preserve"><value>Nome del nuovo campo metadati personalizzato</value></data>
@@ -432,7 +432,7 @@
   <data name="CustomMetadataFieldAdded" xml:space="preserve"><value>Campo metadati aggiunto.</value></data>
   <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Campo metadati rinominato.</value></data>
   <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Campo metadati eliminato.</value></data>
-  <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Esiste gia un campo metadati con questo nome.</value></data>
+  <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Esiste già un campo metadati con questo nome.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} deve essere un numero.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} deve essere una data.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} deve essere sì o no.</value></data>

@@ -395,10 +395,16 @@ public sealed partial class LibraryViewModel : ObservableObject
     public async Task RefreshCustomMetadataColumnsAsync(CancellationToken cancellationToken = default)
     {
         await RefreshCustomMetadataDefinitionsAsync(cancellationToken);
+        var columnsChanged = PruneUnavailableColumnOptions();
         await RefreshCustomMetadataValuesAsync(books, cancellationToken);
+        RefreshActiveColumnOptions();
         RefreshColumnChoices();
         OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
         ApplyFilter();
+        if (columnsChanged)
+        {
+            await SaveColumnSettingsAsync(cancellationToken);
+        }
     }
 
     partial void OnLoadingLibraryTotalCountChanged(int value)
@@ -2054,6 +2060,38 @@ public sealed partial class LibraryViewModel : ObservableObject
             : normalized;
     }
 
+    private bool PruneUnavailableColumnOptions()
+    {
+        var changed = false;
+        foreach (var definition in ViewDefinitions)
+        {
+            var layoutKey = definition.LayoutKey;
+            if (!viewColumns.TryGetValue(layoutKey, out var columns))
+            {
+                continue;
+            }
+
+            var normalized = NormalizeColumnOptions(definition.BaseView, columns).ToList();
+            if (!columns.SequenceEqual(normalized))
+            {
+                viewColumns[layoutKey] = normalized;
+                changed = true;
+            }
+
+            if (viewColumnWidths.TryGetValue(layoutKey, out var widths))
+            {
+                var allowed = normalized.ToHashSet();
+                foreach (var key in widths.Keys.Where(key => !allowed.Contains(key)).ToArray())
+                {
+                    widths.Remove(key);
+                    changed = true;
+                }
+            }
+        }
+
+        return changed;
+    }
+
     private static LibraryColumnKey? ParseColumnKey(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -2307,7 +2345,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 selectedFilters.Any(group => group.ValueSelector(book).Any(group.Values.Contains)) ||
                 selectedCustomFilters.Any(group =>
                     GetCustomMetadataValues(book.Id).TryGetValue(group.FieldId, out var value) &&
-                    group.Values.Contains(value)))
+                    group.Values.Contains(value.Trim())))
             .ToList();
     }
 
@@ -2363,7 +2401,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 .GroupBy(value => value!.Trim(), StringComparer.OrdinalIgnoreCase)
                 .Select(group => new
                 {
-                    Name = group.First()!,
+                    Name = group.Key,
                     Count = group.Count()
                 })
                 .OrderBy(value => value.Name, StringComparer.CurrentCultureIgnoreCase)
@@ -2969,6 +3007,20 @@ public sealed partial class LibraryViewModel : ObservableObject
     }
 
     private async void OnDetailsBookSaved(object? sender, Book savedBook)
+    {
+        try
+        {
+            await HandleDetailsBookSavedAsync(savedBook);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception)
+        {
+        }
+    }
+
+    private async Task HandleDetailsBookSavedAsync(Book savedBook)
     {
         var mutableBooks = books.ToList();
         var index = mutableBooks.FindIndex(book => book.Id == savedBook.Id);

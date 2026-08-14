@@ -178,7 +178,7 @@
   <data name="Isbn" xml:space="preserve">
     <value>ISBN</value>
   </data>
-  <data name="Key" xml:space="preserve"><value>Cle</value></data>
+  <data name="Key" xml:space="preserve"><value>Clé</value></data>
   <data name="Language" xml:space="preserve">
     <value>Langue</value>
   </data>
@@ -278,7 +278,7 @@
     <value>Date de publication</value>
   </data>
   <data name="SelectDate" xml:space="preserve">
-    <value>Selectionnez une date</value>
+    <value>Sélectionnez une date</value>
   </data>
   <data name="Publisher" xml:space="preserve">
     <value>Editeur</value>

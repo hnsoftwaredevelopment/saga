@@ -117,6 +117,13 @@ public sealed class BookDetailsViewModelTests
 
         customMetadataRepository.Values[(book.Id, definition.Id)].TextValue.Should().Be("Nu");
         viewModel.HasUnsavedChanges.Should().BeFalse();
+
+        viewModel.CustomMetadataValues.Single().ValueText = string.Empty;
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        customMetadataRepository.Values.Should().NotContainKey((book.Id, definition.Id));
+        viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 
     [Theory]
@@ -124,6 +131,7 @@ public sealed class BookDetailsViewModelTests
     [InlineData("Nein", false)]
     [InlineData("Oui", true)]
     [InlineData("No", false)]
+    [InlineData("Sí", true)]
     [InlineData("Sì", true)]
     public async Task Boolean_custom_metadata_accepts_supported_localized_yes_no_values(
         string input,

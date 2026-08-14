@@ -339,6 +339,7 @@
                         </Style.Triggers>
                       </Style>
                     </ComboBox.Style>
+                    <ComboBoxItem Content="" Tag="{x:Null}" />
                     <ComboBoxItem Content="{loc:Loc Yes}" Tag="True" />
                     <ComboBoxItem Content="{loc:Loc No}" Tag="False" />
                   </ComboBox>

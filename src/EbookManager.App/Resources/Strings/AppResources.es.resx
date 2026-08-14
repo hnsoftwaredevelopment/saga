@@ -421,10 +421,10 @@
   <data name="CustomMetadataFields" xml:space="preserve"><value>Campos de metadatos personalizados</value></data>
   <data name="CustomMetadataFieldsDescription" xml:space="preserve"><value>Crea tus propios campos de metadatos para esta biblioteca. Estas definiciones se guardan en la biblioteca Saga activa.</value></data>
   <data name="CustomMetadataFieldTypeText" xml:space="preserve"><value>Texto</value></data>
-  <data name="CustomMetadataFieldTypeNumber" xml:space="preserve"><value>Numero</value></data>
+  <data name="CustomMetadataFieldTypeNumber" xml:space="preserve"><value>Número</value></data>
   <data name="CustomMetadataFieldTypeDate" xml:space="preserve"><value>Fecha</value></data>
-  <data name="CustomMetadataFieldTypeBoolean" xml:space="preserve"><value>Si/no</value></data>
-  <data name="CustomMetadataFieldTypeSingleSelect" xml:space="preserve"><value>Opcion unica</value></data>
+  <data name="CustomMetadataFieldTypeBoolean" xml:space="preserve"><value>Sí/no</value></data>
+  <data name="CustomMetadataFieldTypeSingleSelect" xml:space="preserve"><value>Opción única</value></data>
   <data name="CustomMetadataFieldTypeMultiSelect" xml:space="preserve"><value>Varias opciones</value></data>
   <data name="CustomMetadataNewFieldNameTooltip" xml:space="preserve"><value>Nombre del nuevo campo de metadatos personalizado</value></data>
   <data name="CustomMetadataSelectedFieldNameTooltip" xml:space="preserve"><value>Nuevo nombre para el campo de metadatos personalizado seleccionado</value></data>

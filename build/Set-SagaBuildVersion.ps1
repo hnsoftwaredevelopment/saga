@@ -5,7 +5,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$today = Get-Date -Format 'yyyy.M.d'
+$today = [DateTime]::Now.ToString('yyyy.M.d', [Globalization.CultureInfo]::InvariantCulture)
 $reuseWindowSeconds = 30
 $stateDirectory = Split-Path -Parent $StateFile
 if (-not [string]::IsNullOrWhiteSpace($stateDirectory)) {
@@ -15,7 +15,13 @@ if (-not [string]::IsNullOrWhiteSpace($stateDirectory)) {
 $mutex = [System.Threading.Mutex]::new($false, 'Global\SagaDailyBuildVersion')
 $lockTaken = $false
 try {
-    $lockTaken = $mutex.WaitOne([TimeSpan]::FromSeconds(30))
+    try {
+        $lockTaken = $mutex.WaitOne([TimeSpan]::FromSeconds(30))
+    }
+    catch [System.Threading.AbandonedMutexException] {
+        $lockTaken = $true
+    }
+
     if (-not $lockTaken) {
         throw 'Could not acquire the Saga build version lock.'
     }

@@ -165,6 +165,24 @@ public sealed class LibraryDbContextTests
         (await customRepository.GetValuesAsync(book.Id, default))
             .Should()
             .NotContain(value => value.FieldId == readDate.Id);
+
+        await bookRepository.DeleteAsync(book.Id, default);
+        await using var context = factory.Create(library.DirectoryPath);
+        (await context.CustomMetadataValues.AnyAsync(value => value.BookId == book.Id))
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public async Task Custom_metadata_repository_rejects_unknown_field_type()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var customRepository = new EfCustomMetadataRepository(factory, library.DirectoryPath);
+
+        var act = () => customRepository.AddDefinitionAsync("Onbekend", (CustomMetadataFieldType)999, default);
+
+        await act.Should().ThrowAsync<ArgumentOutOfRangeException>();
     }
 
     [Fact]
