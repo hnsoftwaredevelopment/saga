@@ -436,6 +436,7 @@
   <data name="CustomMetadataOptions" xml:space="preserve"><value>Lista de opciones</value></data>
   <data name="CustomMetadataOptionsDescription" xml:space="preserve"><value>Para campos de opción única o múltiple, introduzca una opción por línea.</value></data>
   <data name="CustomMetadataOptionsSaved" xml:space="preserve"><value>Lista de opciones guardada.</value></data>
+  <data name="CustomMetadataOptionsSemicolonNotAllowed" xml:space="preserve"><value>Las opciones no pueden contener punto y coma.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} debe ser un número.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} debe ser una fecha.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} debe ser sí o no.</value></data>
@@ -542,6 +543,13 @@
   <data name="SplashVersionFormat" xml:space="preserve"><value>Versión {0}</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Error al iniciar Saga</value></data>
   <data name="NoLibrarySelected" xml:space="preserve"><value>No hay ninguna biblioteca seleccionada</value></data>
+  <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Edición múltiple de metadatos</value></data>
+  <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Editar metadatos de los libros seleccionados</value></data>
+  <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Libros seleccionados</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Marque solo los campos que desea cambiar. Los campos marcados y vacíos se borrarán.</value></data>
+  <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Use punto y coma para separar varios valores.</value></data>
+  <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Los campos sin marcar no se modifican.</value></data>
+  <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>Se omitieron {0} libro(s) seleccionados porque la combinación modificada de título/autor ya existe.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sí</value></data>
 </root>
 

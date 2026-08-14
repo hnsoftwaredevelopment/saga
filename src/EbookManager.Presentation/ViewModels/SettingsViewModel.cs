@@ -333,6 +333,10 @@ public sealed partial class SettingsViewModel(
         {
             await operation();
         }
+        catch (ArgumentException exception) when (exception.Message == "CustomMetadataOptionsSemicolonNotAllowed")
+        {
+            CustomMetadataStatusMessage = "CustomMetadataOptionsSemicolonNotAllowed";
+        }
         catch (InvalidOperationException)
         {
             CustomMetadataStatusMessage = "CustomMetadataFieldDuplicate";
@@ -352,6 +356,11 @@ public sealed partial class SettingsViewModel(
                      .Select(value => value.Trim())
                      .Where(value => value.Length > 0))
         {
+            if (option.Contains(';', StringComparison.Ordinal))
+            {
+                throw new ArgumentException("CustomMetadataOptionsSemicolonNotAllowed");
+            }
+
             if (seen.Add(option))
             {
                 result.Add(option);

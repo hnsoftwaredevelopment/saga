@@ -45,6 +45,7 @@
   <data name="CustomMetadataOptions" xml:space="preserve"><value>Options</value></data>
   <data name="CustomMetadataOptionsDescription" xml:space="preserve"><value>For single and multiple choice fields, enter one option per line.</value></data>
   <data name="CustomMetadataOptionsSaved" xml:space="preserve"><value>Options saved.</value></data>
+  <data name="CustomMetadataOptionsSemicolonNotAllowed" xml:space="preserve"><value>Options cannot contain semicolons.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} must be a number.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} must be a date.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} must be yes or no.</value></data>
@@ -274,6 +275,13 @@
   <data name="Undo" xml:space="preserve"><value>Undo</value></data>
   <data name="Unread" xml:space="preserve"><value>Unread</value></data>
   <data name="UnsavedChanges" xml:space="preserve"><value>There are unsaved changes.</value></data>
+  <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Multi-edit metadata</value></data>
+  <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Edit metadata for the selected books</value></data>
+  <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Selected books</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Check only the fields you want to change. Checked empty fields will be cleared.</value></data>
+  <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Use semicolons to separate multiple values.</value></data>
+  <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Unchecked fields remain unchanged.</value></data>
+  <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} selected book(s) were skipped because the edited title/author combination already exists.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
 </root>
 

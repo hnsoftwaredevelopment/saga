@@ -118,6 +118,20 @@ public sealed class UserInteractionService(
         return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
     }
 
+    public Task ShowMessageAsync(
+        string title,
+        string message,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        System.Windows.MessageBox.Show(
+            message,
+            title,
+            System.Windows.MessageBoxButton.OK,
+            System.Windows.MessageBoxImage.Information);
+        return Task.CompletedTask;
+    }
+
     public Task ShowImportResultAsync(ImportResultViewModel result, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -155,6 +169,21 @@ public sealed class UserInteractionService(
 
         window.ShowDialog();
         return Task.CompletedTask;
+    }
+
+    public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
+        MetadataMultiEditViewModel edit,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = new MetadataMultiEditWindow(edit);
+        if (System.Windows.Application.Current?.MainWindow is { } owner)
+        {
+            window.Owner = owner;
+        }
+
+        var result = window.ShowDialog() == true ? window.Result : null;
+        return Task.FromResult(result);
     }
 
     private static string? ShowTextPrompt(string title, string message, string initialValue)

@@ -32,6 +32,11 @@
     <LineGeometry StartPoint="9.5,13" EndPoint="16.5,13" />
   </GeometryGroup>
 
+  <GeometryGroup x:Key="MetadataMultiEditIconGeometry">
+    <Geometry>M4 5h15v2H4V5Zm0 5h15v2H4v-2Zm0 5h8v2H4v-2Z</Geometry>
+    <Geometry>M15 20h-3v-3l6-6a1.4 1.4 0 0 1 2 0l1 1a1.4 1.4 0 0 1 0 2l-6 6Z</Geometry>
+  </GeometryGroup>
+
   <GeometryGroup x:Key="SettingsIconGeometry">
     <Geometry>M19.4 13.5c.08-.48.08-.52.08-1s0-.52-.08-1l2.02-1.55-2-3.46-2.38.96a7.73 7.73 0 0 0-1.73-1l-.36-2.56h-4l-.36 2.56c-.62.25-1.2.58-1.73 1L6.48 6.5l-2 3.46L6.5 11.5c-.08.48-.08.52-.08 1s0 .52.08 1l-2.02 1.55 2 3.46 2.38-.96c.53.42 1.11.75 1.73 1l.36 2.56h4l.36-2.56c.62-.25 1.2-.58 1.73-1l2.38.96 2-3.46-2.02-1.55ZM13 15.5a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z</Geometry>
   </GeometryGroup>

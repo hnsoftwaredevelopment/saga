@@ -19,6 +19,23 @@ public partial class DetailedGridView : System.Windows.Controls.UserControl
             sender is System.Windows.FrameworkElement { DataContext: EbookManager.Presentation.ViewModels.BookRowViewModel row })
         {
             viewModel.SelectedBook = row;
+            viewModel.SetSelectedBooks([row]);
+        }
+    }
+
+    private void BooksGridPreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (DataContext is EbookManager.Presentation.ViewModels.LibraryViewModel viewModel)
+        {
+            LibraryGridSelectionHelper.SelectRowUnderPointer(BooksGrid, viewModel, e);
+        }
+    }
+
+    private void BooksGridSelectionChanged(object sender, Syncfusion.UI.Xaml.Grid.GridSelectionChangedEventArgs e)
+    {
+        if (DataContext is EbookManager.Presentation.ViewModels.LibraryViewModel viewModel)
+        {
+            viewModel.SetSelectedBooks(BooksGrid.SelectedItems.OfType<EbookManager.Presentation.ViewModels.BookRowViewModel>());
         }
     }
 }

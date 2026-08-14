@@ -124,6 +124,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     }
 
     public BulkObservableCollection<BookRowViewModel> VisibleBooks { get; } = [];
+    public ObservableCollection<BookRowViewModel> SelectedBooks { get; } = [];
     public ObservableCollection<FacetFilterViewModel> AuthorFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> CategoryFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> SeriesFilters { get; } = [];
@@ -168,6 +169,13 @@ public sealed partial class LibraryViewModel : ObservableObject
     public bool CanManageSelectedViewDefinition =>
         ViewDefinitions.FirstOrDefault(definition =>
             definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase)) is { IsBuiltIn: false };
+
+    public int SelectedBookCount => SelectedBooks.Count;
+
+    public bool CanMultiEditSelectedBooks => SelectedBooks.Count > 0;
+
+    public string MetadataMultiEditMenuHeader =>
+        $"{localize("MetadataMultiEditTitle")} ({SelectedBookCount})";
 
     public IReadOnlyList<LibraryColumnKey> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
 
@@ -307,6 +315,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         renameCurrentViewCommand ??= new AsyncRelayCommand(RenameCurrentViewAsync, CanManageCurrentView);
     public IAsyncRelayCommand DeleteCurrentViewCommand =>
         deleteCurrentViewCommand ??= new AsyncRelayCommand(DeleteCurrentViewAsync, CanManageCurrentView);
+    public IAsyncRelayCommand ShowMetadataMultiEditCommand =>
+        showMetadataMultiEditCommand ??= new AsyncRelayCommand(ShowMetadataMultiEditAsync, () => CanMultiEditSelectedBooks);
 
     private AsyncRelayCommand? refreshCommand;
     private AsyncRelayCommand? addBooksCommand;
@@ -336,6 +346,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand? copyCurrentViewCommand;
     private AsyncRelayCommand? renameCurrentViewCommand;
     private AsyncRelayCommand? deleteCurrentViewCommand;
+    private AsyncRelayCommand? showMetadataMultiEditCommand;
 
     public async Task RefreshAsync(CancellationToken cancellationToken = default)
     {
@@ -714,6 +725,41 @@ public sealed partial class LibraryViewModel : ObservableObject
         customMetadataValuesByBookId[bookId] = formattedValues;
     }
 
+    private async Task RefreshCustomMetadataValuesForBooksAsync(
+        IReadOnlyCollection<Guid> bookIds,
+        CancellationToken cancellationToken)
+    {
+        if (customMetadataRepository is null || bookIds.Count == 0)
+        {
+            return;
+        }
+
+        var distinctBookIds = bookIds.Distinct().ToArray();
+        var values = await customMetadataRepository.GetValuesForBooksAsync(distinctBookIds, cancellationToken);
+        var valuesByBook = values
+            .Where(value => customMetadataFieldDefinitionMap.ContainsKey(value.FieldId))
+            .GroupBy(value => value.BookId)
+            .ToDictionary(
+                group => group.Key,
+                group => (IReadOnlyDictionary<Guid, string>)group.ToDictionary(
+                    value => value.FieldId,
+                    value => FormatCustomMetadataValue(
+                        customMetadataFieldDefinitionMap[value.FieldId].Type,
+                        value)));
+
+        foreach (var bookId in distinctBookIds)
+        {
+            if (valuesByBook.TryGetValue(bookId, out var formattedValues) &&
+                formattedValues.Count > 0)
+            {
+                customMetadataValuesByBookId[bookId] = formattedValues;
+                continue;
+            }
+
+            customMetadataValuesByBookId.Remove(bookId);
+        }
+    }
+
     private IReadOnlyDictionary<Guid, string> GetCustomMetadataValues(Guid bookId) =>
         customMetadataValuesByBookId.TryGetValue(bookId, out var values)
             ? values
@@ -788,6 +834,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         var performance = new LibraryViewPerformanceTracker("ApplyFilter");
         var selectedId = SelectedBook?.Id;
+        var selectedIds = SelectedBooks.Select(row => row.Id).ToHashSet();
         var filteredBooks = performance.Measure(
             "filter",
             () => ApplyFacetFilters(searchService.Filter(
@@ -819,10 +866,38 @@ public sealed partial class LibraryViewModel : ObservableObject
             () => SelectedBook = selectedId is null
                 ? VisibleBooks.FirstOrDefault()
                 : VisibleBooks.FirstOrDefault(row => row.Id == selectedId.Value));
+        performance.Measure(
+            "multi-selection",
+            () => SetSelectedBooks(VisibleBooks.Where(row => selectedIds.Contains(row.Id))));
         EmptyStateMessage = HasActiveLibrary
             ? "This library is empty. Add books or scan a folder to begin."
             : "Create or open a library to get started.";
         ReportPerformance(performance, rows.Count);
+    }
+
+    public void SetSelectedBooks(IEnumerable<BookRowViewModel> selectedRows)
+    {
+        var visibleIds = VisibleBooks.Select(visible => visible.Id).ToHashSet();
+        var rows = selectedRows
+            .Where(row => visibleIds.Contains(row.Id))
+            .GroupBy(row => row.Id)
+            .Select(group => group.First())
+            .ToList();
+        if (SelectedBooks.Select(row => row.Id).SequenceEqual(rows.Select(row => row.Id)))
+        {
+            return;
+        }
+
+        SelectedBooks.Clear();
+        foreach (var row in rows)
+        {
+            SelectedBooks.Add(row);
+        }
+
+        OnPropertyChanged(nameof(SelectedBookCount));
+        OnPropertyChanged(nameof(CanMultiEditSelectedBooks));
+        OnPropertyChanged(nameof(MetadataMultiEditMenuHeader));
+        showMetadataMultiEditCommand?.NotifyCanExecuteChanged();
     }
 
     public void SetGroupingOptions(IEnumerable<LibraryGroupOption> options)
@@ -2406,6 +2481,18 @@ public sealed partial class LibraryViewModel : ObservableObject
             books.SelectMany(book => book.Formats.Select(format => format.ToString())),
             FormatDisplayName);
         RefreshCustomMetadataFilters();
+        NotifyFacetFilterCollectionsChanged();
+    }
+
+    private void NotifyFacetFilterCollectionsChanged()
+    {
+        OnPropertyChanged(nameof(AuthorFilters));
+        OnPropertyChanged(nameof(CategoryFilters));
+        OnPropertyChanged(nameof(SeriesFilters));
+        OnPropertyChanged(nameof(StatusFilters));
+        OnPropertyChanged(nameof(EReaderFilters));
+        OnPropertyChanged(nameof(LanguageFilters));
+        OnPropertyChanged(nameof(FormatFilters));
     }
 
     private void RefreshCustomMetadataFilters()
@@ -2596,6 +2683,195 @@ public sealed partial class LibraryViewModel : ObservableObject
             CancellationToken.None);
     }
 
+    private async Task ShowMetadataMultiEditAsync(CancellationToken cancellationToken)
+    {
+        var selectedIds = SelectedBooks.Select(row => row.Id).ToArray();
+        if (selectedIds.Length == 0)
+        {
+            return;
+        }
+
+        var edit = new MetadataMultiEditViewModel(selectedIds.Length, customMetadataFieldDefinitions);
+        var result = await userInteraction.ShowMetadataMultiEditAsync(edit, cancellationToken);
+        if (result is null)
+        {
+            return;
+        }
+
+        await ApplyMetadataMultiEditAsync(selectedIds, result, cancellationToken);
+    }
+
+    private async Task ApplyMetadataMultiEditAsync(
+        IReadOnlyCollection<Guid> selectedIds,
+        MetadataMultiEditResult result,
+        CancellationToken cancellationToken)
+    {
+        IsCleaningMetadata = true;
+        MetadataCleanupStatusText = "Updating metadata...";
+        await Task.Yield();
+        try
+        {
+            var persistedBooks = new List<Book>();
+            var customChanges = TryCreateCustomMetadataMultiEditChanges(result);
+            if (customChanges is null)
+            {
+                await userInteraction.ShowMessageAsync(
+                    localize("MetadataMultiEditTitle"),
+                    MetadataCleanupStatusText,
+                    cancellationToken);
+                return;
+            }
+
+            var customMetadataChanged = false;
+            var skippedBookCount = 0;
+            foreach (var bookId in selectedIds)
+            {
+                var fullBook = await bookRepository.GetAsync(bookId, cancellationToken);
+                if (fullBook is not null)
+                {
+                    var updatedBook = ApplyMetadataMultiEdit(fullBook, result);
+                    if (updatedBook != fullBook)
+                    {
+                        try
+                        {
+                            await bookRepository.UpdateAsync(updatedBook, cancellationToken);
+                            persistedBooks.Add(updatedBook);
+                        }
+                        catch (BookConflictException)
+                        {
+                            // Keep conflicting books unchanged; later slices can expose skipped books in the dialog.
+                            skippedBookCount++;
+                        }
+                    }
+
+                    if (customChanges.Count > 0 &&
+                        customMetadataRepository is not null &&
+                        await ApplyCustomMetadataMultiEditAsync(bookId, customChanges, cancellationToken))
+                    {
+                        customMetadataChanged = true;
+                    }
+                }
+            }
+
+            if (customMetadataChanged)
+            {
+                await RefreshCustomMetadataValuesForBooksAsync(selectedIds, cancellationToken);
+                if (SelectedBook is { } selectedBook &&
+                    selectedIds.Contains(selectedBook.Id))
+                {
+                    await Details.LoadCustomMetadataValuesAsync(selectedBook.Id, cancellationToken);
+                }
+            }
+
+            if (persistedBooks.Count > 0)
+            {
+                ApplyPersistedMetadataChanges(persistedBooks, refreshDisplay: !customMetadataChanged);
+            }
+
+            if (customMetadataChanged)
+            {
+                RefreshFacetFilters();
+                ApplyFilter();
+            }
+
+            if (skippedBookCount > 0)
+            {
+                await userInteraction.ShowMessageAsync(
+                    localize("MetadataMultiEditTitle"),
+                    string.Format(
+                        CultureInfo.CurrentCulture,
+                        localize("MetadataMultiEditSkippedConflicts"),
+                        skippedBookCount),
+                    cancellationToken);
+            }
+        }
+        finally
+        {
+            IsCleaningMetadata = false;
+        }
+    }
+
+    private static Book ApplyMetadataMultiEdit(Book book, MetadataMultiEditResult result)
+    {
+        var metadata = book.Metadata;
+        var authors = result.UpdateAuthors ? SplitRequiredList(result.AuthorsText) : metadata.Authors;
+        var tags = result.UpdateTags ? SplitNullableList(result.TagsText) : metadata.Tags;
+        var series = result.UpdateSeries ? NormalizeBlank(result.SeriesText) : metadata.Series;
+        var seriesNumber = result.UpdateSeries && series is null ? null : metadata.SeriesNumber;
+        var language = result.UpdateLanguage ? NormalizeBlank(result.LanguageText) : metadata.Language;
+        var readingStatus = result.UpdateStatus ? result.Status : book.ReadingStatus;
+
+        if (authors.SequenceEqual(metadata.Authors) &&
+            NullableSequenceEqual(tags, metadata.Tags) &&
+            series == metadata.Series &&
+            seriesNumber == metadata.SeriesNumber &&
+            language == metadata.Language &&
+            readingStatus == book.ReadingStatus)
+        {
+            return book;
+        }
+
+        return book with
+        {
+            Metadata = CopyMetadata(metadata, authors, tags, series, language, seriesNumber),
+            ReadingStatus = readingStatus,
+            UpdatedUtc = DateTimeOffset.UtcNow
+        };
+    }
+
+    private IReadOnlyList<CustomMetadataValueChange>? TryCreateCustomMetadataMultiEditChanges(
+        MetadataMultiEditResult result)
+    {
+        try
+        {
+            return (result.CustomFields ?? [])
+                .Select(field => string.IsNullOrWhiteSpace(field.ValueText)
+                    ? new CustomMetadataValueChange(Guid.Empty, field.FieldId, null)
+                    : new CustomMetadataValueChange(Guid.Empty, field.FieldId, CreateCustomMetadataValue(Guid.Empty, field)))
+                .ToArray();
+        }
+        catch (FormatException exception)
+        {
+            MetadataCleanupStatusText = CustomMetadataValueParser.TryFormatValidationMessage(exception, localize, out var message)
+                ? message
+                : exception.Message;
+            return null;
+        }
+        catch (InvalidOperationException exception)
+        {
+            MetadataCleanupStatusText = CustomMetadataValueParser.TryFormatValidationMessage(exception, localize, out var message)
+                ? message
+                : exception.Message;
+            return null;
+        }
+    }
+
+    private async Task<bool> ApplyCustomMetadataMultiEditAsync(
+        Guid bookId,
+        IReadOnlyList<CustomMetadataValueChange> changes,
+        CancellationToken cancellationToken)
+    {
+        if (customMetadataRepository is null || changes.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (var change in changes)
+        {
+            if (change.Value is null)
+            {
+                await customMetadataRepository.DeleteValueAsync(bookId, change.FieldId, cancellationToken);
+                continue;
+            }
+
+            await customMetadataRepository.SetValueAsync(
+                change.Value with { BookId = bookId, UpdatedUtc = DateTimeOffset.UtcNow },
+                cancellationToken);
+        }
+
+        return true;
+    }
+
     private async Task ApplyMetadataValueEditAsync(
         MetadataFilterKind kind,
         string oldValue,
@@ -2724,7 +3000,8 @@ public sealed partial class LibraryViewModel : ObservableObject
                     change.Original.Metadata.Authors,
                     change.Original.Metadata.Tags,
                     change.Original.Metadata.Series,
-                    change.NormalizedLanguage)
+                    change.NormalizedLanguage,
+                    change.Original.Metadata.SeriesNumber)
             })
             .ToArray();
 
@@ -2787,7 +3064,9 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    private void ApplyPersistedMetadataChanges(IReadOnlyList<Book> persistedBooks)
+    private void ApplyPersistedMetadataChanges(
+        IReadOnlyList<Book> persistedBooks,
+        bool refreshDisplay = true)
     {
         var persistedById = persistedBooks.ToDictionary(book => book.Id);
         books = books
@@ -2798,6 +3077,11 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             Details.Load(selectedChangedBook, CurrentLibraryPath);
             _ = Details.LoadCustomMetadataValuesAsync(selectedChangedBook.Id, CancellationToken.None);
+        }
+
+        if (!refreshDisplay)
+        {
+            return;
         }
 
         RefreshFacetFilters();
@@ -2879,7 +3163,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     replacementValue,
                     remove,
                     out var authors)
-                ? book with { Metadata = CopyMetadata(metadata, authors, metadata.Tags, metadata.Series, metadata.Language) }
+                ? book with { Metadata = CopyMetadata(metadata, authors, metadata.Tags, metadata.Series, metadata.Language, metadata.SeriesNumber) }
                 : book,
             MetadataFilterKind.Tag => ReplaceListValue(
                     metadata.Tags ?? [],
@@ -2887,7 +3171,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     replacementValue,
                     remove,
                     out var tags)
-                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, tags.Count == 0 ? null : tags, metadata.Series, metadata.Language) }
+                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, tags.Count == 0 ? null : tags, metadata.Series, metadata.Language, metadata.SeriesNumber) }
                 : book,
             MetadataFilterKind.Series => ReplaceScalarValue(
                     metadata.Series,
@@ -2895,7 +3179,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     replacementValue,
                     remove,
                     out var series)
-                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, series, metadata.Language) }
+                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, series, metadata.Language, series is null ? null : metadata.SeriesNumber) }
                 : book,
             MetadataFilterKind.Language => ReplaceScalarValue(
                     metadata.Language,
@@ -2904,7 +3188,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     remove,
                     out var language,
                     LanguageDisplayService.FilterKey)
-                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, metadata.Series, language) }
+                ? book with { Metadata = CopyMetadata(metadata, metadata.Authors, metadata.Tags, metadata.Series, language, metadata.SeriesNumber) }
                 : book,
             _ => book
         };
@@ -2973,7 +3257,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         IReadOnlyList<string> authors,
         IReadOnlyList<string>? tags,
         string? series,
-        string? language) =>
+        string? language,
+        decimal? seriesNumber) =>
         new(
             metadata.Title,
             authors,
@@ -2983,9 +3268,34 @@ public sealed partial class LibraryViewModel : ObservableObject
             metadata.PublicationDate,
             tags,
             series,
-            metadata.SeriesNumber,
+            seriesNumber,
             metadata.Isbn,
             metadata.CoverBytes);
+
+    private static IReadOnlyList<string> SplitRequiredList(string? value) =>
+        SplitList(value, distinct: true);
+
+    private static IReadOnlyList<string>? SplitNullableList(string? value)
+    {
+        var values = SplitList(value, distinct: true);
+        return values.Count == 0 ? null : values;
+    }
+
+    private static IReadOnlyList<string> SplitList(string? value, bool distinct = false) =>
+        CustomMetadataValueParser.SplitList(value, distinct);
+
+    private static string? NormalizeBlank(string? value)
+        => CustomMetadataValueParser.NormalizeBlank(value);
+
+    private static bool NullableSequenceEqual<T>(
+        IReadOnlyList<T>? first,
+        IReadOnlyList<T>? second) =>
+        first is null ? second is null : second is not null && first.SequenceEqual(second);
+
+    private static CustomMetadataValue CreateCustomMetadataValue(
+        Guid bookId,
+        MetadataMultiEditCustomFieldResult value) =>
+        CustomMetadataValueParser.Create(bookId, value.FieldId, value.Name, value.Type, value.ValueText);
 
     private static string? NormalizeStoredLanguageCode(string? value)
     {

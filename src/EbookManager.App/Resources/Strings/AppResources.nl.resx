@@ -45,6 +45,7 @@
   <data name="CustomMetadataOptions" xml:space="preserve"><value>Keuzelijst</value></data>
   <data name="CustomMetadataOptionsDescription" xml:space="preserve"><value>Voer voor enkele en meerdere keuzes één optie per regel in.</value></data>
   <data name="CustomMetadataOptionsSaved" xml:space="preserve"><value>Keuzelijst opgeslagen.</value></data>
+  <data name="CustomMetadataOptionsSemicolonNotAllowed" xml:space="preserve"><value>Opties mogen geen puntkomma's bevatten.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} moet een getal zijn.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} moet een datum zijn.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} moet ja of nee zijn.</value></data>
@@ -274,6 +275,13 @@
   <data name="Undo" xml:space="preserve"><value>Ongedaan maken</value></data>
   <data name="Unread" xml:space="preserve"><value>Ongelezen</value></data>
   <data name="UnsavedChanges" xml:space="preserve"><value>Er zijn niet-opgeslagen wijzigingen.</value></data>
+  <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Metadata in meerdere boeken bewerken</value></data>
+  <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Bewerk metadata voor de geselecteerde boeken</value></data>
+  <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Geselecteerde boeken</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Vink alleen de velden aan die u wilt wijzigen. Aangevinkte lege velden worden leeggemaakt.</value></data>
+  <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Gebruik puntkomma's om meerdere waarden te scheiden.</value></data>
+  <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Niet-aangevinkte velden blijven ongewijzigd.</value></data>
+  <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} geselecteerde boek(en) zijn overgeslagen omdat de gewijzigde titel/auteur-combinatie al bestaat.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
 </root>
 
