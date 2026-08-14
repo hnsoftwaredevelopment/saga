@@ -542,6 +542,12 @@
   <data name="SplashVersionFormat" xml:space="preserve"><value>Versione {0}</value></data>
   <data name="StartupFailedTitle" xml:space="preserve"><value>Avvio di Saga non riuscito</value></data>
   <data name="NoLibrarySelected" xml:space="preserve"><value>Nessuna biblioteca selezionata</value></data>
+  <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Modifica multipla dei metadati</value></data>
+  <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Modifica i metadati dei libri selezionati</value></data>
+  <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Libri selezionati</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Seleziona solo i campi da modificare. I campi selezionati e vuoti verranno cancellati.</value></data>
+  <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Usa il punto e virgola per separare più valori.</value></data>
+  <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>I campi non selezionati restano invariati.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sì</value></data>
 </root>
 

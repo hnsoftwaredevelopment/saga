@@ -274,6 +274,12 @@
   <data name="Undo" xml:space="preserve"><value>Ongedaan maken</value></data>
   <data name="Unread" xml:space="preserve"><value>Ongelezen</value></data>
   <data name="UnsavedChanges" xml:space="preserve"><value>Er zijn niet-opgeslagen wijzigingen.</value></data>
+  <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Metadata multi-edit</value></data>
+  <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Bewerk metadata voor de geselecteerde boeken</value></data>
+  <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Geselecteerde boeken</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Vink alleen de velden aan die u wilt wijzigen. Aangevinkte lege velden worden leeggemaakt.</value></data>
+  <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Gebruik puntkomma's om meerdere waarden te scheiden.</value></data>
+  <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Niet-aangevinkte velden blijven ongewijzigd.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
 </root>
 

@@ -157,6 +157,21 @@ public sealed class UserInteractionService(
         return Task.CompletedTask;
     }
 
+    public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
+        MetadataMultiEditViewModel edit,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = new MetadataMultiEditWindow(edit);
+        if (System.Windows.Application.Current?.MainWindow is { } owner)
+        {
+            window.Owner = owner;
+        }
+
+        var result = window.ShowDialog() == true ? window.Result : null;
+        return Task.FromResult(result);
+    }
+
     private static string? ShowTextPrompt(string title, string message, string initialValue)
     {
         var window = new System.Windows.Window

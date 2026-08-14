@@ -21,4 +21,12 @@ public partial class DetailedGridView : System.Windows.Controls.UserControl
             viewModel.SelectedBook = row;
         }
     }
+
+    private void BooksGridSelectionChanged(object sender, Syncfusion.UI.Xaml.Grid.GridSelectionChangedEventArgs e)
+    {
+        if (DataContext is EbookManager.Presentation.ViewModels.LibraryViewModel viewModel)
+        {
+            viewModel.SetSelectedBooks(BooksGrid.SelectedItems.OfType<EbookManager.Presentation.ViewModels.BookRowViewModel>());
+        }
+    }
 }

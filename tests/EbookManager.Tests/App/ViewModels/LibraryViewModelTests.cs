@@ -1835,6 +1835,175 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_multi_edit_updates_only_selected_books_and_refreshes_filters()
+    {
+        var first = CreateBook("First", ["Old Author"], tags: ["Old"], series: "Old Series", language: "en");
+        var second = CreateBook("Second", ["Old Author"], tags: ["Old"], series: "Old Series", language: "en");
+        var third = CreateBook("Third", ["Old Author"], tags: ["Old"], series: "Old Series", language: "en");
+        var repository = new StaticBookRepository([first, second, third]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new MetadataMultiEditResult(
+                UpdateAuthors: true,
+                AuthorsText: "New Author; Second Author",
+                UpdateSeries: true,
+                SeriesText: "New Series",
+                UpdateTags: true,
+                TagsText: "New; Cleanup",
+                UpdateLanguage: true,
+                LanguageText: "nl",
+                UpdateStatus: true,
+                Status: ReadingStatus.Read)
+        };
+        var viewModel = CreateViewModel([first, second, third], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks.Take(2));
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        interaction.MetadataMultiEditSelectedBookCount.Should().Be(2);
+        repository.UpdateCalls.Should().Be(2);
+        repository.BooksSnapshot.Where(book => book.Id != third.Id).Should().AllSatisfy(book =>
+        {
+            book.Metadata.Authors.Should().Equal("New Author", "Second Author");
+            book.Metadata.Series.Should().Be("New Series");
+            book.Metadata.Tags.Should().Equal("New", "Cleanup");
+            book.Metadata.Language.Should().Be("nl");
+            book.ReadingStatus.Should().Be(ReadingStatus.Read);
+        });
+        repository.BooksSnapshot.Single(book => book.Id == third.Id).Metadata.Series.Should().Be("Old Series");
+        viewModel.SeriesFilters.Should().ContainSingle(filter => filter.Name == "New Series" && filter.Count == 2);
+        viewModel.CategoryFilters.Should().Contain(filter => filter.Name == "Cleanup" && filter.Count == 2);
+    }
+
+    [Fact]
+    public async Task Metadata_multi_edit_adds_new_series_filter_when_selected_books_had_no_series()
+    {
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var repository = new StaticBookRepository([first, second]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new MetadataMultiEditResult(
+                UpdateAuthors: false,
+                AuthorsText: string.Empty,
+                UpdateSeries: true,
+                SeriesText: "Brand New Series",
+                UpdateTags: false,
+                TagsText: string.Empty,
+                UpdateLanguage: false,
+                LanguageText: string.Empty,
+                UpdateStatus: false,
+                Status: ReadingStatus.Unread)
+        };
+        var viewModel = CreateViewModel([first, second], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SeriesFilters.Should().BeEmpty();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks);
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        repository.BooksSnapshot.Should().AllSatisfy(book => book.Metadata.Series.Should().Be("Brand New Series"));
+        viewModel.SeriesFilters.Should().ContainSingle(filter => filter.Name == "Brand New Series" && filter.Count == 2);
+    }
+
+    [Fact]
+    public async Task Metadata_multi_edit_updates_custom_metadata_fields_and_refreshes_filters()
+    {
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var repository = new StaticBookRepository([first, second]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var textField = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        var numberField = customMetadataRepository.AddDefinition("Cijfer", CustomMetadataFieldType.Number);
+        var dateField = customMetadataRepository.AddDefinition("Leesdatum", CustomMetadataFieldType.Date);
+        var booleanField = customMetadataRepository.AddDefinition("Gesigneerd", CustomMetadataFieldType.Boolean);
+        var singleSelectField = customMetadataRepository.AddDefinition("Prioriteit", CustomMetadataFieldType.SingleSelect);
+        var multiSelectField = customMetadataRepository.AddDefinition("Genres", CustomMetadataFieldType.MultiSelect);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new MetadataMultiEditResult(
+                UpdateAuthors: false,
+                AuthorsText: string.Empty,
+                UpdateSeries: false,
+                SeriesText: string.Empty,
+                UpdateTags: false,
+                TagsText: string.Empty,
+                UpdateLanguage: false,
+                LanguageText: string.Empty,
+                UpdateStatus: false,
+                Status: ReadingStatus.Unread,
+                CustomFields:
+                [
+                    new MetadataMultiEditCustomFieldResult(textField.Id, textField.Name, textField.Type, "Avondgroep"),
+                    new MetadataMultiEditCustomFieldResult(numberField.Id, numberField.Name, numberField.Type, "8.5"),
+                    new MetadataMultiEditCustomFieldResult(dateField.Id, dateField.Name, dateField.Type, "2026-08-14"),
+                    new MetadataMultiEditCustomFieldResult(booleanField.Id, booleanField.Name, booleanField.Type, "True"),
+                    new MetadataMultiEditCustomFieldResult(singleSelectField.Id, singleSelectField.Name, singleSelectField.Type, "Hoog"),
+                    new MetadataMultiEditCustomFieldResult(multiSelectField.Id, multiSelectField.Name, multiSelectField.Type, "Thriller; Fantasy")
+                ])
+        };
+        var viewModel = CreateViewModel(
+            [first, second],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            repository: repository,
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks);
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        interaction.MetadataMultiEditCustomFieldNames.Should().Equal(
+            "Leesclub",
+            "Cijfer",
+            "Leesdatum",
+            "Gesigneerd",
+            "Prioriteit",
+            "Genres");
+        repository.UpdateCalls.Should().Be(0);
+        customMetadataRepository.ValuesSnapshot
+            .Where(value => value.FieldId == textField.Id)
+            .Should()
+            .HaveCount(2)
+            .And
+            .AllSatisfy(value => value.TextValue.Should().Be("Avondgroep"));
+        customMetadataRepository.ValuesSnapshot
+            .Where(value => value.FieldId == booleanField.Id)
+            .Should()
+            .HaveCount(2)
+            .And
+            .AllSatisfy(value => value.BooleanValue.Should().BeTrue());
+        viewModel.CustomMetadataFilterGroups
+            .Single(group => group.FieldId == textField.Id)
+            .Filters
+            .Should()
+            .ContainSingle(filter => filter.Name == "Avondgroep" && filter.Count == 2);
+        viewModel.CustomMetadataFilterGroups
+            .Single(group => group.FieldId == multiSelectField.Id)
+            .Filters
+            .Select(filter => filter.Name)
+            .Should()
+            .Equal("Fantasy", "Thriller");
+    }
+
+    [Fact]
+    public async Task Metadata_multi_edit_cancel_does_not_update_books()
+    {
+        var book = CreateBook("First", ["Author"], series: "Old Series");
+        var repository = new StaticBookRepository([book]);
+        var interaction = new ScriptedUserInteractionService { MetadataMultiEditResult = null };
+        var viewModel = CreateViewModel([book], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks);
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        repository.UpdateCalls.Should().Be(0);
+        repository.BooksSnapshot.Single().Metadata.Series.Should().Be("Old Series");
+    }
+
+    [Fact]
     public async Task Saved_details_refresh_visible_rows_and_filters()
     {
         var book = CreateBook("Original", ["Author"]);
@@ -2497,6 +2666,7 @@ public sealed class LibraryViewModelTests
 
         public int GetValuesCalls { get; private set; }
         public int GetValuesForBooksCalls { get; private set; }
+        public IReadOnlyList<CustomMetadataValue> ValuesSnapshot => values.Values.ToArray();
 
         public void ResetCallCounts()
         {
@@ -3079,9 +3249,12 @@ public sealed class LibraryViewModelTests
         public bool ConfirmLanguageNormalizationResult { get; init; }
         public int? ConfirmLanguageNormalizationAffectedCount { get; private set; }
         public Guid? SelectedImportRunId { get; init; }
+        public MetadataMultiEditResult? MetadataMultiEditResult { get; init; }
+        public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
         public Func<DuplicateCandidatesViewModel, CancellationToken, Task>? OnShowDuplicateCandidatesAsync { get; init; }
         public int PickBookFilesCalls { get; private set; }
         public int PickScanFolderCalls { get; private set; }
+        public int? MetadataMultiEditSelectedBookCount { get; private set; }
         public DuplicateCandidatesViewModel? DuplicateCandidates { get; private set; }
         public ImportHistoryViewModel? ImportHistory { get; private set; }
         public ImportResultViewModel? ShownImportResult { get; private set; }
@@ -3140,6 +3313,15 @@ public sealed class LibraryViewModelTests
             {
                 await OnShowDuplicateCandidatesAsync(candidates, cancellationToken);
             }
+        }
+
+        public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
+            MetadataMultiEditViewModel edit,
+            CancellationToken cancellationToken)
+        {
+            MetadataMultiEditSelectedBookCount = edit.SelectedBookCount;
+            MetadataMultiEditCustomFieldNames = edit.CustomFields.Select(field => field.Name).ToArray();
+            return Task.FromResult(MetadataMultiEditResult);
         }
 
         private IReadOnlyList<string> RecordPickBookFiles()

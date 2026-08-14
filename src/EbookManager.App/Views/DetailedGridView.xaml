@@ -102,11 +102,18 @@
                          AllowGrouping="False"
                          ShowGroupDropArea="False"
                          NavigationMode="Row"
-                         SelectionMode="Single"
+                         SelectionMode="Extended"
+                         SelectionChanged="BooksGridSelectionChanged"
                          HeaderRowHeight="40"
                          HeaderStyle="{StaticResource StandardGridHeaderCellStyle}"
                          RowHeight="42"
                          AllowDrop="True">
+    <syncfusion:SfDataGrid.ContextMenu>
+      <ContextMenu>
+        <MenuItem Header="{loc:Loc MetadataMultiEditTitle}"
+                  Command="{Binding PlacementTarget.DataContext.ShowMetadataMultiEditCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+      </ContextMenu>
+    </syncfusion:SfDataGrid.ContextMenu>
     <syncfusion:SfDataGrid.Style>
       <Style TargetType="syncfusion:SfDataGrid">
         <Setter Property="Visibility" Value="Visible" />
