@@ -234,6 +234,41 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task RefreshCustomMetadataColumnsAsync_refreshes_selected_book_details_options()
+    {
+        var book = CreateBook("Book", ["Author"]);
+        var repository = new StaticBookRepository([book]);
+        var bookService = new BookService(
+            repository,
+            new NoopLibraryFileStore(),
+            new NoopMetadataAdapterResolver());
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesprioriteit", CustomMetadataFieldType.SingleSelect);
+        var details = new BookDetailsViewModel(bookService, customMetadataRepository: customMetadataRepository);
+        var viewModel = CreateViewModel(
+            [book],
+            currentLibrary: CreateActiveLibrary(),
+            repository: repository,
+            details: details,
+            customMetadataRepository: customMetadataRepository);
+        await viewModel.RefreshAsync();
+        viewModel.SelectedBook = viewModel.VisibleBooks.Single();
+        await Task.Delay(50);
+        details.CustomMetadataValues.Single(value => value.FieldId == field.Id)
+            .SingleSelectOptions
+            .Should()
+            .Equal([null]);
+
+        await customMetadataRepository.UpdateDefinitionOptionsAsync(field.Id, ["Hoog", "Normaal"], default);
+        await viewModel.RefreshCustomMetadataColumnsAsync();
+
+        details.CustomMetadataValues.Single(value => value.FieldId == field.Id)
+            .SingleSelectOptions
+            .Should()
+            .Equal(null, "Hoog", "Normaal");
+    }
+
+    [Fact]
     public async Task Search_matches_custom_metadata_values()
     {
         var first = CreateBook("Plain title", ["Author"]);
@@ -275,6 +310,31 @@ public sealed class LibraryViewModelTests
         group.Filters.Single(filter => filter.Name == "Avondgroep").IsSelected = true;
 
         viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == first.Id);
+    }
+
+    [Fact]
+    public async Task Multi_select_custom_metadata_values_are_available_as_separate_filters()
+    {
+        var book = CreateBook("First", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Genres", CustomMetadataFieldType.MultiSelect);
+        customMetadataRepository.SetValue(new CustomMetadataValue(book.Id, field.Id, TextValue: "Thriller; Fantasy"));
+        var viewModel = CreateViewModel(
+            [book],
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Filters.Select(filter => filter.Name).Should().Equal("Fantasy", "Thriller");
+
+        group.Filters.Single(filter => filter.Name == "Fantasy").IsSelected = true;
+        viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == book.Id);
+
+        group.Filters.Single(filter => filter.Name == "Fantasy").IsSelected = false;
+        group.Filters.Single(filter => filter.Name == "Thriller").IsSelected = true;
+        viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == book.Id);
     }
 
     [Fact]
@@ -2351,6 +2411,7 @@ public sealed class LibraryViewModelTests
                 name.ToLowerInvariant().Replace(' ', '-'),
                 name,
                 type,
+                [],
                 definitions.Count,
                 now,
                 now);
@@ -2372,6 +2433,20 @@ public sealed class LibraryViewModelTests
 
         public Task RenameDefinitionAsync(Guid fieldId, string name, CancellationToken cancellationToken) =>
             Task.CompletedTask;
+
+        public Task UpdateDefinitionOptionsAsync(
+            Guid fieldId,
+            IReadOnlyList<string> options,
+            CancellationToken cancellationToken)
+        {
+            var index = definitions.FindIndex(definition => definition.Id == fieldId);
+            if (index >= 0)
+            {
+                definitions[index] = definitions[index] with { Options = options.ToArray() };
+            }
+
+            return Task.CompletedTask;
+        }
 
         public Task DeleteDefinitionAsync(Guid fieldId, CancellationToken cancellationToken) =>
             Task.CompletedTask;

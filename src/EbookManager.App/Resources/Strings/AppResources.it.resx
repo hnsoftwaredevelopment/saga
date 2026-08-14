@@ -433,6 +433,9 @@
   <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Campo metadati rinominato.</value></data>
   <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Campo metadati eliminato.</value></data>
   <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Esiste già un campo metadati con questo nome.</value></data>
+  <data name="CustomMetadataOptions" xml:space="preserve"><value>Elenco opzioni</value></data>
+  <data name="CustomMetadataOptionsDescription" xml:space="preserve"><value>Per i campi a scelta singola o multipla, inserisci un'opzione per riga.</value></data>
+  <data name="CustomMetadataOptionsSaved" xml:space="preserve"><value>Elenco opzioni salvato.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} deve essere un numero.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} deve essere una data.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} deve essere sì o no.</value></data>

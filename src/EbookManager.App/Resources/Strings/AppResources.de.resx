@@ -433,6 +433,9 @@
   <data name="CustomMetadataFieldRenamed" xml:space="preserve"><value>Metadatenfeld umbenannt.</value></data>
   <data name="CustomMetadataFieldDeleted" xml:space="preserve"><value>Metadatenfeld gelöscht.</value></data>
   <data name="CustomMetadataFieldDuplicate" xml:space="preserve"><value>Ein Metadatenfeld mit diesem Namen existiert bereits.</value></data>
+  <data name="CustomMetadataOptions" xml:space="preserve"><value>Auswahlliste</value></data>
+  <data name="CustomMetadataOptionsDescription" xml:space="preserve"><value>Geben Sie für Einfach- und Mehrfachauswahl eine Option pro Zeile ein.</value></data>
+  <data name="CustomMetadataOptionsSaved" xml:space="preserve"><value>Auswahlliste gespeichert.</value></data>
   <data name="CustomMetadataValidationNumber" xml:space="preserve"><value>{0} muss eine Zahl sein.</value></data>
   <data name="CustomMetadataValidationDate" xml:space="preserve"><value>{0} muss ein Datum sein.</value></data>
   <data name="CustomMetadataValidationBoolean" xml:space="preserve"><value>{0} muss Ja oder Nein sein.</value></data>

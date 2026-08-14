@@ -282,6 +282,7 @@
       </TabItem>
 
       <TabItem Header="{loc:Loc SettingsMetadataSection}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid Margin="12">
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -324,7 +325,8 @@
                 Margin="0,8,0,0">
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto" />
-              <RowDefinition Height="*" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
               <RowDefinition Height="Auto" />
               <RowDefinition Height="Auto" />
               <RowDefinition Height="Auto" />
@@ -410,13 +412,40 @@
                       Command="{Binding DeleteCustomMetadataFieldCommand}"
                       ToolTip="{loc:Loc CustomMetadataDeleteTooltip}" />
             </Grid>
-            <TextBlock Grid.Row="4"
+            <Border Grid.Row="4"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="10"
+                    Margin="0,8,0,0"
+                    IsEnabled="{Binding CanEditCustomMetadataOptions}">
+              <StackPanel>
+                <TextBlock Text="{loc:Loc CustomMetadataOptions}"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,4" />
+                <TextBlock Text="{loc:Loc CustomMetadataOptionsDescription}"
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           Margin="0,0,0,8" />
+                <TextBox Text="{Binding CustomMetadataOptionsText, UpdateSourceTrigger=PropertyChanged}"
+                         AcceptsReturn="True"
+                         VerticalScrollBarVisibility="Auto"
+                         MinHeight="72"
+                         Margin="0,0,0,8" />
+                <Button Content="{loc:Loc Save}"
+                        MinWidth="85"
+                        HorizontalAlignment="Left"
+                        Command="{Binding SaveCustomMetadataOptionsCommand}" />
+              </StackPanel>
+            </Border>
+            <TextBlock Grid.Row="5"
                        Text="{Binding CustomMetadataStatusMessage, Converter={StaticResource LocalizationKeyToStringConverter}}"
                        TextWrapping="Wrap"
                        Foreground="{DynamicResource TextSecondaryBrush}"
                        Margin="0,8,0,0" />
           </Grid>
         </Grid>
+        </ScrollViewer>
       </TabItem>
 
       <TabItem Header="{loc:Loc SettingsConfirmationsSection}">

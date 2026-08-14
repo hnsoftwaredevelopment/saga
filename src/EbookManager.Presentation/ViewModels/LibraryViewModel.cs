@@ -400,6 +400,11 @@ public sealed partial class LibraryViewModel : ObservableObject
         RefreshActiveColumnOptions();
         RefreshColumnChoices();
         OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
+        if (SelectedBook is { } selectedBook)
+        {
+            await Details.LoadCustomMetadataValuesAsync(selectedBook.Id, cancellationToken);
+        }
+
         ApplyFilter();
         if (columnsChanged)
         {
@@ -2328,6 +2333,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         var selectedCustomFilters = CustomMetadataFilterGroups
             .Select(group => (
                 group.FieldId,
+                group.Type,
                 Values: group.Filters
                     .Where(filter => filter.IsSelected)
                     .Select(filter => filter.Name)
@@ -2345,7 +2351,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 selectedFilters.Any(group => group.ValueSelector(book).Any(group.Values.Contains)) ||
                 selectedCustomFilters.Any(group =>
                     GetCustomMetadataValues(book.Id).TryGetValue(group.FieldId, out var value) &&
-                    group.Values.Contains(value.Trim())))
+                    CustomMetadataFilterValues(group.Type, value).Any(group.Values.Contains)))
             .ToList();
     }
 
@@ -2397,8 +2403,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             var valueCounts = customMetadataValuesByBookId.Values
                 .Select(values => values.TryGetValue(definition.Id, out var value) ? value : null)
-                .Where(value => !string.IsNullOrWhiteSpace(value))
-                .GroupBy(value => value!.Trim(), StringComparer.OrdinalIgnoreCase)
+                .SelectMany(value => CustomMetadataFilterValues(definition.Type, value))
+                .GroupBy(value => value, StringComparer.OrdinalIgnoreCase)
                 .Select(group => new
                 {
                     Name = group.Key,
@@ -2423,6 +2429,18 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         OnPropertyChanged(nameof(HasCustomMetadataFilterGroups));
+    }
+
+    private static IEnumerable<string> CustomMetadataFilterValues(CustomMetadataFieldType type, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return [];
+        }
+
+        return type == CustomMetadataFieldType.MultiSelect
+            ? value.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            : [value.Trim()];
     }
 
     private static bool IsUsefulCustomMetadataFilterType(CustomMetadataFieldDefinition definition) =>

@@ -111,6 +111,24 @@ public sealed class SettingsViewModelTests
     }
 
     [Fact]
+    public async Task SaveCustomMetadataOptions_updates_selected_select_field_options()
+    {
+        var repository = new InMemoryCustomMetadataRepository();
+        var viewModel = new SettingsViewModel(new InMemoryAppSettingsStore(), repository);
+        await viewModel.LoadAsync();
+        viewModel.NewCustomMetadataFieldName = "Leesprioriteit";
+        viewModel.NewCustomMetadataFieldType = CustomMetadataFieldType.SingleSelect;
+        await viewModel.AddCustomMetadataFieldCommand.ExecuteAsync(null);
+
+        viewModel.CustomMetadataOptionsText = "Hoog\r\nNormaal\r\n\r\nhoog\r\nLaag";
+        await viewModel.SaveCustomMetadataOptionsCommand.ExecuteAsync(null);
+
+        viewModel.SelectedCustomMetadataField.Should().NotBeNull();
+        viewModel.SelectedCustomMetadataField!.Options.Should().Equal("Hoog", "Normaal", "Laag");
+        viewModel.CustomMetadataStatusMessage.Should().Be("CustomMetadataOptionsSaved");
+    }
+
+    [Fact]
     public async Task Save_preserves_last_library_path_while_updating_preferences()
     {
         var store = new InMemoryAppSettingsStore();
@@ -276,6 +294,7 @@ public sealed class SettingsViewModelTests
                 normalized.ToLowerInvariant().Replace(' ', '-'),
                 normalized,
                 type,
+                [],
                 definitions.Count,
                 now,
                 now);
@@ -293,6 +312,26 @@ public sealed class SettingsViewModelTests
 
             var current = definitions[index];
             definitions[index] = current with { Name = name.Trim(), UpdatedUtc = DateTimeOffset.UtcNow };
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateDefinitionOptionsAsync(
+            Guid fieldId,
+            IReadOnlyList<string> options,
+            CancellationToken cancellationToken)
+        {
+            var index = definitions.FindIndex(definition => definition.Id == fieldId);
+            if (index < 0)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            var current = definitions[index];
+            if (!current.Options.SequenceEqual(options))
+            {
+                definitions[index] = current with { Options = options.ToArray(), UpdatedUtc = DateTimeOffset.UtcNow };
+            }
+
             return Task.CompletedTask;
         }
 

@@ -5,6 +5,7 @@ public sealed record CustomMetadataFieldDefinition(
     string Key,
     string Name,
     CustomMetadataFieldType Type,
+    IReadOnlyList<string> Options,
     int SortOrder,
     DateTimeOffset CreatedUtc,
     DateTimeOffset UpdatedUtc);

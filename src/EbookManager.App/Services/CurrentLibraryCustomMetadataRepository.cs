@@ -27,6 +27,12 @@ public sealed class CurrentLibraryCustomMetadataRepository(
     public Task RenameDefinitionAsync(Guid fieldId, string name, CancellationToken cancellationToken) =>
         CreateRepository().RenameDefinitionAsync(fieldId, name, cancellationToken);
 
+    public Task UpdateDefinitionOptionsAsync(
+        Guid fieldId,
+        IReadOnlyList<string> options,
+        CancellationToken cancellationToken) =>
+        CreateRepository().UpdateDefinitionOptionsAsync(fieldId, options, cancellationToken);
+
     public Task DeleteDefinitionAsync(Guid fieldId, CancellationToken cancellationToken) =>
         CreateRepository().DeleteDefinitionAsync(fieldId, cancellationToken);
 

@@ -25,3 +25,6 @@
 - [ ] Restart Saga and confirm custom fields and values are restored.
 - [ ] Add a custom metadata field as a column in a custom view.
 - [ ] Search for a value stored in custom metadata.
+- [ ] Create a single-choice custom metadata field, define options in Settings, then confirm Details shows a dropdown.
+- [ ] Create a multiple-choice custom metadata field, define options in Settings, then confirm Details shows checkboxes.
+- [ ] Save selected single/multiple choices and confirm they reappear after selecting the book again.

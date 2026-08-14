@@ -9,6 +9,7 @@ public sealed class CustomMetadataFieldEntity
     public string Name { get; set; } = string.Empty;
     public string NormalizedName { get; set; } = string.Empty;
     public CustomMetadataFieldType Type { get; set; }
+    public string? OptionsJson { get; set; }
     public int SortOrder { get; set; }
     public DateTimeOffset CreatedUtc { get; set; }
     public DateTimeOffset UpdatedUtc { get; set; }

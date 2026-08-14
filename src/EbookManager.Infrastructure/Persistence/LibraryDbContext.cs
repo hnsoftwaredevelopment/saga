@@ -112,6 +112,7 @@ public sealed class LibraryDbContext(DbContextOptions<LibraryDbContext> options)
             field.Property(x => x.Name).IsRequired();
             field.Property(x => x.NormalizedName).IsRequired();
             field.Property(x => x.Type).HasConversion<string>();
+            field.Property(x => x.OptionsJson);
             field.HasIndex(x => x.Key).IsUnique();
             field.HasIndex(x => x.NormalizedName).IsUnique();
             field.HasIndex(x => new { x.SortOrder, x.Name, x.Id });

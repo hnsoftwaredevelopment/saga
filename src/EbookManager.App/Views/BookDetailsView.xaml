@@ -297,6 +297,38 @@
                       </Style>
                     </TextBox.Style>
                   </TextBox>
+                  <ComboBox ItemsSource="{Binding SingleSelectOptions}"
+                            SelectedItem="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBox.Style>
+                      <Style TargetType="ComboBox">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsSingleSelectEditor}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </ComboBox.Style>
+                  </ComboBox>
+                  <ItemsControl ItemsSource="{Binding MultiSelectOptions}">
+                    <ItemsControl.Style>
+                      <Style TargetType="ItemsControl">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsMultiSelectEditor}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </ItemsControl.Style>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <CheckBox Content="{Binding Value}"
+                                  IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}"
+                                  Margin="0,0,0,4" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
                   <TextBox Text="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}"
                            HorizontalContentAlignment="Right"
                            PreviewTextInput="NumericCustomMetadataPreviewTextInput"
