@@ -21,7 +21,9 @@ public sealed class ImportMessageToLocalizedStringConverter : IValueConverter
             ["invalid source path"] = "ImportMessageInvalidSourcePath",
             ["import failed"] = "ImportMessageImportFailed",
             ["cannot persist result"] = "ImportMessageCannotPersistResult",
-            ["cleanup incomplete"] = "ImportMessageCleanupIncomplete"
+            ["cleanup incomplete"] = "ImportMessageCleanupIncomplete",
+            ["calibre custom metadata imported"] = "ImportMessageCalibreCustomMetadataImported",
+            ["calibre custom metadata ignored"] = "ImportMessageCalibreCustomMetadataIgnored"
         };
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

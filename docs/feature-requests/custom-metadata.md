@@ -90,3 +90,23 @@ Milestone 17 completes the first selectable custom metadata workflow.
 - Details uses a combo box for single-select fields.
 - Details uses a checkbox list for multi-select fields.
 - Select values continue to use text storage so existing search, filters, columns, and future Calibre import mapping can build on the same value model.
+
+## Milestone 18
+
+Milestone 18 starts Calibre custom-column import.
+
+- Saga reads Calibre `metadata.db` in read-only mode when an imported ebook file is inside a Calibre library folder.
+- Imported Calibre custom columns are mapped into Saga custom metadata definitions.
+- Supported first-pass Calibre datatypes: `text`, `comments`, `enumeration`, `int`, `float`, `rating`, `datetime`, and `bool`.
+- Calibre `enumeration` values are imported as Saga single-select or multi-select fields, including the configured option list when available.
+- Calibre text columns marked as multiple are imported as Saga multi-select fields.
+- Calibre `datetime` values are stored as Saga date values, using only the date portion.
+- Calibre `composite` columns are skipped for now because they are derived/template fields rather than directly stored user values.
+- Exact duplicates are skipped as books, but Saga can still backfill Calibre custom metadata onto the existing book when the file hash matches.
+- Custom metadata import is best effort: a failed Calibre custom-column import should not fail the book import.
+
+### Deferred Follow-Up Candidates
+
+- Add user-controlled mapping rules for Calibre custom columns.
+- Decide whether possible duplicates should support manual or guided custom metadata backfill.
+- Decide whether Calibre `composite` columns should become generated/read-only Saga fields later.

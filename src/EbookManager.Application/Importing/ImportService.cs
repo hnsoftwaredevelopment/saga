@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Importing;
 using EbookManager.Domain.Metadata;
 
@@ -12,7 +13,9 @@ public sealed class ImportService(
     ILibraryFileStore fileStore,
     IFileHasher hasher,
     IMetadataSourceResolver metadataSourceResolver,
-    IImportExceptionClassifier exceptionClassifier) : IImportRunner
+    IImportExceptionClassifier exceptionClassifier,
+    IExternalCustomMetadataReader? externalCustomMetadataReader = null,
+    ICustomMetadataRepository? customMetadataRepository = null) : IImportRunner
 {
     private const string InvalidSourceDisplayName = "(invalid source)";
     private const long LargeFileSinglePassCopyThresholdBytes = 16 * 1024 * 1024;
@@ -23,6 +26,8 @@ public sealed class ImportService(
     private readonly IFileHasher hasher = hasher;
     private readonly IImportExceptionClassifier exceptionClassifier = exceptionClassifier;
     private readonly IMetadataSourceResolver metadataSourceResolver = metadataSourceResolver;
+    private readonly IExternalCustomMetadataReader? externalCustomMetadataReader = externalCustomMetadataReader;
+    private readonly ICustomMetadataRepository? customMetadataRepository = customMetadataRepository;
 
     public async Task<ImportBatchResult> ImportAsync(
         IReadOnlyList<string> sourcePaths,
@@ -192,14 +197,18 @@ public sealed class ImportService(
                         return await RecordAsync(result);
                     }
 
-                    if (await phaseTimings.MeasureAsync(
+                    var hashDuplicate = await phaseTimings.MeasureAsync(
                             ImportPhase.DuplicateCheck,
-                            () => duplicateTracker.HasHashAsync(sha256, cancellationToken)))
+                            () => duplicateTracker.FindHashDuplicateAsync(sha256, cancellationToken));
+                    if (hashDuplicate.IsDuplicate)
                     {
+                        var duplicateMetadataWarning = hashDuplicate.BookId is { } duplicateBookId
+                            ? await ImportExternalCustomMetadataAsync(sourcePath!, duplicateBookId, cancellationToken)
+                            : null;
                         result = CreateSuccessResult(
                             sourcePath,
                             ImportOutcome.ExactDuplicate,
-                            SafeImportMessages.ExactDuplicate);
+                            AppendWarning(SafeImportMessages.ExactDuplicate, duplicateMetadataWarning)!);
                         return await RecordAsync(result);
                     }
                 }
@@ -302,17 +311,25 @@ public sealed class ImportService(
                     return await RecordAsync(result);
                 }
 
-                if (useSinglePassCopy && await phaseTimings.MeasureAsync(
-                        ImportPhase.DuplicateCheck,
-                        () => duplicateTracker.HasHashAsync(sha256!, cancellationToken)))
+                if (useSinglePassCopy)
                 {
-                    result = CreateSuccessResult(
-                        sourcePath,
-                        ImportOutcome.ExactDuplicate,
-                        SafeImportMessages.ExactDuplicate);
-                    shouldCleanup = true;
+                    var hashDuplicate = await phaseTimings.MeasureAsync(
+                        ImportPhase.DuplicateCheck,
+                        () => duplicateTracker.FindHashDuplicateAsync(sha256!, cancellationToken));
+                    if (hashDuplicate.IsDuplicate)
+                    {
+                        var duplicateMetadataWarning = hashDuplicate.BookId is { } duplicateBookId
+                            ? await ImportExternalCustomMetadataAsync(sourcePath!, duplicateBookId, cancellationToken)
+                            : null;
+                        result = CreateSuccessResult(
+                            sourcePath,
+                            ImportOutcome.ExactDuplicate,
+                            AppendWarning(SafeImportMessages.ExactDuplicate, duplicateMetadataWarning)!);
+                        shouldCleanup = true;
+                    }
                 }
-                else if (isPossibleDuplicate)
+
+                if (result is null && isPossibleDuplicate)
                 {
                     result = CreateSuccessResult(
                         sourcePath,
@@ -320,7 +337,7 @@ public sealed class ImportService(
                         SafeImportMessages.PossibleDuplicate);
                     shouldCleanup = true;
                 }
-                else
+                else if (result is null)
                 {
                     var now = DateTimeOffset.UtcNow;
                     var book = new Book(
@@ -357,9 +374,12 @@ public sealed class ImportService(
 
                         bookPersisted = true;
                         cleanupBookId = addFileToExistingBook ? null : targetBookId;
+                        var customMetadataWarning = addFileToExistingBook
+                            ? null
+                            : await ImportExternalCustomMetadataAsync(sourcePath!, targetBookId, cancellationToken);
                         result = CreateAddedResult(
                             sourcePath,
-                            metadata.Warning,
+                            AppendWarning(metadata.Warning, customMetadataWarning),
                             targetBookId,
                             possibleTitleMatch);
                         duplicateTracker.Add(sha256!, duplicateKey, targetBookId, format);
@@ -527,6 +547,94 @@ public sealed class ImportService(
     private static string AppendCleanupIncomplete(string message) =>
         $"{message}; {SafeImportMessages.CleanupIncomplete}";
 
+    private async Task<string?> ImportExternalCustomMetadataAsync(
+        string sourcePath,
+        Guid bookId,
+        CancellationToken cancellationToken)
+    {
+        if (externalCustomMetadataReader is null || customMetadataRepository is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var values = await externalCustomMetadataReader.ReadAsync(sourcePath, cancellationToken);
+            if (values.Count == 0)
+            {
+                return null;
+            }
+
+            var definitions = (await customMetadataRepository.ListDefinitionsAsync(cancellationToken)).ToList();
+            foreach (var imported in values)
+            {
+                var definition = FindDefinition(definitions, imported.Field);
+                if (definition is null)
+                {
+                    definition = await customMetadataRepository.AddDefinitionAsync(
+                        imported.Field.Name,
+                        imported.Field.Type,
+                        cancellationToken);
+                    definitions.Add(definition);
+                }
+
+                if (definition.Type is CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect &&
+                    imported.Field.Options.Count > 0)
+                {
+                    await customMetadataRepository.UpdateDefinitionOptionsAsync(
+                        definition.Id,
+                        imported.Field.Options,
+                        cancellationToken);
+                    definition = definition with { Options = imported.Field.Options.ToArray() };
+                    var index = definitions.FindIndex(item => item.Id == definition.Id);
+                    if (index >= 0)
+                    {
+                        definitions[index] = definition;
+                    }
+                }
+
+                await customMetadataRepository.SetValueAsync(
+                    new CustomMetadataValue(
+                        bookId,
+                        definition.Id,
+                        imported.TextValue,
+                        imported.NumberValue,
+                        imported.DateValue,
+                        imported.BooleanValue),
+                    cancellationToken);
+            }
+
+            return SafeImportMessages.CalibreCustomMetadataImported;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            return SafeImportMessages.CalibreCustomMetadataIgnored;
+        }
+    }
+
+    private static CustomMetadataFieldDefinition? FindDefinition(
+        IEnumerable<CustomMetadataFieldDefinition> definitions,
+        ExternalCustomMetadataField importedField) =>
+        definitions.FirstOrDefault(definition =>
+            string.Equals(definition.Key, importedField.Key, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(definition.Name, importedField.Name, StringComparison.OrdinalIgnoreCase));
+
+    private static string? AppendWarning(string? current, string? next)
+    {
+        if (string.IsNullOrWhiteSpace(next))
+        {
+            return current;
+        }
+
+        return string.IsNullOrWhiteSpace(current)
+            ? next
+            : $"{current}; {next}";
+    }
+
     private static bool IsBlank(string? value) => string.IsNullOrWhiteSpace(value);
 
     private static bool IsSourceLocallyAvailable(string sourcePath)
@@ -578,6 +686,7 @@ public sealed class ImportService(
         private readonly bool snapshotLoaded;
         private readonly HashSet<string> knownHashes;
         private readonly HashSet<string> knownDuplicateKeys;
+        private readonly Dictionary<string, Guid> bookIdsByHash;
         private readonly Dictionary<string, DuplicateBookReference> duplicateBooksByKey = new(StringComparer.Ordinal);
         private readonly Dictionary<string, IReadOnlyList<Book>> titleMatchesByTitle = new(StringComparer.Ordinal);
 
@@ -585,12 +694,14 @@ public sealed class ImportService(
             IBookRepository bookRepository,
             bool snapshotLoaded,
             IEnumerable<string> knownHashes,
-            IEnumerable<string> knownDuplicateKeys)
+            IEnumerable<string> knownDuplicateKeys,
+            IReadOnlyDictionary<string, Guid> bookIdsByHash)
         {
             this.bookRepository = bookRepository;
             this.snapshotLoaded = snapshotLoaded;
             this.knownHashes = knownHashes.ToHashSet(StringComparer.Ordinal);
             this.knownDuplicateKeys = knownDuplicateKeys.ToHashSet(StringComparer.Ordinal);
+            this.bookIdsByHash = new Dictionary<string, Guid>(bookIdsByHash, StringComparer.Ordinal);
         }
 
         public static async Task<ImportDuplicateTracker> CreateAsync(
@@ -604,36 +715,46 @@ public sealed class ImportService(
                     bookRepository,
                     snapshotLoaded: true,
                     snapshot.FileHashes,
-                    snapshot.DuplicateKeys);
+                    snapshot.DuplicateKeys,
+                    snapshot.BookIdsByFileHash);
             }
 
             return new ImportDuplicateTracker(
                 bookRepository,
                 snapshotLoaded: false,
                 knownHashes: [],
-                knownDuplicateKeys: []);
+                knownDuplicateKeys: [],
+                bookIdsByHash: new Dictionary<string, Guid>(StringComparer.Ordinal));
         }
 
         public async Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken)
         {
+            var duplicate = await FindHashDuplicateAsync(sha256, cancellationToken);
+            return duplicate.IsDuplicate;
+        }
+
+        public async Task<HashDuplicateReference> FindHashDuplicateAsync(string sha256, CancellationToken cancellationToken)
+        {
             var canonicalSha256 = CanonicalizeSha256(sha256);
             if (knownHashes.Contains(canonicalSha256))
             {
-                return true;
+                return new HashDuplicateReference(
+                    true,
+                    bookIdsByHash.TryGetValue(canonicalSha256, out var bookId) ? bookId : null);
             }
 
             if (snapshotLoaded)
             {
-                return false;
+                return new HashDuplicateReference(false, null);
             }
 
             if (await bookRepository.HasHashAsync(canonicalSha256, cancellationToken))
             {
                 knownHashes.Add(canonicalSha256);
-                return true;
+                return new HashDuplicateReference(true, null);
             }
 
-            return false;
+            return new HashDuplicateReference(false, null);
         }
 
         public async Task<DuplicateBookReference?> FindDuplicateAsync(
@@ -707,7 +828,9 @@ public sealed class ImportService(
 
         public void Add(string sha256, string duplicateKey, Guid bookId, EbookFormat format)
         {
-            knownHashes.Add(CanonicalizeSha256(sha256));
+            var canonicalSha256 = CanonicalizeSha256(sha256);
+            knownHashes.Add(canonicalSha256);
+            bookIdsByHash[canonicalSha256] = bookId;
             knownDuplicateKeys.Add(duplicateKey);
             if (!duplicateBooksByKey.TryGetValue(duplicateKey, out var reference) || reference.BookId != bookId)
             {
@@ -720,6 +843,8 @@ public sealed class ImportService(
     }
 
     private sealed record DuplicateBookReference(Guid? BookId, HashSet<EbookFormat> Formats);
+
+    private sealed record HashDuplicateReference(bool IsDuplicate, Guid? BookId);
 
     private enum ImportPhase
     {
@@ -810,6 +935,8 @@ public sealed class ImportService(
         public const string ExactDuplicate = "exact duplicate skipped";
         public const string ImportFailed = "import failed";
         public const string CannotPersistResult = "cannot persist result";
+        public const string CalibreCustomMetadataIgnored = "calibre custom metadata ignored";
+        public const string CalibreCustomMetadataImported = "calibre custom metadata imported";
         public const string InvalidSourcePath = "invalid source path";
         public const string ManagedCopyFailed = "managed copy failed";
         public const string MetadataReadFailed = "metadata read failed";

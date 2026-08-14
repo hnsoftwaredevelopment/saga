@@ -3,11 +3,14 @@ using System.Text;
 using EbookManager.Application.Importing;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Importing;
 using EbookManager.Domain.Metadata;
 using EbookManager.Infrastructure.Metadata;
+using EbookManager.Infrastructure.Persistence.Repositories;
 using EbookManager.Tests.TestSupport;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace EbookManager.Tests.Importing;
@@ -305,6 +308,89 @@ public sealed class ImportServiceTests
         book.Should().NotBeNull();
         book!.CoverRelativePath.Should().Be($"books/{book.Id:N}/cover.jpg");
         File.ReadAllBytes(Path.Combine(fixture.LibraryPath, book.CoverRelativePath!)).Should().Equal(coverBytes);
+    }
+
+    [Fact]
+    public async Task Import_async_imports_supported_calibre_custom_columns_from_metadata_db()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var root = Path.Combine(fixture.WorkspacePath, "CalibreLibrary");
+        var bookDirectory = Path.Combine(root, "Author", "Book (1)");
+        Directory.CreateDirectory(bookDirectory);
+        var source = Path.Combine(bookDirectory, "Book.pdf");
+        File.WriteAllBytes(source, Encoding.UTF8.GetBytes("calibre-custom-columns"));
+        CreateCalibreMetadataDatabase(Path.Combine(root, "metadata.db"));
+        var customMetadataRepository = new EfCustomMetadataRepository(fixture.ContextFactory, fixture.LibraryPath);
+        var service = fixture.CreateService(
+            customMetadataRepository: customMetadataRepository,
+            externalCustomMetadataReader: new CalibreCustomMetadataReader());
+
+        var result = await service.ImportAsync([source], default);
+
+        var bookId = result.Items.Single().BookId!.Value;
+        result.Items.Single().Message.Should().Contain("calibre custom metadata imported");
+        var definitions = await customMetadataRepository.ListDefinitionsAsync(default);
+        definitions.Select(definition => definition.Name)
+            .Should()
+            .BeEquivalentTo("Status", "Info", "Leesdatum", "Percentage");
+        definitions.Should().ContainSingle(definition =>
+            definition.Name == "Status" &&
+            definition.Type == CustomMetadataFieldType.SingleSelect &&
+            definition.Options.SequenceEqual(new[] { "Niet gelezen", "Gelezen" }));
+
+        var values = await customMetadataRepository.GetValuesAsync(bookId, default);
+        values.Should().Contain(value =>
+            value.FieldId == definitions.Single(definition => definition.Name == "Status").Id &&
+            value.TextValue == "Gelezen");
+        values.Should().Contain(value =>
+            value.FieldId == definitions.Single(definition => definition.Name == "Info").Id &&
+            value.TextValue == "Handmatige notitie");
+        values.Should().Contain(value =>
+            value.FieldId == definitions.Single(definition => definition.Name == "Leesdatum").Id &&
+            value.DateValue == new DateOnly(2026, 8, 14));
+        values.Should().Contain(value =>
+            value.FieldId == definitions.Single(definition => definition.Name == "Percentage").Id &&
+            value.NumberValue == 42);
+        definitions.Should().NotContain(definition => definition.Name == "Afgeleid");
+    }
+
+    [Fact]
+    public async Task Import_async_backfills_calibre_custom_columns_for_exact_duplicates()
+    {
+        await using var fixture = await ImportServiceFixture.CreateAsync();
+        var duplicateBytes = Encoding.UTF8.GetBytes("calibre-custom-columns");
+        var existingBook = await fixture.SeedBookAsync(
+            "Existing Saga Title",
+            "Existing Saga Author",
+            "existing.pdf",
+            duplicateBytes);
+        var root = Path.Combine(fixture.WorkspacePath, "CalibreLibrary");
+        var bookDirectory = Path.Combine(root, "Author", "Book (1)");
+        Directory.CreateDirectory(bookDirectory);
+        var source = Path.Combine(bookDirectory, "Book.pdf");
+        File.WriteAllBytes(source, duplicateBytes);
+        CreateCalibreMetadataDatabase(Path.Combine(root, "metadata.db"));
+        var customMetadataRepository = new EfCustomMetadataRepository(fixture.ContextFactory, fixture.LibraryPath);
+        var service = fixture.CreateService(
+            customMetadataRepository: customMetadataRepository,
+            externalCustomMetadataReader: new CalibreCustomMetadataReader());
+
+        var result = await service.ImportAsync([source], default);
+
+        var item = result.Items.Should().ContainSingle().Subject;
+        item.Outcome.Should().Be(ImportOutcome.ExactDuplicate);
+        item.BookId.Should().BeNull();
+        item.Message.Should().Contain("exact duplicate skipped");
+        item.Message.Should().Contain("calibre custom metadata imported");
+        var definitions = await customMetadataRepository.ListDefinitionsAsync(default);
+        var values = await customMetadataRepository.GetValuesAsync(existingBook.Id, default);
+        values.Should().Contain(value =>
+            value.FieldId == definitions.Single(definition => definition.Name == "Status").Id &&
+            value.TextValue == "Gelezen");
+        values.Should().Contain(value =>
+            value.FieldId == definitions.Single(definition => definition.Name == "Info").Id &&
+            value.TextValue == "Handmatige notitie");
+        (await fixture.BookRepository.ListAsync(default)).Should().ContainSingle();
     }
 
     [Fact]
@@ -1515,6 +1601,102 @@ public sealed class ImportServiceTests
     private sealed class SynchronousProgress<T>(Action<T> onReport) : IProgress<T>
     {
         public void Report(T value) => onReport(value);
+    }
+
+    private static void CreateCalibreMetadataDatabase(string databasePath)
+    {
+        using var connection = new SqliteConnection($"Data Source={databasePath}");
+        connection.Open();
+        ExecuteNonQuery(
+            connection,
+            """
+            CREATE TABLE books (
+                id INTEGER PRIMARY KEY,
+                title TEXT NOT NULL,
+                path TEXT NOT NULL
+            );
+            INSERT INTO books(id, title, path) VALUES(1, 'Book', 'Author/Book (1)');
+
+            CREATE TABLE custom_columns (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                label TEXT NOT NULL,
+                name TEXT NOT NULL,
+                datatype TEXT NOT NULL,
+                mark_for_delete BOOL DEFAULT 0 NOT NULL,
+                editable BOOL DEFAULT 1 NOT NULL,
+                display TEXT DEFAULT '{}' NOT NULL,
+                is_multiple BOOL DEFAULT 0 NOT NULL,
+                normalized BOOL NOT NULL,
+                UNIQUE(label)
+            );
+            INSERT INTO custom_columns(id,label,name,datatype,is_multiple,editable,display,normalized) VALUES
+                (1, 'status', 'Status', 'enumeration', 0, 1, '{"enum_values":["Niet gelezen","Gelezen"]}', 1),
+                (2, 'info', 'Info', 'text', 0, 1, '{}', 1),
+                (3, 'leesdatum', 'Leesdatum', 'datetime', 0, 1, '{}', 0),
+                (4, 'percentage', 'Percentage', 'int', 0, 1, '{}', 0),
+                (5, 'afgeleid', 'Afgeleid', 'composite', 0, 1, '{}', 0);
+
+            CREATE TABLE custom_column_1 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                value TEXT NOT NULL COLLATE NOCASE,
+                link TEXT NOT NULL DEFAULT '',
+                UNIQUE(value)
+            );
+            CREATE TABLE books_custom_column_1_link (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                book INTEGER NOT NULL,
+                value INTEGER NOT NULL,
+                UNIQUE(book, value)
+            );
+            INSERT INTO custom_column_1(id, value) VALUES(1, 'Gelezen');
+            INSERT INTO books_custom_column_1_link(book, value) VALUES(1, 1);
+
+            CREATE TABLE custom_column_2 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                value TEXT NOT NULL COLLATE NOCASE,
+                link TEXT NOT NULL DEFAULT '',
+                UNIQUE(value)
+            );
+            CREATE TABLE books_custom_column_2_link (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                book INTEGER NOT NULL,
+                value INTEGER NOT NULL,
+                UNIQUE(book, value)
+            );
+            INSERT INTO custom_column_2(id, value) VALUES(1, 'Handmatige notitie');
+            INSERT INTO books_custom_column_2_link(book, value) VALUES(1, 1);
+
+            CREATE TABLE custom_column_3 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                book INTEGER,
+                value timestamp NOT NULL,
+                UNIQUE(book)
+            );
+            INSERT INTO custom_column_3(book, value) VALUES(1, '2026-08-14 10:11:12+00:00');
+
+            CREATE TABLE custom_column_4 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                book INTEGER,
+                value INT NOT NULL,
+                UNIQUE(book)
+            );
+            INSERT INTO custom_column_4(book, value) VALUES(1, 42);
+
+            CREATE TABLE custom_column_5 (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                book INTEGER,
+                value TEXT NOT NULL,
+                UNIQUE(book)
+            );
+            INSERT INTO custom_column_5(book, value) VALUES(1, 'Derived value');
+            """);
+    }
+
+    private static void ExecuteNonQuery(SqliteConnection connection, string commandText)
+    {
+        using var command = connection.CreateCommand();
+        command.CommandText = commandText;
+        command.ExecuteNonQuery();
     }
 
     private sealed class ReturningMetadataSidecarStore(BookMetadata metadata) : IMetadataSidecarStore

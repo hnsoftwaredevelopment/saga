@@ -137,6 +137,8 @@
   <data name="ImportMessageImportFailed" xml:space="preserve"><value>Import failed</value></data>
   <data name="ImportMessageCannotPersistResult" xml:space="preserve"><value>Could not save the import result</value></data>
   <data name="ImportMessageCleanupIncomplete" xml:space="preserve"><value>Cleanup was not fully completed</value></data>
+  <data name="ImportMessageCalibreCustomMetadataImported" xml:space="preserve"><value>Calibre custom metadata imported</value></data>
+  <data name="ImportMessageCalibreCustomMetadataIgnored" xml:space="preserve"><value>Calibre custom metadata could not be imported</value></data>
   <data name="ImportMessageMetadataWarning" xml:space="preserve"><value>Metadata warning</value></data>
   <data name="ImportMetadataSourceCalibreOpf" xml:space="preserve"><value>Metadata loaded from Calibre metadata.opf</value></data>
   <data name="ImportMetadataSourceJson" xml:space="preserve"><value>Metadata loaded from Saga metadata.json</value></data>
@@ -274,3 +276,4 @@
   <data name="UnsavedChanges" xml:space="preserve"><value>There are unsaved changes.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
 </root>
+
