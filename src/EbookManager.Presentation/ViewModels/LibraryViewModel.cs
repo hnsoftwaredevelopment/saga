@@ -58,8 +58,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private IReadOnlyList<CustomMetadataFieldDefinition> customMetadataFieldDefinitions = [];
     private IReadOnlyDictionary<Guid, CustomMetadataFieldDefinition> customMetadataFieldDefinitionMap =
         new Dictionary<Guid, CustomMetadataFieldDefinition>();
-    private IReadOnlyDictionary<Guid, IReadOnlyDictionary<Guid, string>> customMetadataValuesByBookId =
-        new Dictionary<Guid, IReadOnlyDictionary<Guid, string>>();
+    private Dictionary<Guid, IReadOnlyDictionary<Guid, string>> customMetadataValuesByBookId = [];
     private readonly Dictionary<string, List<LibraryColumnKey>> viewColumns =
         new()
         {
@@ -668,7 +667,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         if (customMetadataRepository is null || sourceBooks.Count == 0)
         {
-            customMetadataValuesByBookId = new Dictionary<Guid, IReadOnlyDictionary<Guid, string>>();
+            customMetadataValuesByBookId = [];
             return;
         }
 
@@ -686,6 +685,33 @@ public sealed partial class LibraryViewModel : ObservableObject
                         value => FormatCustomMetadataValue(
                             customMetadataFieldDefinitionMap[value.FieldId].Type,
                             value)));
+    }
+
+    private async Task RefreshCustomMetadataValuesForBookAsync(
+        Guid bookId,
+        CancellationToken cancellationToken)
+    {
+        if (customMetadataRepository is null)
+        {
+            customMetadataValuesByBookId.Remove(bookId);
+            return;
+        }
+
+        var values = await customMetadataRepository.GetValuesAsync(bookId, cancellationToken);
+        var formattedValues = values
+            .Where(value => customMetadataFieldDefinitionMap.ContainsKey(value.FieldId))
+            .ToDictionary(
+                value => value.FieldId,
+                value => FormatCustomMetadataValue(
+                    customMetadataFieldDefinitionMap[value.FieldId].Type,
+                    value));
+        if (formattedValues.Count == 0)
+        {
+            customMetadataValuesByBookId.Remove(bookId);
+            return;
+        }
+
+        customMetadataValuesByBookId[bookId] = formattedValues;
     }
 
     private IReadOnlyDictionary<Guid, string> GetCustomMetadataValues(Guid bookId) =>
@@ -2615,13 +2641,57 @@ public sealed partial class LibraryViewModel : ObservableObject
                 return;
             }
 
+            if (TryGetListField(kind, out var listField) &&
+                bookRepository is IBookBulkMetadataRepository listBulkRepository)
+            {
+                try
+                {
+                    var affectedCount = await listBulkRepository.UpdateListMetadataAsync(
+                        changedBooks,
+                        listField,
+                        cancellationToken);
+                    if (affectedCount == 0)
+                    {
+                        return;
+                    }
+
+                    ApplyPersistedMetadataChanges(changedBooks);
+                    return;
+                }
+                catch (BookConflictException)
+                {
+                    // Fall back to per-book updates so one conflicting cleanup does not block the safe changes.
+                }
+            }
+
             var persistedBooks = new List<Book>(changedBooks.Count);
             foreach (var changedBook in changedBooks)
             {
                 try
                 {
-                    await bookRepository.UpdateAsync(changedBook, cancellationToken);
-                    persistedBooks.Add(changedBook);
+                    var fullBook = await bookRepository.GetAsync(changedBook.Id, cancellationToken);
+                    if (fullBook is null)
+                    {
+                        continue;
+                    }
+
+                    var bookToPersist = changedBook with
+                    {
+                        Metadata = new BookMetadata(
+                            changedBook.Metadata.Title,
+                            changedBook.Metadata.Authors,
+                            changedBook.Metadata.Description,
+                            changedBook.Metadata.Language,
+                            changedBook.Metadata.Publisher,
+                            changedBook.Metadata.PublicationDate,
+                            changedBook.Metadata.Tags,
+                            changedBook.Metadata.Series,
+                            changedBook.Metadata.SeriesNumber,
+                            changedBook.Metadata.Isbn,
+                            fullBook.Metadata.CoverBytes)
+                    };
+                    await bookRepository.UpdateAsync(bookToPersist, cancellationToken);
+                    persistedBooks.Add(bookToPersist);
                 }
                 catch (BookConflictException)
                 {
@@ -2745,6 +2815,19 @@ public sealed partial class LibraryViewModel : ObservableObject
             _ => default
         };
         return kind is MetadataFilterKind.Series or MetadataFilterKind.Language;
+    }
+
+    private static bool TryGetListField(
+        MetadataFilterKind kind,
+        out BookListMetadataField field)
+    {
+        field = kind switch
+        {
+            MetadataFilterKind.Author => BookListMetadataField.Authors,
+            MetadataFilterKind.Tag => BookListMetadataField.Tags,
+            _ => default
+        };
+        return kind is MetadataFilterKind.Author or MetadataFilterKind.Tag;
     }
 
     private static bool MetadataValueMatches(
@@ -3052,7 +3135,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         books = mutableBooks;
-        await RefreshCustomMetadataValuesAsync(books, CancellationToken.None);
+        await RefreshCustomMetadataValuesForBookAsync(savedBook.Id, CancellationToken.None);
         RefreshFacetFilters();
         ApplyFilter();
     }

@@ -2,6 +2,16 @@
 
 Saga settings should feel like a live desktop experience instead of a restart-driven configuration file.
 
+## Local Application Data
+
+Saga stores local application files under `%LOCALAPPDATA%\Saga`.
+
+- `settings.json` stores user preferences.
+- `libraries.json` stores known libraries.
+- `Logs\performance.log` stores slow library operation diagnostics when an operation crosses the configured slow-operation threshold.
+
+Older development builds used `%LOCALAPPDATA%\EbookManager` for settings. Saga keeps a read-only fallback to those legacy JSON files when the new Saga files do not exist yet, so existing local settings can migrate naturally on the next save.
+
 ## Default Behavior
 
 When a user changes a setting, Saga should apply the choice as early as safely possible:

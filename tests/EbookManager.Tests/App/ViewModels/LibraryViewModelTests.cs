@@ -1594,6 +1594,26 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Rename_author_filter_uses_bulk_list_metadata_update_when_available()
+    {
+        var first = CreateBook("First", ["Ake Edwardson"]);
+        var second = CreateBook("Second", ["Ake Edwardson", "Other"]);
+        var repository = new BulkScalarMetadataRepository([first, second]);
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "Åke Edwardson" };
+        var viewModel = CreateViewModel([first, second], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.RenameAuthorFilterCommand.ExecuteAsync(
+            viewModel.AuthorFilters.Single(filter => filter.Name == "Ake Edwardson"));
+
+        repository.BulkListUpdateCalls.Should().Be(1);
+        repository.UpdateCalls.Should().Be(0);
+        repository.BooksSnapshot.SelectMany(book => book.Metadata.Authors)
+            .Should().Contain("Åke Edwardson")
+            .And.NotContain("Ake Edwardson");
+    }
+
+    [Fact]
     public async Task Remove_tag_filter_removes_value_from_all_matching_books_and_refreshes_filters()
     {
         var first = CreateBook("First", ["Author"], tags: ["Keep", "RemoveMe"]);
@@ -1613,6 +1633,25 @@ public sealed class LibraryViewModelTests
         repository.BooksSnapshot.Single(book => book.Metadata.Title == "Second").Metadata.Tags
             .Should().BeNull();
         viewModel.CategoryFilters.Should().NotContain(filter => filter.Name == "RemoveMe");
+    }
+
+    [Fact]
+    public async Task Remove_tag_filter_uses_bulk_list_metadata_update_when_available()
+    {
+        var first = CreateBook("First", ["Author"], tags: ["Keep", "RemoveMe"]);
+        var second = CreateBook("Second", ["Author"], tags: ["RemoveMe"]);
+        var repository = new BulkScalarMetadataRepository([first, second]);
+        var interaction = new ScriptedUserInteractionService { ConfirmMetadataValueRemovalResult = true };
+        var viewModel = CreateViewModel([first, second], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.RemoveTagFilterCommand.ExecuteAsync(
+            viewModel.CategoryFilters.Single(filter => filter.Name == "RemoveMe"));
+
+        repository.BulkListUpdateCalls.Should().Be(1);
+        repository.UpdateCalls.Should().Be(0);
+        repository.BooksSnapshot.SelectMany(book => book.Metadata.Tags ?? [])
+            .Should().NotContain("RemoveMe");
     }
 
     [Fact]
@@ -1741,6 +1780,58 @@ public sealed class LibraryViewModelTests
             .Should().Equal("Old Author");
         repository.BooksSnapshot.Single(book => book.Id == second.Id).Metadata.Authors
             .Should().Equal("New Author");
+    }
+
+    [Fact]
+    public async Task Rename_filter_falls_back_to_per_book_updates_when_bulk_list_update_conflicts()
+    {
+        var first = CreateBook("Same Title", ["Old Author"]);
+        var second = CreateBook("Other Title", ["Old Author"]);
+        var repository = new ConflictingBulkListMetadataRepository([first, second], first.Id);
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "New Author" };
+        var viewModel = CreateViewModel([first, second], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.RenameAuthorFilterCommand.ExecuteAsync(
+            viewModel.AuthorFilters.Single(filter => filter.Name == "Old Author"));
+
+        repository.BulkListUpdateCalls.Should().Be(1);
+        repository.UpdateCalls.Should().Be(1);
+        repository.BooksSnapshot.Single(book => book.Id == first.Id).Metadata.Authors
+            .Should().Equal("Old Author");
+        repository.BooksSnapshot.Single(book => book.Id == second.Id).Metadata.Authors
+            .Should().Equal("New Author");
+    }
+
+    [Fact]
+    public async Task Rename_filter_conflict_fallback_preserves_cover_bytes_from_full_book()
+    {
+        var fullBook = CreateBook("Same Title", ["Old Author"], coverBytes: [1, 2, 3]);
+        var listBook = fullBook with
+        {
+            Metadata = new BookMetadata(
+                fullBook.Metadata.Title,
+                fullBook.Metadata.Authors,
+                fullBook.Metadata.Description,
+                fullBook.Metadata.Language,
+                fullBook.Metadata.Publisher,
+                fullBook.Metadata.PublicationDate,
+                fullBook.Metadata.Tags,
+                fullBook.Metadata.Series,
+                fullBook.Metadata.SeriesNumber,
+                fullBook.Metadata.Isbn)
+        };
+        var repository = new FullBookOnGetConflictingBulkListMetadataRepository([listBook], fullBook);
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "New Author" };
+        var viewModel = CreateViewModel([listBook], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.RenameAuthorFilterCommand.ExecuteAsync(
+            viewModel.AuthorFilters.Single(filter => filter.Name == "Old Author"));
+
+        repository.UpdatedBook.Should().NotBeNull();
+        repository.UpdatedBook!.Metadata.Authors.Should().Equal("New Author");
+        repository.UpdatedBook.Metadata.CoverBytes.Should().Equal(1, 2, 3);
     }
 
     [Fact]
@@ -2360,12 +2451,13 @@ public sealed class LibraryViewModelTests
         string? series = null,
         ReadingStatus readingStatus = ReadingStatus.Unread,
         IReadOnlyList<EbookFormat>? formats = null,
-        Guid? id = null)
+        Guid? id = null,
+        byte[]? coverBytes = null)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
             id ?? Guid.NewGuid(),
-            new BookMetadata(title, authors, Language: language, Tags: tags, Series: series),
+            new BookMetadata(title, authors, Language: language, Tags: tags, Series: series, CoverBytes: coverBytes),
             readingStatus,
             null,
             now,
@@ -2402,6 +2494,15 @@ public sealed class LibraryViewModelTests
     {
         private readonly List<CustomMetadataFieldDefinition> definitions = [];
         private readonly Dictionary<(Guid BookId, Guid FieldId), CustomMetadataValue> values = [];
+
+        public int GetValuesCalls { get; private set; }
+        public int GetValuesForBooksCalls { get; private set; }
+
+        public void ResetCallCounts()
+        {
+            GetValuesCalls = 0;
+            GetValuesForBooksCalls = 0;
+        }
 
         public CustomMetadataFieldDefinition AddDefinition(string name, CustomMetadataFieldType type)
         {
@@ -2451,15 +2552,21 @@ public sealed class LibraryViewModelTests
         public Task DeleteDefinitionAsync(Guid fieldId, CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
-        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesAsync(Guid bookId, CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
+        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesAsync(Guid bookId, CancellationToken cancellationToken)
+        {
+            GetValuesCalls++;
+            return Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
                 values.Values.Where(value => value.BookId == bookId).ToList());
+        }
 
         public Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
             IReadOnlyCollection<Guid> bookIds,
-            CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
+            CancellationToken cancellationToken)
+        {
+            GetValuesForBooksCalls++;
+            return Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
                 values.Values.Where(value => bookIds.Contains(value.BookId)).ToList());
+        }
 
         public Task SetValueAsync(CustomMetadataValue value, CancellationToken cancellationToken)
         {
@@ -2504,10 +2611,10 @@ public sealed class LibraryViewModelTests
 
         public IReadOnlyList<Book> BooksSnapshot => [.. Books];
         public int UpdateCalls { get; private set; }
-        public int GetCalls { get; private set; }
+        public int GetCalls { get; protected set; }
 
         public virtual Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([.. Books]);
-        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
+        public virtual Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
         {
             GetCalls++;
             return Task.FromResult(Books.SingleOrDefault(book => book.Id == id));
@@ -2546,6 +2653,7 @@ public sealed class LibraryViewModelTests
         : StaticBookRepository(books), IBookBulkMetadataRepository
     {
         public int BulkUpdateCalls { get; private set; }
+        public int BulkListUpdateCalls { get; protected set; }
 
         public virtual Task<int> UpdateScalarMetadataAsync(
             IReadOnlyCollection<Guid> bookIds,
@@ -2579,6 +2687,28 @@ public sealed class LibraryViewModelTests
                         book.Metadata.Isbn,
                         book.Metadata.CoverBytes)
                 };
+                updated++;
+            }
+
+            return Task.FromResult(updated);
+        }
+
+        public virtual Task<int> UpdateListMetadataAsync(
+            IReadOnlyCollection<Book> books,
+            BookListMetadataField field,
+            CancellationToken cancellationToken)
+        {
+            BulkListUpdateCalls++;
+            var updatesById = books.ToDictionary(book => book.Id);
+            var updated = 0;
+            for (var index = 0; index < Books.Count; index++)
+            {
+                if (!updatesById.TryGetValue(Books[index].Id, out var updatedBook))
+                {
+                    continue;
+                }
+
+                Books[index] = updatedBook;
                 updated++;
             }
 
@@ -2677,6 +2807,66 @@ public sealed class LibraryViewModelTests
                 throw new BookConflictException();
             }
 
+            return base.UpdateAsync(book, cancellationToken);
+        }
+    }
+
+    private sealed class ConflictingBulkListMetadataRepository(
+        IReadOnlyList<Book> books,
+        Guid conflictingBookId) : BulkScalarMetadataRepository(books)
+    {
+        private bool bulkConflictThrown;
+
+        public override Task<int> UpdateListMetadataAsync(
+            IReadOnlyCollection<Book> books,
+            BookListMetadataField field,
+            CancellationToken cancellationToken)
+        {
+            BulkListUpdateCalls++;
+            if (!bulkConflictThrown)
+            {
+                bulkConflictThrown = true;
+                throw new BookConflictException();
+            }
+
+            return base.UpdateListMetadataAsync(books, field, cancellationToken);
+        }
+
+        public override Task UpdateAsync(Book book, CancellationToken cancellationToken)
+        {
+            if (book.Id == conflictingBookId)
+            {
+                throw new BookConflictException();
+            }
+
+            return base.UpdateAsync(book, cancellationToken);
+        }
+    }
+
+    private sealed class FullBookOnGetConflictingBulkListMetadataRepository(
+        IReadOnlyList<Book> listBooks,
+        Book fullBook) : BulkScalarMetadataRepository(listBooks)
+    {
+        public Book? UpdatedBook { get; private set; }
+
+        public override Task<int> UpdateListMetadataAsync(
+            IReadOnlyCollection<Book> books,
+            BookListMetadataField field,
+            CancellationToken cancellationToken)
+        {
+            BulkListUpdateCalls++;
+            throw new BookConflictException();
+        }
+
+        public override Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
+        {
+            GetCalls++;
+            return Task.FromResult(id == fullBook.Id ? fullBook : null);
+        }
+
+        public override Task UpdateAsync(Book book, CancellationToken cancellationToken)
+        {
+            UpdatedBook = book;
             return base.UpdateAsync(book, cancellationToken);
         }
     }

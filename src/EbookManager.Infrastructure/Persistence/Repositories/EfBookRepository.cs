@@ -12,6 +12,8 @@ public sealed class EfBookRepository(
     LibraryDbContextFactory contextFactory,
     string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository
 {
+    private const int SqliteParameterChunkSize = 500;
+
     public async Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
         await using var context = contextFactory.Create(libraryPath);
@@ -259,7 +261,7 @@ public sealed class EfBookRepository(
         var total = 0;
         var updatedUtc = DateTimeOffset.UtcNow;
         await using var context = contextFactory.Create(libraryPath);
-        foreach (var batch in bookIds.Chunk(500))
+        foreach (var batch in bookIds.Chunk(SqliteParameterChunkSize))
         {
             var ids = batch;
             total += field switch
@@ -283,6 +285,160 @@ public sealed class EfBookRepository(
         }
 
         return total;
+    }
+
+    public async Task<int> UpdateListMetadataAsync(
+        IReadOnlyCollection<Book> books,
+        BookListMetadataField field,
+        CancellationToken cancellationToken)
+    {
+        if (field is not (BookListMetadataField.Authors or BookListMetadataField.Tags))
+        {
+            throw new ArgumentOutOfRangeException(nameof(field), field, "Unsupported list metadata field.");
+        }
+
+        try
+        {
+            if (books.Count == 0)
+            {
+                return 0;
+            }
+
+            var booksById = books
+                .GroupBy(book => book.Id)
+                .ToDictionary(group => group.Key, group => group.Last());
+            var bookIds = booksById.Keys.ToArray();
+            var updatedUtc = DateTimeOffset.UtcNow;
+            await using var context = contextFactory.Create(libraryPath);
+            await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            var existingBookIds = new HashSet<Guid>();
+            foreach (var batch in bookIds.Chunk(SqliteParameterChunkSize))
+            {
+                var ids = batch;
+                var existingIds = await context.Books
+                    .Where(book => ids.Contains(book.Id))
+                    .Select(book => book.Id)
+                    .ToListAsync(cancellationToken);
+                foreach (var id in existingIds)
+                {
+                    existingBookIds.Add(id);
+                }
+            }
+
+            if (existingBookIds.Count == 0)
+            {
+                return 0;
+            }
+
+            var previousAuthorIds = new List<Guid>();
+            var previousTagIds = new List<Guid>();
+            foreach (var batch in existingBookIds.Chunk(SqliteParameterChunkSize))
+            {
+                var ids = batch;
+                if (field == BookListMetadataField.Authors)
+                {
+                    previousAuthorIds.AddRange(await context.BookAuthors
+                        .Where(bookAuthor => ids.Contains(bookAuthor.BookId))
+                        .Select(bookAuthor => bookAuthor.AuthorId)
+                        .ToListAsync(cancellationToken));
+                    await context.BookAuthors
+                        .Where(bookAuthor => ids.Contains(bookAuthor.BookId))
+                        .ExecuteDeleteAsync(cancellationToken);
+                }
+                else
+                {
+                    previousTagIds.AddRange(await context.BookTags
+                        .Where(bookTag => ids.Contains(bookTag.BookId))
+                        .Select(bookTag => bookTag.TagId)
+                        .ToListAsync(cancellationToken));
+                    await context.BookTags
+                        .Where(bookTag => ids.Contains(bookTag.BookId))
+                        .ExecuteDeleteAsync(cancellationToken);
+                }
+            }
+
+            context.ChangeTracker.Clear();
+            if (field == BookListMetadataField.Authors)
+            {
+                var authorNamesByBookId = booksById
+                    .Where(item => existingBookIds.Contains(item.Key))
+                    .ToDictionary(item => item.Key, item => NormalizeMetadataNames(item.Value.Metadata.Authors));
+                var authorsByNormalizedName = await LoadOrCreateAuthorsAsync(
+                    context,
+                    authorNamesByBookId.Values.SelectMany(values => values),
+                    cancellationToken);
+                foreach (var (bookId, authors) in authorNamesByBookId)
+                {
+                    AddBookAuthors(context, bookId, authors, authorsByNormalizedName);
+                }
+
+                foreach (var batch in existingBookIds.Chunk(SqliteParameterChunkSize))
+                {
+                    var ids = batch;
+                    var entities = await context.Books
+                        .Where(book => ids.Contains(book.Id))
+                        .ToListAsync(cancellationToken);
+                    foreach (var entity in entities)
+                    {
+                        var book = booksById[entity.Id];
+                        entity.DuplicateKey = DuplicateKeyNormalizer.BuildDuplicateKey(
+                            book.Metadata.Title,
+                            book.Metadata.Authors);
+                        entity.UpdatedUtc = updatedUtc;
+                    }
+                }
+            }
+            else
+            {
+                var tagNamesByBookId = booksById
+                    .Where(item => existingBookIds.Contains(item.Key))
+                    .ToDictionary(item => item.Key, item => NormalizeMetadataNames(item.Value.Metadata.Tags));
+                var tagsByNormalizedName = await LoadOrCreateTagsAsync(
+                    context,
+                    tagNamesByBookId.Values.SelectMany(values => values),
+                    cancellationToken);
+                foreach (var (bookId, tags) in tagNamesByBookId)
+                {
+                    AddBookTags(context, bookId, tags, tagsByNormalizedName);
+                }
+
+                foreach (var batch in existingBookIds.Chunk(SqliteParameterChunkSize))
+                {
+                    var ids = batch;
+                    await context.Books
+                        .Where(book => ids.Contains(book.Id))
+                        .ExecuteUpdateAsync(
+                            setters => setters.SetProperty(book => book.UpdatedUtc, updatedUtc),
+                            cancellationToken);
+                }
+            }
+
+            await context.SaveChangesAsync(cancellationToken);
+            if (field == BookListMetadataField.Authors)
+            {
+                await RemoveOrphanedMetadataAsync(
+                    context,
+                    previousAuthorIds.Distinct().ToArray(),
+                    [],
+                    cancellationToken);
+            }
+            else
+            {
+                await RemoveOrphanedMetadataAsync(
+                    context,
+                    [],
+                    previousTagIds.Distinct().ToArray(),
+                    cancellationToken);
+            }
+
+            await context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return existingBookIds.Count;
+        }
+        catch (Exception exception) when (IsDuplicateKeyViolation(exception))
+        {
+            throw new BookConflictException();
+        }
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
@@ -465,6 +621,68 @@ public sealed class EfBookRepository(
         }
     }
 
+    private static async Task<Dictionary<string, AuthorEntity>> LoadOrCreateAuthorsAsync(
+        LibraryDbContext context,
+        IEnumerable<NormalizedMetadataName> authorNames,
+        CancellationToken cancellationToken)
+    {
+        var normalizedAuthors = authorNames
+            .GroupBy(author => author.NormalizedName, StringComparer.Ordinal)
+            .Select(group => group.First())
+            .ToList();
+        var normalizedNames = normalizedAuthors.Select(author => author.NormalizedName).ToArray();
+        var existingAuthors = new Dictionary<string, AuthorEntity>(StringComparer.Ordinal);
+        foreach (var batch in normalizedNames.Chunk(SqliteParameterChunkSize))
+        {
+            var names = batch;
+            var authors = await context.Authors
+                .Where(author => names.Contains(author.NormalizedName))
+                .ToListAsync(cancellationToken);
+            foreach (var author in authors)
+            {
+                existingAuthors[author.NormalizedName] = author;
+            }
+        }
+
+        foreach (var (name, normalizedName) in normalizedAuthors)
+        {
+            if (existingAuthors.TryGetValue(normalizedName, out var author))
+            {
+                author.Name = name;
+                continue;
+            }
+
+            author = new AuthorEntity
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                NormalizedName = normalizedName
+            };
+            context.Authors.Add(author);
+            existingAuthors.Add(normalizedName, author);
+        }
+
+        return existingAuthors;
+    }
+
+    private static void AddBookAuthors(
+        LibraryDbContext context,
+        Guid bookId,
+        IReadOnlyList<NormalizedMetadataName> authors,
+        IReadOnlyDictionary<string, AuthorEntity> authorsByNormalizedName)
+    {
+        for (var order = 0; order < authors.Count; order++)
+        {
+            var author = authorsByNormalizedName[authors[order].NormalizedName];
+            context.BookAuthors.Add(new BookAuthorEntity
+            {
+                BookId = bookId,
+                AuthorId = author.Id,
+                Order = order
+            });
+        }
+    }
+
     private static async Task AddTagsAsync(
         LibraryDbContext context,
         BookEntity book,
@@ -514,6 +732,68 @@ public sealed class EfBookRepository(
         }
     }
 
+    private static async Task<Dictionary<string, TagEntity>> LoadOrCreateTagsAsync(
+        LibraryDbContext context,
+        IEnumerable<NormalizedMetadataName> tagNames,
+        CancellationToken cancellationToken)
+    {
+        var normalizedTags = tagNames
+            .GroupBy(tag => tag.NormalizedName, StringComparer.Ordinal)
+            .Select(group => group.First())
+            .ToList();
+        var normalizedNames = normalizedTags.Select(tag => tag.NormalizedName).ToArray();
+        var existingTags = new Dictionary<string, TagEntity>(StringComparer.Ordinal);
+        foreach (var batch in normalizedNames.Chunk(SqliteParameterChunkSize))
+        {
+            var names = batch;
+            var tags = await context.Tags
+                .Where(tag => names.Contains(tag.NormalizedName))
+                .ToListAsync(cancellationToken);
+            foreach (var tag in tags)
+            {
+                existingTags[tag.NormalizedName] = tag;
+            }
+        }
+
+        foreach (var (name, normalizedName) in normalizedTags)
+        {
+            if (existingTags.TryGetValue(normalizedName, out var tag))
+            {
+                tag.Name = name;
+                continue;
+            }
+
+            tag = new TagEntity
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                NormalizedName = normalizedName
+            };
+            context.Tags.Add(tag);
+            existingTags.Add(normalizedName, tag);
+        }
+
+        return existingTags;
+    }
+
+    private static void AddBookTags(
+        LibraryDbContext context,
+        Guid bookId,
+        IReadOnlyList<NormalizedMetadataName> tags,
+        IReadOnlyDictionary<string, TagEntity> tagsByNormalizedName)
+    {
+        for (var order = 0; order < tags.Count; order++)
+        {
+            var tag = tagsByNormalizedName[tags[order].NormalizedName];
+            context.BookTags.Add(new BookTagEntity
+            {
+                BookId = bookId,
+                TagId = tag.Id,
+                Order = order
+            });
+        }
+    }
+
     private static async Task RemoveOrphanedMetadataAsync(
         LibraryDbContext context,
         CancellationToken cancellationToken)
@@ -534,18 +814,20 @@ public sealed class EfBookRepository(
         IReadOnlyList<Guid> tagIds,
         CancellationToken cancellationToken)
     {
-        if (authorIds.Count > 0)
+        foreach (var batch in authorIds.Chunk(SqliteParameterChunkSize))
         {
+            var ids = batch;
             var authors = await context.Authors
-                .Where(x => authorIds.Contains(x.Id) && !x.BookAuthors.Any())
+                .Where(x => ids.Contains(x.Id) && !x.BookAuthors.Any())
                 .ToListAsync(cancellationToken);
             context.Authors.RemoveRange(authors);
         }
 
-        if (tagIds.Count > 0)
+        foreach (var batch in tagIds.Chunk(SqliteParameterChunkSize))
         {
+            var ids = batch;
             var tags = await context.Tags
-                .Where(x => tagIds.Contains(x.Id) && !x.BookTags.Any())
+                .Where(x => ids.Contains(x.Id) && !x.BookTags.Any())
                 .ToListAsync(cancellationToken);
             context.Tags.RemoveRange(tags);
         }

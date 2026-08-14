@@ -101,6 +101,17 @@ public sealed class CurrentLibraryBookRepository(
             : repository.UpdateScalarMetadataAsync(bookIds, field, value, cancellationToken);
     }
 
+    public Task<int> UpdateListMetadataAsync(
+        IReadOnlyCollection<Book> books,
+        BookListMetadataField field,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult(0)
+            : repository.UpdateListMetadataAsync(books, field, cancellationToken);
+    }
+
     public Task DeleteAsync(Guid id, CancellationToken cancellationToken) =>
         CreateRepository().DeleteAsync(id, cancellationToken);
 

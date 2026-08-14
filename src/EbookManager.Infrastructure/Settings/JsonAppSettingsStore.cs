@@ -8,6 +8,9 @@ namespace EbookManager.Infrastructure.Settings;
 
 public sealed class JsonAppSettingsStore : IAppSettingsStore
 {
+    private const string CurrentApplicationDirectoryName = "Saga";
+    private const string LegacyApplicationDirectoryName = "EbookManager";
+
     private static readonly AppSettings DefaultSettings = new(
         null,
         "en-US",
@@ -30,12 +33,21 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
         OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
 
     private readonly string baseDirectory;
+    private readonly string? legacyBaseDirectory;
 
     public JsonAppSettingsStore(string? baseDirectory = null)
     {
-        this.baseDirectory = baseDirectory ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "EbookManager");
+        var localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        this.baseDirectory = baseDirectory ?? Path.Combine(localApplicationData, CurrentApplicationDirectoryName);
+        legacyBaseDirectory = baseDirectory is null
+            ? Path.Combine(localApplicationData, LegacyApplicationDirectoryName)
+            : null;
+    }
+
+    internal JsonAppSettingsStore(string baseDirectory, string? legacyBaseDirectory)
+    {
+        this.baseDirectory = baseDirectory;
+        this.legacyBaseDirectory = legacyBaseDirectory;
     }
 
     public Task<AppSettings> LoadAsync(CancellationToken cancellationToken) =>
@@ -68,6 +80,20 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
             cancellationToken.ThrowIfCancellationRequested();
             if (!File.Exists(path))
             {
+                if (TryGetLegacyPath(filename) is { } legacyPath && File.Exists(legacyPath))
+                {
+                    try
+                    {
+                        await using var legacyStream = File.OpenRead(legacyPath);
+                        return await JsonSerializer.DeserializeAsync<T>(legacyStream, JsonOptions, cancellationToken) ?? defaultValue;
+                    }
+                    catch (JsonException)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        return defaultValue;
+                    }
+                }
+
                 return defaultValue;
             }
 
@@ -131,6 +157,20 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
 
     private static SemaphoreSlim GetTargetLock(string path) =>
         TargetLocks.GetOrAdd(Path.GetFullPath(path), _ => new SemaphoreSlim(1, 1));
+
+    private string? TryGetLegacyPath(string filename)
+    {
+        if (legacyBaseDirectory is null)
+        {
+            return null;
+        }
+
+        var currentPath = Path.GetFullPath(Path.Combine(baseDirectory, filename));
+        var legacyPath = Path.GetFullPath(Path.Combine(legacyBaseDirectory, filename));
+        return string.Equals(currentPath, legacyPath, StringComparison.OrdinalIgnoreCase)
+            ? null
+            : legacyPath;
+    }
 
     private static void Quarantine(string path)
     {
