@@ -84,6 +84,7 @@
   <data name="File" xml:space="preserve"><value>File</value></data>
   <data name="FileType" xml:space="preserve"><value>File type</value></data>
   <data name="FilterHelp" xml:space="preserve"><value>Filters are based on metadata found during import.</value></data>
+  <data name="FilterSearchPlaceholder" xml:space="preserve"><value>Search within this filter list</value></data>
   <data name="Filters" xml:space="preserve"><value>Filters</value></data>
   <data name="FilterRenameTitle" xml:space="preserve"><value>Rename metadata value</value></data>
   <data name="FilterRenameMessage" xml:space="preserve"><value>Rename "{0}" to:</value></data>

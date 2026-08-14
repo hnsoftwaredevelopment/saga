@@ -23,5 +23,8 @@ public sealed partial class FacetFilterViewModel(
     [ObservableProperty]
     private bool isSelected = isSelected;
 
+    [ObservableProperty]
+    private bool isVisible = true;
+
     partial void OnIsSelectedChanged(bool value) => selectionChanged();
 }

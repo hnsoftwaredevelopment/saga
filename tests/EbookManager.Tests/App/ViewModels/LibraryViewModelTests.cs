@@ -313,6 +313,65 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Custom_metadata_filter_search_hides_nonmatching_values_and_preserves_selection()
+    {
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var third = CreateBook("Third", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        customMetadataRepository.SetValue(new CustomMetadataValue(first.Id, field.Id, TextValue: "Avondgroep"));
+        customMetadataRepository.SetValue(new CustomMetadataValue(second.Id, field.Id, TextValue: "Middaggroep"));
+        customMetadataRepository.SetValue(new CustomMetadataValue(third.Id, field.Id, TextValue: "Weekendgroep"));
+        var viewModel = CreateViewModel(
+            [first, second, third],
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Filters.Single(filter => filter.Name == "Weekendgroep").IsSelected = true;
+
+        group.FilterSearchText = "middag";
+
+        group.VisibleFilterCount.Should().Be(1);
+        group.FilterSearchSummary.Should().Be("1 / 3");
+        group.Filters.Single(filter => filter.Name == "Middaggroep").IsVisible.Should().BeTrue();
+        group.Filters.Single(filter => filter.Name == "Weekendgroep").IsVisible.Should().BeFalse();
+        group.Filters.Single(filter => filter.Name == "Weekendgroep").IsSelected.Should().BeTrue();
+        viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == third.Id);
+    }
+
+    [Fact]
+    public async Task Custom_metadata_filter_search_row_is_only_available_for_long_lists_or_active_search_text()
+    {
+        var books = Enumerable.Range(1, 3)
+            .Select(index => CreateBook($"Book {index}", ["Author"]))
+            .ToArray();
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        foreach (var book in books.Select((book, index) => new { Book = book, Index = index + 1 }))
+        {
+            customMetadataRepository.SetValue(
+                new CustomMetadataValue(book.Book.Id, field.Id, TextValue: $"Groep {book.Index}"));
+        }
+
+        var viewModel = CreateViewModel(
+            books,
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+
+        group.HasFilterSearch.Should().BeFalse();
+
+        group.FilterSearchText = "groep";
+
+        group.HasFilterSearch.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Multi_select_custom_metadata_values_are_available_as_separate_filters()
     {
         var book = CreateBook("First", ["Author"]);
@@ -727,6 +786,60 @@ public sealed class LibraryViewModelTests
 
         viewModel.VisibleBooks.Should().ContainSingle()
             .Which.Title.Should().Be("Dune");
+    }
+
+    [Fact]
+    public async Task Filter_search_hides_nonmatching_author_filters_without_changing_selection()
+    {
+        var dune = CreateBook("Dune", ["Frank Herbert"]);
+        var hobbit = CreateBook("The Hobbit", ["J.R.R. Tolkien"]);
+        var reacher = CreateBook("Reacher", ["Lee Child"]);
+        var viewModel = CreateViewModel([dune, hobbit, reacher]);
+
+        await viewModel.RefreshAsync();
+        viewModel.AuthorFilters.Single(filter => filter.Name == "Lee Child").IsSelected = true;
+
+        viewModel.AuthorFilterSearchText = "tol";
+
+        viewModel.VisibleAuthorFilterCount.Should().Be(1);
+        viewModel.AuthorFilterSearchSummary.Should().Be("1 / 3");
+        viewModel.AuthorFilters.Single(filter => filter.Name == "J.R.R. Tolkien").IsVisible.Should().BeTrue();
+        viewModel.AuthorFilters.Single(filter => filter.Name == "Lee Child").IsVisible.Should().BeFalse();
+        viewModel.AuthorFilters.Single(filter => filter.Name == "Lee Child").IsSelected.Should().BeTrue();
+        viewModel.VisibleBooks.Should().ContainSingle(row => row.Title == "Reacher");
+
+        viewModel.AuthorFilterSearchText = string.Empty;
+
+        viewModel.VisibleAuthorFilterCount.Should().Be(3);
+        viewModel.AuthorFilterSearchSummary.Should().Be("3 / 3");
+    }
+
+    [Fact]
+    public async Task Filter_search_row_is_only_available_for_long_lists_or_active_search_text()
+    {
+        var smallViewModel = CreateViewModel(
+            [
+                CreateBook("Book A", ["Author A"]),
+                CreateBook("Book B", ["Author B"]),
+                CreateBook("Book C", ["Author C"])
+            ]);
+
+        await smallViewModel.RefreshAsync();
+
+        smallViewModel.HasAuthorFilterSearch.Should().BeFalse();
+
+        smallViewModel.AuthorFilterSearchText = "author";
+
+        smallViewModel.HasAuthorFilterSearch.Should().BeTrue();
+
+        var largeViewModel = CreateViewModel(
+            Enumerable.Range(1, 8)
+                .Select(index => CreateBook($"Book {index}", [$"Author {index}"]))
+                .ToArray());
+
+        await largeViewModel.RefreshAsync();
+
+        largeViewModel.HasAuthorFilterSearch.Should().BeTrue();
     }
 
     [Fact]
