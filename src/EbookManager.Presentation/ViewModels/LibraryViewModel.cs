@@ -20,6 +20,8 @@ namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class LibraryViewModel : ObservableObject
 {
+    private const int FilterSearchMinimumItemCount = 8;
+
     private const int LibraryLoadPageSize = 500;
     private const string MissingActiveLibraryMessage =
         "The active library folder no longer exists. Create or open a library to continue.";
@@ -161,6 +163,22 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool HasCustomMetadataFilterGroups => CustomMetadataFilterGroups.Count > 0;
 
+    public int VisibleAuthorFilterCount => CountVisibleFilters(AuthorFilters);
+    public int VisibleCategoryFilterCount => CountVisibleFilters(CategoryFilters);
+    public int VisibleSeriesFilterCount => CountVisibleFilters(SeriesFilters);
+    public int VisibleLanguageFilterCount => CountVisibleFilters(LanguageFilters);
+    public int VisibleFormatFilterCount => CountVisibleFilters(FormatFilters);
+    public string AuthorFilterSearchSummary => FormatFilterSearchCountSummary(VisibleAuthorFilterCount, AuthorFilters.Count);
+    public string CategoryFilterSearchSummary => FormatFilterSearchCountSummary(VisibleCategoryFilterCount, CategoryFilters.Count);
+    public string SeriesFilterSearchSummary => FormatFilterSearchCountSummary(VisibleSeriesFilterCount, SeriesFilters.Count);
+    public string LanguageFilterSearchSummary => FormatFilterSearchCountSummary(VisibleLanguageFilterCount, LanguageFilters.Count);
+    public string FormatFilterSearchSummary => FormatFilterSearchCountSummary(VisibleFormatFilterCount, FormatFilters.Count);
+    public bool HasAuthorFilterSearch => ShouldShowFilterSearch(AuthorFilters.Count, AuthorFilterSearchText);
+    public bool HasCategoryFilterSearch => ShouldShowFilterSearch(CategoryFilters.Count, CategoryFilterSearchText);
+    public bool HasSeriesFilterSearch => ShouldShowFilterSearch(SeriesFilters.Count, SeriesFilterSearchText);
+    public bool HasLanguageFilterSearch => ShouldShowFilterSearch(LanguageFilters.Count, LanguageFilterSearchText);
+    public bool HasFormatFilterSearch => ShouldShowFilterSearch(FormatFilters.Count, FormatFilterSearchText);
+
     public string ApplicationVersion =>
         Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ??
         Assembly.GetExecutingAssembly().GetName().Version?.ToString() ??
@@ -184,6 +202,21 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     [ObservableProperty]
     private string searchText = string.Empty;
+
+    [ObservableProperty]
+    private string authorFilterSearchText = string.Empty;
+
+    [ObservableProperty]
+    private string categoryFilterSearchText = string.Empty;
+
+    [ObservableProperty]
+    private string seriesFilterSearchText = string.Empty;
+
+    [ObservableProperty]
+    private string languageFilterSearchText = string.Empty;
+
+    [ObservableProperty]
+    private string formatFilterSearchText = string.Empty;
 
     [ObservableProperty]
     private LibraryView selectedView = LibraryView.Detailed;
@@ -2481,6 +2514,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             books.SelectMany(book => book.Formats.Select(format => format.ToString())),
             FormatDisplayName);
         RefreshCustomMetadataFilters();
+        ApplyAllFilterSearches();
         NotifyFacetFilterCollectionsChanged();
     }
 
@@ -2495,6 +2529,103 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(FormatFilters));
     }
 
+    partial void OnAuthorFilterSearchTextChanged(string value) =>
+        ApplyStandardFilterSearch(
+            AuthorFilters,
+            value,
+            nameof(VisibleAuthorFilterCount),
+            nameof(AuthorFilterSearchSummary),
+            nameof(HasAuthorFilterSearch));
+
+    partial void OnCategoryFilterSearchTextChanged(string value) =>
+        ApplyStandardFilterSearch(
+            CategoryFilters,
+            value,
+            nameof(VisibleCategoryFilterCount),
+            nameof(CategoryFilterSearchSummary),
+            nameof(HasCategoryFilterSearch));
+
+    partial void OnSeriesFilterSearchTextChanged(string value) =>
+        ApplyStandardFilterSearch(
+            SeriesFilters,
+            value,
+            nameof(VisibleSeriesFilterCount),
+            nameof(SeriesFilterSearchSummary),
+            nameof(HasSeriesFilterSearch));
+
+    partial void OnLanguageFilterSearchTextChanged(string value) =>
+        ApplyStandardFilterSearch(
+            LanguageFilters,
+            value,
+            nameof(VisibleLanguageFilterCount),
+            nameof(LanguageFilterSearchSummary),
+            nameof(HasLanguageFilterSearch));
+
+    partial void OnFormatFilterSearchTextChanged(string value) =>
+        ApplyStandardFilterSearch(
+            FormatFilters,
+            value,
+            nameof(VisibleFormatFilterCount),
+            nameof(FormatFilterSearchSummary),
+            nameof(HasFormatFilterSearch));
+
+    private void ApplyAllFilterSearches()
+    {
+        ApplyStandardFilterSearch(
+            AuthorFilters,
+            AuthorFilterSearchText,
+            nameof(VisibleAuthorFilterCount),
+            nameof(AuthorFilterSearchSummary),
+            nameof(HasAuthorFilterSearch));
+        ApplyStandardFilterSearch(
+            CategoryFilters,
+            CategoryFilterSearchText,
+            nameof(VisibleCategoryFilterCount),
+            nameof(CategoryFilterSearchSummary),
+            nameof(HasCategoryFilterSearch));
+        ApplyStandardFilterSearch(
+            SeriesFilters,
+            SeriesFilterSearchText,
+            nameof(VisibleSeriesFilterCount),
+            nameof(SeriesFilterSearchSummary),
+            nameof(HasSeriesFilterSearch));
+        ApplyStandardFilterSearch(
+            LanguageFilters,
+            LanguageFilterSearchText,
+            nameof(VisibleLanguageFilterCount),
+            nameof(LanguageFilterSearchSummary),
+            nameof(HasLanguageFilterSearch));
+        ApplyStandardFilterSearch(
+            FormatFilters,
+            FormatFilterSearchText,
+            nameof(VisibleFormatFilterCount),
+            nameof(FormatFilterSearchSummary),
+            nameof(HasFormatFilterSearch));
+        foreach (var group in CustomMetadataFilterGroups)
+        {
+            group.ApplySearch();
+        }
+    }
+
+    private void ApplyStandardFilterSearch(
+        ObservableCollection<FacetFilterViewModel> filters,
+        string? searchText,
+        string visibleCountPropertyName,
+        string summaryPropertyName,
+        string searchVisibilityPropertyName)
+    {
+        var query = searchText?.Trim();
+        foreach (var filter in filters)
+        {
+            filter.IsVisible = string.IsNullOrWhiteSpace(query) ||
+                FilterTextMatches(filter, query);
+        }
+
+        OnPropertyChanged(visibleCountPropertyName);
+        OnPropertyChanged(summaryPropertyName);
+        OnPropertyChanged(searchVisibilityPropertyName);
+    }
+
     private void RefreshCustomMetadataFilters()
     {
         var existingSelections = CustomMetadataFilterGroups
@@ -2507,6 +2638,9 @@ public sealed partial class LibraryViewModel : ObservableObject
             .ToDictionary(
                 item => (item.FieldId, item.Name),
                 item => item.IsSelected);
+        var existingSearchTexts = CustomMetadataFilterGroups.ToDictionary(
+            group => group.FieldId,
+            group => group.FilterSearchText);
 
         CustomMetadataFilterGroups.Clear();
         foreach (var definition in customMetadataFieldDefinitions
@@ -2538,7 +2672,17 @@ public sealed partial class LibraryViewModel : ObservableObject
                 filters.Add(new FacetFilterViewModel(value.Name, value.Count, isSelected, ApplyFilter));
             }
 
-            CustomMetadataFilterGroups.Add(new CustomMetadataFilterGroupViewModel(definition, filters));
+            var group = new CustomMetadataFilterGroupViewModel(definition, filters);
+            if (existingSearchTexts.TryGetValue(definition.Id, out var searchText))
+            {
+                group.FilterSearchText = searchText;
+            }
+            else
+            {
+                group.ApplySearch();
+            }
+
+            CustomMetadataFilterGroups.Add(group);
         }
 
         OnPropertyChanged(nameof(HasCustomMetadataFilterGroups));
@@ -2628,6 +2772,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         string.IsNullOrWhiteSpace(value) ? [] : [value];
 
     private static string FormatDisplayName(string value) => value.ToUpperInvariant();
+
+    private static int CountVisibleFilters(IEnumerable<FacetFilterViewModel> filters) =>
+        filters.Count(filter => filter.IsVisible);
+
+    private static string FormatFilterSearchCountSummary(int visibleCount, int totalCount) =>
+        $"{visibleCount} / {totalCount}";
+
+    private static bool ShouldShowFilterSearch(int totalCount, string? searchText) =>
+        totalCount >= FilterSearchMinimumItemCount || !string.IsNullOrWhiteSpace(searchText);
+
+    private static bool FilterTextMatches(FacetFilterViewModel filter, string query) =>
+        filter.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
+        filter.DisplayText.Contains(query, StringComparison.CurrentCultureIgnoreCase);
 
     private async Task RenameFilterValueAsync(
         FacetFilterViewModel? filter,

@@ -455,6 +455,7 @@
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Créer une nouvelle bibliothèque</value></data>
   <data name="File" xml:space="preserve"><value>Fichier</value></data>
   <data name="FilterHelp" xml:space="preserve"><value>Les filtres reposent sur les métadonnées trouvées lors de l’importation.</value></data>
+  <data name="FilterSearchPlaceholder" xml:space="preserve"><value>Rechercher dans cette liste de filtres</value></data>
   <data name="Filters" xml:space="preserve"><value>Filtres</value></data>
   <data name="FilterRenameTitle" xml:space="preserve"><value>Renommer la valeur de métadonnée</value></data>
   <data name="FilterRenameMessage" xml:space="preserve"><value>Renommer « {0} » en :</value></data>

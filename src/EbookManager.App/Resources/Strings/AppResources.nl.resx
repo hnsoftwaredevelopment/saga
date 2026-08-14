@@ -84,6 +84,7 @@
   <data name="File" xml:space="preserve"><value>Bestand</value></data>
   <data name="FileType" xml:space="preserve"><value>Bestandstype</value></data>
   <data name="FilterHelp" xml:space="preserve"><value>Filters zijn gebaseerd op metadata die tijdens import is gevonden.</value></data>
+  <data name="FilterSearchPlaceholder" xml:space="preserve"><value>Zoeken binnen deze filterlijst</value></data>
   <data name="Filters" xml:space="preserve"><value>Filters</value></data>
   <data name="FilterRenameTitle" xml:space="preserve"><value>Metadatawaarde hernoemen</value></data>
   <data name="FilterRenameMessage" xml:space="preserve"><value>Hernoem "{0}" naar:</value></data>

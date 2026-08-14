@@ -51,9 +51,21 @@
               <Setter Property="Margin" Value="0" />
               <Setter Property="HorizontalContentAlignment" Value="Stretch" />
               <Setter Property="Focusable" Value="False" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding IsVisible}" Value="False">
+                  <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+              </Style.Triggers>
             </Style>
           </Setter.Value>
         </Setter>
+      </Style>
+      <Style x:Key="FilterSearchTextBoxStyle" TargetType="TextBox">
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="ToolTip" Value="{loc:Loc FilterSearchPlaceholder}" />
       </Style>
     </Grid.Resources>
     <Grid.Style>
@@ -280,6 +292,27 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
           <Expander Header="{loc:Loc Authors}" IsExpanded="False" Margin="0,0,0,6">
+            <StackPanel>
+              <DockPanel Margin="0,0,0,6">
+                <DockPanel.Style>
+                  <Style TargetType="DockPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding HasAuthorFilterSearch}" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </DockPanel.Style>
+                <TextBlock Text="{Binding AuthorFilterSearchSummary}"
+                           DockPanel.Dock="Right"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="11"
+                           Margin="8,0,0,0"
+                           VerticalAlignment="Center" />
+                <TextBox Text="{Binding AuthorFilterSearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource FilterSearchTextBoxStyle}" />
+              </DockPanel>
               <ListBox ItemsSource="{Binding AuthorFilters}"
                        Style="{StaticResource FilterListBoxStyle}">
                 <ListBox.ItemTemplate>
@@ -307,8 +340,30 @@
                   </DataTemplate>
                 </ListBox.ItemTemplate>
               </ListBox>
+            </StackPanel>
           </Expander>
           <Expander Header="{loc:Loc Series}" Margin="0,0,0,6">
+            <StackPanel>
+              <DockPanel Margin="0,0,0,6">
+                <DockPanel.Style>
+                  <Style TargetType="DockPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding HasSeriesFilterSearch}" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </DockPanel.Style>
+                <TextBlock Text="{Binding SeriesFilterSearchSummary}"
+                           DockPanel.Dock="Right"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="11"
+                           Margin="8,0,0,0"
+                           VerticalAlignment="Center" />
+                <TextBox Text="{Binding SeriesFilterSearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource FilterSearchTextBoxStyle}" />
+              </DockPanel>
               <ListBox ItemsSource="{Binding SeriesFilters}"
                        Style="{StaticResource FilterListBoxStyle}"
                        MaxHeight="120">
@@ -337,8 +392,30 @@
                   </DataTemplate>
                 </ListBox.ItemTemplate>
               </ListBox>
+            </StackPanel>
           </Expander>
           <Expander Header="{loc:Loc Tags}" Margin="0,0,0,6">
+            <StackPanel>
+              <DockPanel Margin="0,0,0,6">
+                <DockPanel.Style>
+                  <Style TargetType="DockPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding HasCategoryFilterSearch}" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </DockPanel.Style>
+                <TextBlock Text="{Binding CategoryFilterSearchSummary}"
+                           DockPanel.Dock="Right"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="11"
+                           Margin="8,0,0,0"
+                           VerticalAlignment="Center" />
+                <TextBox Text="{Binding CategoryFilterSearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource FilterSearchTextBoxStyle}" />
+              </DockPanel>
               <ListBox ItemsSource="{Binding CategoryFilters}"
                        Style="{StaticResource FilterListBoxStyle}"
                        MaxHeight="120">
@@ -367,6 +444,7 @@
                   </DataTemplate>
                 </ListBox.ItemTemplate>
               </ListBox>
+            </StackPanel>
           </Expander>
           <Expander Header="{loc:Loc Status}" Margin="0,0,0,6">
             <ScrollViewer MaxHeight="120"
@@ -399,6 +477,27 @@
             </ScrollViewer>
           </Expander>
           <Expander Header="{loc:Loc Language}" Margin="0,0,0,12">
+            <StackPanel>
+              <DockPanel Margin="0,0,0,6">
+                <DockPanel.Style>
+                  <Style TargetType="DockPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding HasLanguageFilterSearch}" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </DockPanel.Style>
+                <TextBlock Text="{Binding LanguageFilterSearchSummary}"
+                           DockPanel.Dock="Right"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="11"
+                           Margin="8,0,0,0"
+                           VerticalAlignment="Center" />
+                <TextBox Text="{Binding LanguageFilterSearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource FilterSearchTextBoxStyle}" />
+              </DockPanel>
               <ListBox ItemsSource="{Binding LanguageFilters}"
                        Style="{StaticResource FilterListBoxStyle}"
                        MaxHeight="120">
@@ -427,21 +526,43 @@
                   </DataTemplate>
                 </ListBox.ItemTemplate>
               </ListBox>
+            </StackPanel>
           </Expander>
           <Expander Header="{loc:Loc Type}" Margin="0,0,0,12">
-            <ScrollViewer MaxHeight="120"
-                          VerticalScrollBarVisibility="Auto">
-              <ItemsControl ItemsSource="{Binding FormatFilters}">
-                <ItemsControl.ItemTemplate>
+            <StackPanel>
+              <DockPanel Margin="0,0,0,6">
+                <DockPanel.Style>
+                  <Style TargetType="DockPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding HasFormatFilterSearch}" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </DockPanel.Style>
+                <TextBlock Text="{Binding FormatFilterSearchSummary}"
+                           DockPanel.Dock="Right"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="11"
+                           Margin="8,0,0,0"
+                           VerticalAlignment="Center" />
+                <TextBox Text="{Binding FormatFilterSearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource FilterSearchTextBoxStyle}" />
+              </DockPanel>
+              <ListBox ItemsSource="{Binding FormatFilters}"
+                       Style="{StaticResource FilterListBoxStyle}"
+                       MaxHeight="120">
+                <ListBox.ItemTemplate>
                   <DataTemplate>
                     <CheckBox Content="{Binding DisplayName}"
                               IsChecked="{Binding IsSelected, Mode=TwoWay}"
                               Margin="0,2"
                               Foreground="{DynamicResource TextSecondaryBrush}" />
                   </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </StackPanel>
           </Expander>
           <ItemsControl ItemsSource="{Binding CustomMetadataFilterGroups}">
             <ItemsControl.Style>
@@ -457,6 +578,27 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Expander Header="{Binding Name}" Margin="0,0,0,12">
+                  <StackPanel>
+                    <DockPanel Margin="0,0,0,6">
+                      <DockPanel.Style>
+                        <Style TargetType="DockPanel">
+                          <Setter Property="Visibility" Value="Visible" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasFilterSearch}" Value="False">
+                              <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </DockPanel.Style>
+                      <TextBlock Text="{Binding FilterSearchSummary}"
+                                 DockPanel.Dock="Right"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 FontSize="11"
+                                 Margin="8,0,0,0"
+                                 VerticalAlignment="Center" />
+                      <TextBox Text="{Binding FilterSearchText, UpdateSourceTrigger=PropertyChanged}"
+                               Style="{StaticResource FilterSearchTextBoxStyle}" />
+                    </DockPanel>
                     <ListBox ItemsSource="{Binding Filters}"
                              Style="{StaticResource FilterListBoxStyle}"
                              MaxHeight="120">
@@ -469,6 +611,7 @@
                         </DataTemplate>
                       </ListBox.ItemTemplate>
                     </ListBox>
+                  </StackPanel>
                 </Expander>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
