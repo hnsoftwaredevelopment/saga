@@ -2669,8 +2669,29 @@ public sealed partial class LibraryViewModel : ObservableObject
             {
                 try
                 {
-                    await bookRepository.UpdateAsync(changedBook, cancellationToken);
-                    persistedBooks.Add(changedBook);
+                    var fullBook = await bookRepository.GetAsync(changedBook.Id, cancellationToken);
+                    if (fullBook is null)
+                    {
+                        continue;
+                    }
+
+                    var bookToPersist = changedBook with
+                    {
+                        Metadata = new BookMetadata(
+                            changedBook.Metadata.Title,
+                            changedBook.Metadata.Authors,
+                            changedBook.Metadata.Description,
+                            changedBook.Metadata.Language,
+                            changedBook.Metadata.Publisher,
+                            changedBook.Metadata.PublicationDate,
+                            changedBook.Metadata.Tags,
+                            changedBook.Metadata.Series,
+                            changedBook.Metadata.SeriesNumber,
+                            changedBook.Metadata.Isbn,
+                            fullBook.Metadata.CoverBytes)
+                    };
+                    await bookRepository.UpdateAsync(bookToPersist, cancellationToken);
+                    persistedBooks.Add(bookToPersist);
                 }
                 catch (BookConflictException)
                 {

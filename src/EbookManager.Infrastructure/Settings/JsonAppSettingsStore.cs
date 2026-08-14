@@ -44,6 +44,12 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
             : null;
     }
 
+    internal JsonAppSettingsStore(string baseDirectory, string? legacyBaseDirectory)
+    {
+        this.baseDirectory = baseDirectory;
+        this.legacyBaseDirectory = legacyBaseDirectory;
+    }
+
     public Task<AppSettings> LoadAsync(CancellationToken cancellationToken) =>
         ReadAsync("settings.json", DefaultSettings, cancellationToken);
 
@@ -76,8 +82,16 @@ public sealed class JsonAppSettingsStore : IAppSettingsStore
             {
                 if (TryGetLegacyPath(filename) is { } legacyPath && File.Exists(legacyPath))
                 {
-                    await using var legacyStream = File.OpenRead(legacyPath);
-                    return await JsonSerializer.DeserializeAsync<T>(legacyStream, JsonOptions, cancellationToken) ?? defaultValue;
+                    try
+                    {
+                        await using var legacyStream = File.OpenRead(legacyPath);
+                        return await JsonSerializer.DeserializeAsync<T>(legacyStream, JsonOptions, cancellationToken) ?? defaultValue;
+                    }
+                    catch (JsonException)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        return defaultValue;
+                    }
                 }
 
                 return defaultValue;

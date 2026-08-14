@@ -95,6 +95,33 @@ public sealed class JsonAppSettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task Load_returns_defaults_for_malformed_legacy_settings_without_changing_legacy_file()
+    {
+        var currentDirectory = Path.Combine(temporaryDirectory.DirectoryPath, "Saga");
+        var legacyDirectory = Path.Combine(temporaryDirectory.DirectoryPath, "EbookManager");
+        var legacyPath = Path.Combine(legacyDirectory, "settings.json");
+        Directory.CreateDirectory(legacyDirectory);
+        await File.WriteAllTextAsync(legacyPath, "{");
+        var store = new JsonAppSettingsStore(currentDirectory, legacyDirectory);
+
+        var settings = await store.LoadAsync(default);
+
+        settings.Should().Be(new AppSettings(
+            null,
+            "en-US",
+            "Light",
+            "Detailed",
+            true,
+            true,
+            EbookManager.Domain.Settings.AuthorSortStrategy.DisplayName,
+            true,
+            true,
+            new EbookManager.Domain.Settings.DuplicateMergeDefaultSettings()));
+        File.Exists(legacyPath).Should().BeTrue();
+        Directory.GetFiles(legacyDirectory, "*.corrupt").Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Load_uses_default_scan_recursion_when_setting_is_missing()
     {
         var path = Path.Combine(temporaryDirectory.DirectoryPath, "settings.json");

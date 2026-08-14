@@ -369,6 +369,54 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Bulk_list_metadata_update_rejects_unsupported_field_without_changing_relationships()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        var book = CreateBook("First", ["Author"], ["Keep"]);
+        await repository.AddAsync(book, CreateFile(book.Id, Hash('A')), default);
+
+        var act = () => repository.UpdateListMetadataAsync(
+            [book with { Metadata = new BookMetadata(book.Metadata.Title, book.Metadata.Authors) }],
+            (BookListMetadataField)999,
+            default);
+
+        await act.Should().ThrowAsync<ArgumentOutOfRangeException>();
+        var reloaded = await repository.GetAsync(book.Id, default);
+        reloaded!.Metadata.Tags.Should().Equal("Keep");
+    }
+
+    [Fact]
+    public async Task Bulk_list_metadata_update_cleans_orphaned_tags_in_parameter_safe_batches()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        var books = Enumerable.Range(0, 501)
+            .Select(index => CreateBook($"Book {index:000}", ["Author"], [$"Remove {index:000}"]))
+            .ToList();
+        for (var index = 0; index < books.Count; index++)
+        {
+            var book = books[index];
+            await repository.AddAsync(book, CreateFile(book.Id, Hash(index)), default);
+        }
+
+        var updates = books
+            .Select(book => book with
+            {
+                Metadata = new BookMetadata(book.Metadata.Title, book.Metadata.Authors)
+            })
+            .ToList();
+
+        var updated = await repository.UpdateListMetadataAsync(updates, BookListMetadataField.Tags, default);
+
+        updated.Should().Be(501);
+        await using var context = factory.Create(library.DirectoryPath);
+        (await context.Tags.CountAsync()).Should().Be(0);
+    }
+
+    [Fact]
     public async Task ListPageAsync_orders_by_normalized_title_for_indexed_library_loading()
     {
         using var library = new TemporaryLibrary();
@@ -1279,6 +1327,8 @@ public sealed class LibraryDbContextTests
             null);
 
     private static string Hash(char character) => new(character, 64);
+
+    private static string Hash(int number) => $"{number:x64}";
 
     private sealed class TemporaryLibrary : IDisposable
     {

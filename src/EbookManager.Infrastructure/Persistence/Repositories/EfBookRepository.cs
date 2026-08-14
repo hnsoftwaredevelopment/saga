@@ -292,6 +292,11 @@ public sealed class EfBookRepository(
         BookListMetadataField field,
         CancellationToken cancellationToken)
     {
+        if (field is not (BookListMetadataField.Authors or BookListMetadataField.Tags))
+        {
+            throw new ArgumentOutOfRangeException(nameof(field), field, "Unsupported list metadata field.");
+        }
+
         try
         {
             if (books.Count == 0)
@@ -411,11 +416,19 @@ public sealed class EfBookRepository(
             await context.SaveChangesAsync(cancellationToken);
             if (field == BookListMetadataField.Authors)
             {
-                await RemoveOrphanedMetadataAsync(context, previousAuthorIds, [], cancellationToken);
+                await RemoveOrphanedMetadataAsync(
+                    context,
+                    previousAuthorIds.Distinct().ToArray(),
+                    [],
+                    cancellationToken);
             }
             else
             {
-                await RemoveOrphanedMetadataAsync(context, [], previousTagIds, cancellationToken);
+                await RemoveOrphanedMetadataAsync(
+                    context,
+                    [],
+                    previousTagIds.Distinct().ToArray(),
+                    cancellationToken);
             }
 
             await context.SaveChangesAsync(cancellationToken);
@@ -801,18 +814,20 @@ public sealed class EfBookRepository(
         IReadOnlyList<Guid> tagIds,
         CancellationToken cancellationToken)
     {
-        if (authorIds.Count > 0)
+        foreach (var batch in authorIds.Chunk(SqliteParameterChunkSize))
         {
+            var ids = batch;
             var authors = await context.Authors
-                .Where(x => authorIds.Contains(x.Id) && !x.BookAuthors.Any())
+                .Where(x => ids.Contains(x.Id) && !x.BookAuthors.Any())
                 .ToListAsync(cancellationToken);
             context.Authors.RemoveRange(authors);
         }
 
-        if (tagIds.Count > 0)
+        foreach (var batch in tagIds.Chunk(SqliteParameterChunkSize))
         {
+            var ids = batch;
             var tags = await context.Tags
-                .Where(x => tagIds.Contains(x.Id) && !x.BookTags.Any())
+                .Where(x => ids.Contains(x.Id) && !x.BookTags.Any())
                 .ToListAsync(cancellationToken);
             context.Tags.RemoveRange(tags);
         }

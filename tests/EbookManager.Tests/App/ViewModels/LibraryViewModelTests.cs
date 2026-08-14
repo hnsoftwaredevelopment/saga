@@ -1804,6 +1804,37 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Rename_filter_conflict_fallback_preserves_cover_bytes_from_full_book()
+    {
+        var fullBook = CreateBook("Same Title", ["Old Author"], coverBytes: [1, 2, 3]);
+        var listBook = fullBook with
+        {
+            Metadata = new BookMetadata(
+                fullBook.Metadata.Title,
+                fullBook.Metadata.Authors,
+                fullBook.Metadata.Description,
+                fullBook.Metadata.Language,
+                fullBook.Metadata.Publisher,
+                fullBook.Metadata.PublicationDate,
+                fullBook.Metadata.Tags,
+                fullBook.Metadata.Series,
+                fullBook.Metadata.SeriesNumber,
+                fullBook.Metadata.Isbn)
+        };
+        var repository = new FullBookOnGetConflictingBulkListMetadataRepository([listBook], fullBook);
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "New Author" };
+        var viewModel = CreateViewModel([listBook], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.RenameAuthorFilterCommand.ExecuteAsync(
+            viewModel.AuthorFilters.Single(filter => filter.Name == "Old Author"));
+
+        repository.UpdatedBook.Should().NotBeNull();
+        repository.UpdatedBook!.Metadata.Authors.Should().Equal("New Author");
+        repository.UpdatedBook.Metadata.CoverBytes.Should().Equal(1, 2, 3);
+    }
+
+    [Fact]
     public async Task Saved_details_refresh_visible_rows_and_filters()
     {
         var book = CreateBook("Original", ["Author"]);
@@ -2420,12 +2451,13 @@ public sealed class LibraryViewModelTests
         string? series = null,
         ReadingStatus readingStatus = ReadingStatus.Unread,
         IReadOnlyList<EbookFormat>? formats = null,
-        Guid? id = null)
+        Guid? id = null,
+        byte[]? coverBytes = null)
     {
         var now = DateTimeOffset.UtcNow;
         return new Book(
             id ?? Guid.NewGuid(),
-            new BookMetadata(title, authors, Language: language, Tags: tags, Series: series),
+            new BookMetadata(title, authors, Language: language, Tags: tags, Series: series, CoverBytes: coverBytes),
             readingStatus,
             null,
             now,
@@ -2579,10 +2611,10 @@ public sealed class LibraryViewModelTests
 
         public IReadOnlyList<Book> BooksSnapshot => [.. Books];
         public int UpdateCalls { get; private set; }
-        public int GetCalls { get; private set; }
+        public int GetCalls { get; protected set; }
 
         public virtual Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<Book>>([.. Books]);
-        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
+        public virtual Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
         {
             GetCalls++;
             return Task.FromResult(Books.SingleOrDefault(book => book.Id == id));
@@ -2807,6 +2839,34 @@ public sealed class LibraryViewModelTests
                 throw new BookConflictException();
             }
 
+            return base.UpdateAsync(book, cancellationToken);
+        }
+    }
+
+    private sealed class FullBookOnGetConflictingBulkListMetadataRepository(
+        IReadOnlyList<Book> listBooks,
+        Book fullBook) : BulkScalarMetadataRepository(listBooks)
+    {
+        public Book? UpdatedBook { get; private set; }
+
+        public override Task<int> UpdateListMetadataAsync(
+            IReadOnlyCollection<Book> books,
+            BookListMetadataField field,
+            CancellationToken cancellationToken)
+        {
+            BulkListUpdateCalls++;
+            throw new BookConflictException();
+        }
+
+        public override Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
+        {
+            GetCalls++;
+            return Task.FromResult(id == fullBook.Id ? fullBook : null);
+        }
+
+        public override Task UpdateAsync(Book book, CancellationToken cancellationToken)
+        {
+            UpdatedBook = book;
             return base.UpdateAsync(book, cancellationToken);
         }
     }
