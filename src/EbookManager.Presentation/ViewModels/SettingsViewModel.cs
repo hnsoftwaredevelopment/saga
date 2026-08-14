@@ -1,16 +1,23 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EbookManager.Domain.Abstractions;
+using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Settings;
 
 namespace EbookManager.Presentation.ViewModels;
 
 public sealed record AuthorSortStrategyOption(AuthorSortStrategy Value, string ResourceKey);
 public sealed record CultureOption(string Value, string DisplayName);
+public sealed record CustomMetadataFieldTypeOption(CustomMetadataFieldType Value, string ResourceKey);
 public sealed record DuplicateMergeDefaultActionOption(DuplicateMergeDefaultAction Value, string ResourceKey);
 
-public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) : ObservableObject
+public sealed partial class SettingsViewModel(
+    IAppSettingsStore settingsStore,
+    ICustomMetadataRepository? customMetadataRepository = null) : ObservableObject
 {
     private readonly IAppSettingsStore settingsStore = settingsStore;
+    private readonly ICustomMetadataRepository? customMetadataRepository = customMetadataRepository;
 
     public IReadOnlyList<CultureOption> SelectableCultures { get; } =
     [
@@ -35,6 +42,21 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
         new(DuplicateMergeDefaultAction.Copy, "MergeActionCopy"),
         new(DuplicateMergeDefaultAction.Merge, "MergeActionMerge")
     ];
+    public IReadOnlyList<CustomMetadataFieldTypeOption> SelectableCustomMetadataFieldTypes { get; } =
+    [
+        new(CustomMetadataFieldType.Text, "CustomMetadataFieldTypeText"),
+        new(CustomMetadataFieldType.Number, "CustomMetadataFieldTypeNumber"),
+        new(CustomMetadataFieldType.Date, "CustomMetadataFieldTypeDate"),
+        new(CustomMetadataFieldType.Boolean, "CustomMetadataFieldTypeBoolean"),
+        new(CustomMetadataFieldType.SingleSelect, "CustomMetadataFieldTypeSingleSelect"),
+        new(CustomMetadataFieldType.MultiSelect, "CustomMetadataFieldTypeMultiSelect")
+    ];
+
+    public ObservableCollection<CustomMetadataFieldViewModel> CustomMetadataFields { get; } = [];
+
+    public event EventHandler? CustomMetadataFieldsChanged;
+
+    public bool HasCustomMetadataRepository => customMetadataRepository is not null;
 
     [ObservableProperty]
     private string culture = "en-US";
@@ -78,6 +100,42 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
     [ObservableProperty]
     private DuplicateMergeDefaultAction mergeDefaultLanguage = DuplicateMergeDefaultAction.NoAction;
 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AddCustomMetadataFieldCommand))]
+    private string newCustomMetadataFieldName = string.Empty;
+
+    [ObservableProperty]
+    private CustomMetadataFieldType newCustomMetadataFieldType = CustomMetadataFieldType.Text;
+
+    [ObservableProperty]
+    private CustomMetadataFieldViewModel? selectedCustomMetadataField;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(RenameCustomMetadataFieldCommand))]
+    private string customMetadataFieldName = string.Empty;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AddCustomMetadataFieldCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RenameCustomMetadataFieldCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DeleteCustomMetadataFieldCommand))]
+    private bool isCustomMetadataBusy;
+
+    [ObservableProperty]
+    private string customMetadataStatusMessage = string.Empty;
+
+    public IAsyncRelayCommand AddCustomMetadataFieldCommand =>
+        addCustomMetadataFieldCommand ??= new AsyncRelayCommand(AddCustomMetadataFieldAsync, CanAddCustomMetadataField);
+
+    public IAsyncRelayCommand RenameCustomMetadataFieldCommand =>
+        renameCustomMetadataFieldCommand ??= new AsyncRelayCommand(RenameCustomMetadataFieldAsync, CanRenameCustomMetadataField);
+
+    public IAsyncRelayCommand DeleteCustomMetadataFieldCommand =>
+        deleteCustomMetadataFieldCommand ??= new AsyncRelayCommand(DeleteCustomMetadataFieldAsync, CanDeleteCustomMetadataField);
+
+    private AsyncRelayCommand? addCustomMetadataFieldCommand;
+    private AsyncRelayCommand? renameCustomMetadataFieldCommand;
+    private AsyncRelayCommand? deleteCustomMetadataFieldCommand;
+
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
         var settings = await settingsStore.LoadAsync(cancellationToken);
@@ -96,6 +154,7 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
         MergeDefaultDescription = mergeDefaults.Description;
         MergeDefaultPublisher = mergeDefaults.Publisher;
         MergeDefaultLanguage = mergeDefaults.Language;
+        await LoadCustomMetadataFieldsAsync(cancellationToken);
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
@@ -124,4 +183,128 @@ public sealed partial class SettingsViewModel(IAppSettingsStore settingsStore) :
             },
             cancellationToken);
     }
+
+    partial void OnSelectedCustomMetadataFieldChanged(CustomMetadataFieldViewModel? value)
+    {
+        CustomMetadataFieldName = value?.Name ?? string.Empty;
+        RenameCustomMetadataFieldCommand.NotifyCanExecuteChanged();
+        DeleteCustomMetadataFieldCommand.NotifyCanExecuteChanged();
+    }
+
+    private async Task LoadCustomMetadataFieldsAsync(CancellationToken cancellationToken)
+    {
+        CustomMetadataFields.Clear();
+        if (customMetadataRepository is null)
+        {
+            return;
+        }
+
+        foreach (var definition in await customMetadataRepository.ListDefinitionsAsync(cancellationToken))
+        {
+            CustomMetadataFields.Add(new CustomMetadataFieldViewModel(definition));
+        }
+    }
+
+    private bool CanAddCustomMetadataField() =>
+        customMetadataRepository is not null &&
+        !IsCustomMetadataBusy &&
+        !string.IsNullOrWhiteSpace(NewCustomMetadataFieldName);
+
+    private async Task AddCustomMetadataFieldAsync()
+    {
+        if (customMetadataRepository is null)
+        {
+            return;
+        }
+
+        await ExecuteCustomMetadataOperationAsync(async () =>
+        {
+            var definition = await customMetadataRepository.AddDefinitionAsync(
+                NewCustomMetadataFieldName,
+                NewCustomMetadataFieldType,
+                default);
+            var item = new CustomMetadataFieldViewModel(definition);
+            CustomMetadataFields.Add(item);
+            SelectedCustomMetadataField = item;
+            NewCustomMetadataFieldName = string.Empty;
+            CustomMetadataStatusMessage = "CustomMetadataFieldAdded";
+            CustomMetadataFieldsChanged?.Invoke(this, EventArgs.Empty);
+        });
+    }
+
+    private bool CanRenameCustomMetadataField() =>
+        customMetadataRepository is not null &&
+        !IsCustomMetadataBusy &&
+        SelectedCustomMetadataField is not null &&
+        !string.IsNullOrWhiteSpace(CustomMetadataFieldName);
+
+    private async Task RenameCustomMetadataFieldAsync()
+    {
+        if (customMetadataRepository is null || SelectedCustomMetadataField is null)
+        {
+            return;
+        }
+
+        var fieldId = SelectedCustomMetadataField.Id;
+        await ExecuteCustomMetadataOperationAsync(async () =>
+        {
+            await customMetadataRepository.RenameDefinitionAsync(
+                fieldId,
+                CustomMetadataFieldName,
+                default);
+            await LoadCustomMetadataFieldsAsync(default);
+            SelectedCustomMetadataField = CustomMetadataFields.FirstOrDefault(field => field.Id == fieldId);
+            CustomMetadataStatusMessage = "CustomMetadataFieldRenamed";
+            CustomMetadataFieldsChanged?.Invoke(this, EventArgs.Empty);
+        });
+    }
+
+    private bool CanDeleteCustomMetadataField() =>
+        customMetadataRepository is not null &&
+        !IsCustomMetadataBusy &&
+        SelectedCustomMetadataField is not null;
+
+    private async Task DeleteCustomMetadataFieldAsync()
+    {
+        if (customMetadataRepository is null || SelectedCustomMetadataField is null)
+        {
+            return;
+        }
+
+        await ExecuteCustomMetadataOperationAsync(async () =>
+        {
+            var deleted = SelectedCustomMetadataField;
+            await customMetadataRepository.DeleteDefinitionAsync(deleted.Id, default);
+            CustomMetadataFields.Remove(deleted);
+            SelectedCustomMetadataField = CustomMetadataFields.FirstOrDefault();
+            CustomMetadataStatusMessage = "CustomMetadataFieldDeleted";
+            CustomMetadataFieldsChanged?.Invoke(this, EventArgs.Empty);
+        });
+    }
+
+    private async Task ExecuteCustomMetadataOperationAsync(Func<Task> operation)
+    {
+        IsCustomMetadataBusy = true;
+        CustomMetadataStatusMessage = string.Empty;
+        try
+        {
+            await operation();
+        }
+        catch (InvalidOperationException)
+        {
+            CustomMetadataStatusMessage = "CustomMetadataFieldDuplicate";
+        }
+        finally
+        {
+            IsCustomMetadataBusy = false;
+        }
+    }
+}
+
+public sealed class CustomMetadataFieldViewModel(CustomMetadataFieldDefinition definition)
+{
+    public Guid Id { get; } = definition.Id;
+    public string Key { get; } = definition.Key;
+    public string Name { get; } = definition.Name;
+    public CustomMetadataFieldType Type { get; } = definition.Type;
 }

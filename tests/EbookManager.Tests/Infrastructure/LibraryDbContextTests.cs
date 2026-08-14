@@ -1,6 +1,7 @@
 using EbookManager.Application.Books;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Importing;
 using EbookManager.Domain.Metadata;
 using EbookManager.Infrastructure.Persistence;
@@ -100,6 +101,105 @@ public sealed class LibraryDbContextTests
         }
 
         File.Exists(Path.Combine(library.DirectoryPath, "library.db")).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Migration_creates_custom_metadata_tables_and_indexes()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+
+        await using var context = factory.Create(library.DirectoryPath);
+        var connection = (SqliteConnection)context.Database.GetDbConnection();
+        await connection.OpenAsync();
+        var tableNames = await ReadSqliteValuesAsync(
+            connection,
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE 'CustomMetadata%' ORDER BY name");
+        tableNames.Should().Equal("CustomMetadataFields", "CustomMetadataValues");
+
+        var indexNames = await ReadSqliteValuesAsync(
+            connection,
+            "SELECT name FROM sqlite_master WHERE type = 'index' AND name LIKE 'IX_CustomMetadata%' ORDER BY name");
+        indexNames.Should().Contain([
+            "IX_CustomMetadataFields_Key",
+            "IX_CustomMetadataFields_NormalizedName",
+            "IX_CustomMetadataFields_SortOrder_Name_Id",
+            "IX_CustomMetadataValues_FieldId"
+        ]);
+    }
+
+    [Fact]
+    public async Task Custom_metadata_repository_round_trips_definitions_and_values()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var bookRepository = new EfBookRepository(factory, library.DirectoryPath);
+        var customRepository = new EfCustomMetadataRepository(factory, library.DirectoryPath);
+        var book = CreateBook("Custom Metadata Book", ["Author"]);
+        await bookRepository.AddAsync(book, CreateFile(book.Id), default);
+
+        var rating = await customRepository.AddDefinitionAsync("Mijn rating", CustomMetadataFieldType.Number, default);
+        var readDate = await customRepository.AddDefinitionAsync("Gelezen op", CustomMetadataFieldType.Date, default);
+        var favorite = await customRepository.AddDefinitionAsync("Favoriet", CustomMetadataFieldType.Boolean, default);
+        await customRepository.SetValueAsync(new(book.Id, rating.Id, NumberValue: 4.5m), default);
+        await customRepository.SetValueAsync(new(book.Id, readDate.Id, DateValue: new DateOnly(2026, 8, 12)), default);
+        await customRepository.SetValueAsync(new(book.Id, favorite.Id, BooleanValue: true), default);
+
+        var definitions = await customRepository.ListDefinitionsAsync(default);
+        definitions.Select(definition => definition.Name)
+            .Should()
+            .Equal("Mijn rating", "Gelezen op", "Favoriet");
+        rating.Key.Should().Be("mijn-rating");
+
+        var values = await customRepository.GetValuesAsync(book.Id, default);
+        values.Should().Contain(value => value.FieldId == rating.Id && value.NumberValue == 4.5m);
+        values.Should().Contain(value => value.FieldId == readDate.Id && value.DateValue == new DateOnly(2026, 8, 12));
+        values.Should().Contain(value => value.FieldId == favorite.Id && value.BooleanValue == true);
+
+        await customRepository.RenameDefinitionAsync(rating.Id, "Eigen rating", default);
+        var renamed = (await customRepository.ListDefinitionsAsync(default)).First();
+        renamed.Name.Should().Be("Eigen rating");
+        renamed.Key.Should().Be("mijn-rating");
+
+        await customRepository.DeleteDefinitionAsync(readDate.Id, default);
+        (await customRepository.GetValuesAsync(book.Id, default))
+            .Should()
+            .NotContain(value => value.FieldId == readDate.Id);
+
+        await bookRepository.DeleteAsync(book.Id, default);
+        await using var context = factory.Create(library.DirectoryPath);
+        (await context.CustomMetadataValues.AnyAsync(value => value.BookId == book.Id))
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public async Task Custom_metadata_repository_rejects_unknown_field_type()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var customRepository = new EfCustomMetadataRepository(factory, library.DirectoryPath);
+
+        var act = () => customRepository.AddDefinitionAsync("Onbekend", (CustomMetadataFieldType)999, default);
+
+        await act.Should().ThrowAsync<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
+    public async Task Custom_metadata_repository_rejects_value_that_does_not_match_field_type()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var bookRepository = new EfBookRepository(factory, library.DirectoryPath);
+        var customRepository = new EfCustomMetadataRepository(factory, library.DirectoryPath);
+        var book = CreateBook("Custom Metadata Book", ["Author"]);
+        await bookRepository.AddAsync(book, CreateFile(book.Id), default);
+        var field = await customRepository.AddDefinitionAsync("Is gesigneerd", CustomMetadataFieldType.Boolean, default);
+
+        var act = () => customRepository.SetValueAsync(new(book.Id, field.Id, TextValue: "yes"), default);
+
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*Boolean*");
     }
 
     [Fact]
@@ -1032,6 +1132,22 @@ public sealed class LibraryDbContextTests
         await using var context = factory.Create(libraryPath);
         await context.Database.MigrateAsync();
         return factory;
+    }
+
+    private static async Task<IReadOnlyList<string>> ReadSqliteValuesAsync(
+        SqliteConnection connection,
+        string commandText)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = commandText;
+        await using var reader = await command.ExecuteReaderAsync();
+        var values = new List<string>();
+        while (await reader.ReadAsync())
+        {
+            values.Add(reader.GetString(0));
+        }
+
+        return values;
     }
 
     private static Book CreateBook(

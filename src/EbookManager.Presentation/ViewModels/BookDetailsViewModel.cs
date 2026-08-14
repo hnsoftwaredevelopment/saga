@@ -2,21 +2,28 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EbookManager.Application.Books;
 using EbookManager.Application.Metadata;
+using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.CustomMetadata;
 using EbookManager.Presentation.Abstractions;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class BookDetailsViewModel(
     BookService bookService,
     BookFileExportService? exportService = null,
-    IBookFileInteractionService? fileInteraction = null) : ObservableObject
+    IBookFileInteractionService? fileInteraction = null,
+    ICustomMetadataRepository? customMetadataRepository = null) : ObservableObject
 {
     private readonly BookService bookService = bookService;
     private readonly BookFileExportService? exportService = exportService;
     private readonly IBookFileInteractionService? fileInteraction = fileInteraction;
+    private readonly ICustomMetadataRepository? customMetadataRepository = customMetadataRepository;
     private Book? originalBook;
+    private string? currentLibraryPath;
+    private Dictionary<Guid, string?> originalCustomMetadataValues = [];
     private bool isApplyingBook;
 
     [ObservableProperty]
@@ -32,6 +39,9 @@ public sealed partial class BookDetailsViewModel(
     private string formatsText = string.Empty;
 
     public ObservableCollection<BookFormatDetailsViewModel> FormatDetails { get; } = [];
+    public ObservableCollection<CustomMetadataValueViewModel> CustomMetadataValues { get; } = [];
+
+    public bool HasCustomMetadataValues => CustomMetadataValues.Count > 0;
 
     [ObservableProperty]
     private string? description;
@@ -60,6 +70,12 @@ public sealed partial class BookDetailsViewModel(
     [ObservableProperty]
     private DateOnly? publicationDate;
 
+    public DateTime? PublicationDateValue
+    {
+        get => PublicationDate?.ToDateTime(TimeOnly.MinValue);
+        set => PublicationDate = value is null ? null : DateOnly.FromDateTime(value.Value);
+    }
+
     [ObservableProperty]
     private string? tagsText;
 
@@ -77,6 +93,9 @@ public sealed partial class BookDetailsViewModel(
 
     [ObservableProperty]
     private byte[]? coverBytes;
+
+    [ObservableProperty]
+    private string? coverPath;
 
     [ObservableProperty]
     private bool hasUnsavedChanges;
@@ -115,12 +134,13 @@ public sealed partial class BookDetailsViewModel(
         OnPropertyChanged(nameof(SaveErrorMessage));
     }
 
-    public void Load(Book book)
+    public void Load(Book book, string? libraryPath = null)
     {
         ArgumentNullException.ThrowIfNull(book);
 
         originalBook = book;
-        Apply(book);
+        currentLibraryPath = libraryPath;
+        Apply(book, libraryPath);
         LastSaveResult = null;
         LastDeleteResult = null;
         RefreshLocalizedDisplayNames();
@@ -131,11 +151,15 @@ public sealed partial class BookDetailsViewModel(
     public void Clear()
     {
         originalBook = null;
+        currentLibraryPath = null;
         BookId = null;
         Title = string.Empty;
         AuthorsText = string.Empty;
         FormatsText = string.Empty;
         FormatDetails.Clear();
+        CustomMetadataValues.Clear();
+        OnPropertyChanged(nameof(HasCustomMetadataValues));
+        originalCustomMetadataValues = [];
         Description = null;
         Language = null;
         Publisher = null;
@@ -146,6 +170,7 @@ public sealed partial class BookDetailsViewModel(
         Isbn = null;
         ReadingStatus = ReadingStatus.Unread;
         CoverBytes = null;
+        CoverPath = null;
         LastSaveResult = null;
         LastDeleteResult = null;
         RefreshLocalizedDisplayNames();
@@ -187,10 +212,23 @@ public sealed partial class BookDetailsViewModel(
             return;
         }
 
+        var customMetadataChanges = TryCreateCustomMetadataChanges(book.Id);
+        if (customMetadataChanges is null)
+        {
+            return;
+        }
+
         LastSaveResult = await bookService.SaveAsync(book, cancellationToken);
         if (LastSaveResult.Status == BookSaveStatus.Succeeded)
         {
+            var customMetadataSaved = await SaveCustomMetadataValuesAsync(customMetadataChanges, cancellationToken);
+            if (!customMetadataSaved)
+            {
+                return;
+            }
+
             originalBook = book;
+            originalCustomMetadataValues = SnapshotCustomMetadataValues();
             RefreshLocalizedDisplayNames();
             RefreshDirtyState();
             BookSaved?.Invoke(this, book);
@@ -227,7 +265,14 @@ public sealed partial class BookDetailsViewModel(
             return;
         }
 
-        Apply(originalBook);
+        Apply(originalBook, currentLibraryPath);
+        ApplyValues(() =>
+        {
+            foreach (var value in CustomMetadataValues)
+            {
+                value.ValueText = originalCustomMetadataValues.GetValueOrDefault(value.FieldId);
+            }
+        });
         LastSaveResult = null;
         RefreshDirtyState();
     }
@@ -241,7 +286,11 @@ public sealed partial class BookDetailsViewModel(
         RefreshDirtyState();
     }
     partial void OnPublisherChanged(string? value) => RefreshDirtyState();
-    partial void OnPublicationDateChanged(DateOnly? value) => RefreshDirtyState();
+    partial void OnPublicationDateChanged(DateOnly? value)
+    {
+        OnPropertyChanged(nameof(PublicationDateValue));
+        RefreshDirtyState();
+    }
     partial void OnTagsTextChanged(string? value) => RefreshDirtyState();
     partial void OnSeriesChanged(string? value) => RefreshDirtyState();
     partial void OnSeriesNumberChanged(decimal? value) => RefreshDirtyState();
@@ -249,7 +298,49 @@ public sealed partial class BookDetailsViewModel(
     partial void OnReadingStatusChanged(ReadingStatus value) => RefreshDirtyState();
     partial void OnCoverBytesChanged(byte[]? value) => RefreshDirtyState();
 
-    private void Apply(Book book)
+    public async Task LoadCustomMetadataValuesAsync(Guid bookId, CancellationToken cancellationToken = default)
+    {
+        if (BookId != bookId || customMetadataRepository is null)
+        {
+            return;
+        }
+
+        var definitions = await customMetadataRepository.ListDefinitionsAsync(cancellationToken);
+        var values = await customMetadataRepository.GetValuesAsync(bookId, cancellationToken);
+        if (BookId != bookId)
+        {
+            return;
+        }
+
+        var valuesByField = values.ToDictionary(value => value.FieldId);
+        ApplyValues(() =>
+        {
+            CustomMetadataValues.Clear();
+            foreach (var definition in definitions)
+            {
+                valuesByField.TryGetValue(definition.Id, out var value);
+                var item = new CustomMetadataValueViewModel(
+                    definition.Id,
+                    definition.Name,
+                    definition.Type,
+                    FormatCustomMetadataValue(definition.Type, value));
+                item.PropertyChanged += (_, args) =>
+                {
+                    if (args.PropertyName == nameof(CustomMetadataValueViewModel.ValueText))
+                    {
+                        RefreshDirtyState();
+                    }
+                };
+                CustomMetadataValues.Add(item);
+            }
+
+            originalCustomMetadataValues = SnapshotCustomMetadataValues();
+            OnPropertyChanged(nameof(HasCustomMetadataValues));
+        });
+        RefreshDirtyState();
+    }
+
+    private void Apply(Book book, string? libraryPath)
     {
         ApplyValues(() =>
         {
@@ -268,6 +359,9 @@ public sealed partial class BookDetailsViewModel(
             Isbn = book.Metadata.Isbn;
             ReadingStatus = book.ReadingStatus;
             CoverBytes = book.Metadata.CoverBytes;
+            CoverPath = libraryPath is null || string.IsNullOrWhiteSpace(book.CoverRelativePath)
+                ? null
+                : Path.Combine(libraryPath, book.CoverRelativePath);
         });
     }
 
@@ -281,7 +375,8 @@ public sealed partial class BookDetailsViewModel(
         var editedBook = ToBook();
         HasUnsavedChanges = originalBook is not null &&
             editedBook is not null &&
-            !BooksEquivalentForEditing(originalBook, editedBook);
+            (!BooksEquivalentForEditing(originalBook, editedBook) ||
+                !CustomMetadataValuesEquivalentForEditing(originalCustomMetadataValues, SnapshotCustomMetadataValues()));
     }
 
     private void ApplyValues(Action apply)
@@ -419,7 +514,221 @@ public sealed partial class BookDetailsViewModel(
         DescriptionTextCleaner.Clean(value);
 
     private static string FormatDateTime(DateTimeOffset value) =>
-        value.ToLocalTime().ToString("g", System.Globalization.CultureInfo.CurrentCulture);
+        value.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);
+
+    private IReadOnlyList<CustomMetadataValueChange>? TryCreateCustomMetadataChanges(Guid bookId)
+    {
+        try
+        {
+            return CustomMetadataValues
+                .Select(value => string.IsNullOrWhiteSpace(value.ValueText)
+                    ? new CustomMetadataValueChange(bookId, value.FieldId, null)
+                    : new CustomMetadataValueChange(bookId, value.FieldId, CreateCustomMetadataValue(bookId, value)))
+                .ToList();
+        }
+        catch (FormatException exception)
+        {
+            LastSaveResult = new BookSaveResult(BookSaveStatus.Failed, [], exception.Message);
+            return null;
+        }
+        catch (InvalidOperationException exception)
+        {
+            LastSaveResult = new BookSaveResult(BookSaveStatus.Failed, [], exception.Message);
+            return null;
+        }
+    }
+
+    private async Task<bool> SaveCustomMetadataValuesAsync(
+        IReadOnlyList<CustomMetadataValueChange> changes,
+        CancellationToken cancellationToken)
+    {
+        if (customMetadataRepository is null)
+        {
+            return true;
+        }
+
+        try
+        {
+            foreach (var change in changes)
+            {
+                if (change.Value is null)
+                {
+                    await customMetadataRepository.DeleteValueAsync(change.BookId, change.FieldId, cancellationToken);
+                    continue;
+                }
+
+                await customMetadataRepository.SetValueAsync(change.Value, cancellationToken);
+            }
+        }
+        catch (Exception exception) when (exception is InvalidOperationException or FormatException)
+        {
+            LastSaveResult = new BookSaveResult(BookSaveStatus.Failed, [], exception.Message);
+            if (changes.Count > 0)
+            {
+                await LoadCustomMetadataValuesAsync(changes[0].BookId, cancellationToken);
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private Dictionary<Guid, string?> SnapshotCustomMetadataValues() =>
+        CustomMetadataValues.ToDictionary(
+            value => value.FieldId,
+            value => NormalizeBlank(value.ValueText),
+            EqualityComparer<Guid>.Default);
+
+    private static bool CustomMetadataValuesEquivalentForEditing(
+        IReadOnlyDictionary<Guid, string?> original,
+        IReadOnlyDictionary<Guid, string?> edited)
+    {
+        if (original.Count != edited.Count)
+        {
+            return false;
+        }
+
+        return original.All(pair =>
+            edited.TryGetValue(pair.Key, out var value) &&
+            string.Equals(pair.Value, value, StringComparison.Ordinal));
+    }
+
+    private static string? FormatCustomMetadataValue(CustomMetadataFieldType type, CustomMetadataValue? value) =>
+        type switch
+        {
+            CustomMetadataFieldType.Number => value?.NumberValue?.ToString("0.#############################", CultureInfo.CurrentCulture),
+            CustomMetadataFieldType.Date => value?.DateValue?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            CustomMetadataFieldType.Boolean => value?.BooleanValue?.ToString(),
+            _ => value?.TextValue
+        };
+
+    private static CustomMetadataValue CreateCustomMetadataValue(Guid bookId, CustomMetadataValueViewModel value) =>
+        value.Type switch
+        {
+            CustomMetadataFieldType.Text or CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect =>
+                new CustomMetadataValue(bookId, value.FieldId, TextValue: NormalizeBlank(value.ValueText)),
+            CustomMetadataFieldType.Number =>
+                decimal.TryParse(value.ValueText, NumberStyles.Number, CultureInfo.CurrentCulture, out var number)
+                    ? new CustomMetadataValue(bookId, value.FieldId, NumberValue: number)
+                    : throw new FormatException($"CustomMetadataValidationNumber|{value.Name}"),
+            CustomMetadataFieldType.Date =>
+                TryParseDate(value.ValueText, out var date)
+                    ? new CustomMetadataValue(bookId, value.FieldId, DateValue: date)
+                    : throw new FormatException($"CustomMetadataValidationDate|{value.Name}"),
+            CustomMetadataFieldType.Boolean =>
+                TryParseBoolean(value.ValueText, out var boolean)
+                    ? new CustomMetadataValue(bookId, value.FieldId, BooleanValue: boolean)
+                    : throw new FormatException($"CustomMetadataValidationBoolean|{value.Name}"),
+            _ => throw new InvalidOperationException($"Unsupported custom metadata field type '{value.Type}'.")
+        };
+
+    private static bool TryParseBoolean(string? value, out bool result)
+    {
+        var normalized = NormalizeBlank(value);
+        if (normalized is null)
+        {
+            result = false;
+            return false;
+        }
+
+        if (bool.TryParse(normalized, out result))
+        {
+            return true;
+        }
+
+        if (string.Equals(normalized, "yes", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "true", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "ja", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "oui", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "si", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "sí", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "sì", StringComparison.OrdinalIgnoreCase) ||
+            normalized == "1")
+        {
+            result = true;
+            return true;
+        }
+
+        if (string.Equals(normalized, "no", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "false", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "nee", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "nein", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(normalized, "non", StringComparison.OrdinalIgnoreCase) ||
+            normalized == "0")
+        {
+            result = false;
+            return true;
+        }
+
+        result = false;
+        return false;
+    }
+
+    private static bool TryParseDate(string? value, out DateOnly result)
+    {
+        if (DateOnly.TryParse(value, CultureInfo.CurrentCulture, out result))
+        {
+            return true;
+        }
+
+        return DateOnly.TryParseExact(
+            value,
+            "yyyy-MM-dd",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out result);
+    }
+}
+
+public sealed record CustomMetadataValueChange(Guid BookId, Guid FieldId, CustomMetadataValue? Value);
+
+public sealed partial class CustomMetadataValueViewModel(
+    Guid fieldId,
+    string name,
+    CustomMetadataFieldType type,
+    string? valueText) : ObservableObject
+{
+    public Guid FieldId { get; } = fieldId;
+    public string Name { get; } = name;
+    public CustomMetadataFieldType Type { get; } = type;
+    public bool IsTextEditor =>
+        Type is CustomMetadataFieldType.Text or CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect;
+    public bool IsNumberEditor => Type == CustomMetadataFieldType.Number;
+    public bool IsDateEditor => Type == CustomMetadataFieldType.Date;
+    public bool IsBooleanEditor => Type == CustomMetadataFieldType.Boolean;
+
+    [ObservableProperty]
+    private string? valueText = valueText;
+
+    public bool? BooleanValue
+    {
+        get => bool.TryParse(ValueText, out var value) ? value : null;
+        set => ValueText = value?.ToString(CultureInfo.InvariantCulture);
+    }
+
+    public DateTime? DateValue
+    {
+        get
+        {
+            if (DateOnly.TryParse(ValueText, CultureInfo.CurrentCulture, out var date) ||
+                DateOnly.TryParseExact(ValueText, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+            {
+                return date.ToDateTime(TimeOnly.MinValue);
+            }
+
+            return null;
+        }
+        set => ValueText = value is null
+            ? null
+            : DateOnly.FromDateTime(value.Value).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    }
+
+    partial void OnValueTextChanged(string? value)
+    {
+        OnPropertyChanged(nameof(BooleanValue));
+        OnPropertyChanged(nameof(DateValue));
+    }
 }
 
 public sealed partial class BookFormatDetailsViewModel : ObservableObject

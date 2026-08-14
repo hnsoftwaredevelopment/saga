@@ -118,6 +118,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<BookFileExportService>();
         services.AddSingleton<IBookFileInteractionService, BookFileInteractionService>();
         services.AddSingleton<IBookRepository, CurrentLibraryBookRepository>();
+        services.AddSingleton<ICustomMetadataRepository, CurrentLibraryCustomMetadataRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();
         services.AddTransient<BookService>();
         services.AddSingleton<ImportService>();
@@ -127,7 +128,8 @@ public partial class App : System.Windows.Application
         services.AddTransient(provider => new BookDetailsViewModel(
             provider.GetRequiredService<BookService>(),
             provider.GetRequiredService<BookFileExportService>(),
-            provider.GetRequiredService<IBookFileInteractionService>()));
+            provider.GetRequiredService<IBookFileInteractionService>(),
+            provider.GetRequiredService<ICustomMetadataRepository>()));
         services.AddTransient(provider => new LibraryViewModel(
             provider.GetRequiredService<IBookRepository>(),
             provider.GetRequiredService<BookSearchService>(),
@@ -139,6 +141,7 @@ public partial class App : System.Windows.Application
             provider.GetService<ImportService>(),
             provider.GetService<IImportAgent>(),
             provider.GetService<IImportRepository>(),
+            provider.GetRequiredService<ICustomMetadataRepository>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),

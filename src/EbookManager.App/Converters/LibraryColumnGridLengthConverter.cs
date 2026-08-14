@@ -11,7 +11,8 @@ public sealed class LibraryColumnGridLengthConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         var (option, width) = ParseParameter(parameter);
-        return TryGetWidth(value, option, width, out var actualWidth)
+        var key = LibraryColumnKey.FromStandard(option);
+        return TryGetWidth(value, key, width, out var actualWidth)
             ? new GridLength(actualWidth)
             : new GridLength(0);
     }
@@ -36,19 +37,19 @@ public sealed class LibraryColumnGridLengthConverter : IValueConverter
 
     private static bool TryGetWidth(
         object value,
-        LibraryColumnOption option,
+        LibraryColumnKey key,
         double defaultWidth,
         out double width)
     {
         width = defaultWidth;
         if (value is LibraryColumnLayoutSnapshot snapshot)
         {
-            if (!snapshot.VisibleColumns.Contains(option))
+            if (!snapshot.VisibleColumns.Contains(key))
             {
                 return false;
             }
 
-            if (snapshot.ColumnWidths.TryGetValue(option, out var savedWidth) &&
+            if (snapshot.ColumnWidths.TryGetValue(key, out var savedWidth) &&
                 double.IsFinite(savedWidth) &&
                 savedWidth > 0)
             {
@@ -58,6 +59,6 @@ public sealed class LibraryColumnGridLengthConverter : IValueConverter
             return true;
         }
 
-        return value is IEnumerable values && values.Cast<object>().OfType<LibraryColumnOption>().Contains(option);
+        return value is IEnumerable values && values.Cast<object>().OfType<LibraryColumnKey>().Contains(key);
     }
 }

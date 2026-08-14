@@ -13,6 +13,8 @@ public sealed class LibraryDbContext(DbContextOptions<LibraryDbContext> options)
     public DbSet<TagEntity> Tags => Set<TagEntity>();
     public DbSet<BookTagEntity> BookTags => Set<BookTagEntity>();
     public DbSet<BookFileEntity> BookFiles => Set<BookFileEntity>();
+    public DbSet<CustomMetadataFieldEntity> CustomMetadataFields => Set<CustomMetadataFieldEntity>();
+    public DbSet<CustomMetadataValueEntity> CustomMetadataValues => Set<CustomMetadataValueEntity>();
     public DbSet<ImportRunEntity> ImportRuns => Set<ImportRunEntity>();
     public DbSet<ImportItemEntity> ImportItems => Set<ImportItemEntity>();
 
@@ -99,6 +101,34 @@ public sealed class LibraryDbContext(DbContextOptions<LibraryDbContext> options)
             bookFile.HasOne(x => x.Book)
                 .WithMany(x => x.Files)
                 .HasForeignKey(x => x.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CustomMetadataFieldEntity>(field =>
+        {
+            field.ToTable("CustomMetadataFields");
+            field.HasKey(x => x.Id);
+            field.Property(x => x.Key).IsRequired();
+            field.Property(x => x.Name).IsRequired();
+            field.Property(x => x.NormalizedName).IsRequired();
+            field.Property(x => x.Type).HasConversion<string>();
+            field.HasIndex(x => x.Key).IsUnique();
+            field.HasIndex(x => x.NormalizedName).IsUnique();
+            field.HasIndex(x => new { x.SortOrder, x.Name, x.Id });
+        });
+
+        modelBuilder.Entity<CustomMetadataValueEntity>(value =>
+        {
+            value.ToTable("CustomMetadataValues");
+            value.HasKey(x => new { x.BookId, x.FieldId });
+            value.Property(x => x.DateValue).HasConversion(nullableDateOnlyConverter);
+            value.HasOne(x => x.Book)
+                .WithMany(x => x.CustomMetadataValues)
+                .HasForeignKey(x => x.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+            value.HasOne(x => x.Field)
+                .WithMany(x => x.Values)
+                .HasForeignKey(x => x.FieldId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

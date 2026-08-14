@@ -1,6 +1,7 @@
 using EbookManager.Application.Books;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Metadata;
 using EbookManager.Presentation.Abstractions;
 using EbookManager.Presentation.ViewModels;
@@ -75,6 +76,114 @@ public sealed class BookDetailsViewModelTests
 
         viewModel.FormatsText.Should().Be("EPUB, PDF");
         viewModel.FormatDetails.Select(format => format.DisplayText).Should().Equal("EPUB", "PDF");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Loading_custom_metadata_values_does_not_set_dirty_state()
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        var definition = customMetadataRepository.AddDefinition("Eigen rating", CustomMetadataFieldType.Number);
+        var viewModel = CreateViewModel(out _, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+        customMetadataRepository.SeedValue(new CustomMetadataValue(book.Id, definition.Id, NumberValue: 4.5m));
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+
+        viewModel.CustomMetadataValues.Should().ContainSingle(value =>
+            value.Name == "Eigen rating" &&
+            value.Type == CustomMetadataFieldType.Number &&
+            value.ValueText == 4.5m.ToString("0.#############################", CultureInfo.CurrentCulture));
+        viewModel.HasCustomMetadataValues.Should().BeTrue();
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Editing_custom_metadata_value_sets_dirty_state_and_save_persists_value()
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        var definition = customMetadataRepository.AddDefinition("Leesprioriteit", CustomMetadataFieldType.Text);
+        var viewModel = CreateViewModel(out _, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+        customMetadataRepository.SeedValue(new CustomMetadataValue(book.Id, definition.Id, TextValue: "Later"));
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+        viewModel.CustomMetadataValues.Single().ValueText = "Nu";
+
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        customMetadataRepository.Values[(book.Id, definition.Id)].TextValue.Should().Be("Nu");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+
+        viewModel.CustomMetadataValues.Single().ValueText = string.Empty;
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        customMetadataRepository.Values.Should().NotContainKey((book.Id, definition.Id));
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("Ja", true)]
+    [InlineData("Nein", false)]
+    [InlineData("Oui", true)]
+    [InlineData("No", false)]
+    [InlineData("Sí", true)]
+    [InlineData("Sì", true)]
+    public async Task Boolean_custom_metadata_accepts_supported_localized_yes_no_values(
+        string input,
+        bool expected)
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        var definition = customMetadataRepository.AddDefinition("Gelezen", CustomMetadataFieldType.Boolean);
+        var viewModel = CreateViewModel(out _, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+        viewModel.CustomMetadataValues.Single().ValueText = input;
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        customMetadataRepository.Values[(book.Id, definition.Id)].BooleanValue.Should().Be(expected);
+    }
+
+    [Fact]
+    public async Task Invalid_custom_metadata_value_does_not_save_standard_metadata()
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        customMetadataRepository.AddDefinition("Cijfer", CustomMetadataFieldType.Number);
+        var viewModel = CreateViewModel(out var repository, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+        viewModel.Title = "Changed";
+        viewModel.CustomMetadataValues.Single().ValueText = "abc";
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        repository.UpdatedBook.Should().BeNull();
+        viewModel.SaveErrorMessage.Should().Be("CustomMetadataValidationNumber|Cijfer");
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Undo_restores_custom_metadata_values()
+    {
+        var customMetadataRepository = new RecordingCustomMetadataRepository();
+        var definition = customMetadataRepository.AddDefinition("Leesprioriteit", CustomMetadataFieldType.Text);
+        var viewModel = CreateViewModel(out _, customMetadataRepository: customMetadataRepository);
+        var book = CreateBook("Original", ["First Author"]);
+        customMetadataRepository.SeedValue(new CustomMetadataValue(book.Id, definition.Id, TextValue: "Later"));
+
+        viewModel.Load(book);
+        await viewModel.LoadCustomMetadataValuesAsync(book.Id);
+        viewModel.CustomMetadataValues.Single().ValueText = "Nu";
+        viewModel.UndoCommand.Execute(null);
+
+        viewModel.CustomMetadataValues.Single().ValueText.Should().Be("Later");
         viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 
@@ -450,14 +559,15 @@ public sealed class BookDetailsViewModelTests
         out RecordingBookRepository repository,
         IBookFileInteractionService? fileInteraction = null,
         ILibraryFileStore? fileStore = null,
-        BookFileExportService? exportService = null)
+        BookFileExportService? exportService = null,
+        ICustomMetadataRepository? customMetadataRepository = null)
     {
         repository = new RecordingBookRepository();
         var service = new BookService(
             repository,
             fileStore ?? new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver());
-        return new BookDetailsViewModel(service, exportService, fileInteraction);
+        return new BookDetailsViewModel(service, exportService, fileInteraction, customMetadataRepository);
     }
 
     private static Book CreateBook(
@@ -570,6 +680,69 @@ public sealed class BookDetailsViewModelTests
 
         public Task UpdateFileWriteBackAsync(Guid fileId, MetadataWriteResult result, CancellationToken cancellationToken) =>
             Task.CompletedTask;
+    }
+
+    private sealed class RecordingCustomMetadataRepository : ICustomMetadataRepository
+    {
+        private readonly List<CustomMetadataFieldDefinition> definitions = [];
+        public Dictionary<(Guid BookId, Guid FieldId), CustomMetadataValue> Values { get; } = [];
+
+        public CustomMetadataFieldDefinition AddDefinition(string name, CustomMetadataFieldType type)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var definition = new CustomMetadataFieldDefinition(
+                Guid.NewGuid(),
+                name.ToLowerInvariant().Replace(' ', '-'),
+                name,
+                type,
+                definitions.Count,
+                now,
+                now);
+            definitions.Add(definition);
+            return definition;
+        }
+
+        public void SeedValue(CustomMetadataValue value)
+        {
+            Values[(value.BookId, value.FieldId)] = value;
+        }
+
+        public Task<IReadOnlyList<CustomMetadataFieldDefinition>> ListDefinitionsAsync(CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CustomMetadataFieldDefinition>>(definitions);
+
+        public Task<CustomMetadataFieldDefinition> AddDefinitionAsync(
+            string name,
+            CustomMetadataFieldType type,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(AddDefinition(name, type));
+
+        public Task RenameDefinitionAsync(Guid fieldId, string name, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task DeleteDefinitionAsync(Guid fieldId, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesAsync(Guid bookId, CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
+                Values.Values.Where(value => value.BookId == bookId).ToList());
+
+        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
+            IReadOnlyCollection<Guid> bookIds,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
+                Values.Values.Where(value => bookIds.Contains(value.BookId)).ToList());
+
+        public Task SetValueAsync(CustomMetadataValue value, CancellationToken cancellationToken)
+        {
+            Values[(value.BookId, value.FieldId)] = value;
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteValueAsync(Guid bookId, Guid fieldId, CancellationToken cancellationToken)
+        {
+            Values.Remove((bookId, fieldId));
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class NoopLibraryFileStore : ILibraryFileStore

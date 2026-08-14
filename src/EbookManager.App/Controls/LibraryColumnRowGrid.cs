@@ -90,31 +90,31 @@ public sealed class LibraryColumnRowGrid : Grid
         var columns = LayoutSnapshot.VisibleColumns.ToArray();
         for (var index = 0; index < columns.Length; index++)
         {
-            var option = columns[index];
+            var key = columns[index];
             ColumnDefinitions.Add(new ColumnDefinition
             {
-                Width = new GridLength(GetColumnWidth(option))
+                Width = new GridLength(GetColumnWidth(key))
             });
 
-            var element = IsHeader ? CreateHeaderCell(option) : CreateBookCell(option);
+            var element = IsHeader ? CreateHeaderCell(key) : CreateBookCell(key);
             SetColumn(element, index);
             Children.Add(element);
 
             if (IsHeader && index < columns.Length - 1)
             {
-                Children.Add(CreateResizeThumb(index, option));
+                Children.Add(CreateResizeThumb(index, key));
             }
         }
     }
 
-    private double GetColumnWidth(LibraryColumnOption option) =>
-        LayoutSnapshot?.ColumnWidths.TryGetValue(option, out var width) == true &&
+    private double GetColumnWidth(LibraryColumnKey key) =>
+        LayoutSnapshot?.ColumnWidths.TryGetValue(key, out var width) == true &&
         double.IsFinite(width) &&
         width > 0
             ? width
-            : GetDefaultWidth(option);
+            : GetDefaultWidth(key);
 
-    private FrameworkElement CreateHeaderCell(LibraryColumnOption option)
+    private FrameworkElement CreateHeaderCell(LibraryColumnKey key)
     {
         var textBlock = new TextBlock
         {
@@ -124,19 +124,30 @@ public sealed class LibraryColumnRowGrid : Grid
             Margin = new Thickness(8, 0, 8, 0)
         };
         textBlock.SetResourceReference(TextBlock.ForegroundProperty, "TextSecondaryBrush");
-        BindingOperations.SetBinding(
-            textBlock,
-            TextBlock.TextProperty,
-            new Binding($"[{GetResourceKey(option)}]")
-            {
-                Source = LocalizedStrings.Current,
-                Mode = BindingMode.OneWay
-            });
+        if (key.CustomFieldId is { } fieldId)
+        {
+            textBlock.Text = LayoutSnapshot?.CustomMetadataFields.TryGetValue(fieldId, out var field) == true
+                ? field.Name
+                : string.Empty;
+        }
+        else
+        {
+            BindingOperations.SetBinding(
+                textBlock,
+                TextBlock.TextProperty,
+                new Binding($"[{GetResourceKey(key.StandardOption ?? LibraryColumnOption.Title)}]")
+                {
+                    Source = LocalizedStrings.Current,
+                    Mode = BindingMode.OneWay
+                });
+        }
+
         return textBlock;
     }
 
-    private FrameworkElement CreateBookCell(LibraryColumnOption option)
+    private FrameworkElement CreateBookCell(LibraryColumnKey key)
     {
+        var option = key.StandardOption;
         if (option == LibraryColumnOption.Cover)
         {
             var border = new Border
@@ -165,15 +176,28 @@ public sealed class LibraryColumnRowGrid : Grid
             return border;
         }
 
-        var textBlock = CreateTextElement(option);
+        var textBlock = CreateTextElement(key);
         textBlock.VerticalAlignment = VerticalAlignment.Center;
         textBlock.Margin = new Thickness(8, 0, 8, 0);
         textBlock.SetResourceReference(TextBlock.ForegroundProperty, GetForegroundResource(option));
         return textBlock;
     }
 
-    private TextBlock CreateTextElement(LibraryColumnOption option)
+    private TextBlock CreateTextElement(LibraryColumnKey key)
     {
+        var option = key.StandardOption;
+        if (key.CustomFieldId is { } fieldId)
+        {
+            var highlighted = new HighlightedTextBlock();
+            highlighted.SetResourceReference(HighlightedTextBlock.HighlightBrushProperty, "SearchHighlightBrush");
+            highlighted.HighlightedText = BookRow!.GetCustomMetadataValue(fieldId);
+            BindingOperations.SetBinding(
+                highlighted,
+                HighlightedTextBlock.SearchTextProperty,
+                new Binding(nameof(BookRowViewModel.SearchText)) { Source = BookRow });
+            return highlighted;
+        }
+
         if (option is LibraryColumnOption.Title or LibraryColumnOption.Authors or LibraryColumnOption.Series or LibraryColumnOption.Format)
         {
             var highlighted = new HighlightedTextBlock();
@@ -181,7 +205,7 @@ public sealed class LibraryColumnRowGrid : Grid
             BindingOperations.SetBinding(
                 highlighted,
                 HighlightedTextBlock.HighlightedTextProperty,
-                new Binding(GetRowProperty(option)) { Source = BookRow });
+                new Binding(GetRowProperty(option.Value)) { Source = BookRow });
             BindingOperations.SetBinding(
                 highlighted,
                 HighlightedTextBlock.SearchTextProperty,
@@ -193,7 +217,7 @@ public sealed class LibraryColumnRowGrid : Grid
         BindingOperations.SetBinding(
             textBlock,
             TextBlock.TextProperty,
-            new Binding(GetRowProperty(option)) { Source = BookRow });
+            new Binding(GetRowProperty(option ?? LibraryColumnOption.Title)) { Source = BookRow });
         if (option == LibraryColumnOption.Description)
         {
             textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
@@ -202,7 +226,7 @@ public sealed class LibraryColumnRowGrid : Grid
         return textBlock;
     }
 
-    private Thumb CreateResizeThumb(int columnIndex, LibraryColumnOption option)
+    private Thumb CreateResizeThumb(int columnIndex, LibraryColumnKey key)
     {
         var thumb = new Thumb
         {
@@ -211,7 +235,7 @@ public sealed class LibraryColumnRowGrid : Grid
             VerticalAlignment = VerticalAlignment.Stretch,
             Cursor = Cursors.SizeWE,
             Background = Brushes.Transparent,
-            Tag = option
+            Tag = key
         };
         thumb.Template = CreateResizeThumbTemplate();
         SetColumn(thumb, columnIndex);
@@ -250,7 +274,7 @@ public sealed class LibraryColumnRowGrid : Grid
     {
         var columnIndex = sender is Thumb sourceThumb ? GetColumn(sourceThumb) : -1;
         if (DataContext is not LibraryViewModel viewModel ||
-            sender is not Thumb { Tag: LibraryColumnOption option } ||
+            sender is not Thumb { Tag: LibraryColumnKey key } ||
             columnIndex < 0 ||
             columnIndex >= ColumnDefinitions.Count)
         {
@@ -259,7 +283,7 @@ public sealed class LibraryColumnRowGrid : Grid
 
         try
         {
-            await viewModel.SetColumnWidthAsync(View, option, ColumnDefinitions[columnIndex].ActualWidth, CancellationToken.None);
+            await viewModel.SetColumnWidthAsync(View, key, ColumnDefinitions[columnIndex].ActualWidth, CancellationToken.None);
         }
         catch (OperationCanceledException)
         {
@@ -312,13 +336,13 @@ public sealed class LibraryColumnRowGrid : Grid
             _ => "Title"
         };
 
-    private static string GetForegroundResource(LibraryColumnOption option) =>
+    private static string GetForegroundResource(LibraryColumnOption? option) =>
         option is LibraryColumnOption.Title or LibraryColumnOption.Authors
             ? "TextPrimaryBrush"
             : "TextSecondaryBrush";
 
-    private static double GetDefaultWidth(LibraryColumnOption option) =>
-        option switch
+    private static double GetDefaultWidth(LibraryColumnKey key) =>
+        key.StandardOption switch
         {
             LibraryColumnOption.Cover => 80,
             LibraryColumnOption.Title => 220,
@@ -336,6 +360,6 @@ public sealed class LibraryColumnRowGrid : Grid
             LibraryColumnOption.DateAdded => 150,
             LibraryColumnOption.LastModified => 150,
             LibraryColumnOption.EReader => 120,
-            _ => 120
+            _ => 160
         };
 }

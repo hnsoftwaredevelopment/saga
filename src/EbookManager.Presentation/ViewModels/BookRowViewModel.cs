@@ -9,7 +9,8 @@ public sealed class BookRowViewModel(
     Book book,
     string searchText = "",
     string? libraryPath = null,
-    AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName)
+    AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName,
+    IReadOnlyDictionary<Guid, string>? customMetadataValues = null)
 {
     public Book Book { get; } = book;
     public Guid Id => Book.Id;
@@ -41,6 +42,14 @@ public sealed class BookRowViewModel(
         ? null
         : Path.Combine(libraryPath, Book.CoverRelativePath);
     public string SearchText { get; } = searchText;
+    public IReadOnlyDictionary<string, string> CustomMetadataValues { get; } =
+        customMetadataValues?.ToDictionary(item => item.Key.ToString("D"), item => item.Value, StringComparer.OrdinalIgnoreCase)
+        ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+    public string GetCustomMetadataValue(Guid fieldId) =>
+        CustomMetadataValues.TryGetValue(fieldId.ToString("D"), out var value)
+            ? value
+            : string.Empty;
 
     private static string FormatDateTime(DateTimeOffset value) =>
         value.ToLocalTime().ToString("g", CultureInfo.CurrentCulture);

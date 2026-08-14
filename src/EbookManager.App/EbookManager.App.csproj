@@ -7,8 +7,6 @@
     <AssemblyName>Saga</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>2026.7.24.7</AssemblyVersion>
-    <FileVersion>2026.7.24.7</FileVersion>
     <ApplicationIcon>Resources\AppIcon\appicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
@@ -28,6 +26,7 @@
 
   <ItemGroup>
 	  <PackageReference Include="Syncfusion.SfGrid.WPF" />
+	  <PackageReference Include="Syncfusion.SfInput.WPF" />
 	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 </Project>
