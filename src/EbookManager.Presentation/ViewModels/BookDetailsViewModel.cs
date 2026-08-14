@@ -22,6 +22,7 @@ public sealed partial class BookDetailsViewModel(
     private readonly IBookFileInteractionService? fileInteraction = fileInteraction;
     private readonly ICustomMetadataRepository? customMetadataRepository = customMetadataRepository;
     private Book? originalBook;
+    private string? currentLibraryPath;
     private Dictionary<Guid, string?> originalCustomMetadataValues = [];
     private bool isApplyingBook;
 
@@ -69,6 +70,12 @@ public sealed partial class BookDetailsViewModel(
     [ObservableProperty]
     private DateOnly? publicationDate;
 
+    public DateTime? PublicationDateValue
+    {
+        get => PublicationDate?.ToDateTime(TimeOnly.MinValue);
+        set => PublicationDate = value is null ? null : DateOnly.FromDateTime(value.Value);
+    }
+
     [ObservableProperty]
     private string? tagsText;
 
@@ -86,6 +93,9 @@ public sealed partial class BookDetailsViewModel(
 
     [ObservableProperty]
     private byte[]? coverBytes;
+
+    [ObservableProperty]
+    private string? coverPath;
 
     [ObservableProperty]
     private bool hasUnsavedChanges;
@@ -124,12 +134,13 @@ public sealed partial class BookDetailsViewModel(
         OnPropertyChanged(nameof(SaveErrorMessage));
     }
 
-    public void Load(Book book)
+    public void Load(Book book, string? libraryPath = null)
     {
         ArgumentNullException.ThrowIfNull(book);
 
         originalBook = book;
-        Apply(book);
+        currentLibraryPath = libraryPath;
+        Apply(book, libraryPath);
         LastSaveResult = null;
         LastDeleteResult = null;
         RefreshLocalizedDisplayNames();
@@ -140,6 +151,7 @@ public sealed partial class BookDetailsViewModel(
     public void Clear()
     {
         originalBook = null;
+        currentLibraryPath = null;
         BookId = null;
         Title = string.Empty;
         AuthorsText = string.Empty;
@@ -158,6 +170,7 @@ public sealed partial class BookDetailsViewModel(
         Isbn = null;
         ReadingStatus = ReadingStatus.Unread;
         CoverBytes = null;
+        CoverPath = null;
         LastSaveResult = null;
         LastDeleteResult = null;
         RefreshLocalizedDisplayNames();
@@ -252,7 +265,7 @@ public sealed partial class BookDetailsViewModel(
             return;
         }
 
-        Apply(originalBook);
+        Apply(originalBook, currentLibraryPath);
         ApplyValues(() =>
         {
             foreach (var value in CustomMetadataValues)
@@ -273,7 +286,11 @@ public sealed partial class BookDetailsViewModel(
         RefreshDirtyState();
     }
     partial void OnPublisherChanged(string? value) => RefreshDirtyState();
-    partial void OnPublicationDateChanged(DateOnly? value) => RefreshDirtyState();
+    partial void OnPublicationDateChanged(DateOnly? value)
+    {
+        OnPropertyChanged(nameof(PublicationDateValue));
+        RefreshDirtyState();
+    }
     partial void OnTagsTextChanged(string? value) => RefreshDirtyState();
     partial void OnSeriesChanged(string? value) => RefreshDirtyState();
     partial void OnSeriesNumberChanged(decimal? value) => RefreshDirtyState();
@@ -323,7 +340,7 @@ public sealed partial class BookDetailsViewModel(
         RefreshDirtyState();
     }
 
-    private void Apply(Book book)
+    private void Apply(Book book, string? libraryPath)
     {
         ApplyValues(() =>
         {
@@ -342,6 +359,9 @@ public sealed partial class BookDetailsViewModel(
             Isbn = book.Metadata.Isbn;
             ReadingStatus = book.ReadingStatus;
             CoverBytes = book.Metadata.CoverBytes;
+            CoverPath = libraryPath is null || string.IsNullOrWhiteSpace(book.CoverRelativePath)
+                ? null
+                : Path.Combine(libraryPath, book.CoverRelativePath);
         });
     }
 

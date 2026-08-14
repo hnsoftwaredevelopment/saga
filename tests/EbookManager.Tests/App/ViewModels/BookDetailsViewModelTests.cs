@@ -718,6 +718,12 @@ public sealed class BookDetailsViewModelTests
             Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
                 Values.Values.Where(value => value.BookId == bookId).ToList());
 
+        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
+            IReadOnlyCollection<Guid> bookIds,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
+                Values.Values.Where(value => bookIds.Contains(value.BookId)).ToList());
+
         public Task SetValueAsync(CustomMetadataValue value, CancellationToken cancellationToken)
         {
             Values[(value.BookId, value.FieldId)] = value;

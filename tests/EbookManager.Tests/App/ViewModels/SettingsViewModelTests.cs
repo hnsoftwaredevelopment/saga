@@ -305,6 +305,11 @@ public sealed class SettingsViewModelTests
         public Task<IReadOnlyList<CustomMetadataValue>> GetValuesAsync(Guid bookId, CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<CustomMetadataValue>>([]);
 
+        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
+            IReadOnlyCollection<Guid> bookIds,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CustomMetadataValue>>([]);
+
         public Task SetValueAsync(CustomMetadataValue value, CancellationToken cancellationToken) =>
             Task.CompletedTask;
 

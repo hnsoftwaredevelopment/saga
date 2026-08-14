@@ -1,0 +1,29 @@
+<Project>
+  <PropertyGroup>
+    <SagaBuildVersionStateFile>$(MSBuildThisFileDirectory).build\saga-version-state.txt</SagaBuildVersionStateFile>
+    <SagaGeneratedAssemblyInfo>$(IntermediateOutputPath)SagaVersionInfo.g.cs</SagaGeneratedAssemblyInfo>
+  </PropertyGroup>
+
+  <Target Name="SetSagaDailyBuildVersion"
+          BeforeTargets="CoreCompile"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <MakeDir Directories="$(MSBuildThisFileDirectory).build" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)build\Set-SagaBuildVersion.ps1&quot; -StateFile &quot;$(SagaBuildVersionStateFile)&quot;"
+          StandardOutputImportance="Low" />
+    <ReadLinesFromFile File="$(SagaBuildVersionStateFile)">
+      <Output TaskParameter="Lines" PropertyName="SagaDailyBuildVersion" />
+    </ReadLinesFromFile>
+    <PropertyGroup>
+      <Version>$(SagaDailyBuildVersion)</Version>
+      <AssemblyVersion>$(SagaDailyBuildVersion)</AssemblyVersion>
+      <FileVersion>$(SagaDailyBuildVersion)</FileVersion>
+      <InformationalVersion>$(SagaDailyBuildVersion)</InformationalVersion>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(SagaGeneratedAssemblyInfo)"
+                      Overwrite="true"
+                      Lines="// &lt;auto-generated /&gt;&#xD;&#xA;using System.Reflection%3B&#xD;&#xA;[assembly: AssemblyVersion(&quot;$(SagaDailyBuildVersion)&quot;)]&#xD;&#xA;[assembly: AssemblyFileVersion(&quot;$(SagaDailyBuildVersion)&quot;)]&#xD;&#xA;[assembly: AssemblyInformationalVersion(&quot;$(SagaDailyBuildVersion)&quot;)]" />
+    <ItemGroup>
+      <Compile Include="$(SagaGeneratedAssemblyInfo)" />
+    </ItemGroup>
+  </Target>
+</Project>

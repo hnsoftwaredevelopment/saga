@@ -141,6 +141,7 @@ public partial class App : System.Windows.Application
             provider.GetService<ImportService>(),
             provider.GetService<IImportAgent>(),
             provider.GetService<IImportRepository>(),
+            provider.GetRequiredService<ICustomMetadataRepository>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),

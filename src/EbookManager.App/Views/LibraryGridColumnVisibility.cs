@@ -1,4 +1,8 @@
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Windows;
+using System.Windows.Data;
+using EbookManager.App.Controls;
 using EbookManager.Presentation.ViewModels;
 using Syncfusion.UI.Xaml.Grid;
 
@@ -8,6 +12,7 @@ internal sealed class LibraryGridColumnVisibility
 {
     private readonly SfDataGrid grid;
     private readonly LibraryView view;
+    private const string CustomMappingPrefix = "CustomMetadata:";
     private LibraryViewModel? viewModel;
     private bool isApplyingLayout;
 
@@ -31,6 +36,7 @@ internal sealed class LibraryGridColumnVisibility
         if (viewModel is not null)
         {
             viewModel.ActiveColumnOptions.CollectionChanged += ActiveColumnOptionsChanged;
+            viewModel.PropertyChanged += ViewModelPropertyChanged;
             grid.ResizingColumns += GridResizingColumns;
         }
 
@@ -42,6 +48,7 @@ internal sealed class LibraryGridColumnVisibility
         if (viewModel is not null)
         {
             viewModel.ActiveColumnOptions.CollectionChanged -= ActiveColumnOptionsChanged;
+            viewModel.PropertyChanged -= ViewModelPropertyChanged;
             grid.ResizingColumns -= GridResizingColumns;
             viewModel = null;
         }
@@ -59,10 +66,11 @@ internal sealed class LibraryGridColumnVisibility
         {
             var orderedVisibleColumns = viewModel.GetVisibleColumns(view);
             var visibleColumns = orderedVisibleColumns.ToHashSet();
+            EnsureCustomColumns(orderedVisibleColumns);
 
             foreach (var column in grid.Columns)
             {
-                if (TryGetColumnOption(column.MappingName, out var option))
+                if (TryGetColumnKey(column.MappingName, out var option))
                 {
                     column.IsHidden = !visibleColumns.Contains(option);
                     column.Width = viewModel.GetColumnWidth(view, option, column.Width);
@@ -82,7 +90,15 @@ internal sealed class LibraryGridColumnVisibility
         Apply();
     }
 
-    private void ApplyColumnOrder(IReadOnlyList<LibraryColumnOption> orderedVisibleColumns)
+    private void ViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(LibraryViewModel.ActiveColumnLayoutSnapshot))
+        {
+            Apply();
+        }
+    }
+
+    private void ApplyColumnOrder(IReadOnlyList<LibraryColumnKey> orderedVisibleColumns)
     {
         for (var desiredIndex = 0; desiredIndex < orderedVisibleColumns.Count; desiredIndex++)
         {
@@ -99,11 +115,11 @@ internal sealed class LibraryGridColumnVisibility
         }
     }
 
-    private int FindColumnIndex(LibraryColumnOption option)
+    private int FindColumnIndex(LibraryColumnKey option)
     {
         for (var index = 0; index < grid.Columns.Count; index++)
         {
-            if (TryGetColumnOption(grid.Columns[index].MappingName, out var columnOption) &&
+            if (TryGetColumnKey(grid.Columns[index].MappingName, out var columnOption) &&
                 columnOption == option)
             {
                 return index;
@@ -111,6 +127,47 @@ internal sealed class LibraryGridColumnVisibility
         }
 
         return -1;
+    }
+
+    private void EnsureCustomColumns(IReadOnlyList<LibraryColumnKey> orderedVisibleColumns)
+    {
+        var desiredCustomColumns = orderedVisibleColumns
+            .Where(column => column.CustomFieldId is not null)
+            .ToHashSet();
+
+        for (var index = grid.Columns.Count - 1; index >= 0; index--)
+        {
+            var column = grid.Columns[index];
+            if (TryGetCustomColumnKey(column.MappingName, out var key) &&
+                !desiredCustomColumns.Contains(key))
+            {
+                grid.Columns.RemoveAt(index);
+            }
+        }
+
+        if (viewModel is null)
+        {
+            return;
+        }
+
+        foreach (var key in desiredCustomColumns)
+        {
+            var existingIndex = FindColumnIndex(key);
+            if (existingIndex >= 0)
+            {
+                grid.Columns[existingIndex].HeaderText = viewModel.GetColumnHeaderText(key);
+                continue;
+            }
+
+            var fieldId = key.CustomFieldId!.Value;
+            grid.Columns.Add(new GridTemplateColumn
+            {
+                HeaderText = viewModel.GetColumnHeaderText(key),
+                MappingName = GetCustomMappingName(fieldId),
+                Width = viewModel.GetColumnWidth(view, key, 160),
+                CellTemplate = CreateCustomMetadataCellTemplate(fieldId)
+            });
+        }
     }
 
     private async void GridResizingColumns(object? sender, ResizingColumnsEventArgs e)
@@ -125,7 +182,7 @@ internal sealed class LibraryGridColumnVisibility
         }
 
         var column = grid.Columns[e.ColumnIndex];
-        if (!TryGetColumnOption(column.MappingName, out var option))
+        if (!TryGetColumnKey(column.MappingName, out var option))
         {
             return;
         }
@@ -143,9 +200,28 @@ internal sealed class LibraryGridColumnVisibility
         }
     }
 
-    private static bool TryGetColumnOption(string mappingName, out LibraryColumnOption option)
+    private static DataTemplate CreateCustomMetadataCellTemplate(Guid fieldId)
     {
-        option = mappingName switch
+        var text = new FrameworkElementFactory(typeof(HighlightedTextBlock));
+        text.SetResourceReference(HighlightedTextBlock.HighlightBrushProperty, "SearchHighlightBrush");
+        text.SetResourceReference(HighlightedTextBlock.ForegroundProperty, "TextSecondaryBrush");
+        text.SetBinding(
+            HighlightedTextBlock.HighlightedTextProperty,
+            new Binding($"CustomMetadataValues[{fieldId:D}]"));
+        text.SetBinding(
+            HighlightedTextBlock.SearchTextProperty,
+            new Binding(nameof(BookRowViewModel.SearchText)));
+        return new DataTemplate { VisualTree = text };
+    }
+
+    private static bool TryGetColumnKey(string mappingName, out LibraryColumnKey option)
+    {
+        if (TryGetCustomColumnKey(mappingName, out option))
+        {
+            return true;
+        }
+
+        var standardOption = mappingName switch
         {
             "CoverBytes" => LibraryColumnOption.Cover,
             "Title" => LibraryColumnOption.Title,
@@ -163,25 +239,27 @@ internal sealed class LibraryGridColumnVisibility
             "DateAddedSortValue" => LibraryColumnOption.DateAdded,
             "LastModifiedSortValue" => LibraryColumnOption.LastModified,
             "EReader" => LibraryColumnOption.EReader,
-            _ => default,
+            _ => (LibraryColumnOption?)null,
         };
 
-        return mappingName is
-            "CoverBytes" or
-            "Title" or
-            "Authors" or
-            "Formats" or
-            "Series" or
-            "SeriesNumber" or
-            "ReadingStatus" or
-            "Language" or
-            "Publisher" or
-            "PublicationDateSortValue" or
-            "Tags" or
-            "Isbn" or
-            "Description" or
-            "DateAddedSortValue" or
-            "LastModifiedSortValue" or
-            "EReader";
+        option = standardOption is null
+            ? new LibraryColumnKey(mappingName)
+            : LibraryColumnKey.FromStandard(standardOption.Value);
+        return standardOption is not null;
     }
+
+    private static bool TryGetCustomColumnKey(string mappingName, out LibraryColumnKey option)
+    {
+        if (mappingName.StartsWith(CustomMappingPrefix, StringComparison.OrdinalIgnoreCase) &&
+            Guid.TryParse(mappingName[CustomMappingPrefix.Length..], out var fieldId))
+        {
+            option = LibraryColumnKey.FromCustom(fieldId);
+            return true;
+        }
+
+        option = new LibraryColumnKey(mappingName);
+        return false;
+    }
+
+    private static string GetCustomMappingName(Guid fieldId) => $"{CustomMappingPrefix}{fieldId:D}";
 }

@@ -1,6 +1,7 @@
 .superpowers/
 
 # .NET build output
+.build/
 bin/
 obj/
 artifacts/

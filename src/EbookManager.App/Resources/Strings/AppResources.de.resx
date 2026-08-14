@@ -277,6 +277,9 @@
   <data name="PublicationDate" xml:space="preserve">
     <value>Veroeffentlichungsdatum</value>
   </data>
+  <data name="SelectDate" xml:space="preserve">
+    <value>Datum auswaehlen</value>
+  </data>
   <data name="Publisher" xml:space="preserve">
     <value>Verlag</value>
   </data>

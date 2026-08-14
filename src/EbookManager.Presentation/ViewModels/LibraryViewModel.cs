@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -9,6 +10,7 @@ using EbookManager.Application.Importing;
 using EbookManager.Application.Metadata;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Importing;
 using EbookManager.Domain.Settings;
 using EbookManager.Libraries;
@@ -31,6 +33,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly ImportService? importService;
     private readonly IImportAgent? importAgent;
     private readonly IImportRepository? importRepository;
+    private readonly ICustomMetadataRepository? customMetadataRepository;
     private readonly LibraryService? libraryService;
     private readonly CurrentLibrary? currentLibrary;
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
@@ -52,14 +55,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         BuiltInViewKeys().ToDictionary(key => key, _ => new List<LibraryGroupOption>(), StringComparer.Ordinal);
     private readonly Dictionary<string, LibrarySortOption> viewSortOptions =
         BuiltInViewKeys().ToDictionary(key => key, _ => LibrarySortOption.None, StringComparer.Ordinal);
-    private readonly Dictionary<string, List<LibraryColumnOption>> viewColumns =
+    private IReadOnlyList<CustomMetadataFieldDefinition> customMetadataFieldDefinitions = [];
+    private IReadOnlyDictionary<Guid, CustomMetadataFieldDefinition> customMetadataFieldDefinitionMap =
+        new Dictionary<Guid, CustomMetadataFieldDefinition>();
+    private IReadOnlyDictionary<Guid, IReadOnlyDictionary<Guid, string>> customMetadataValuesByBookId =
+        new Dictionary<Guid, IReadOnlyDictionary<Guid, string>>();
+    private readonly Dictionary<string, List<LibraryColumnKey>> viewColumns =
         new()
         {
             [nameof(LibraryView.Bookshelf)] = [],
-            [nameof(LibraryView.Detailed)] = DefaultDetailedColumns().ToList(),
-            [nameof(LibraryView.List)] = DefaultListColumns().ToList()
+            [nameof(LibraryView.Detailed)] = DefaultDetailedColumns().Select(LibraryColumnKey.FromStandard).ToList(),
+            [nameof(LibraryView.List)] = DefaultListColumns().Select(LibraryColumnKey.FromStandard).ToList()
         };
-    private readonly Dictionary<string, Dictionary<LibraryColumnOption, double>> viewColumnWidths =
+    private readonly Dictionary<string, Dictionary<LibraryColumnKey, double>> viewColumnWidths =
         new()
         {
             [nameof(LibraryView.Bookshelf)] = [],
@@ -78,6 +86,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         ImportService? importService = null,
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
+        ICustomMetadataRepository? customMetadataRepository = null,
         LibraryService? libraryService = null,
         CurrentLibrary? currentLibrary = null,
         ILibraryDatabaseInitializer? databaseInitializer = null,
@@ -96,6 +105,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.importService = importService;
         this.importAgent = importAgent;
         this.importRepository = importRepository;
+        this.customMetadataRepository = customMetadataRepository;
         this.libraryService = libraryService;
         this.currentLibrary = currentLibrary;
         this.databaseInitializer = databaseInitializer;
@@ -122,9 +132,10 @@ public sealed partial class LibraryViewModel : ObservableObject
     public ObservableCollection<FacetFilterViewModel> EReaderFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> LanguageFilters { get; } = [];
     public ObservableCollection<FacetFilterViewModel> FormatFilters { get; } = [];
+    public ObservableCollection<CustomMetadataFilterGroupViewModel> CustomMetadataFilterGroups { get; } = [];
     public BulkObservableCollection<LibraryGroupNodeViewModel> GroupedLibraryNodes { get; } = [];
     public ObservableCollection<LibraryGroupOption> ActiveGroupOptions { get; } = [];
-    public ObservableCollection<LibraryColumnOption> ActiveColumnOptions { get; } = [];
+    public ObservableCollection<LibraryColumnKey> ActiveColumnOptions { get; } = [];
     public ObservableCollection<LibraryColumnChoiceViewModel> ColumnChoices { get; } = [];
     public ObservableCollection<LibraryViewDefinitionViewModel> ViewDefinitions { get; } = [];
     public LibraryViewDefinitionViewModel? SelectedViewDefinition =>
@@ -139,7 +150,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         LibraryGroupOption.Status,
         LibraryGroupOption.Format
     ];
-    public IReadOnlyList<LibraryColumnOption> AvailableColumnOptions { get; } = DefaultDetailedColumns();
+    public IReadOnlyList<LibraryColumnKey> AvailableColumnOptions { get; } =
+        DefaultDetailedColumns().Select(LibraryColumnKey.FromStandard).ToArray();
 
     public BookDetailsViewModel Details { get; }
 
@@ -147,14 +159,21 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public bool HasColumnChoices => ColumnChoices.Count > 0;
 
+    public bool HasCustomMetadataFilterGroups => CustomMetadataFilterGroups.Count > 0;
+
+    public string ApplicationVersion =>
+        Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ??
+        Assembly.GetExecutingAssembly().GetName().Version?.ToString() ??
+        "-";
+
     public bool CanManageSelectedViewDefinition =>
         ViewDefinitions.FirstOrDefault(definition =>
             definition.Id.Equals(SelectedViewDefinitionId, StringComparison.OrdinalIgnoreCase)) is { IsBuiltIn: false };
 
-    public IReadOnlyList<LibraryColumnOption> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
+    public IReadOnlyList<LibraryColumnKey> ActiveColumnOptionsSnapshot => ActiveColumnOptions.ToArray();
 
     public LibraryColumnLayoutSnapshot ActiveColumnLayoutSnapshot =>
-        new(ActiveColumnOptions.ToArray(), GetColumnWidths(SelectedLayoutKey));
+        new(ActiveColumnOptions.ToArray(), GetColumnWidths(SelectedLayoutKey), customMetadataFieldDefinitionMap);
 
     [ObservableProperty]
     private string searchText = string.Empty;
@@ -328,6 +347,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             : "Create or open a library to get started.";
         try
         {
+            await RefreshCustomMetadataDefinitionsAsync(cancellationToken);
             await ApplyDefaultViewAsync(cancellationToken);
             if (currentLibrary is not null &&
                 !EnsureActiveLibraryStillExists("Create or open a library to get started."))
@@ -336,6 +356,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             }
 
             books = await LoadBooksAsync(cancellationToken);
+            await RefreshCustomMetadataValuesAsync(books, cancellationToken);
             RefreshFacetFilters();
             ApplyFilter();
             RefreshLibraryDisplay();
@@ -364,8 +385,19 @@ public sealed partial class LibraryViewModel : ObservableObject
             authorSortStrategy = settings.AuthorSortStrategy;
         }
 
+        await RefreshCustomMetadataDefinitionsAsync(cancellationToken);
+        await RefreshCustomMetadataValuesAsync(books, cancellationToken);
         RefreshFacetFilters();
         RefreshLocalizedFilterDisplayNames();
+        ApplyFilter();
+    }
+
+    public async Task RefreshCustomMetadataColumnsAsync(CancellationToken cancellationToken = default)
+    {
+        await RefreshCustomMetadataDefinitionsAsync(cancellationToken);
+        await RefreshCustomMetadataValuesAsync(books, cancellationToken);
+        RefreshColumnChoices();
+        OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
         ApplyFilter();
     }
 
@@ -469,11 +501,11 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        Details.Load(value.Book);
+        Details.Load(value.Book, CurrentLibraryPath);
         var fullBook = await bookRepository.GetAsync(value.Id, CancellationToken.None);
         if (version == selectionVersion && fullBook is not null)
         {
-            Details.Load(fullBook);
+            Details.Load(fullBook, CurrentLibraryPath);
             await Details.LoadFormatDetailsAsync(fullBook.Id, CancellationToken.None);
             await Details.LoadCustomMetadataValuesAsync(fullBook.Id, CancellationToken.None);
         }
@@ -604,6 +636,65 @@ public sealed partial class LibraryViewModel : ObservableObject
         return allBooks;
     }
 
+    private async Task RefreshCustomMetadataDefinitionsAsync(CancellationToken cancellationToken)
+    {
+        if (customMetadataRepository is null || !HasActiveLibrary)
+        {
+            customMetadataFieldDefinitions = [];
+            customMetadataFieldDefinitionMap = new Dictionary<Guid, CustomMetadataFieldDefinition>();
+            return;
+        }
+
+        customMetadataFieldDefinitions = await customMetadataRepository.ListDefinitionsAsync(cancellationToken);
+        customMetadataFieldDefinitionMap = customMetadataFieldDefinitions.ToDictionary(field => field.Id);
+        RefreshActiveColumnOptions();
+        OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
+    }
+
+    private async Task RefreshCustomMetadataValuesAsync(
+        IReadOnlyList<Book> sourceBooks,
+        CancellationToken cancellationToken)
+    {
+        if (customMetadataRepository is null || sourceBooks.Count == 0)
+        {
+            customMetadataValuesByBookId = new Dictionary<Guid, IReadOnlyDictionary<Guid, string>>();
+            return;
+        }
+
+        var values = await customMetadataRepository.GetValuesForBooksAsync(
+            sourceBooks.Select(book => book.Id).Distinct().ToArray(),
+            cancellationToken);
+        customMetadataValuesByBookId = values
+            .GroupBy(value => value.BookId)
+            .ToDictionary(
+                group => group.Key,
+                group => (IReadOnlyDictionary<Guid, string>)group
+                    .Where(value => customMetadataFieldDefinitionMap.ContainsKey(value.FieldId))
+                    .ToDictionary(
+                        value => value.FieldId,
+                        value => FormatCustomMetadataValue(
+                            customMetadataFieldDefinitionMap[value.FieldId].Type,
+                            value)));
+    }
+
+    private IReadOnlyDictionary<Guid, string> GetCustomMetadataValues(Guid bookId) =>
+        customMetadataValuesByBookId.TryGetValue(bookId, out var values)
+            ? values
+            : new Dictionary<Guid, string>();
+
+    private string FormatCustomMetadataValue(
+        CustomMetadataFieldType type,
+        CustomMetadataValue value) =>
+        type switch
+        {
+            CustomMetadataFieldType.Number => value.NumberValue?.ToString("0.#############################", CultureInfo.CurrentCulture) ?? string.Empty,
+            CustomMetadataFieldType.Date => value.DateValue?.ToString("d", CultureInfo.CurrentCulture) ?? string.Empty,
+            CustomMetadataFieldType.Boolean => value.BooleanValue is null
+                ? string.Empty
+                : localize(value.BooleanValue.Value ? "Yes" : "No"),
+            _ => value.TextValue ?? string.Empty
+        };
+
     private void ResetLoadingLibraryProgress()
     {
         LoadingLibraryTotalCount = 0;
@@ -662,11 +753,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         var selectedId = SelectedBook?.Id;
         var filteredBooks = performance.Measure(
             "filter",
-            () => ApplyFacetFilters(searchService.Filter(books, SearchText)));
+            () => ApplyFacetFilters(searchService.Filter(
+                books,
+                SearchText,
+                book => GetCustomMetadataValues(book.Id).Values)));
         var rows = performance.Measure(
             "materialize-sort",
             () => ApplySort(
-                    filteredBooks.Select(book => new BookRowViewModel(book, SearchText, CurrentLibraryPath, authorSortStrategy)),
+                    filteredBooks.Select(book => new BookRowViewModel(
+                        book,
+                        SearchText,
+                        CurrentLibraryPath,
+                        authorSortStrategy,
+                        GetCustomMetadataValues(book.Id))),
                     SelectedSortOption,
                     authorSortStrategy)
                 .ToList());
@@ -822,21 +921,31 @@ public sealed partial class LibraryViewModel : ObservableObject
         return rows.Length;
     }
 
-    public IReadOnlyList<LibraryColumnOption> GetVisibleColumns(LibraryView view) =>
+    public IReadOnlyList<LibraryColumnKey> GetVisibleColumns(LibraryView view) =>
         GetVisibleColumns(LayoutKeyOrViewKey(view), view);
 
-    private IReadOnlyList<LibraryColumnOption> GetVisibleColumns(string layoutKey, LibraryView baseView) =>
+    private IReadOnlyList<LibraryColumnKey> GetVisibleColumns(string layoutKey, LibraryView baseView) =>
         viewColumns.TryGetValue(layoutKey, out var columns)
             ? columns.ToArray()
-            : GetDefaultColumns(baseView);
+            : GetDefaultColumnKeys(baseView);
 
     public bool IsColumnVisible(LibraryView view, LibraryColumnOption column) =>
-        viewColumns.TryGetValue(LayoutKeyOrViewKey(view), out var columns) && columns.Contains(column);
+        viewColumns.TryGetValue(LayoutKeyOrViewKey(view), out var columns) &&
+        columns.Contains(LibraryColumnKey.FromStandard(column));
 
     public double GetColumnWidth(LibraryView view, LibraryColumnOption column, double defaultWidth) =>
+        GetColumnWidth(LayoutKeyOrViewKey(view), LibraryColumnKey.FromStandard(column), defaultWidth);
+
+    public double GetColumnWidth(LibraryView view, LibraryColumnKey column, double defaultWidth) =>
         GetColumnWidth(LayoutKeyOrViewKey(view), column, defaultWidth);
 
-    private double GetColumnWidth(string layoutKey, LibraryColumnOption column, double defaultWidth) =>
+    public string GetColumnHeaderText(LibraryColumnKey key) =>
+        key.CustomFieldId is { } fieldId &&
+        customMetadataFieldDefinitionMap.TryGetValue(fieldId, out var field)
+            ? field.Name
+            : localize(GetColumnResourceKey(key.StandardOption ?? LibraryColumnOption.Title));
+
+    private double GetColumnWidth(string layoutKey, LibraryColumnKey column, double defaultWidth) =>
         viewColumnWidths.TryGetValue(layoutKey, out var widths) &&
         widths.TryGetValue(column, out var width) &&
         IsUsableColumnWidth(width)
@@ -849,13 +958,22 @@ public sealed partial class LibraryViewModel : ObservableObject
         double width,
         CancellationToken cancellationToken = default)
     {
+        await SetColumnWidthAsync(LayoutKeyOrViewKey(view), view, LibraryColumnKey.FromStandard(column), width, cancellationToken);
+    }
+
+    public async Task SetColumnWidthAsync(
+        LibraryView view,
+        LibraryColumnKey column,
+        double width,
+        CancellationToken cancellationToken = default)
+    {
         await SetColumnWidthAsync(LayoutKeyOrViewKey(view), view, column, width, cancellationToken);
     }
 
     private async Task SetColumnWidthAsync(
         string layoutKey,
         LibraryView baseView,
-        LibraryColumnOption column,
+        LibraryColumnKey column,
         double width,
         CancellationToken cancellationToken = default)
     {
@@ -889,13 +1007,17 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        await SetVisibleColumnsAsync(LayoutKeyOrViewKey(view), view, columns, cancellationToken);
+        await SetVisibleColumnsAsync(
+            LayoutKeyOrViewKey(view),
+            view,
+            columns.Select(LibraryColumnKey.FromStandard),
+            cancellationToken);
     }
 
     private async Task SetVisibleColumnsAsync(
         string layoutKey,
         LibraryView baseView,
-        IEnumerable<LibraryColumnOption> columns,
+        IEnumerable<LibraryColumnKey> columns,
         CancellationToken cancellationToken = default)
     {
         if (baseView == LibraryView.Bookshelf)
@@ -972,18 +1094,18 @@ public sealed partial class LibraryViewModel : ObservableObject
     private void SetSortOption(string layoutKey, LibrarySortOption sortOption) =>
         viewSortOptions[layoutKey] = sortOption;
 
-    private List<LibraryColumnOption> GetColumnOptions(string layoutKey, LibraryView baseView)
+    private List<LibraryColumnKey> GetColumnOptions(string layoutKey, LibraryView baseView)
     {
         if (!viewColumns.TryGetValue(layoutKey, out var columns))
         {
-            columns = GetDefaultColumns(baseView).ToList();
+            columns = GetDefaultColumnKeys(baseView).ToList();
             viewColumns[layoutKey] = columns;
         }
 
         return columns;
     }
 
-    private Dictionary<LibraryColumnOption, double> GetColumnWidthOptions(string layoutKey)
+    private Dictionary<LibraryColumnKey, double> GetColumnWidthOptions(string layoutKey)
     {
         if (!viewColumnWidths.TryGetValue(layoutKey, out var widths))
         {
@@ -1265,17 +1387,17 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(ActiveColumnLayoutSnapshot));
     }
 
-    private IReadOnlyDictionary<LibraryColumnOption, double> GetColumnWidths(LibraryView view) =>
+    private IReadOnlyDictionary<LibraryColumnKey, double> GetColumnWidths(LibraryView view) =>
         GetColumnWidths(ViewKey(view));
 
-    private IReadOnlyDictionary<LibraryColumnOption, double> GetColumnWidths(string layoutKey) =>
+    private IReadOnlyDictionary<LibraryColumnKey, double> GetColumnWidths(string layoutKey) =>
         viewColumnWidths.TryGetValue(layoutKey, out var widths)
-            ? new Dictionary<LibraryColumnOption, double>(widths)
-            : new Dictionary<LibraryColumnOption, double>();
+            ? new Dictionary<LibraryColumnKey, double>(widths)
+            : new Dictionary<LibraryColumnKey, double>();
 
     private void RefreshColumnChoices()
     {
-        var availableOptions = GetDefaultColumns(SelectedView);
+        var availableOptions = GetAvailableColumnKeys(SelectedView);
         var visibleColumns = GetVisibleColumns(SelectedLayoutKey, SelectedView);
         var visibleOptions = visibleColumns.ToHashSet();
         var orderedOptions = visibleColumns
@@ -1285,7 +1407,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         for (var index = ColumnChoices.Count - 1; index >= 0; index--)
         {
-            if (!orderedOptions.Contains(ColumnChoices[index].Option))
+            if (!orderedOptions.Contains(ColumnChoices[index].Key))
             {
                 ColumnChoices.RemoveAt(index);
             }
@@ -1294,13 +1416,16 @@ public sealed partial class LibraryViewModel : ObservableObject
         for (var desiredIndex = 0; desiredIndex < orderedOptions.Length; desiredIndex++)
         {
             var option = orderedOptions[desiredIndex];
-            var choice = ColumnChoices.FirstOrDefault(existing => existing.Option == option);
+            var choice = ColumnChoices.FirstOrDefault(existing => existing.Key == option);
             if (choice is null)
             {
-                ColumnChoices.Insert(desiredIndex, new LibraryColumnChoiceViewModel(option, visibleOptions.Contains(option)));
+                ColumnChoices.Insert(
+                    desiredIndex,
+                    new LibraryColumnChoiceViewModel(option, GetColumnDisplayName(option), visibleOptions.Contains(option)));
                 continue;
             }
 
+            choice.DisplayName = GetColumnDisplayName(option);
             choice.IsSelected = visibleOptions.Contains(option);
             var currentIndex = ColumnChoices.IndexOf(choice);
             if (currentIndex != desiredIndex)
@@ -1312,6 +1437,39 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(HasColumnChoices));
     }
 
+    private string GetColumnDisplayName(LibraryColumnKey key)
+    {
+        if (key.CustomFieldId is { } fieldId &&
+            customMetadataFieldDefinitionMap.TryGetValue(fieldId, out var field))
+        {
+            return field.Name;
+        }
+
+        return localize(GetColumnResourceKey(key.StandardOption ?? LibraryColumnOption.Title));
+    }
+
+    private static string GetColumnResourceKey(LibraryColumnOption option) =>
+        option switch
+        {
+            LibraryColumnOption.Cover => "Cover",
+            LibraryColumnOption.Title => "Title",
+            LibraryColumnOption.Authors => "Authors",
+            LibraryColumnOption.Format => "Type",
+            LibraryColumnOption.Series => "Series",
+            LibraryColumnOption.SeriesNumber => "SeriesNumber",
+            LibraryColumnOption.Status => "Status",
+            LibraryColumnOption.Language => "Language",
+            LibraryColumnOption.Publisher => "Publisher",
+            LibraryColumnOption.PublicationDate => "PublicationDate",
+            LibraryColumnOption.Tags => "Tags",
+            LibraryColumnOption.Isbn => "Isbn",
+            LibraryColumnOption.Description => "Description",
+            LibraryColumnOption.DateAdded => "DateAdded",
+            LibraryColumnOption.LastModified => "LastModified",
+            LibraryColumnOption.EReader => "EReader",
+            _ => "Columns"
+        };
+
     private async Task ToggleColumnAsync(LibraryColumnChoiceViewModel? choice, CancellationToken cancellationToken)
     {
         if (choice is null || SelectedView == LibraryView.Bookshelf)
@@ -1322,14 +1480,14 @@ public sealed partial class LibraryViewModel : ObservableObject
         var columns = GetVisibleColumns(SelectedLayoutKey, SelectedView).ToList();
         if (choice.IsSelected)
         {
-            if (!columns.Contains(choice.Option))
+            if (!columns.Contains(choice.Key))
             {
-                columns.Add(choice.Option);
+                columns.Add(choice.Key);
             }
         }
         else
         {
-            columns.Remove(choice.Option);
+            columns.Remove(choice.Key);
         }
 
         if (columns.Count == 0)
@@ -1360,8 +1518,8 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        var orderedOptions = ColumnChoices.Select(choice => choice.Option).ToList();
-        var currentIndex = orderedOptions.IndexOf(draggedChoice.Option);
+        var orderedOptions = ColumnChoices.Select(choice => choice.Key).ToList();
+        var currentIndex = orderedOptions.IndexOf(draggedChoice.Key);
         if (currentIndex < 0)
         {
             return;
@@ -1369,7 +1527,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         var targetIndex = targetChoice is null
             ? orderedOptions.Count
-            : orderedOptions.IndexOf(targetChoice.Option);
+            : orderedOptions.IndexOf(targetChoice.Key);
         if (targetIndex < 0 || ReferenceEquals(draggedChoice, targetChoice))
         {
             return;
@@ -1387,11 +1545,11 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         targetIndex = Math.Clamp(targetIndex, 0, orderedOptions.Count);
-        orderedOptions.Insert(targetIndex, draggedChoice.Option);
+        orderedOptions.Insert(targetIndex, draggedChoice.Key);
 
         var selectedOptions = ColumnChoices
             .Where(choice => choice.IsSelected)
-            .Select(choice => choice.Option)
+            .Select(choice => choice.Key)
             .ToHashSet();
         var columns = orderedOptions
             .Where(selectedOptions.Contains)
@@ -1410,7 +1568,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var columns = GetVisibleColumns(SelectedLayoutKey, SelectedView).ToList();
-        var currentIndex = columns.IndexOf(choice.Option);
+        var currentIndex = columns.IndexOf(choice.Key);
         var newIndex = currentIndex + direction;
         if (currentIndex < 0 || newIndex < 0 || newIndex >= columns.Count)
         {
@@ -1428,7 +1586,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         viewSortOptions[SelectedLayoutKey] = LibrarySortOption.None;
         if (SelectedView != LibraryView.Bookshelf)
         {
-            viewColumns[SelectedLayoutKey] = GetDefaultColumns(SelectedView).ToList();
+            viewColumns[SelectedLayoutKey] = GetDefaultColumnKeys(SelectedView).ToList();
             viewColumnWidths[SelectedLayoutKey] = [];
         }
 
@@ -1494,7 +1652,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         viewGroupings[layoutKey] = GetGroupings(SelectedLayoutKey).ToList();
         viewSortOptions[layoutKey] = GetSortOption(SelectedLayoutKey);
         viewColumns[layoutKey] = GetColumnOptions(SelectedLayoutKey, SelectedView).ToList();
-        viewColumnWidths[layoutKey] = new Dictionary<LibraryColumnOption, double>(
+        viewColumnWidths[layoutKey] = new Dictionary<LibraryColumnKey, double>(
             GetColumnWidthOptions(SelectedLayoutKey));
 
         ViewDefinitions.Add(definition);
@@ -1775,14 +1933,14 @@ public sealed partial class LibraryViewModel : ObservableObject
             .Select(option => option.ToString())
             .ToArray();
 
-    private static IReadOnlyList<string> ToColumnSettingValues(IEnumerable<LibraryColumnOption> options) =>
-        options.Select(option => option.ToString()).ToArray();
+    private static IReadOnlyList<string> ToColumnSettingValues(IEnumerable<LibraryColumnKey> options) =>
+        options.Select(option => option.Value).ToArray();
 
     private static IReadOnlyDictionary<string, double> ToColumnWidthSettingValues(
-        IReadOnlyDictionary<LibraryColumnOption, double> widths) =>
+        IReadOnlyDictionary<LibraryColumnKey, double> widths) =>
         widths
             .Where(item => IsUsableColumnWidth(item.Value))
-            .ToDictionary(item => item.Key.ToString(), item => Math.Round(item.Value, 2), StringComparer.Ordinal);
+            .ToDictionary(item => item.Key.Value, item => Math.Round(item.Value, 2), StringComparer.Ordinal);
 
     private static IReadOnlyList<LibraryGroupOption> ParseGroupOptions(IEnumerable<string>? values)
     {
@@ -1826,7 +1984,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    private static Dictionary<LibraryColumnOption, double> ParseColumnWidths(
+    private static Dictionary<LibraryColumnKey, double> ParseColumnWidths(
         IReadOnlyDictionary<string, double>? values)
     {
         if (values is null)
@@ -1834,14 +1992,13 @@ public sealed partial class LibraryViewModel : ObservableObject
             return [];
         }
 
-        var widths = new Dictionary<LibraryColumnOption, double>();
+        var widths = new Dictionary<LibraryColumnKey, double>();
         foreach (var (key, width) in values)
         {
-            if (Enum.TryParse<LibraryColumnOption>(key, ignoreCase: true, out var option) &&
-                Enum.IsDefined(option) &&
-                IsUsableColumnWidth(width))
+            var columnKey = ParseColumnKey(key);
+            if (columnKey is not null && IsUsableColumnWidth(width))
             {
-                widths[option] = Math.Round(width, 2);
+                widths[columnKey] = Math.Round(width, 2);
             }
         }
 
@@ -1867,37 +2024,62 @@ public sealed partial class LibraryViewModel : ObservableObject
         return normalized;
     }
 
-    private static IReadOnlyList<LibraryColumnOption> ParseColumnOptions(
+    private IReadOnlyList<LibraryColumnKey> ParseColumnOptions(
         LibraryView view,
         IEnumerable<string>? values)
     {
         if (values is null)
         {
-            return GetDefaultColumns(view);
+            return GetDefaultColumnKeys(view);
         }
 
         var parsed = values
-            .Select(value => Enum.TryParse<LibraryColumnOption>(value, ignoreCase: true, out var option) && Enum.IsDefined(option)
-                ? option
-                : (LibraryColumnOption?)null)
-            .OfType<LibraryColumnOption>()
+            .Select(ParseColumnKey)
+            .OfType<LibraryColumnKey>()
             .ToArray();
         return NormalizeColumnOptions(view, parsed);
     }
 
-    private static IReadOnlyList<LibraryColumnOption> NormalizeColumnOptions(
+    private IReadOnlyList<LibraryColumnKey> NormalizeColumnOptions(
         LibraryView view,
-        IEnumerable<LibraryColumnOption> options)
+        IEnumerable<LibraryColumnKey> options)
     {
-        var allowed = GetDefaultColumns(view).ToHashSet();
+        var allowed = GetAvailableColumnKeys(view).ToHashSet();
         var normalized = options
             .Where(option => allowed.Contains(option))
             .Distinct()
             .ToList();
         return normalized.Count == 0
-            ? GetDefaultColumns(view)
+            ? GetDefaultColumnKeys(view)
             : normalized;
     }
+
+    private static LibraryColumnKey? ParseColumnKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        if (value.StartsWith(LibraryColumnKey.CustomPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return Guid.TryParse(value[LibraryColumnKey.CustomPrefix.Length..], out var fieldId)
+                ? LibraryColumnKey.FromCustom(fieldId)
+                : null;
+        }
+
+        return Enum.TryParse<LibraryColumnOption>(value, ignoreCase: true, out var option) && Enum.IsDefined(option)
+            ? LibraryColumnKey.FromStandard(option)
+            : null;
+    }
+
+    private IReadOnlyList<LibraryColumnKey> GetAvailableColumnKeys(LibraryView view) =>
+        GetDefaultColumnKeys(view)
+            .Concat(customMetadataFieldDefinitions.Select(field => LibraryColumnKey.FromCustom(field.Id)))
+            .ToArray();
+
+    private static IReadOnlyList<LibraryColumnKey> GetDefaultColumnKeys(LibraryView view) =>
+        GetDefaultColumns(view).Select(LibraryColumnKey.FromStandard).ToArray();
 
     private static IReadOnlyList<LibraryColumnOption> GetDefaultColumns(LibraryView view) =>
         view switch
@@ -2105,14 +2287,27 @@ public sealed partial class LibraryViewModel : ObservableObject
                     .ToHashSet(StringComparer.OrdinalIgnoreCase)))
             .Where(group => group.Values.Count > 0)
             .ToArray();
+        var selectedCustomFilters = CustomMetadataFilterGroups
+            .Select(group => (
+                group.FieldId,
+                Values: group.Filters
+                    .Where(filter => filter.IsSelected)
+                    .Select(filter => filter.Name)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase)))
+            .Where(group => group.Values.Count > 0)
+            .ToArray();
 
-        if (selectedFilters.Length == 0)
+        if (selectedFilters.Length == 0 && selectedCustomFilters.Length == 0)
         {
             return source;
         }
 
         return source
-            .Where(book => selectedFilters.Any(group => group.ValueSelector(book).Any(group.Values.Contains)))
+            .Where(book =>
+                selectedFilters.Any(group => group.ValueSelector(book).Any(group.Values.Contains)) ||
+                selectedCustomFilters.Any(group =>
+                    GetCustomMetadataValues(book.Id).TryGetValue(group.FieldId, out var value) &&
+                    group.Values.Contains(value)))
             .ToList();
     }
 
@@ -2140,7 +2335,66 @@ public sealed partial class LibraryViewModel : ObservableObject
             FormatFilters,
             books.SelectMany(book => book.Formats.Select(format => format.ToString())),
             FormatDisplayName);
+        RefreshCustomMetadataFilters();
     }
+
+    private void RefreshCustomMetadataFilters()
+    {
+        var existingSelections = CustomMetadataFilterGroups
+            .SelectMany(group => group.Filters.Select(filter => new
+            {
+                group.FieldId,
+                filter.Name,
+                filter.IsSelected
+            }))
+            .ToDictionary(
+                item => (item.FieldId, item.Name),
+                item => item.IsSelected);
+
+        CustomMetadataFilterGroups.Clear();
+        foreach (var definition in customMetadataFieldDefinitions
+                     .Where(IsUsefulCustomMetadataFilterType)
+                     .OrderBy(field => field.SortOrder)
+                     .ThenBy(field => field.Name, StringComparer.CurrentCultureIgnoreCase))
+        {
+            var valueCounts = customMetadataValuesByBookId.Values
+                .Select(values => values.TryGetValue(definition.Id, out var value) ? value : null)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .GroupBy(value => value!.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Select(group => new
+                {
+                    Name = group.First()!,
+                    Count = group.Count()
+                })
+                .OrderBy(value => value.Name, StringComparer.CurrentCultureIgnoreCase)
+                .ToList();
+            if (valueCounts.Count == 0)
+            {
+                continue;
+            }
+
+            var filters = new ObservableCollection<FacetFilterViewModel>();
+            foreach (var value in valueCounts)
+            {
+                var isSelected = existingSelections.TryGetValue((definition.Id, value.Name), out var existingSelection) &&
+                    existingSelection;
+                filters.Add(new FacetFilterViewModel(value.Name, value.Count, isSelected, ApplyFilter));
+            }
+
+            CustomMetadataFilterGroups.Add(new CustomMetadataFilterGroupViewModel(definition, filters));
+        }
+
+        OnPropertyChanged(nameof(HasCustomMetadataFilterGroups));
+    }
+
+    private static bool IsUsefulCustomMetadataFilterType(CustomMetadataFieldDefinition definition) =>
+        definition.Type is
+            CustomMetadataFieldType.Text or
+            CustomMetadataFieldType.SingleSelect or
+            CustomMetadataFieldType.MultiSelect or
+            CustomMetadataFieldType.Boolean or
+            CustomMetadataFieldType.Number or
+            CustomMetadataFieldType.Date;
 
     private void RefreshFilters(
         ObservableCollection<FacetFilterViewModel> filters,
@@ -2416,7 +2670,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         if (SelectedBook is { } selected &&
             persistedById.GetValueOrDefault(selected.Id) is { } selectedChangedBook)
         {
-            Details.Load(selectedChangedBook);
+            Details.Load(selectedChangedBook, CurrentLibraryPath);
             _ = Details.LoadCustomMetadataValuesAsync(selectedChangedBook.Id, CancellationToken.None);
         }
 
@@ -2703,6 +2957,9 @@ public sealed partial class LibraryViewModel : ObservableObject
         StatusFilters.Clear();
         EReaderFilters.Clear();
         LanguageFilters.Clear();
+        FormatFilters.Clear();
+        CustomMetadataFilterGroups.Clear();
+        OnPropertyChanged(nameof(HasCustomMetadataFilterGroups));
         Details.Clear();
         RefreshLibraryDisplay();
         EmptyStateMessage = MissingActiveLibraryMessage;
@@ -2711,7 +2968,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         return false;
     }
 
-    private void OnDetailsBookSaved(object? sender, Book savedBook)
+    private async void OnDetailsBookSaved(object? sender, Book savedBook)
     {
         var mutableBooks = books.ToList();
         var index = mutableBooks.FindIndex(book => book.Id == savedBook.Id);
@@ -2725,6 +2982,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         books = mutableBooks;
+        await RefreshCustomMetadataValuesAsync(books, CancellationToken.None);
         RefreshFacetFilters();
         ApplyFilter();
     }

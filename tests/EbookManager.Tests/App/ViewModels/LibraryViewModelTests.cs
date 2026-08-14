@@ -2,6 +2,7 @@ using EbookManager.Application.Books;
 using EbookManager.Application.Importing;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
+using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Importing;
 using EbookManager.Domain.Libraries;
 using EbookManager.Domain.Metadata;
@@ -200,6 +201,80 @@ public sealed class LibraryViewModelTests
         settingsStore.Settings.LibraryViewLayouts.Views["Detailed"].Columns
             .Should()
             .Equal("Title", "Authors");
+    }
+
+    [Fact]
+    public async Task Custom_metadata_fields_can_be_selected_as_view_columns()
+    {
+        var book = CreateBook("Book", ["Author"]);
+        var settingsStore = new InMemoryAppSettingsStore();
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Gelezen door", CustomMetadataFieldType.Text);
+        customMetadataRepository.SetValue(new CustomMetadataValue(book.Id, field.Id, TextValue: "Henk"));
+        var viewModel = CreateViewModel(
+            [book],
+            currentLibrary: CreateActiveLibrary(),
+            settingsStore: settingsStore,
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+
+        var customChoice = viewModel.ColumnChoices.Single(choice => choice.Key == LibraryColumnKey.FromCustom(field.Id));
+        customChoice.DisplayName.Should().Be("Gelezen door");
+        customChoice.IsSelected.Should().BeFalse();
+
+        customChoice.IsSelected = true;
+        await viewModel.ToggleColumnCommand.ExecuteAsync(customChoice);
+
+        viewModel.ActiveColumnOptions.Should().Contain(LibraryColumnKey.FromCustom(field.Id));
+        viewModel.VisibleBooks.Single().GetCustomMetadataValue(field.Id).Should().Be("Henk");
+        settingsStore.Settings.LibraryViewLayouts!.Views!["Detailed"].Columns
+            .Should()
+            .Contain($"custom:{field.Id:D}");
+    }
+
+    [Fact]
+    public async Task Search_matches_custom_metadata_values()
+    {
+        var first = CreateBook("Plain title", ["Author"]);
+        var second = CreateBook("Other book", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        customMetadataRepository.SetValue(new CustomMetadataValue(first.Id, field.Id, TextValue: "Avondgroep"));
+        var viewModel = CreateViewModel(
+            [first, second],
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SearchText = "avondgroep";
+
+        viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == first.Id);
+    }
+
+    [Fact]
+    public async Task Custom_metadata_values_are_available_as_filters()
+    {
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        customMetadataRepository.SetValue(new CustomMetadataValue(first.Id, field.Id, TextValue: "Avondgroep"));
+        customMetadataRepository.SetValue(new CustomMetadataValue(second.Id, field.Id, TextValue: "Middaggroep"));
+        var viewModel = CreateViewModel(
+            [first, second],
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Name.Should().Be("Leesclub");
+        group.Filters.Select(filter => filter.Name).Should().Equal("Avondgroep", "Middaggroep");
+
+        group.Filters.Single(filter => filter.Name == "Avondgroep").IsSelected = true;
+
+        viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == first.Id);
     }
 
     [Fact]
@@ -1313,7 +1388,8 @@ public sealed class LibraryViewModelTests
 
         viewModel.SelectedSortOption.Should().Be(LibrarySortOption.None);
         viewModel.ActiveGroupOptions.Should().BeEmpty();
-        viewModel.GetVisibleColumns(LibraryView.Detailed).Should().Equal(DefaultDetailedColumnOptions());
+        viewModel.GetVisibleColumns(LibraryView.Detailed).Should().Equal(
+            DefaultDetailedColumnOptions().Select(LibraryColumnKey.FromStandard));
         viewModel.GetColumnWidth(LibraryView.Detailed, LibraryColumnOption.Title, 220).Should().Be(220);
         viewModel.SelectedView = LibraryView.List;
         viewModel.SelectedSortOption.Should().Be(LibrarySortOption.Category);
@@ -2187,6 +2263,7 @@ public sealed class LibraryViewModelTests
         BookDetailsViewModel? details = null,
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
+        ICustomMetadataRepository? customMetadataRepository = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
@@ -2210,6 +2287,7 @@ public sealed class LibraryViewModelTests
             settingsStore: settingsStore,
             importAgent: importAgent,
             importRepository: importRepository,
+            customMetadataRepository: customMetadataRepository,
             performanceReporter: performanceReporter,
             localize: localize);
     }
@@ -2259,6 +2337,67 @@ public sealed class LibraryViewModelTests
         LibraryColumnOption.LastModified,
         LibraryColumnOption.EReader
     ];
+
+    private sealed class InMemoryCustomMetadataRepository : ICustomMetadataRepository
+    {
+        private readonly List<CustomMetadataFieldDefinition> definitions = [];
+        private readonly Dictionary<(Guid BookId, Guid FieldId), CustomMetadataValue> values = [];
+
+        public CustomMetadataFieldDefinition AddDefinition(string name, CustomMetadataFieldType type)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var definition = new CustomMetadataFieldDefinition(
+                Guid.NewGuid(),
+                name.ToLowerInvariant().Replace(' ', '-'),
+                name,
+                type,
+                definitions.Count,
+                now,
+                now);
+            definitions.Add(definition);
+            return definition;
+        }
+
+        public void SetValue(CustomMetadataValue value) =>
+            values[(value.BookId, value.FieldId)] = value;
+
+        public Task<IReadOnlyList<CustomMetadataFieldDefinition>> ListDefinitionsAsync(CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CustomMetadataFieldDefinition>>(definitions);
+
+        public Task<CustomMetadataFieldDefinition> AddDefinitionAsync(
+            string name,
+            CustomMetadataFieldType type,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(AddDefinition(name, type));
+
+        public Task RenameDefinitionAsync(Guid fieldId, string name, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task DeleteDefinitionAsync(Guid fieldId, CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesAsync(Guid bookId, CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
+                values.Values.Where(value => value.BookId == bookId).ToList());
+
+        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
+            IReadOnlyCollection<Guid> bookIds,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
+                values.Values.Where(value => bookIds.Contains(value.BookId)).ToList());
+
+        public Task SetValueAsync(CustomMetadataValue value, CancellationToken cancellationToken)
+        {
+            SetValue(value);
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteValueAsync(Guid bookId, Guid fieldId, CancellationToken cancellationToken)
+        {
+            values.Remove((bookId, fieldId));
+            return Task.CompletedTask;
+        }
+    }
 
     private sealed class CapturingLibraryPerformanceReporter : ILibraryPerformanceReporter
     {

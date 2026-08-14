@@ -11,6 +11,8 @@ public sealed class EfCustomMetadataRepository(
     LibraryDbContextFactory contextFactory,
     string libraryPath) : ICustomMetadataRepository
 {
+    private const int SqliteParameterChunkSize = 500;
+
     public async Task<IReadOnlyList<CustomMetadataFieldDefinition>> ListDefinitionsAsync(
         CancellationToken cancellationToken)
     {
@@ -106,6 +108,33 @@ public sealed class EfCustomMetadataRepository(
             .OrderBy(value => value.Field.SortOrder)
             .ThenBy(value => value.Field.Name)
             .ToListAsync(cancellationToken);
+        return values.Select(ToDomain).ToList().AsReadOnly();
+    }
+
+    public async Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
+        IReadOnlyCollection<Guid> bookIds,
+        CancellationToken cancellationToken)
+    {
+        if (bookIds.Count == 0)
+        {
+            return [];
+        }
+
+        await using var context = contextFactory.Create(libraryPath);
+        var values = new List<CustomMetadataValueEntity>();
+        foreach (var chunk in bookIds.Distinct().Chunk(SqliteParameterChunkSize))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var chunkValues = await context.CustomMetadataValues
+                .AsNoTracking()
+                .Where(value => chunk.Contains(value.BookId))
+                .OrderBy(value => value.BookId)
+                .ThenBy(value => value.Field.SortOrder)
+                .ThenBy(value => value.Field.Name)
+                .ToListAsync(cancellationToken);
+            values.AddRange(chunkValues);
+        }
+
         return values.Select(ToDomain).ToList().AsReadOnly();
     }
 

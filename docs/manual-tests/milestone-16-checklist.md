@@ -17,6 +17,8 @@
 - [ ] Edit custom metadata values in Details and confirm Save works.
 - [ ] Confirm yes/no custom fields use a yes/no selector.
 - [ ] Confirm number custom fields are right-aligned and reject obvious non-numeric typing.
+- [ ] Confirm date custom fields use a date picker with a localized placeholder.
+- [ ] Confirm the standard publication date field uses the same localized date picker.
 - [ ] Enter an invalid custom metadata value and confirm the validation message is shown in the active UI language.
 - [ ] Clear a custom metadata value, save, reselect the book, and confirm the value stays empty.
 - [ ] Edit a custom metadata value and confirm Undo restores the original value.

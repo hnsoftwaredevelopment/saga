@@ -28,10 +28,17 @@ public partial class SettingsWindow : System.Windows.Window
         this.themeService = themeService;
         InitializeComponent();
         DataContext = viewModel;
+        viewModel.CustomMetadataFieldsChanged += CustomMetadataFieldsChanged;
         Loaded += OnLoaded;
+        Closed += (_, _) => viewModel.CustomMetadataFieldsChanged -= CustomMetadataFieldsChanged;
     }
 
     public LibraryViewModel LibraryViewModel => libraryViewModel;
+
+    private async void CustomMetadataFieldsChanged(object? sender, EventArgs e)
+    {
+        await libraryViewModel.RefreshCustomMetadataColumnsAsync();
+    }
 
     private async void OnLoaded(object sender, System.Windows.RoutedEventArgs e)
     {
@@ -42,6 +49,7 @@ public partial class SettingsWindow : System.Windows.Window
         try
         {
             await viewModel.LoadAsync();
+            await libraryViewModel.RefreshCustomMetadataColumnsAsync();
             originalTheme = viewModel.Theme;
             localizationService.ApplyCulture(viewModel.Culture);
             if (!libraryViewModel.ViewDefinitions.Any(definition =>
@@ -92,6 +100,7 @@ public partial class SettingsWindow : System.Windows.Window
         await viewModel.SaveAsync();
         localizationService.ApplyCulture(viewModel.Culture);
         await libraryViewModel.RefreshSettingsDependentDisplayAsync();
+        await libraryViewModel.RefreshCustomMetadataColumnsAsync();
         themeService.ApplyTheme(viewModel.Theme);
         DialogResult = true;
     }

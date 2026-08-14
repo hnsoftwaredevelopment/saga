@@ -11,7 +11,9 @@ public sealed class LibraryColumnOptionToLocalizedStringConverter : IValueConver
     {
         if (value is LibraryColumnChoiceViewModel choice)
         {
-            return Convert(choice.Option, targetType, parameter, culture);
+            return choice.Option is { } choiceOption
+                ? Convert(choiceOption, targetType, parameter, culture)
+                : choice.DisplayName;
         }
 
         if (value is not LibraryColumnOption option)

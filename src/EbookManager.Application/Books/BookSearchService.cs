@@ -8,6 +8,14 @@ public sealed class BookSearchService
 {
     public IReadOnlyList<Book> Filter(IReadOnlyList<Book> books, string? searchText)
     {
+        return Filter(books, searchText, null);
+    }
+
+    public IReadOnlyList<Book> Filter(
+        IReadOnlyList<Book> books,
+        string? searchText,
+        Func<Book, IEnumerable<string?>>? extraValuesSelector)
+    {
         ArgumentNullException.ThrowIfNull(books);
 
         if (string.IsNullOrWhiteSpace(searchText))
@@ -16,10 +24,13 @@ public sealed class BookSearchService
         }
 
         var normalizedSearchText = searchText.Trim();
-        return books.Where(book => Matches(book, normalizedSearchText)).ToList();
+        return books.Where(book => Matches(book, normalizedSearchText, extraValuesSelector)).ToList();
     }
 
-    private static bool Matches(Book book, string searchText) =>
+    private static bool Matches(
+        Book book,
+        string searchText,
+        Func<Book, IEnumerable<string?>>? extraValuesSelector) =>
         Contains(book.Metadata.Title, searchText) ||
         book.Metadata.Authors.Any(author => Contains(author, searchText)) ||
         Contains(book.Metadata.Description, searchText) ||
@@ -34,7 +45,8 @@ public sealed class BookSearchService
         book.Formats.Any(format => Contains(format.ToString(), searchText)) ||
         MatchesDateTime(book.CreatedUtc, searchText) ||
         MatchesDateTime(book.UpdatedUtc, searchText) ||
-        MatchesReadingStatus(book.ReadingStatus, searchText);
+        MatchesReadingStatus(book.ReadingStatus, searchText) ||
+        (extraValuesSelector?.Invoke(book).Any(value => Contains(value, searchText)) ?? false);
 
     private static bool Contains(string? value, string searchText) =>
         !string.IsNullOrWhiteSpace(value) &&

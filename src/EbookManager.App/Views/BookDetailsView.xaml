@@ -3,9 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:books="clr-namespace:EbookManager.Domain.Books;assembly=EbookManager.Domain"
              xmlns:converters="clr-namespace:EbookManager.App.Converters"
-             xmlns:loc="clr-namespace:EbookManager.App.Localization">
+             xmlns:loc="clr-namespace:EbookManager.App.Localization"
+             xmlns:syncinput="clr-namespace:Syncfusion.Windows.Controls.Input;assembly=Syncfusion.SfInput.WPF">
   <UserControl.Resources>
     <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
+    <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
     <converters:BookSaveErrorToLocalizedStringConverter x:Key="BookSaveErrorToLocalizedStringConverter" />
     <converters:CustomMetadataFieldTypeToLocalizedStringConverter x:Key="CustomMetadataFieldTypeToLocalizedStringConverter" />
     <converters:FormatExportStatusToLocalizedStringConverter x:Key="FormatExportStatusToLocalizedStringConverter" />
@@ -94,7 +96,7 @@
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
-          <Image Source="{Binding CoverBytes, Converter={StaticResource ByteArrayToImageSourceConverter}}"
+          <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=320}"
                  Stretch="Uniform" />
         </Grid>
       </Border>
@@ -234,7 +236,11 @@
       <TextBlock Text="{loc:Loc Publisher}" FontWeight="SemiBold" />
       <TextBox Text="{Binding Publisher, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc PublicationDate}" FontWeight="SemiBold" />
-      <TextBox Text="{Binding PublicationDate, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
+      <syncinput:SfDatePicker Value="{Binding PublicationDateValue, UpdateSourceTrigger=PropertyChanged}"
+                              AllowNull="True"
+                              FormatString="d"
+                              Watermark="{loc:Loc SelectDate}"
+                              Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Tags}" FontWeight="SemiBold" />
       <TextBox Text="{Binding TagsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" />
@@ -306,9 +312,12 @@
                       </Style>
                     </TextBox.Style>
                   </TextBox>
-                  <DatePicker SelectedDate="{Binding DateValue, UpdateSourceTrigger=PropertyChanged}">
-                    <DatePicker.Style>
-                      <Style TargetType="DatePicker">
+                  <syncinput:SfDatePicker Value="{Binding DateValue, UpdateSourceTrigger=PropertyChanged}"
+                                          AllowNull="True"
+                                          FormatString="d"
+                                          Watermark="{loc:Loc SelectDate}">
+                    <syncinput:SfDatePicker.Style>
+                      <Style TargetType="syncinput:SfDatePicker">
                         <Setter Property="Visibility" Value="Collapsed" />
                         <Style.Triggers>
                           <DataTrigger Binding="{Binding IsDateEditor}" Value="True">
@@ -316,8 +325,8 @@
                           </DataTrigger>
                         </Style.Triggers>
                       </Style>
-                    </DatePicker.Style>
-                  </DatePicker>
+                    </syncinput:SfDatePicker.Style>
+                  </syncinput:SfDatePicker>
                   <ComboBox SelectedValue="{Binding ValueText, UpdateSourceTrigger=PropertyChanged}"
                             SelectedValuePath="Tag">
                     <ComboBox.Style>

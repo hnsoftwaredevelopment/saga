@@ -54,6 +54,8 @@ public sealed partial class SettingsViewModel(
 
     public ObservableCollection<CustomMetadataFieldViewModel> CustomMetadataFields { get; } = [];
 
+    public event EventHandler? CustomMetadataFieldsChanged;
+
     public bool HasCustomMetadataRepository => customMetadataRepository is not null;
 
     [ObservableProperty]
@@ -226,6 +228,7 @@ public sealed partial class SettingsViewModel(
             SelectedCustomMetadataField = item;
             NewCustomMetadataFieldName = string.Empty;
             CustomMetadataStatusMessage = "CustomMetadataFieldAdded";
+            CustomMetadataFieldsChanged?.Invoke(this, EventArgs.Empty);
         });
     }
 
@@ -252,6 +255,7 @@ public sealed partial class SettingsViewModel(
             await LoadCustomMetadataFieldsAsync(default);
             SelectedCustomMetadataField = CustomMetadataFields.FirstOrDefault(field => field.Id == fieldId);
             CustomMetadataStatusMessage = "CustomMetadataFieldRenamed";
+            CustomMetadataFieldsChanged?.Invoke(this, EventArgs.Empty);
         });
     }
 
@@ -274,6 +278,7 @@ public sealed partial class SettingsViewModel(
             CustomMetadataFields.Remove(deleted);
             SelectedCustomMetadataField = CustomMetadataFields.FirstOrDefault();
             CustomMetadataStatusMessage = "CustomMetadataFieldDeleted";
+            CustomMetadataFieldsChanged?.Invoke(this, EventArgs.Empty);
         });
     }
 

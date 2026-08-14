@@ -4,13 +4,19 @@ namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class LibraryColumnChoiceViewModel : ObservableObject
 {
-    public LibraryColumnChoiceViewModel(LibraryColumnOption option, bool isSelected)
+    public LibraryColumnChoiceViewModel(LibraryColumnKey key, string displayName, bool isSelected)
     {
-        Option = option;
+        Key = key;
+        this.displayName = displayName;
         this.isSelected = isSelected;
     }
 
-    public LibraryColumnOption Option { get; }
+    public LibraryColumnKey Key { get; }
+
+    public LibraryColumnOption? Option => Key.StandardOption;
+
+    [ObservableProperty]
+    private string displayName;
 
     [ObservableProperty]
     private bool isSelected;

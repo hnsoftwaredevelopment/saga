@@ -188,6 +188,7 @@
   <data name="OpenSettingsTooltip" xml:space="preserve"><value>Open instellingen</value></data>
   <data name="Outcome" xml:space="preserve"><value>Resultaat</value></data>
   <data name="PublicationDate" xml:space="preserve"><value>Publicatiedatum</value></data>
+  <data name="SelectDate" xml:space="preserve"><value>Selecteer een datum</value></data>
   <data name="Publisher" xml:space="preserve"><value>Uitgever</value></data>
   <data name="Reading" xml:space="preserve"><value>Aan het lezen</value></data>
   <data name="Read" xml:space="preserve"><value>Gelezen</value></data>

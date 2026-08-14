@@ -38,6 +38,16 @@ public sealed class CurrentLibraryCustomMetadataRepository(
             : repository.GetValuesAsync(bookId, cancellationToken);
     }
 
+    public Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
+        IReadOnlyCollection<Guid> bookIds,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult<IReadOnlyList<CustomMetadataValue>>([])
+            : repository.GetValuesForBooksAsync(bookIds, cancellationToken);
+    }
+
     public Task SetValueAsync(CustomMetadataValue value, CancellationToken cancellationToken) =>
         CreateRepository().SetValueAsync(value, cancellationToken);
 
