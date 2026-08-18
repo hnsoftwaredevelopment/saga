@@ -148,6 +148,25 @@
   <data name="DuplicateSelectionHelp" xml:space="preserve">
     <value>Consejo: mantenga Ctrl mientras selecciona otro libro para seleccionar varios duplicados.</value>
   </data>
+  <data name="MarkAsNotDuplicate" xml:space="preserve">
+    <value>Marcar este libro como no duplicado</value>
+  </data>
+  <data name="MarkAsNotDuplicateShort" xml:space="preserve">
+    <value>No dup.</value>
+  </data>
+  <data name="DuplicateExclusionsSettingsTitle" xml:space="preserve"><value>Duplicados ignorados</value></data>
+  <data name="DuplicateExclusionsSettingsDescription" xml:space="preserve"><value>Revise los libros marcados como no duplicados y vuelva a mostrarlos en la comprobacion de duplicados.</value></data>
+  <data name="ManageDuplicateExclusions" xml:space="preserve"><value>Gestionar duplicados ignorados</value></data>
+  <data name="DuplicateExclusionsTitle" xml:space="preserve"><value>Duplicados ignorados</value></data>
+  <data name="DuplicateExclusionsDescription" xml:space="preserve"><value>Estos pares de libros estan ocultos en la vista de duplicados. Restaure un par para volver a mostrarlo.</value></data>
+  <data name="DuplicateExclusionsNone" xml:space="preserve"><value>No se encontraron pares de duplicados ignorados.</value></data>
+  <data name="DuplicateExclusionsCountSuffix" xml:space="preserve"><value> pares ignorados</value></data>
+  <data name="RestoreSelectedDuplicateExclusions" xml:space="preserve"><value>Restaurar seleccionados</value></data>
+  <data name="RestoreAllDuplicateExclusions" xml:space="preserve"><value>Restaurar todo</value></data>
+  <data name="FirstBook" xml:space="preserve"><value>Primer libro</value></data>
+  <data name="FirstBookAuthors" xml:space="preserve"><value>Primeros autores</value></data>
+  <data name="SecondBook" xml:space="preserve"><value>Segundo libro</value></data>
+  <data name="SecondBookAuthors" xml:space="preserve"><value>Segundos autores</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve">
     <value>Aun hay una importacion en curso. ¿Cerrar la aplicacion y cancelar la importacion?</value>
   </data>
@@ -264,6 +283,12 @@
   </data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>La lista de duplicados esta obsoleta. Saga actualizo la biblioteca; abra de nuevo la vista de duplicados.</value>
+  </data>
+  <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
+    <value>No se pudo marcar</value>
+  </data>
+  <data name="DuplicateIgnoreFailedMessage" xml:space="preserve">
+    <value>Saga no pudo marcar este libro como no duplicado. Intentelo de nuevo.</value>
   </data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve">
     <value>Autor coincidente</value>

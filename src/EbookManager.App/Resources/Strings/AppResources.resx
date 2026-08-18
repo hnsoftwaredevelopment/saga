@@ -105,6 +105,21 @@
   <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groups</value></data>
   <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> books</value></data>
   <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Tip: hold Ctrl while selecting another book to select multiple duplicates.</value></data>
+  <data name="MarkAsNotDuplicate" xml:space="preserve"><value>Mark this book as not a duplicate</value></data>
+  <data name="MarkAsNotDuplicateShort" xml:space="preserve"><value>Not dup.</value></data>
+  <data name="DuplicateExclusionsSettingsTitle" xml:space="preserve"><value>Ignored duplicates</value></data>
+  <data name="DuplicateExclusionsSettingsDescription" xml:space="preserve"><value>Review books you previously marked as not duplicates and make them visible in duplicate checks again.</value></data>
+  <data name="ManageDuplicateExclusions" xml:space="preserve"><value>Manage ignored duplicates</value></data>
+  <data name="DuplicateExclusionsTitle" xml:space="preserve"><value>Ignored duplicates</value></data>
+  <data name="DuplicateExclusionsDescription" xml:space="preserve"><value>These book pairs are hidden from the duplicate overview. Restore a pair to show it again when checking duplicates.</value></data>
+  <data name="DuplicateExclusionsNone" xml:space="preserve"><value>No ignored duplicate pairs found.</value></data>
+  <data name="DuplicateExclusionsCountSuffix" xml:space="preserve"><value> ignored pairs</value></data>
+  <data name="RestoreSelectedDuplicateExclusions" xml:space="preserve"><value>Restore selected</value></data>
+  <data name="RestoreAllDuplicateExclusions" xml:space="preserve"><value>Restore all</value></data>
+  <data name="FirstBook" xml:space="preserve"><value>First book</value></data>
+  <data name="FirstBookAuthors" xml:space="preserve"><value>First authors</value></data>
+  <data name="SecondBook" xml:space="preserve"><value>Second book</value></data>
+  <data name="SecondBookAuthors" xml:space="preserve"><value>Second authors</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve"><value>An import is still running. Close the application and cancel the import?</value></data>
   <data name="ImportInProgressTitle" xml:space="preserve"><value>Import in progress</value></data>
   <data name="ImportPossibleDuplicate" xml:space="preserve"><value>Possible duplicate</value></data>
@@ -183,6 +198,8 @@
   <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is merged.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Merge failed</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>The duplicate list is outdated. Saga refreshed the library; open the duplicate overview again.</value></data>
+  <data name="DuplicateIgnoreFailedTitle" xml:space="preserve"><value>Ignore failed</value></data>
+  <data name="DuplicateIgnoreFailedMessage" xml:space="preserve"><value>Saga could not mark this book as not a duplicate. Please try again.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Author match</value></data>
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Title only</value></data>
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Updating metadata...</value></data>

@@ -2792,6 +2792,7 @@ public sealed class LibraryViewModelTests
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
         ICustomMetadataRepository? customMetadataRepository = null,
+        IDuplicateExclusionRepository? duplicateExclusionRepository = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
@@ -2816,6 +2817,7 @@ public sealed class LibraryViewModelTests
             importAgent: importAgent,
             importRepository: importRepository,
             customMetadataRepository: customMetadataRepository,
+            duplicateExclusionRepository: duplicateExclusionRepository,
             performanceReporter: performanceReporter,
             localize: localize);
     }
@@ -3467,6 +3469,7 @@ public sealed class LibraryViewModelTests
         public int PickScanFolderCalls { get; private set; }
         public int? MetadataMultiEditSelectedBookCount { get; private set; }
         public DuplicateCandidatesViewModel? DuplicateCandidates { get; private set; }
+        public DuplicateExclusionsViewModel? DuplicateExclusions { get; private set; }
         public ImportHistoryViewModel? ImportHistory { get; private set; }
         public ImportResultViewModel? ShownImportResult { get; private set; }
 
@@ -3534,6 +3537,12 @@ public sealed class LibraryViewModelTests
             {
                 await OnShowDuplicateCandidatesAsync(candidates, cancellationToken);
             }
+        }
+
+        public Task ShowDuplicateExclusionsAsync(DuplicateExclusionsViewModel exclusions, CancellationToken cancellationToken)
+        {
+            DuplicateExclusions = exclusions;
+            return Task.CompletedTask;
         }
 
         public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(

@@ -466,6 +466,18 @@
                      TextWrapping="Wrap"
                      Foreground="{DynamicResource TextSecondaryBrush}"
                      Margin="0,0,0,16" />
+          <TextBlock Text="{loc:Loc DuplicateExclusionsSettingsTitle}"
+                     FontWeight="SemiBold"
+                     Margin="0,0,0,6" />
+          <TextBlock Text="{loc:Loc DuplicateExclusionsSettingsDescription}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Margin="0,0,0,8" />
+          <Button Content="{loc:Loc ManageDuplicateExclusions}"
+                  HorizontalAlignment="Left"
+                  MinWidth="170"
+                  Margin="0,0,0,16"
+                  Command="{Binding LibraryViewModel.ShowDuplicateExclusionsCommand, ElementName=SettingsRoot}" />
           <TextBlock Text="{loc:Loc DuplicateMergeDefaults}"
                      FontWeight="SemiBold"
                      Margin="0,0,0,6" />

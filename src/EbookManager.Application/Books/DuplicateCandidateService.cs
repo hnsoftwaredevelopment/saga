@@ -7,13 +7,15 @@ namespace EbookManager.Application.Books;
 
 public sealed partial class DuplicateCandidateService
 {
-    public DuplicateCandidateResult FindCandidates(IReadOnlyList<Book> books)
+    public DuplicateCandidateResult FindCandidates(
+        IReadOnlyList<Book> books,
+        IReadOnlySet<DuplicateExclusionPair>? excludedPairs = null)
     {
         var groups = books
             .Select(book => new DuplicateCandidateBook(book, NormalizeTitle(book.Metadata.Title)))
             .Where(item => item.Key.Length > 0)
             .GroupBy(item => item.Key, StringComparer.Ordinal)
-            .SelectMany(CreateAuthorMatchedGroups)
+            .SelectMany(group => CreateAuthorMatchedGroups(group, excludedPairs ?? new HashSet<DuplicateExclusionPair>()))
             .Select(group => new DuplicateCandidateGroup(
                 group.Key,
                 group.Books[0].Metadata.Title.Trim(),
@@ -28,7 +30,8 @@ public sealed partial class DuplicateCandidateService
     }
 
     private static IEnumerable<AuthorMatchedGroup> CreateAuthorMatchedGroups(
-        IGrouping<string, DuplicateCandidateBook> titleGroup)
+        IGrouping<string, DuplicateCandidateBook> titleGroup,
+        IReadOnlySet<DuplicateExclusionPair> excludedPairs)
     {
         var titleBooks = titleGroup
             .Select(item => item.Book)
@@ -47,7 +50,8 @@ public sealed partial class DuplicateCandidateService
                 var current = component[index];
                 for (var remainingIndex = remaining.Count - 1; remainingIndex >= 0; remainingIndex--)
                 {
-                    if (!SharesAuthor(current, remaining[remainingIndex]))
+                    if (!SharesAuthor(current, remaining[remainingIndex]) ||
+                        IsExcluded(current.Id, remaining[remainingIndex].Id, excludedPairs))
                     {
                         continue;
                     }
@@ -76,14 +80,54 @@ public sealed partial class DuplicateCandidateService
             yield break;
         }
 
-        if (titleBooks.Count > 1)
+        foreach (var group in CreateTitleOnlyGroups(titleGroup.Key, titleBooks, excludedPairs))
         {
-            yield return new AuthorMatchedGroup(
-                $"{titleGroup.Key}:title",
-                titleBooks.AsReadOnly(),
-                DuplicateCandidateMatchKind.TitleOnly);
+            yield return group;
         }
     }
+
+    private static IEnumerable<AuthorMatchedGroup> CreateTitleOnlyGroups(
+        string titleKey,
+        IReadOnlyList<Book> titleBooks,
+        IReadOnlySet<DuplicateExclusionPair> excludedPairs)
+    {
+        var remaining = titleBooks.ToList();
+        var componentIndex = 0;
+        while (remaining.Count > 0)
+        {
+            var seed = remaining[0];
+            remaining.RemoveAt(0);
+            var component = new List<Book> { seed };
+            for (var index = 0; index < component.Count; index++)
+            {
+                var current = component[index];
+                for (var remainingIndex = remaining.Count - 1; remainingIndex >= 0; remainingIndex--)
+                {
+                    if (IsExcluded(current.Id, remaining[remainingIndex].Id, excludedPairs))
+                    {
+                        continue;
+                    }
+
+                    component.Add(remaining[remainingIndex]);
+                    remaining.RemoveAt(remainingIndex);
+                }
+            }
+
+            if (component.Count > 1)
+            {
+                yield return new AuthorMatchedGroup(
+                    $"{titleKey}:title:{componentIndex++}",
+                    component.AsReadOnly(),
+                    DuplicateCandidateMatchKind.TitleOnly);
+            }
+        }
+    }
+
+    private static bool IsExcluded(
+        Guid firstBookId,
+        Guid secondBookId,
+        IReadOnlySet<DuplicateExclusionPair> excludedPairs) =>
+        excludedPairs.Contains(DuplicateExclusionPair.Create(firstBookId, secondBookId));
 
     private static bool SharesAuthor(Book first, Book second)
     {

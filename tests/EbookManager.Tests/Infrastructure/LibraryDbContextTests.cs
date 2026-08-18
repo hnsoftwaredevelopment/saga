@@ -690,6 +690,42 @@ public sealed class LibraryDbContextTests
             DuplicateKeyNormalizer.BuildDuplicateKey(book.Metadata.Title, book.Metadata.Authors));
     }
 
+    [Fact]
+    public async Task Duplicate_exclusions_round_trip_and_cascade_when_book_is_deleted()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var first = CreateBook("Same Title", ["First Author"]);
+        var second = CreateBook("Same Title", ["Second Author"]);
+
+        await repository.AddAsync(first, CreateFile(first.Id, sha256: Hash('E')), default);
+        await repository.AddAsync(second, CreateFile(second.Id, sha256: Hash('F')), default);
+        var pair = DuplicateExclusionPair.Create(second.Id, first.Id);
+
+        await repository.AddDuplicateExclusionsAsync([pair], default);
+        await repository.AddDuplicateExclusionsAsync([pair], default);
+
+        var exclusions = await repository.ListDuplicateExclusionsAsync(default);
+        exclusions.Should().ContainSingle().Which.Should().Be(DuplicateExclusionPair.Create(first.Id, second.Id));
+        var details = await repository.ListDuplicateExclusionDetailsAsync(default);
+        details.Should().ContainSingle().Which.Should().Match<DuplicateExclusion>(exclusion =>
+            exclusion.Pair == DuplicateExclusionPair.Create(first.Id, second.Id) &&
+            exclusion.FirstBookTitle == "Same Title" &&
+            exclusion.SecondBookTitle == "Same Title");
+
+        await repository.RemoveDuplicateExclusionsAsync([pair], default);
+
+        (await repository.ListDuplicateExclusionsAsync(default)).Should().BeEmpty();
+
+        await repository.AddDuplicateExclusionsAsync([pair], default);
+
+        await repository.DeleteAsync(first.Id, default);
+
+        (await repository.ListDuplicateExclusionsAsync(default)).Should().BeEmpty();
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("ABC")]

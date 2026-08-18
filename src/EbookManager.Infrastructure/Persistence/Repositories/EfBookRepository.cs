@@ -10,7 +10,7 @@ namespace EbookManager.Infrastructure.Persistence.Repositories;
 
 public sealed class EfBookRepository(
     LibraryDbContextFactory contextFactory,
-    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository
+    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository
 {
     private const int SqliteParameterChunkSize = 500;
 
@@ -124,6 +124,120 @@ public sealed class EfBookRepository(
                 .GroupBy(row => row.Sha256, StringComparer.Ordinal)
                 .ToDictionary(group => group.Key, group => group.First().BookId, StringComparer.Ordinal)
         };
+    }
+
+    public async Task<IReadOnlySet<DuplicateExclusionPair>> ListDuplicateExclusionsAsync(
+        CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var pairs = await context.DuplicateExclusions
+            .AsNoTracking()
+            .Select(x => new { x.FirstBookId, x.SecondBookId })
+            .ToListAsync(cancellationToken);
+        return pairs
+            .Select(pair => DuplicateExclusionPair.Create(pair.FirstBookId, pair.SecondBookId))
+            .ToHashSet();
+    }
+
+    public async Task<IReadOnlyList<DuplicateExclusion>> ListDuplicateExclusionDetailsAsync(
+        CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var exclusions = await context.DuplicateExclusions
+            .AsNoTracking()
+            .Include(x => x.FirstBook)
+                .ThenInclude(x => x.BookAuthors)
+                .ThenInclude(x => x.Author)
+            .Include(x => x.SecondBook)
+                .ThenInclude(x => x.BookAuthors)
+                .ThenInclude(x => x.Author)
+            .AsSplitQuery()
+            .ToListAsync(cancellationToken);
+
+        return exclusions
+            .OrderByDescending(exclusion => exclusion.CreatedAt)
+            .Select(exclusion => new DuplicateExclusion(
+                DuplicateExclusionPair.Create(exclusion.FirstBookId, exclusion.SecondBookId),
+                exclusion.FirstBook.Title,
+                FormatAuthors(exclusion.FirstBook),
+                exclusion.SecondBook.Title,
+                FormatAuthors(exclusion.SecondBook),
+                exclusion.CreatedAt))
+            .ToList()
+            .AsReadOnly();
+    }
+
+    public async Task AddDuplicateExclusionsAsync(
+        IReadOnlyCollection<DuplicateExclusionPair> pairs,
+        CancellationToken cancellationToken)
+    {
+        if (pairs.Count == 0)
+        {
+            return;
+        }
+
+        var normalizedPairs = pairs
+            .Select(pair => DuplicateExclusionPair.Create(pair.FirstBookId, pair.SecondBookId))
+            .Where(pair => pair.FirstBookId != pair.SecondBookId)
+            .Distinct()
+            .ToList();
+        if (normalizedPairs.Count == 0)
+        {
+            return;
+        }
+
+        await using var context = contextFactory.Create(libraryPath);
+        var createdAt = DateTimeOffset.UtcNow;
+        foreach (var pair in normalizedPairs)
+        {
+            await context.Database.ExecuteSqlInterpolatedAsync(
+                $"""
+                INSERT OR IGNORE INTO DuplicateExclusions (FirstBookId, SecondBookId, CreatedAt)
+                VALUES ({pair.FirstBookId}, {pair.SecondBookId}, {createdAt})
+                """,
+                cancellationToken);
+        }
+    }
+
+    public async Task RemoveDuplicateExclusionsAsync(
+        IReadOnlyCollection<DuplicateExclusionPair> pairs,
+        CancellationToken cancellationToken)
+    {
+        if (pairs.Count == 0)
+        {
+            return;
+        }
+
+        var normalizedPairs = pairs
+            .Select(pair => DuplicateExclusionPair.Create(pair.FirstBookId, pair.SecondBookId))
+            .Where(pair => pair.FirstBookId != pair.SecondBookId)
+            .Distinct()
+            .ToArray();
+        if (normalizedPairs.Length == 0)
+        {
+            return;
+        }
+
+        await using var context = contextFactory.Create(libraryPath);
+        foreach (var pair in normalizedPairs)
+        {
+            var entity = await context.DuplicateExclusions
+                .SingleOrDefaultAsync(
+                    x => x.FirstBookId == pair.FirstBookId && x.SecondBookId == pair.SecondBookId,
+                    cancellationToken);
+            if (entity is not null)
+            {
+                context.DuplicateExclusions.Remove(entity);
+            }
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ClearDuplicateExclusionsAsync(CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        await context.DuplicateExclusions.ExecuteDeleteAsync(cancellationToken);
     }
 
     public async Task AddAsync(
@@ -905,6 +1019,13 @@ public sealed class EfBookRepository(
                 .OrderBy(format => format)
                 .ToList()
         };
+
+    private static IReadOnlyList<string> FormatAuthors(BookEntity entity) =>
+        entity.BookAuthors
+            .OrderBy(x => x.Order)
+            .Select(x => x.Author.Name)
+            .ToList()
+            .AsReadOnly();
 
     private static Book ToDomain(
         BookListProjection projection,

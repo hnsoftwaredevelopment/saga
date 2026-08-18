@@ -148,6 +148,25 @@
   <data name="DuplicateSelectionHelp" xml:space="preserve">
     <value>Astuce : maintenez Ctrl pendant la selection d'un autre livre pour selectionner plusieurs doublons.</value>
   </data>
+  <data name="MarkAsNotDuplicate" xml:space="preserve">
+    <value>Marquer ce livre comme non doublon</value>
+  </data>
+  <data name="MarkAsNotDuplicateShort" xml:space="preserve">
+    <value>Non doubl.</value>
+  </data>
+  <data name="DuplicateExclusionsSettingsTitle" xml:space="preserve"><value>Doublons ignores</value></data>
+  <data name="DuplicateExclusionsSettingsDescription" xml:space="preserve"><value>Consultez les livres marques comme non doublons et rendez-les de nouveau visibles dans la detection des doublons.</value></data>
+  <data name="ManageDuplicateExclusions" xml:space="preserve"><value>Gerer les doublons ignores</value></data>
+  <data name="DuplicateExclusionsTitle" xml:space="preserve"><value>Doublons ignores</value></data>
+  <data name="DuplicateExclusionsDescription" xml:space="preserve"><value>Ces paires de livres sont masquees dans la vue des doublons. Restaurez une paire pour l'afficher de nouveau.</value></data>
+  <data name="DuplicateExclusionsNone" xml:space="preserve"><value>Aucune paire de doublons ignoree trouvee.</value></data>
+  <data name="DuplicateExclusionsCountSuffix" xml:space="preserve"><value> paires ignorees</value></data>
+  <data name="RestoreSelectedDuplicateExclusions" xml:space="preserve"><value>Restaurer la selection</value></data>
+  <data name="RestoreAllDuplicateExclusions" xml:space="preserve"><value>Tout restaurer</value></data>
+  <data name="FirstBook" xml:space="preserve"><value>Premier livre</value></data>
+  <data name="FirstBookAuthors" xml:space="preserve"><value>Premiers auteurs</value></data>
+  <data name="SecondBook" xml:space="preserve"><value>Deuxieme livre</value></data>
+  <data name="SecondBookAuthors" xml:space="preserve"><value>Deuxiemes auteurs</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve">
     <value>Un import est encore en cours. Fermer l'application et annuler l'import ?</value>
   </data>
@@ -264,6 +283,12 @@
   </data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>La liste des doublons est obsolete. Saga a actualise la bibliotheque ; ouvrez de nouveau la vue des doublons.</value>
+  </data>
+  <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
+    <value>Marquage impossible</value>
+  </data>
+  <data name="DuplicateIgnoreFailedMessage" xml:space="preserve">
+    <value>Saga n'a pas pu marquer ce livre comme n'etant pas un doublon. Veuillez reessayer.</value>
   </data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve">
     <value>Auteur correspondant</value>

@@ -14,9 +14,11 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     private readonly string? libraryPath;
     private readonly Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync;
     private readonly Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync;
+    private readonly Func<IReadOnlyCollection<DuplicateExclusionPair>, CancellationToken, Task>? ignoreCandidatesAsync;
     private readonly AsyncRelayCommand deleteSelectedCandidatesCommand;
     private IReadOnlyList<Book> books;
     private IReadOnlyList<DuplicateCandidateGroup> allGroups;
+    private IReadOnlySet<DuplicateExclusionPair> excludedPairs;
     private DuplicateMergeDefaultSettings mergeDefaults = new();
     private bool exactMatchesOnly = true;
 
@@ -24,11 +26,15 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         DuplicateCandidateResult result,
         string? libraryPath = null,
         Func<DuplicateCandidateRowViewModel, CancellationToken, Task<bool>>? deleteCandidateAsync = null,
-        Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync = null)
+        Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync = null,
+        Func<IReadOnlyCollection<DuplicateExclusionPair>, CancellationToken, Task>? ignoreCandidatesAsync = null,
+        IReadOnlySet<DuplicateExclusionPair>? excludedPairs = null)
     {
         this.libraryPath = libraryPath;
         this.deleteCandidateAsync = deleteCandidateAsync;
         this.mergeCandidateAsync = mergeCandidateAsync;
+        this.ignoreCandidatesAsync = ignoreCandidatesAsync;
+        this.excludedPairs = excludedPairs ?? new HashSet<DuplicateExclusionPair>();
         books = result.Groups
             .SelectMany(group => group.Books)
             .DistinctBy(book => book.Id)
@@ -102,7 +108,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         HasChanges = true;
         ClearMergeSuccessMessage();
         OnPropertyChanged(nameof(HasChanges));
-        ApplyResult(duplicateCandidateService.FindCandidates(books));
+        ApplyResult(duplicateCandidateService.FindCandidates(books, excludedPairs));
     }
 
     public async Task MergeCandidateAsync(
@@ -144,7 +150,36 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         HasChanges = true;
         SetMergeSuccessMessage(preview.Target.Title);
         OnPropertyChanged(nameof(HasChanges));
-        ApplyResult(duplicateCandidateService.FindCandidates(books));
+        ApplyResult(duplicateCandidateService.FindCandidates(books, excludedPairs));
+    }
+
+    public async Task IgnoreCandidateAsync(
+        DuplicateCandidateRowViewModel row,
+        CancellationToken cancellationToken)
+    {
+        var groupBookIds = Rows
+            .Where(candidate => candidate.MatchKey == row.MatchKey)
+            .Select(candidate => candidate.Id)
+            .Distinct()
+            .ToArray();
+        var pairs = BuildExclusionPairs(row.Id, groupBookIds);
+        if (pairs.Count == 0)
+        {
+            return;
+        }
+
+        if (ignoreCandidatesAsync is not null)
+        {
+            await ignoreCandidatesAsync(pairs, cancellationToken);
+        }
+
+        excludedPairs = excludedPairs
+            .Concat(pairs)
+            .ToHashSet();
+        HasChanges = true;
+        ClearMergeSuccessMessage();
+        OnPropertyChanged(nameof(HasChanges));
+        ApplyResult(duplicateCandidateService.FindCandidates(books, excludedPairs));
     }
 
     public void ClearMergeSuccessMessage()
@@ -199,7 +234,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         }
 
         OnPropertyChanged(nameof(HasChanges));
-        ApplyResult(duplicateCandidateService.FindCandidates(books));
+        ApplyResult(duplicateCandidateService.FindCandidates(books, excludedPairs));
     }
 
     private void SetMergeSuccessMessage(string bookTitle)
@@ -207,6 +242,15 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         MergeSuccessBookTitle = bookTitle;
         OnPropertyChanged(nameof(MergeSuccessBookTitle));
         OnPropertyChanged(nameof(HasMergeSuccessMessage));
+    }
+
+    private static IReadOnlyList<DuplicateExclusionPair> BuildExclusionPairs(Guid ignoredBookId, IReadOnlyList<Guid> groupBookIds)
+    {
+        return groupBookIds
+            .Where(bookId => bookId != ignoredBookId)
+            .Select(bookId => DuplicateExclusionPair.Create(ignoredBookId, bookId))
+            .Distinct()
+            .ToArray();
     }
 
     public static string BuildGroupTitle(DuplicateCandidateGroup group) =>

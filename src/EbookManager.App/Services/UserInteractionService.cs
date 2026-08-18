@@ -171,6 +171,19 @@ public sealed class UserInteractionService(
         return Task.CompletedTask;
     }
 
+    public Task ShowDuplicateExclusionsAsync(DuplicateExclusionsViewModel exclusions, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = new DuplicateExclusionsWindow(exclusions);
+        if (System.Windows.Application.Current?.MainWindow is { } owner)
+        {
+            window.Owner = owner;
+        }
+
+        window.ShowDialog();
+        return Task.CompletedTask;
+    }
+
     public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
         MetadataMultiEditViewModel edit,
         CancellationToken cancellationToken)

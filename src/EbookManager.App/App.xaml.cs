@@ -118,7 +118,9 @@ public partial class App : System.Windows.Application
         services.AddSingleton<ILibraryFileStore, CurrentLibraryFileStore>();
         services.AddSingleton<BookFileExportService>();
         services.AddSingleton<IBookFileInteractionService, BookFileInteractionService>();
-        services.AddSingleton<IBookRepository, CurrentLibraryBookRepository>();
+        services.AddSingleton<CurrentLibraryBookRepository>();
+        services.AddSingleton<IBookRepository>(provider => provider.GetRequiredService<CurrentLibraryBookRepository>());
+        services.AddSingleton<IDuplicateExclusionRepository>(provider => provider.GetRequiredService<CurrentLibraryBookRepository>());
         services.AddSingleton<ICustomMetadataRepository, CurrentLibraryCustomMetadataRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();
         services.AddTransient<BookService>();
@@ -143,6 +145,7 @@ public partial class App : System.Windows.Application
             provider.GetService<IImportAgent>(),
             provider.GetService<IImportRepository>(),
             provider.GetRequiredService<ICustomMetadataRepository>(),
+            provider.GetRequiredService<IDuplicateExclusionRepository>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),

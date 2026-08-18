@@ -148,6 +148,25 @@
   <data name="DuplicateSelectionHelp" xml:space="preserve">
     <value>Tipp: Halten Sie Strg gedrueckt, waehrend Sie ein weiteres Buch auswaehlen, um mehrere Duplikate zu markieren.</value>
   </data>
+  <data name="MarkAsNotDuplicate" xml:space="preserve">
+    <value>Dieses Buch als kein Duplikat markieren</value>
+  </data>
+  <data name="MarkAsNotDuplicateShort" xml:space="preserve">
+    <value>Kein Dupl.</value>
+  </data>
+  <data name="DuplicateExclusionsSettingsTitle" xml:space="preserve"><value>Ignorierte Duplikate</value></data>
+  <data name="DuplicateExclusionsSettingsDescription" xml:space="preserve"><value>Pruefen Sie Buecher, die als keine Duplikate markiert wurden, und machen Sie sie wieder in der Duplikatpruefung sichtbar.</value></data>
+  <data name="ManageDuplicateExclusions" xml:space="preserve"><value>Ignorierte Duplikate verwalten</value></data>
+  <data name="DuplicateExclusionsTitle" xml:space="preserve"><value>Ignorierte Duplikate</value></data>
+  <data name="DuplicateExclusionsDescription" xml:space="preserve"><value>Diese Buchpaare sind in der Duplikatuebersicht verborgen. Stellen Sie ein Paar wieder her, um es erneut anzeigen zu lassen.</value></data>
+  <data name="DuplicateExclusionsNone" xml:space="preserve"><value>Keine ignorierten Duplikatpaare gefunden.</value></data>
+  <data name="DuplicateExclusionsCountSuffix" xml:space="preserve"><value> ignorierte Paare</value></data>
+  <data name="RestoreSelectedDuplicateExclusions" xml:space="preserve"><value>Auswahl wiederherstellen</value></data>
+  <data name="RestoreAllDuplicateExclusions" xml:space="preserve"><value>Alle wiederherstellen</value></data>
+  <data name="FirstBook" xml:space="preserve"><value>Erstes Buch</value></data>
+  <data name="FirstBookAuthors" xml:space="preserve"><value>Erste Autoren</value></data>
+  <data name="SecondBook" xml:space="preserve"><value>Zweites Buch</value></data>
+  <data name="SecondBookAuthors" xml:space="preserve"><value>Zweite Autoren</value></data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve">
     <value>Ein Import laeuft noch. Anwendung schliessen und Import abbrechen?</value>
   </data>
@@ -264,6 +283,12 @@
   </data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>Die Duplikatliste ist veraltet. Saga hat die Bibliothek aktualisiert; oeffnen Sie die Duplikatuebersicht erneut.</value>
+  </data>
+  <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
+    <value>Markieren fehlgeschlagen</value>
+  </data>
+  <data name="DuplicateIgnoreFailedMessage" xml:space="preserve">
+    <value>Saga konnte dieses Buch nicht als kein Duplikat markieren. Bitte versuchen Sie es erneut.</value>
   </data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve">
     <value>Autortreffer</value>

@@ -103,6 +103,15 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         }
     }
 
+    private async void IgnoreCandidateButtonClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: DuplicateCandidateRowViewModel row })
+        {
+            e.Handled = true;
+            await IgnoreCandidateAsync(row);
+        }
+    }
+
     private async void MergeCandidateButtonClicked(object sender, System.Windows.RoutedEventArgs e)
     {
         if (sender is Button { DataContext: DuplicateCandidateRowViewModel row } button)
@@ -138,6 +147,17 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         await DeleteCandidateAsync(row);
     }
 
+    private async void IgnoreCandidateClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        if (DuplicateRowsGrid.SelectedItem is not DuplicateCandidateRowViewModel row)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        await IgnoreCandidateAsync(row);
+    }
+
     private async Task DeleteCandidateAsync(DuplicateCandidateRowViewModel row)
     {
         if (DataContext is not DuplicateCandidatesViewModel viewModel)
@@ -149,6 +169,32 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         if (!viewModel.HasGroups)
         {
             Close();
+        }
+    }
+
+    private async Task IgnoreCandidateAsync(DuplicateCandidateRowViewModel row)
+    {
+        if (DataContext is not DuplicateCandidatesViewModel viewModel)
+        {
+            return;
+        }
+
+        try
+        {
+            await viewModel.IgnoreCandidateAsync(row, CancellationToken.None);
+            if (!viewModel.HasGroups)
+            {
+                Close();
+            }
+        }
+        catch (Exception)
+        {
+            System.Windows.MessageBox.Show(
+                this,
+                LocalizedStrings.Current["DuplicateIgnoreFailedMessage"],
+                LocalizedStrings.Current["DuplicateIgnoreFailedTitle"],
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
         }
     }
 
