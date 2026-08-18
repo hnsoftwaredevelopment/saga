@@ -2959,14 +2959,22 @@ public sealed partial class LibraryViewModel : ObservableObject
     private static Book ApplyMetadataMultiEdit(Book book, MetadataMultiEditResult result)
     {
         var metadata = book.Metadata;
+        var title = metadata.Title;
         var authors = result.UpdateAuthors ? SplitRequiredList(result.AuthorsText) : metadata.Authors;
+        if (result.SwapTitleAndAuthors)
+        {
+            title = string.Join(", ", metadata.Authors).Trim();
+            authors = [metadata.Title.Trim()];
+        }
+
         var tags = result.UpdateTags ? SplitNullableList(result.TagsText) : metadata.Tags;
         var series = result.UpdateSeries ? NormalizeBlank(result.SeriesText) : metadata.Series;
         var seriesNumber = result.UpdateSeries && series is null ? null : metadata.SeriesNumber;
         var language = result.UpdateLanguage ? NormalizeBlank(result.LanguageText) : metadata.Language;
         var readingStatus = result.UpdateStatus ? result.Status : book.ReadingStatus;
 
-        if (authors.SequenceEqual(metadata.Authors) &&
+        if (title == metadata.Title &&
+            authors.SequenceEqual(metadata.Authors) &&
             NullableSequenceEqual(tags, metadata.Tags) &&
             series == metadata.Series &&
             seriesNumber == metadata.SeriesNumber &&
@@ -2978,7 +2986,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         return book with
         {
-            Metadata = CopyMetadata(metadata, authors, tags, series, language, seriesNumber),
+            Metadata = CopyMetadata(metadata, title, authors, tags, series, language, seriesNumber),
             ReadingStatus = readingStatus,
             UpdatedUtc = DateTimeOffset.UtcNow
         };
@@ -3424,8 +3432,18 @@ public sealed partial class LibraryViewModel : ObservableObject
         string? series,
         string? language,
         decimal? seriesNumber) =>
+        CopyMetadata(metadata, metadata.Title, authors, tags, series, language, seriesNumber);
+
+    private static BookMetadata CopyMetadata(
+        BookMetadata metadata,
+        string title,
+        IReadOnlyList<string> authors,
+        IReadOnlyList<string>? tags,
+        string? series,
+        string? language,
+        decimal? seriesNumber) =>
         new(
-            metadata.Title,
+            title,
             authors,
             metadata.Description,
             language,

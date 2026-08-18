@@ -573,6 +573,8 @@
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Editar metadatos de los libros seleccionados</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Libros seleccionados</value></data>
   <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Marque solo los campos que desea cambiar. Los campos marcados y vacíos se borrarán.</value></data>
+  <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Intercambiar título y autores</value></data>
+  <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Use esto cuando los libros importados tengan el título y el autor invertidos.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Use punto y coma para separar varios valores.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Los campos sin marcar no se modifican.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>Se omitieron {0} libro(s) seleccionados porque la combinación modificada de título/autor ya existe.</value></data>
