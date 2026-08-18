@@ -26,5 +26,5 @@
 ## Verwacht Resultaat
 
 - Genegeerde duplicate-relaties blijven verborgen.
-- Genegeerde duplicate-relaties kunnen door de gebruiker worden teruggezet zonder databasewerk.
+- Genegeerde duplicate-relaties kunnen door de gebruiker worden teruggezet via de gebruikersinterface, zonder handmatige database-ingreep.
 - De hoofdboekenlijst wordt pas ververst bij sluiten van het duplicatenvenster.

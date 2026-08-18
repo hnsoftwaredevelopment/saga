@@ -284,6 +284,12 @@
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>La liste des doublons est obsolete. Saga a actualise la bibliotheque ; ouvrez de nouveau la vue des doublons.</value>
   </data>
+  <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
+    <value>Marquage impossible</value>
+  </data>
+  <data name="DuplicateIgnoreFailedMessage" xml:space="preserve">
+    <value>Saga n'a pas pu marquer ce livre comme n'etant pas un doublon. Veuillez reessayer.</value>
+  </data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve">
     <value>Auteur correspondant</value>
   </data>

@@ -284,6 +284,12 @@
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>L'elenco duplicati e obsoleto. Saga ha aggiornato la biblioteca; apri di nuovo la panoramica duplicati.</value>
   </data>
+  <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
+    <value>Marcatura non riuscita</value>
+  </data>
+  <data name="DuplicateIgnoreFailedMessage" xml:space="preserve">
+    <value>Saga non ha potuto marcare questo libro come non duplicato. Riprova.</value>
+  </data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve">
     <value>Autore corrispondente</value>
   </data>

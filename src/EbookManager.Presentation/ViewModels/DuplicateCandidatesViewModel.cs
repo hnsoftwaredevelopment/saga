@@ -234,7 +234,7 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         }
 
         OnPropertyChanged(nameof(HasChanges));
-        ApplyResult(duplicateCandidateService.FindCandidates(books));
+        ApplyResult(duplicateCandidateService.FindCandidates(books, excludedPairs));
     }
 
     private void SetMergeSuccessMessage(string bookTitle)

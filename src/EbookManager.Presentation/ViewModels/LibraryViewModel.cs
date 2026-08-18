@@ -318,7 +318,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public IAsyncRelayCommand ShowDuplicateExclusionsCommand => showDuplicateExclusionsCommand ??= new AsyncRelayCommand(
         ShowDuplicateExclusionsAsync,
-        () => duplicateExclusionRepository is not null);
+        () => duplicateExclusionRepository is not null && HasActiveLibrary);
     public IRelayCommand CloseImportJobCommand => closeImportJobCommand ??= new RelayCommand(() => importAgent?.Job.Close());
     public IAsyncRelayCommand AddGroupingCommand => addGroupingCommand ??= new AsyncRelayCommand(AddGroupingAsync, CanAddGrouping);
     public IAsyncRelayCommand<LibraryGroupOption> RemoveGroupingCommand =>
@@ -3500,7 +3500,11 @@ public sealed partial class LibraryViewModel : ObservableObject
         };
     }
 
-    partial void OnCurrentLibraryPathChanged(string? value) => OnPropertyChanged(nameof(HasActiveLibrary));
+    partial void OnCurrentLibraryPathChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasActiveLibrary));
+        showDuplicateExclusionsCommand?.NotifyCanExecuteChanged();
+    }
 
     public bool ApplyDefaultViewPreference(string? defaultView)
     {

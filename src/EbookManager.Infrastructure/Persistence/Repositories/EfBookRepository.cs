@@ -187,25 +187,16 @@ public sealed class EfBookRepository(
         }
 
         await using var context = contextFactory.Create(libraryPath);
-        var existing = await context.DuplicateExclusions
-            .AsNoTracking()
-            .Select(x => new { x.FirstBookId, x.SecondBookId })
-            .ToListAsync(cancellationToken);
-        var existingPairs = existing
-            .Select(pair => DuplicateExclusionPair.Create(pair.FirstBookId, pair.SecondBookId))
-            .ToHashSet();
         var createdAt = DateTimeOffset.UtcNow;
-        foreach (var pair in normalizedPairs.Where(pair => !existingPairs.Contains(pair)))
+        foreach (var pair in normalizedPairs)
         {
-            context.DuplicateExclusions.Add(new DuplicateExclusionEntity
-            {
-                FirstBookId = pair.FirstBookId,
-                SecondBookId = pair.SecondBookId,
-                CreatedAt = createdAt
-            });
+            await context.Database.ExecuteSqlInterpolatedAsync(
+                $"""
+                INSERT OR IGNORE INTO DuplicateExclusions (FirstBookId, SecondBookId, CreatedAt)
+                VALUES ({pair.FirstBookId}, {pair.SecondBookId}, {createdAt})
+                """,
+                cancellationToken);
         }
-
-        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task RemoveDuplicateExclusionsAsync(

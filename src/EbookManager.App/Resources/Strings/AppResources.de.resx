@@ -284,6 +284,12 @@
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>Die Duplikatliste ist veraltet. Saga hat die Bibliothek aktualisiert; oeffnen Sie die Duplikatuebersicht erneut.</value>
   </data>
+  <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
+    <value>Markieren fehlgeschlagen</value>
+  </data>
+  <data name="DuplicateIgnoreFailedMessage" xml:space="preserve">
+    <value>Saga konnte dieses Buch nicht als kein Duplikat markieren. Bitte versuchen Sie es erneut.</value>
+  </data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve">
     <value>Autortreffer</value>
   </data>

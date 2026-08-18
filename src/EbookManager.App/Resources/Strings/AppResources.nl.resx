@@ -198,6 +198,8 @@
   <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is samengevoegd.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Samenvoegen mislukt</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>De duplicatenlijst is verouderd. Saga heeft de bibliotheek ververst; open het duplicatenoverzicht opnieuw.</value></data>
+  <data name="DuplicateIgnoreFailedTitle" xml:space="preserve"><value>Markeren mislukt</value></data>
+  <data name="DuplicateIgnoreFailedMessage" xml:space="preserve"><value>Saga kon dit boek niet markeren als geen duplicaat. Probeer het opnieuw.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteurmatch</value></data>
   <data name="DuplicateMatchTitleOnly" xml:space="preserve"><value>Alleen titel</value></data>
   <data name="MetadataCleanupStatus" xml:space="preserve"><value>Metadata wordt bijgewerkt...</value></data>

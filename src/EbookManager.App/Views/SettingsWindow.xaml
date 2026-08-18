@@ -477,7 +477,7 @@
                   HorizontalAlignment="Left"
                   MinWidth="170"
                   Margin="0,0,0,16"
-                  Click="ManageDuplicateExclusionsClicked" />
+                  Command="{Binding LibraryViewModel.ShowDuplicateExclusionsCommand, ElementName=SettingsRoot}" />
           <TextBlock Text="{loc:Loc DuplicateMergeDefaults}"
                      FontWeight="SemiBold"
                      Margin="0,0,0,6" />

@@ -179,10 +179,22 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
             return;
         }
 
-        await viewModel.IgnoreCandidateAsync(row, CancellationToken.None);
-        if (!viewModel.HasGroups)
+        try
         {
-            Close();
+            await viewModel.IgnoreCandidateAsync(row, CancellationToken.None);
+            if (!viewModel.HasGroups)
+            {
+                Close();
+            }
+        }
+        catch (Exception)
+        {
+            System.Windows.MessageBox.Show(
+                this,
+                LocalizedStrings.Current["DuplicateIgnoreFailedMessage"],
+                LocalizedStrings.Current["DuplicateIgnoreFailedTitle"],
+                System.Windows.MessageBoxButton.OK,
+                System.Windows.MessageBoxImage.Warning);
         }
     }
 
