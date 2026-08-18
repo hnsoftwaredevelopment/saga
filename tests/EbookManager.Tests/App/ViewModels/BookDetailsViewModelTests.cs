@@ -67,6 +67,26 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public void Swap_title_and_authors_updates_edit_fields_and_undo_restores_original_values()
+    {
+        var viewModel = CreateViewModel(out _);
+        var book = CreateBook("Karin Slaughter", ["Triptiek"]);
+
+        viewModel.Load(book);
+        viewModel.SwapTitleAndAuthorsCommand.Execute(null);
+
+        viewModel.Title.Should().Be("Triptiek");
+        viewModel.AuthorsText.Should().Be("Karin Slaughter");
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+
+        viewModel.UndoCommand.Execute(null);
+
+        viewModel.Title.Should().Be("Karin Slaughter");
+        viewModel.AuthorsText.Should().Be("Triptiek");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
     public void Loading_a_book_shows_available_formats_without_setting_dirty_state()
     {
         var viewModel = CreateViewModel(out _);

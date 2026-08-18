@@ -101,7 +101,22 @@
         </Grid>
       </Border>
 
-      <TextBlock Text="{loc:Loc Title}" FontWeight="SemiBold" />
+      <DockPanel>
+        <Button Command="{Binding SwapTitleAndAuthorsCommand}"
+                DockPanel.Dock="Right"
+                Width="28"
+                Height="26"
+                Padding="5"
+                Margin="8,0,0,0"
+                ToolTip="{loc:Loc SwapTitleAndAuthorsTooltip}">
+          <Path Data="{StaticResource SwapTitleAuthorIconGeometry}"
+                Fill="{DynamicResource AccentBrush}"
+                Stretch="Uniform" />
+        </Button>
+        <TextBlock Text="{loc:Loc Title}"
+                   FontWeight="SemiBold"
+                   VerticalAlignment="Center" />
+      </DockPanel>
       <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />
       <TextBlock Text="{loc:Loc Authors}" FontWeight="SemiBold" />
       <TextBox Text="{Binding AuthorsText, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" />

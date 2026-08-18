@@ -23,3 +23,13 @@ Gebruik deze checklist voor de eerste metadata cleanup-slice waarmee verkeerd ge
 
 - [ ] Annuleer de dialog en controleer dat er niets wordt opgeslagen.
 - [ ] Combineer Titel en auteur omwisselen met bijvoorbeeld Serie of Tags en controleer dat die extra wijzigingen ook worden opgeslagen.
+
+## Details Pane
+
+- [ ] Selecteer een boek waarvan titel en auteur zijn omgedraaid.
+- [ ] Klik op de wisselknop naast het titelveld.
+- [ ] Controleer dat titel en auteur direct worden omgewisseld.
+- [ ] Controleer dat de melding voor niet-opgeslagen wijzigingen verschijnt.
+- [ ] Klik op Ongedaan maken en controleer dat de oorspronkelijke waarden terugkomen.
+- [ ] Herhaal de wisselactie en klik op Opslaan.
+- [ ] Controleer dat de boekenlijst, details en auteursfilter direct zijn bijgewerkt.

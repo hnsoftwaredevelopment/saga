@@ -120,10 +120,12 @@ public sealed partial class BookDetailsViewModel(
     public IAsyncRelayCommand SaveCommand => saveCommand ??= new AsyncRelayCommand(SaveAsync, CanEdit);
     public IAsyncRelayCommand DeleteCommand => deleteCommand ??= new AsyncRelayCommand(DeleteAsync, CanEdit);
     public IRelayCommand UndoCommand => undoCommand ??= new RelayCommand(Undo, CanEdit);
+    public IRelayCommand SwapTitleAndAuthorsCommand => swapTitleAndAuthorsCommand ??= new RelayCommand(SwapTitleAndAuthors, CanEdit);
 
     private AsyncRelayCommand? saveCommand;
     private AsyncRelayCommand? deleteCommand;
     private RelayCommand? undoCommand;
+    private RelayCommand? swapTitleAndAuthorsCommand;
 
     public event EventHandler<Book>? BookSaved;
     public event EventHandler<Guid>? BookDeleted;
@@ -277,6 +279,19 @@ public sealed partial class BookDetailsViewModel(
         RefreshDirtyState();
     }
 
+    private void SwapTitleAndAuthors()
+    {
+        if (originalBook is null)
+        {
+            return;
+        }
+
+        var titleToAuthor = Title.Trim();
+        Title = JoinList(SplitList(AuthorsText));
+        AuthorsText = titleToAuthor;
+        LastSaveResult = null;
+    }
+
     partial void OnTitleChanged(string value) => RefreshDirtyState();
     partial void OnAuthorsTextChanged(string value) => RefreshDirtyState();
     partial void OnDescriptionChanged(string? value) => RefreshDirtyState();
@@ -400,6 +415,7 @@ public sealed partial class BookDetailsViewModel(
         saveCommand?.NotifyCanExecuteChanged();
         deleteCommand?.NotifyCanExecuteChanged();
         undoCommand?.NotifyCanExecuteChanged();
+        swapTitleAndAuthorsCommand?.NotifyCanExecuteChanged();
     }
 
     private static bool BooksEquivalentForEditing(Book first, Book second) =>
