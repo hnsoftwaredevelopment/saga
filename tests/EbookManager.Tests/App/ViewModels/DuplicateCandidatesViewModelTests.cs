@@ -185,6 +185,37 @@ public sealed class DuplicateCandidatesViewModelTests
     }
 
     [Fact]
+    public async Task IgnoreCandidate_persists_clicked_book_pairs_and_keeps_remaining_duplicates()
+    {
+        var first = CreateBook("De Stad", ["Author One"], series: null, language: null);
+        var second = CreateBook("De Stad", ["Author Two"], series: null, language: null);
+        var third = CreateBook("De Stad", ["Author Three"], series: null, language: null);
+        var result = new DuplicateCandidateService().FindCandidates([first, second, third]);
+        IReadOnlyCollection<DuplicateExclusionPair>? ignoredPairs = null;
+        var viewModel = new DuplicateCandidatesViewModel(
+            result,
+            ignoreCandidatesAsync: (pairs, _) =>
+            {
+                ignoredPairs = pairs;
+                return Task.CompletedTask;
+            })
+        {
+            ExactMatchesOnly = false
+        };
+
+        await viewModel.IgnoreCandidateAsync(viewModel.Rows[0], CancellationToken.None);
+
+        ignoredPairs.Should().BeEquivalentTo(
+        [
+            DuplicateExclusionPair.Create(first.Id, second.Id),
+            DuplicateExclusionPair.Create(first.Id, third.Id)
+        ]);
+        viewModel.HasChanges.Should().BeTrue();
+        viewModel.HasGroups.Should().BeTrue();
+        viewModel.Rows.Select(row => row.Id).Should().BeEquivalentTo([second.Id, third.Id]);
+    }
+
+    [Fact]
     public async Task MergeCandidate_merges_row_into_best_metadata_target_in_the_same_group()
     {
         var source = CreateBook("De Hobbit", ["Unknown"], series: null, language: null);

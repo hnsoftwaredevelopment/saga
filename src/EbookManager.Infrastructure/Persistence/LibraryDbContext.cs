@@ -17,6 +17,7 @@ public sealed class LibraryDbContext(DbContextOptions<LibraryDbContext> options)
     public DbSet<CustomMetadataValueEntity> CustomMetadataValues => Set<CustomMetadataValueEntity>();
     public DbSet<ImportRunEntity> ImportRuns => Set<ImportRunEntity>();
     public DbSet<ImportItemEntity> ImportItems => Set<ImportItemEntity>();
+    public DbSet<DuplicateExclusionEntity> DuplicateExclusions => Set<DuplicateExclusionEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -158,6 +159,21 @@ public sealed class LibraryDbContext(DbContextOptions<LibraryDbContext> options)
                 .WithMany()
                 .HasForeignKey(x => x.BookId)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<DuplicateExclusionEntity>(duplicateExclusion =>
+        {
+            duplicateExclusion.ToTable("DuplicateExclusions");
+            duplicateExclusion.HasKey(x => new { x.FirstBookId, x.SecondBookId });
+            duplicateExclusion.Property(x => x.CreatedAt).IsRequired();
+            duplicateExclusion.HasOne(x => x.FirstBook)
+                .WithMany()
+                .HasForeignKey(x => x.FirstBookId)
+                .OnDelete(DeleteBehavior.Cascade);
+            duplicateExclusion.HasOne(x => x.SecondBook)
+                .WithMany()
+                .HasForeignKey(x => x.SecondBookId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

@@ -10,7 +10,7 @@ namespace EbookManager.App.Services;
 public sealed class CurrentLibraryBookRepository(
     CurrentLibrary currentLibrary,
     LibraryDbContextFactory contextFactory)
-    : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository
+    : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository
 {
     public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
@@ -75,6 +75,24 @@ public sealed class CurrentLibraryBookRepository(
                 new HashSet<string>(StringComparer.Ordinal),
                 new HashSet<string>(StringComparer.Ordinal)))
             : repository.CreateDuplicateSnapshotAsync(cancellationToken);
+    }
+
+    public Task<IReadOnlySet<DuplicateExclusionPair>> ListDuplicateExclusionsAsync(CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult<IReadOnlySet<DuplicateExclusionPair>>(new HashSet<DuplicateExclusionPair>())
+            : repository.ListDuplicateExclusionsAsync(cancellationToken);
+    }
+
+    public Task AddDuplicateExclusionsAsync(
+        IReadOnlyCollection<DuplicateExclusionPair> pairs,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.CompletedTask
+            : repository.AddDuplicateExclusionsAsync(pairs, cancellationToken);
     }
 
     public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>

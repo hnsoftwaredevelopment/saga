@@ -10,7 +10,7 @@ namespace EbookManager.Infrastructure.Persistence.Repositories;
 
 public sealed class EfBookRepository(
     LibraryDbContextFactory contextFactory,
-    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository
+    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository
 {
     private const int SqliteParameterChunkSize = 500;
 
@@ -124,6 +124,60 @@ public sealed class EfBookRepository(
                 .GroupBy(row => row.Sha256, StringComparer.Ordinal)
                 .ToDictionary(group => group.Key, group => group.First().BookId, StringComparer.Ordinal)
         };
+    }
+
+    public async Task<IReadOnlySet<DuplicateExclusionPair>> ListDuplicateExclusionsAsync(
+        CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var pairs = await context.DuplicateExclusions
+            .AsNoTracking()
+            .Select(x => new { x.FirstBookId, x.SecondBookId })
+            .ToListAsync(cancellationToken);
+        return pairs
+            .Select(pair => DuplicateExclusionPair.Create(pair.FirstBookId, pair.SecondBookId))
+            .ToHashSet();
+    }
+
+    public async Task AddDuplicateExclusionsAsync(
+        IReadOnlyCollection<DuplicateExclusionPair> pairs,
+        CancellationToken cancellationToken)
+    {
+        if (pairs.Count == 0)
+        {
+            return;
+        }
+
+        var normalizedPairs = pairs
+            .Select(pair => DuplicateExclusionPair.Create(pair.FirstBookId, pair.SecondBookId))
+            .Where(pair => pair.FirstBookId != pair.SecondBookId)
+            .Distinct()
+            .ToList();
+        if (normalizedPairs.Count == 0)
+        {
+            return;
+        }
+
+        await using var context = contextFactory.Create(libraryPath);
+        var existing = await context.DuplicateExclusions
+            .AsNoTracking()
+            .Select(x => new { x.FirstBookId, x.SecondBookId })
+            .ToListAsync(cancellationToken);
+        var existingPairs = existing
+            .Select(pair => DuplicateExclusionPair.Create(pair.FirstBookId, pair.SecondBookId))
+            .ToHashSet();
+        var createdAt = DateTimeOffset.UtcNow;
+        foreach (var pair in normalizedPairs.Where(pair => !existingPairs.Contains(pair)))
+        {
+            context.DuplicateExclusions.Add(new DuplicateExclusionEntity
+            {
+                FirstBookId = pair.FirstBookId,
+                SecondBookId = pair.SecondBookId,
+                CreatedAt = createdAt
+            });
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task AddAsync(

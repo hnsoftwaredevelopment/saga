@@ -148,6 +148,12 @@
   <data name="DuplicateSelectionHelp" xml:space="preserve">
     <value>Astuce : maintenez Ctrl pendant la selection d'un autre livre pour selectionner plusieurs doublons.</value>
   </data>
+  <data name="MarkAsNotDuplicate" xml:space="preserve">
+    <value>Marquer ce livre comme non doublon</value>
+  </data>
+  <data name="MarkAsNotDuplicateShort" xml:space="preserve">
+    <value>Non doubl.</value>
+  </data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve">
     <value>Un import est encore en cours. Fermer l'application et annuler l'import ?</value>
   </data>

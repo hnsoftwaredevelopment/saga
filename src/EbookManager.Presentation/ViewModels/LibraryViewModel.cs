@@ -36,6 +36,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IImportAgent? importAgent;
     private readonly IImportRepository? importRepository;
     private readonly ICustomMetadataRepository? customMetadataRepository;
+    private readonly IDuplicateExclusionRepository? duplicateExclusionRepository;
     private readonly LibraryService? libraryService;
     private readonly CurrentLibrary? currentLibrary;
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
@@ -88,6 +89,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         IImportAgent? importAgent = null,
         IImportRepository? importRepository = null,
         ICustomMetadataRepository? customMetadataRepository = null,
+        IDuplicateExclusionRepository? duplicateExclusionRepository = null,
         LibraryService? libraryService = null,
         CurrentLibrary? currentLibrary = null,
         ILibraryDatabaseInitializer? databaseInitializer = null,
@@ -107,6 +109,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.importAgent = importAgent;
         this.importRepository = importRepository;
         this.customMetadataRepository = customMetadataRepository;
+        this.duplicateExclusionRepository = duplicateExclusionRepository;
         this.libraryService = libraryService;
         this.currentLibrary = currentLibrary;
         this.databaseInitializer = databaseInitializer;
@@ -3712,7 +3715,10 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        var result = duplicateCandidateService.FindCandidates(books);
+        var excludedPairs = duplicateExclusionRepository is null
+            ? new HashSet<DuplicateExclusionPair>()
+            : await duplicateExclusionRepository.ListDuplicateExclusionsAsync(cancellationToken);
+        var result = duplicateCandidateService.FindCandidates(books, excludedPairs);
         var settings = settingsStore is null
             ? null
             : await settingsStore.LoadAsync(cancellationToken);
@@ -3720,7 +3726,9 @@ public sealed partial class LibraryViewModel : ObservableObject
             result,
             CurrentLibraryPath,
             DeleteDuplicateCandidateAsync,
-            MergeDuplicateCandidateAsync);
+            MergeDuplicateCandidateAsync,
+            IgnoreDuplicateCandidatesAsync,
+            excludedPairs);
         candidates.ExactMatchesOnly = settings?.DuplicateExactMatchesOnly ?? true;
         candidates.MergeDefaults = settings?.DuplicateMergeDefaults ?? new DuplicateMergeDefaultSettings();
         await userInteraction.ShowDuplicateCandidatesAsync(
@@ -3766,6 +3774,18 @@ public sealed partial class LibraryViewModel : ObservableObject
             await RefreshAsync(cancellationToken);
             throw new InvalidOperationException("The duplicate list is outdated. Open the duplicate overview again.", exception);
         }
+    }
+
+    private async Task IgnoreDuplicateCandidatesAsync(
+        IReadOnlyCollection<DuplicateExclusionPair> pairs,
+        CancellationToken cancellationToken)
+    {
+        if (duplicateExclusionRepository is null)
+        {
+            return;
+        }
+
+        await duplicateExclusionRepository.AddDuplicateExclusionsAsync(pairs, cancellationToken);
     }
 
     private enum MetadataFilterKind

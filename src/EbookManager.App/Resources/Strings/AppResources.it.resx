@@ -148,6 +148,12 @@
   <data name="DuplicateSelectionHelp" xml:space="preserve">
     <value>Suggerimento: tieni premuto Ctrl mentre selezioni un altro libro per selezionare piu duplicati.</value>
   </data>
+  <data name="MarkAsNotDuplicate" xml:space="preserve">
+    <value>Segna questo libro come non duplicato</value>
+  </data>
+  <data name="MarkAsNotDuplicateShort" xml:space="preserve">
+    <value>Non dup.</value>
+  </data>
   <data name="ImportInProgressCloseMessage" xml:space="preserve">
     <value>Un'importazione e ancora in corso. Chiudere l'applicazione e annullare l'importazione?</value>
   </data>

@@ -66,6 +66,41 @@ public sealed class DuplicateCandidateServiceTests
         result.Groups.Should().BeEmpty();
     }
 
+    [Fact]
+    public void FindCandidates_ignores_excluded_author_overlap_pairs()
+    {
+        var service = new DuplicateCandidateService();
+        var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"]);
+        var second = CreateBook("de hobbit", ["J.R.R. Tolkien"]);
+        var exclusions = new HashSet<DuplicateExclusionPair>
+        {
+            DuplicateExclusionPair.Create(first.Id, second.Id)
+        };
+
+        var result = service.FindCandidates([first, second], exclusions);
+
+        result.Groups.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void FindCandidates_keeps_nonexcluded_books_in_large_title_group()
+    {
+        var service = new DuplicateCandidateService();
+        var first = CreateBook("De Stad", ["Author One"]);
+        var second = CreateBook("De Stad", ["Author Two"]);
+        var third = CreateBook("De Stad", ["Author Three"]);
+        var exclusions = new HashSet<DuplicateExclusionPair>
+        {
+            DuplicateExclusionPair.Create(first.Id, second.Id)
+        };
+
+        var result = service.FindCandidates([first, second, third], exclusions);
+
+        result.Groups.Should().ContainSingle();
+        result.Groups[0].MatchKind.Should().Be(DuplicateCandidateMatchKind.TitleOnly);
+        result.Groups[0].Books.Select(book => book.Id).Should().BeEquivalentTo([first.Id, third.Id, second.Id]);
+    }
+
     private static Book CreateBook(string title, IReadOnlyList<string> authors) =>
         new(
             Guid.NewGuid(),
