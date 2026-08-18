@@ -14,9 +14,10 @@ Soms hebben twee boeken dezelfde titel, maar zijn het inhoudelijk verschillende 
 - Als er geen onderlinge duplicaten overblijven, verdwijnt de groep volledig.
 - Bij opnieuw openen van het duplicatenvenster blijven genegeerde groepen verborgen.
 - Als een betrokken boek wordt verwijderd of samengevoegd, ruimt de database de bijbehorende uitsluitingen automatisch op.
+- In `Instellingen > Duplicaten` kan de gebruiker genegeerde duplicaatparen beheren.
+- De gebruiker kan geselecteerde genegeerde paren terugzetten of alle genegeerde paren in een keer terugzetten.
 
 ## Later
 
-- Beheerscherm om genegeerde duplicaten te bekijken en eventueel terug te zetten.
 - Mogelijk een bulkactie voor meerdere geselecteerde duplicate-groepen.
 - Duidelijkere iconografie als er een definitief icon beschikbaar is.

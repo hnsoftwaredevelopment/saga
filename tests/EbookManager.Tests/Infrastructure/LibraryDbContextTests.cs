@@ -709,6 +709,17 @@ public sealed class LibraryDbContextTests
 
         var exclusions = await repository.ListDuplicateExclusionsAsync(default);
         exclusions.Should().ContainSingle().Which.Should().Be(DuplicateExclusionPair.Create(first.Id, second.Id));
+        var details = await repository.ListDuplicateExclusionDetailsAsync(default);
+        details.Should().ContainSingle().Which.Should().Match<DuplicateExclusion>(exclusion =>
+            exclusion.Pair == DuplicateExclusionPair.Create(first.Id, second.Id) &&
+            exclusion.FirstBookTitle == "Same Title" &&
+            exclusion.SecondBookTitle == "Same Title");
+
+        await repository.RemoveDuplicateExclusionsAsync([pair], default);
+
+        (await repository.ListDuplicateExclusionsAsync(default)).Should().BeEmpty();
+
+        await repository.AddDuplicateExclusionsAsync([pair], default);
 
         await repository.DeleteAsync(first.Id, default);
 

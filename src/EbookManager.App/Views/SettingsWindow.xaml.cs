@@ -137,6 +137,29 @@ public partial class SettingsWindow : System.Windows.Window
         }
     }
 
+    private async void ManageDuplicateExclusionsClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        var previousCursor = Cursor;
+        Cursor = System.Windows.Input.Cursors.Wait;
+        if (sender is System.Windows.Controls.Control control)
+        {
+            control.IsEnabled = false;
+        }
+
+        try
+        {
+            await libraryViewModel.ShowDuplicateExclusionsCommand.ExecuteAsync(null);
+        }
+        finally
+        {
+            Cursor = previousCursor;
+            if (sender is System.Windows.Controls.Control completedControl)
+            {
+                completedControl.IsEnabled = true;
+            }
+        }
+    }
+
     private void ColumnDragGripPreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
     {
         if (e.LeftButton != System.Windows.Input.MouseButtonState.Pressed ||

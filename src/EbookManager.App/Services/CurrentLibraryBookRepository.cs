@@ -85,6 +85,14 @@ public sealed class CurrentLibraryBookRepository(
             : repository.ListDuplicateExclusionsAsync(cancellationToken);
     }
 
+    public Task<IReadOnlyList<DuplicateExclusion>> ListDuplicateExclusionDetailsAsync(CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult<IReadOnlyList<DuplicateExclusion>>([])
+            : repository.ListDuplicateExclusionDetailsAsync(cancellationToken);
+    }
+
     public Task AddDuplicateExclusionsAsync(
         IReadOnlyCollection<DuplicateExclusionPair> pairs,
         CancellationToken cancellationToken)
@@ -93,6 +101,24 @@ public sealed class CurrentLibraryBookRepository(
         return repository is null
             ? Task.CompletedTask
             : repository.AddDuplicateExclusionsAsync(pairs, cancellationToken);
+    }
+
+    public Task RemoveDuplicateExclusionsAsync(
+        IReadOnlyCollection<DuplicateExclusionPair> pairs,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.CompletedTask
+            : repository.RemoveDuplicateExclusionsAsync(pairs, cancellationToken);
+    }
+
+    public Task ClearDuplicateExclusionsAsync(CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.CompletedTask
+            : repository.ClearDuplicateExclusionsAsync(cancellationToken);
     }
 
     public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>
