@@ -372,5 +372,13 @@ public sealed class SettingsViewModelTests
 
         public Task DeleteValueAsync(Guid bookId, Guid fieldId, CancellationToken cancellationToken) =>
             Task.CompletedTask;
+
+        public Task<IReadOnlyList<Guid>> CleanupFilterValueAsync(
+            Guid fieldId,
+            string oldValue,
+            string? replacementValue,
+            bool remove,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<Guid>>([]);
     }
 }

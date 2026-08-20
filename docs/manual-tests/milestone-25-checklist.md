@@ -34,3 +34,5 @@ Gebruik deze checklist voor de slice waarmee custom metadata waarden direct vanu
 ## Niet-Bewerkbare Typen
 
 - [ ] Controleer dat nummer-, datum- en ja/nee-custom metadata filters geen opschoonactie nodig hebben voor deze slice.
+- [ ] Controleer dat nummer-, datum- en ja/nee-custom metadata filters geen menu-item Hernoemen tonen.
+- [ ] Controleer dat nummer-, datum- en ja/nee-custom metadata filters geen menu-item Verwijderen tonen.

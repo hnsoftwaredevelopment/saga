@@ -219,6 +219,86 @@ public sealed class EfCustomMetadataRepository(
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Guid>> CleanupFilterValueAsync(
+        Guid fieldId,
+        string oldValue,
+        string? replacementValue,
+        bool remove,
+        CancellationToken cancellationToken)
+    {
+        var oldText = NormalizeBlank(oldValue);
+        if (oldText is null)
+        {
+            return [];
+        }
+
+        var replacementText = NormalizeBlank(replacementValue);
+        if (!remove && replacementText is null)
+        {
+            return [];
+        }
+
+        await using var context = contextFactory.Create(libraryPath);
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        var field = await context.CustomMetadataFields
+            .SingleOrDefaultAsync(field => field.Id == fieldId, cancellationToken)
+            ?? throw new KeyNotFoundException($"Custom metadata field '{fieldId}' does not exist.");
+        if (!CanCleanupFilterValue(field.Type))
+        {
+            return [];
+        }
+
+        var values = await context.CustomMetadataValues
+            .Where(value => value.FieldId == fieldId && value.TextValue != null)
+            .ToListAsync(cancellationToken);
+        var changedBookIds = new List<Guid>();
+        var now = DateTimeOffset.UtcNow;
+        foreach (var value in values)
+        {
+            var editedText = field.Type == CustomMetadataFieldType.MultiSelect
+                ? EditListValue(value.TextValue!, oldText, replacementText, remove)
+                : EditScalarValue(value.TextValue!, oldText, replacementText, remove);
+            if (string.Equals(value.TextValue, editedText, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            changedBookIds.Add(value.BookId);
+            if (editedText is null)
+            {
+                context.CustomMetadataValues.Remove(value);
+                continue;
+            }
+
+            value.TextValue = editedText;
+            value.UpdatedUtc = now;
+        }
+
+        if (!remove &&
+            replacementText is not null &&
+            field.Type is CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect)
+        {
+            var updatedOptions = RenameOption(DeserializeOptions(field.OptionsJson), oldText, replacementText);
+            if (!updatedOptions.SequenceEqual(DeserializeOptions(field.OptionsJson), StringComparer.Ordinal))
+            {
+                field.OptionsJson = updatedOptions.Count == 0
+                    ? null
+                    : JsonSerializer.Serialize(updatedOptions);
+                field.UpdatedUtc = now;
+            }
+        }
+
+        if (changedBookIds.Count == 0 && !context.ChangeTracker.HasChanges())
+        {
+            await transaction.CommitAsync(cancellationToken);
+            return [];
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+        return changedBookIds.Distinct().ToList().AsReadOnly();
+    }
+
     private static CustomMetadataFieldDefinition ToDomain(CustomMetadataFieldEntity entity) =>
         new(
             entity.Id,
@@ -289,6 +369,100 @@ public sealed class EfCustomMetadataRepository(
         var trimmed = value?.Trim();
         return string.IsNullOrEmpty(trimmed) ? null : trimmed;
     }
+
+    private static bool CanCleanupFilterValue(CustomMetadataFieldType type) =>
+        type is
+            CustomMetadataFieldType.Text or
+            CustomMetadataFieldType.SingleSelect or
+            CustomMetadataFieldType.MultiSelect;
+
+    private static string? EditScalarValue(
+        string value,
+        string oldValue,
+        string? replacementValue,
+        bool remove)
+    {
+        if (!string.Equals(value.Trim(), oldValue, StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+
+        return remove ? null : replacementValue;
+    }
+
+    private static string? EditListValue(
+        string value,
+        string oldValue,
+        string? replacementValue,
+        bool remove)
+    {
+        var changed = false;
+        var values = new List<string>();
+        foreach (var item in SplitList(value))
+        {
+            if (string.Equals(item, oldValue, StringComparison.OrdinalIgnoreCase))
+            {
+                changed = true;
+                if (!remove && replacementValue is not null)
+                {
+                    values.Add(replacementValue);
+                }
+            }
+            else
+            {
+                values.Add(item);
+            }
+        }
+
+        if (!changed)
+        {
+            return value;
+        }
+
+        var distinctValues = values
+            .Where(item => !string.IsNullOrWhiteSpace(item))
+            .Select(item => item.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        return distinctValues.Length == 0
+            ? null
+            : string.Join("; ", distinctValues);
+    }
+
+    private static IReadOnlyList<string> RenameOption(
+        IReadOnlyList<string> options,
+        string oldValue,
+        string replacementValue)
+    {
+        var changed = false;
+        var updated = new List<string>();
+        foreach (var option in options)
+        {
+            if (string.Equals(option, oldValue, StringComparison.OrdinalIgnoreCase))
+            {
+                changed = true;
+                updated.Add(replacementValue);
+                continue;
+            }
+
+            updated.Add(option);
+        }
+
+        if (!changed &&
+            !updated.Contains(replacementValue, StringComparer.OrdinalIgnoreCase))
+        {
+            updated.Add(replacementValue);
+        }
+
+        return updated
+            .Where(option => !string.IsNullOrWhiteSpace(option))
+            .Select(option => option.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+    }
+
+    private static IEnumerable<string> SplitList(string? value) =>
+        (value ?? string.Empty).Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
     private static IReadOnlyList<string> NormalizeOptions(IEnumerable<string> options)
     {

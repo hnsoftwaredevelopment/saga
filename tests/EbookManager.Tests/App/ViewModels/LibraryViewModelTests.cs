@@ -430,6 +430,7 @@ public sealed class LibraryViewModelTests
         var book = CreateBook("First", ["Author"]);
         var customMetadataRepository = new InMemoryCustomMetadataRepository();
         var field = customMetadataRepository.AddDefinition("Genres", CustomMetadataFieldType.MultiSelect);
+        await customMetadataRepository.UpdateDefinitionOptionsAsync(field.Id, ["Thriller", "Fantasy"], default);
         customMetadataRepository.SetValue(new CustomMetadataValue(book.Id, field.Id, TextValue: "Thriller; Fantasy"));
         var interaction = new ScriptedUserInteractionService { PromptTextResult = "Detective" };
         var viewModel = CreateViewModel(
@@ -444,6 +445,11 @@ public sealed class LibraryViewModelTests
             group.Filters.Single(filter => filter.Name == "Thriller"));
 
         customMetadataRepository.ValuesSnapshot.Single().TextValue.Should().Be("Detective; Fantasy");
+        (await customMetadataRepository.ListDefinitionsAsync(default))
+            .Single(definition => definition.Id == field.Id)
+            .Options
+            .Should()
+            .Equal("Detective", "Fantasy");
         group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
         group.Filters.Select(filter => filter.Name).Should().Equal("Detective", "Fantasy");
     }
@@ -3145,6 +3151,146 @@ public sealed class LibraryViewModelTests
             values.Remove((bookId, fieldId));
             return Task.CompletedTask;
         }
+
+        public Task<IReadOnlyList<Guid>> CleanupFilterValueAsync(
+            Guid fieldId,
+            string oldValue,
+            string? replacementValue,
+            bool remove,
+            CancellationToken cancellationToken)
+        {
+            var definitionIndex = definitions.FindIndex(definition => definition.Id == fieldId);
+            if (definitionIndex < 0)
+            {
+                return Task.FromResult<IReadOnlyList<Guid>>([]);
+            }
+
+            var definition = definitions[definitionIndex];
+            if (definition.Type is not (CustomMetadataFieldType.Text or CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect))
+            {
+                return Task.FromResult<IReadOnlyList<Guid>>([]);
+            }
+
+            var changedBookIds = new List<Guid>();
+            foreach (var value in values.Values.Where(value => value.FieldId == fieldId).ToArray())
+            {
+                var updatedText = definition.Type == CustomMetadataFieldType.MultiSelect
+                    ? EditListValue(value.TextValue, oldValue, replacementValue, remove)
+                    : EditScalarValue(value.TextValue, oldValue, replacementValue, remove);
+                if (string.Equals(value.TextValue, updatedText, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                changedBookIds.Add(value.BookId);
+                if (string.IsNullOrWhiteSpace(updatedText))
+                {
+                    values.Remove((value.BookId, value.FieldId));
+                    continue;
+                }
+
+                values[(value.BookId, value.FieldId)] = value with
+                {
+                    TextValue = updatedText,
+                    UpdatedUtc = DateTimeOffset.UtcNow
+                };
+            }
+
+            if (!remove &&
+                !string.IsNullOrWhiteSpace(replacementValue) &&
+                definition.Type is CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect)
+            {
+                definitions[definitionIndex] = definition with
+                {
+                    Options = RenameOption(definition.Options, oldValue, replacementValue.Trim())
+                };
+            }
+
+            return Task.FromResult<IReadOnlyList<Guid>>(changedBookIds.Distinct().ToArray());
+        }
+
+        private static string? EditScalarValue(
+            string? value,
+            string oldValue,
+            string? replacementValue,
+            bool remove) =>
+            string.Equals(value?.Trim(), oldValue.Trim(), StringComparison.OrdinalIgnoreCase)
+                ? remove ? null : replacementValue?.Trim()
+                : value;
+
+        private static string? EditListValue(
+            string? value,
+            string oldValue,
+            string? replacementValue,
+            bool remove)
+        {
+            var changed = false;
+            var values = new List<string>();
+            foreach (var item in SplitList(value))
+            {
+                if (string.Equals(item, oldValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    changed = true;
+                    if (!remove && !string.IsNullOrWhiteSpace(replacementValue))
+                    {
+                        values.Add(replacementValue.Trim());
+                    }
+                }
+                else
+                {
+                    values.Add(item);
+                }
+            }
+
+            if (!changed)
+            {
+                return value;
+            }
+
+            var distinctValues = values
+                .Where(item => !string.IsNullOrWhiteSpace(item))
+                .Select(item => item.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            return distinctValues.Length == 0
+                ? null
+                : string.Join("; ", distinctValues);
+        }
+
+        private static IReadOnlyList<string> RenameOption(
+            IReadOnlyList<string> options,
+            string oldValue,
+            string replacementValue)
+        {
+            var changed = false;
+            var updated = new List<string>();
+            foreach (var option in options)
+            {
+                if (string.Equals(option, oldValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    changed = true;
+                    updated.Add(replacementValue);
+                }
+                else
+                {
+                    updated.Add(option);
+                }
+            }
+
+            if (!changed && !updated.Contains(replacementValue, StringComparer.OrdinalIgnoreCase))
+            {
+                updated.Add(replacementValue);
+            }
+
+            return updated
+                .Where(option => !string.IsNullOrWhiteSpace(option))
+                .Select(option => option.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+
+        private static IEnumerable<string> SplitList(string? value) =>
+            (value ?? string.Empty).Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
     private sealed class CapturingLibraryPerformanceReporter : ILibraryPerformanceReporter

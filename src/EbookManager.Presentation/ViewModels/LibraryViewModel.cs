@@ -2732,92 +2732,6 @@ public sealed partial class LibraryViewModel : ObservableObject
         CustomMetadataFilterValues(type, value)
             .Any(item => string.Equals(item, oldValue, StringComparison.OrdinalIgnoreCase));
 
-    private static bool TryEditCustomMetadataValue(
-        CustomMetadataFieldDefinition definition,
-        CustomMetadataValue currentValue,
-        string oldValue,
-        string? replacementValue,
-        bool remove,
-        out CustomMetadataValue? editedValue)
-    {
-        editedValue = currentValue;
-        if (!CanCleanupCustomMetadataValues(definition) ||
-            string.IsNullOrWhiteSpace(currentValue.TextValue))
-        {
-            return false;
-        }
-
-        var textValue = definition.Type == CustomMetadataFieldType.MultiSelect
-            ? EditCustomMetadataListValue(currentValue.TextValue, oldValue, replacementValue, remove)
-            : EditCustomMetadataScalarValue(currentValue.TextValue, oldValue, replacementValue, remove);
-        if (string.Equals(currentValue.TextValue, textValue, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        editedValue = string.IsNullOrWhiteSpace(textValue)
-            ? null
-            : currentValue with
-            {
-                TextValue = textValue,
-                UpdatedUtc = DateTimeOffset.UtcNow
-            };
-        return true;
-    }
-
-    private static string? EditCustomMetadataScalarValue(
-        string value,
-        string oldValue,
-        string? replacementValue,
-        bool remove)
-    {
-        if (!string.Equals(value.Trim(), oldValue.Trim(), StringComparison.OrdinalIgnoreCase))
-        {
-            return value;
-        }
-
-        return remove ? null : NormalizeBlank(replacementValue);
-    }
-
-    private static string? EditCustomMetadataListValue(
-        string value,
-        string oldValue,
-        string? replacementValue,
-        bool remove)
-    {
-        var changed = false;
-        var values = new List<string>();
-        foreach (var item in SplitList(value))
-        {
-            if (string.Equals(item, oldValue, StringComparison.OrdinalIgnoreCase))
-            {
-                changed = true;
-                if (!remove && !string.IsNullOrWhiteSpace(replacementValue))
-                {
-                    values.Add(replacementValue.Trim());
-                }
-            }
-            else
-            {
-                values.Add(item);
-            }
-        }
-
-        if (!changed)
-        {
-            return value;
-        }
-
-        var distinctValues = values
-            .Where(item => !string.IsNullOrWhiteSpace(item))
-            .Select(item => item.Trim())
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-        return distinctValues.Length == 0
-            ? null
-            : string.Join("; ", distinctValues);
-    }
-
     private static bool IsUsefulCustomMetadataFilterType(CustomMetadataFieldDefinition definition) =>
         definition.Type is
             CustomMetadataFieldType.Text or
@@ -3352,34 +3266,21 @@ public sealed partial class LibraryViewModel : ObservableObject
                 return;
             }
 
-            foreach (var bookId in affectedBookIds)
+            var changedBookIds = await customMetadataRepository.CleanupFilterValueAsync(
+                definition.Id,
+                oldValue,
+                replacementValue,
+                remove,
+                cancellationToken);
+            if (changedBookIds.Count == 0)
             {
-                var values = await customMetadataRepository.GetValuesAsync(bookId, cancellationToken);
-                var currentValue = values.FirstOrDefault(value => value.FieldId == definition.Id);
-                if (currentValue is null ||
-                    !TryEditCustomMetadataValue(
-                        definition,
-                        currentValue,
-                        oldValue,
-                        replacementValue,
-                        remove,
-                        out var editedValue))
-                {
-                    continue;
-                }
-
-                if (editedValue is null)
-                {
-                    await customMetadataRepository.DeleteValueAsync(bookId, definition.Id, cancellationToken);
-                    continue;
-                }
-
-                await customMetadataRepository.SetValueAsync(editedValue, cancellationToken);
+                return;
             }
 
-            await RefreshCustomMetadataValuesForBooksAsync(affectedBookIds, cancellationToken);
+            await RefreshCustomMetadataDefinitionsAsync(cancellationToken);
+            await RefreshCustomMetadataValuesForBooksAsync(changedBookIds, cancellationToken);
             if (SelectedBook is { } selectedBook &&
-                affectedBookIds.Contains(selectedBook.Id))
+                changedBookIds.Contains(selectedBook.Id))
             {
                 await Details.LoadCustomMetadataValuesAsync(selectedBook.Id, cancellationToken);
             }

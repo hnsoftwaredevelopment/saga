@@ -21,4 +21,10 @@ public interface ICustomMetadataRepository
         CancellationToken cancellationToken);
     Task SetValueAsync(CustomMetadataValue value, CancellationToken cancellationToken);
     Task DeleteValueAsync(Guid bookId, Guid fieldId, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Guid>> CleanupFilterValueAsync(
+        Guid fieldId,
+        string oldValue,
+        string? replacementValue,
+        bool remove,
+        CancellationToken cancellationToken);
 }
