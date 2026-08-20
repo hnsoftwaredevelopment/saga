@@ -2025,8 +2025,9 @@ public sealed class LibraryViewModelTests
     {
         var first = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl");
         var second = CreateBook("Lee Child", ["Spervuur"], language: "nl");
+        var coauthored = CreateBook("Shared Title", ["Author One", "Author Two"], language: "en");
         var untouched = CreateBook("The Hobbit", ["J.R.R. Tolkien"], language: "en");
-        var repository = new StaticBookRepository([first, second, untouched]);
+        var repository = new StaticBookRepository([first, second, coauthored, untouched]);
         var interaction = new ScriptedUserInteractionService
         {
             MetadataMultiEditResult = new MetadataMultiEditResult(
@@ -2042,20 +2043,22 @@ public sealed class LibraryViewModelTests
                 Status: ReadingStatus.Unread,
                 SwapTitleAndAuthors: true)
         };
-        var viewModel = CreateViewModel([first, second, untouched], interaction, repository: repository);
+        var viewModel = CreateViewModel([first, second, coauthored, untouched], interaction, repository: repository);
 
         await viewModel.RefreshAsync();
-        viewModel.SetSelectedBooks(viewModel.VisibleBooks.Take(2));
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks.Where(book => book.Id != untouched.Id));
         await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
 
-        repository.UpdateCalls.Should().Be(2);
+        repository.UpdateCalls.Should().Be(3);
         repository.BooksSnapshot.Single(book => book.Id == first.Id).Metadata.Title.Should().Be("Triptiek");
         repository.BooksSnapshot.Single(book => book.Id == first.Id).Metadata.Authors.Should().Equal("Karin Slaughter");
         repository.BooksSnapshot.Single(book => book.Id == second.Id).Metadata.Title.Should().Be("Spervuur");
         repository.BooksSnapshot.Single(book => book.Id == second.Id).Metadata.Authors.Should().Equal("Lee Child");
+        repository.BooksSnapshot.Single(book => book.Id == coauthored.Id).Metadata.Title.Should().Be("Author One, Author Two");
+        repository.BooksSnapshot.Single(book => book.Id == coauthored.Id).Metadata.Authors.Should().Equal("Shared Title");
         repository.BooksSnapshot.Single(book => book.Id == untouched.Id).Metadata.Title.Should().Be("The Hobbit");
         viewModel.AuthorFilters.Should().ContainSingle(filter => filter.Name == "Karin Slaughter" && filter.Count == 1);
-        viewModel.VisibleBooks.Select(book => book.Title).Should().Contain(["Triptiek", "Spervuur", "The Hobbit"]);
+        viewModel.VisibleBooks.Select(book => book.Title).Should().Contain(["Triptiek", "Spervuur", "Author One, Author Two", "The Hobbit"]);
     }
 
     [Fact]

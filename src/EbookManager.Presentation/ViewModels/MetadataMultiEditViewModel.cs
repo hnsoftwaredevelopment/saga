@@ -78,25 +78,25 @@ public sealed partial class MetadataMultiEditViewModel : ObservableObject
 
     public MetadataMultiEditResult CreateResult() =>
         new(
-            UpdateAuthors,
-            AuthorsText,
-            UpdateSeries,
-            SeriesText,
-            UpdateTags,
-            TagsText,
-            UpdateLanguage,
-            LanguageText,
-            UpdateStatus,
-            Status,
-            SwapTitleAndAuthors,
-            CustomFields
+            UpdateAuthors: UpdateAuthors,
+            AuthorsText: AuthorsText,
+            UpdateSeries: UpdateSeries,
+            SeriesText: SeriesText,
+            UpdateTags: UpdateTags,
+            TagsText: TagsText,
+            UpdateLanguage: UpdateLanguage,
+            LanguageText: LanguageText,
+            UpdateStatus: UpdateStatus,
+            Status: Status,
+            CustomFields: CustomFields
                 .Where(field => field.UpdateValue)
                 .Select(field => new MetadataMultiEditCustomFieldResult(
                     field.FieldId,
                     field.Name,
                     field.Type,
                     field.ValueText))
-                .ToArray());
+                .ToArray(),
+            SwapTitleAndAuthors: SwapTitleAndAuthors);
 
     public bool CanEditAuthors => !SwapTitleAndAuthors;
 
@@ -143,8 +143,8 @@ public sealed record MetadataMultiEditResult(
     string LanguageText,
     bool UpdateStatus,
     ReadingStatus Status,
-    bool SwapTitleAndAuthors = false,
-    IReadOnlyList<MetadataMultiEditCustomFieldResult>? CustomFields = null);
+    IReadOnlyList<MetadataMultiEditCustomFieldResult>? CustomFields = null,
+    bool SwapTitleAndAuthors = false);
 
 public sealed record MetadataMultiEditCustomFieldResult(
     Guid FieldId,
