@@ -579,6 +579,10 @@
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Titel und Autoren tauschen</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Verwenden Sie dies, wenn importierte Bücher Titel und Autor vertauscht haben.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Mehrere Werte mit Semikolon trennen.</value></data>
+  <data name="MetadataMultiEditTagActionReplace" xml:space="preserve"><value>Ersetzen</value></data>
+  <data name="MetadataMultiEditTagActionAdd" xml:space="preserve"><value>Hinzufügen</value></data>
+  <data name="MetadataMultiEditTagActionRemove" xml:space="preserve"><value>Entfernen</value></data>
+  <data name="MetadataMultiEditTagsHelp" xml:space="preserve"><value>Ersetzen leert zuerst die vorhandenen Tags. Hinzufügen behält vorhandene Tags. Entfernen löscht nur die angegebenen Tags.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Nicht aktivierte Felder bleiben unverändert.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} ausgewählte(s) Buch/Bücher wurden übersprungen, weil die geänderte Titel-/Autor-Kombination bereits vorhanden ist.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>

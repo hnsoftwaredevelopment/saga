@@ -53,6 +53,9 @@ public sealed partial class MetadataMultiEditViewModel : ObservableObject
     private bool updateTags;
 
     [ObservableProperty]
+    private MetadataMultiEditTagAction tagAction = MetadataMultiEditTagAction.Replace;
+
+    [ObservableProperty]
     private string tagsText = string.Empty;
 
     [ObservableProperty]
@@ -96,7 +99,8 @@ public sealed partial class MetadataMultiEditViewModel : ObservableObject
                     field.Type,
                     field.ValueText))
                 .ToArray(),
-            SwapTitleAndAuthors: SwapTitleAndAuthors);
+            SwapTitleAndAuthors: SwapTitleAndAuthors,
+            TagAction: TagAction);
 
     public bool CanEditAuthors => !SwapTitleAndAuthors;
 
@@ -144,7 +148,15 @@ public sealed record MetadataMultiEditResult(
     bool UpdateStatus,
     ReadingStatus Status,
     IReadOnlyList<MetadataMultiEditCustomFieldResult>? CustomFields = null,
-    bool SwapTitleAndAuthors = false);
+    bool SwapTitleAndAuthors = false,
+    MetadataMultiEditTagAction TagAction = MetadataMultiEditTagAction.Replace);
+
+public enum MetadataMultiEditTagAction
+{
+    Replace,
+    Add,
+    Remove
+}
 
 public sealed record MetadataMultiEditCustomFieldResult(
     Guid FieldId,

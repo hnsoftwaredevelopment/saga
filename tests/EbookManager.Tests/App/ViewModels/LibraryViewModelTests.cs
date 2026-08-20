@@ -2021,6 +2021,71 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_multi_edit_can_add_tags_without_replacing_existing_tags()
+    {
+        var first = CreateBook("First", ["Author"], tags: ["Old", "Keep"]);
+        var second = CreateBook("Second", ["Author"], tags: ["Keep"]);
+        var repository = new StaticBookRepository([first, second]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new MetadataMultiEditResult(
+                UpdateAuthors: false,
+                AuthorsText: string.Empty,
+                UpdateSeries: false,
+                SeriesText: string.Empty,
+                UpdateTags: true,
+                TagsText: "New; old",
+                UpdateLanguage: false,
+                LanguageText: string.Empty,
+                UpdateStatus: false,
+                Status: ReadingStatus.Unread,
+                TagAction: MetadataMultiEditTagAction.Add)
+        };
+        var viewModel = CreateViewModel([first, second], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks);
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        repository.BooksSnapshot.Single(book => book.Id == first.Id).Metadata.Tags.Should().Equal("Old", "Keep", "New");
+        repository.BooksSnapshot.Single(book => book.Id == second.Id).Metadata.Tags.Should().Equal("Keep", "New", "old");
+        viewModel.CategoryFilters.Should().Contain(filter => filter.Name == "New" && filter.Count == 2);
+    }
+
+    [Fact]
+    public async Task Metadata_multi_edit_can_remove_tags_without_clearing_other_tags()
+    {
+        var first = CreateBook("First", ["Author"], tags: ["Old", "Keep"]);
+        var second = CreateBook("Second", ["Author"], tags: ["Old"]);
+        var repository = new StaticBookRepository([first, second]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new MetadataMultiEditResult(
+                UpdateAuthors: false,
+                AuthorsText: string.Empty,
+                UpdateSeries: false,
+                SeriesText: string.Empty,
+                UpdateTags: true,
+                TagsText: "old",
+                UpdateLanguage: false,
+                LanguageText: string.Empty,
+                UpdateStatus: false,
+                Status: ReadingStatus.Unread,
+                TagAction: MetadataMultiEditTagAction.Remove)
+        };
+        var viewModel = CreateViewModel([first, second], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks);
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        repository.BooksSnapshot.Single(book => book.Id == first.Id).Metadata.Tags.Should().Equal("Keep");
+        repository.BooksSnapshot.Single(book => book.Id == second.Id).Metadata.Tags.Should().BeNull();
+        viewModel.CategoryFilters.Should().ContainSingle(filter => filter.Name == "Keep" && filter.Count == 1);
+        viewModel.CategoryFilters.Should().NotContain(filter => filter.Name == "Old");
+    }
+
+    [Fact]
     public async Task Metadata_multi_edit_swaps_title_and_author_for_selected_books()
     {
         var first = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl");

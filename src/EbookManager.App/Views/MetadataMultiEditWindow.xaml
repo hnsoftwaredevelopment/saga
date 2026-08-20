@@ -4,6 +4,7 @@
         xmlns:converters="clr-namespace:EbookManager.App.Converters"
         xmlns:loc="clr-namespace:EbookManager.App.Localization"
         xmlns:syncinput="clr-namespace:Syncfusion.Windows.Controls.Input;assembly=Syncfusion.SfInput.WPF"
+        xmlns:viewModels="clr-namespace:EbookManager.Presentation.ViewModels;assembly=EbookManager.Presentation"
         Title="{loc:Loc MetadataMultiEditTitle}"
         Width="520"
         Height="680"
@@ -77,9 +78,40 @@
         <CheckBox Content="{loc:Loc Tags}"
                   IsChecked="{Binding UpdateTags}"
                   Margin="0,0,0,4" />
-        <TextBox Text="{Binding TagsText, UpdateSourceTrigger=PropertyChanged}"
-                 ToolTip="{loc:Loc MetadataMultiEditSemicolonTooltip}"
-                 Margin="22,0,0,12" />
+        <Grid Margin="22,0,0,12"
+              IsEnabled="{Binding UpdateTags}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <ComboBox Grid.Row="0"
+                    Grid.Column="0"
+                    SelectedValue="{Binding TagAction}"
+                    SelectedValuePath="Tag"
+                    Margin="0,0,8,6">
+            <ComboBoxItem Content="{loc:Loc MetadataMultiEditTagActionReplace}"
+                          Tag="{x:Static viewModels:MetadataMultiEditTagAction.Replace}" />
+            <ComboBoxItem Content="{loc:Loc MetadataMultiEditTagActionAdd}"
+                          Tag="{x:Static viewModels:MetadataMultiEditTagAction.Add}" />
+            <ComboBoxItem Content="{loc:Loc MetadataMultiEditTagActionRemove}"
+                          Tag="{x:Static viewModels:MetadataMultiEditTagAction.Remove}" />
+          </ComboBox>
+          <TextBox Grid.Row="0"
+                   Grid.Column="1"
+                   Text="{Binding TagsText, UpdateSourceTrigger=PropertyChanged}"
+                   ToolTip="{loc:Loc MetadataMultiEditSemicolonTooltip}"
+                   Margin="0,0,0,6" />
+          <TextBlock Grid.Row="1"
+                     Grid.ColumnSpan="2"
+                     Text="{loc:Loc MetadataMultiEditTagsHelp}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </Grid>
 
         <CheckBox Content="{loc:Loc Language}"
                   IsChecked="{Binding UpdateLanguage}"

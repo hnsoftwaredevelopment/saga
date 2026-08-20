@@ -579,6 +579,10 @@
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Inverser le titre et les auteurs</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Utilisez ceci lorsque les livres importés ont le titre et l'auteur inversés.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Utilisez des points-virgules pour séparer plusieurs valeurs.</value></data>
+  <data name="MetadataMultiEditTagActionReplace" xml:space="preserve"><value>Remplacer</value></data>
+  <data name="MetadataMultiEditTagActionAdd" xml:space="preserve"><value>Ajouter</value></data>
+  <data name="MetadataMultiEditTagActionRemove" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="MetadataMultiEditTagsHelp" xml:space="preserve"><value>Remplacer efface d'abord les étiquettes actuelles. Ajouter conserve les étiquettes existantes. Supprimer enlève uniquement les étiquettes indiquées.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Les champs non cochés restent inchangés.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} livre(s) sélectionné(s) ont été ignorés, car la combinaison titre/auteur modifiée existe déjà.</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>

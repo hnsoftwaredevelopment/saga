@@ -301,6 +301,10 @@
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Swap title and authors</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Use this when imported books have title and author metadata reversed.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Use semicolons to separate multiple values.</value></data>
+  <data name="MetadataMultiEditTagActionReplace" xml:space="preserve"><value>Replace</value></data>
+  <data name="MetadataMultiEditTagActionAdd" xml:space="preserve"><value>Add</value></data>
+  <data name="MetadataMultiEditTagActionRemove" xml:space="preserve"><value>Remove</value></data>
+  <data name="MetadataMultiEditTagsHelp" xml:space="preserve"><value>Replace clears the current tags first. Add keeps existing tags. Remove only removes the listed tags.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Unchecked fields remain unchanged.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} selected book(s) were skipped because the edited title/author combination already exists.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>

@@ -22,10 +22,20 @@ Milestone 20 introduces the first testable multi-edit workflow:
 - Custom metadata changes refresh custom filters, visible custom columns, selected book details, and search results immediately.
 - Users can swap title and authors for selected books when imported metadata has those fields reversed.
 
+## Milestone 24
+
+Milestone 24 expands tag maintenance in the same multi-edit workflow:
+
+- Tags can be replaced, which is the original behavior.
+- Tags can be added while preserving existing tags.
+- Tags can be removed while preserving all other tags.
+- Multiple tag values are still separated with semicolons.
+- Tag changes refresh the visible rows, tag filters, selected book details, and search results immediately.
+
 ## Deferred Follow-Up Candidates
 
 - Add the same multi-selection workflow to Bookshelf tiles.
-- Add tag modes: replace tags, add tags, remove tags, split tags, and merge tags.
+- Add advanced tag modes: split tags and merge tags.
 - Add a preview screen for title/author swaps before applying large batches.
 - Add a preview screen for large batches before applying changes.
 - Add undo/history for batch metadata edits.
