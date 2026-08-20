@@ -20,12 +20,13 @@ Milestone 20 introduces the first testable multi-edit workflow:
 - Custom metadata editors respect the configured field type: text, number, date, yes/no, single choice, and multiple choice.
 - Checked empty custom metadata fields clear that value for all selected books.
 - Custom metadata changes refresh custom filters, visible custom columns, selected book details, and search results immediately.
+- Users can swap title and authors for selected books when imported metadata has those fields reversed.
 
 ## Deferred Follow-Up Candidates
 
 - Add the same multi-selection workflow to Bookshelf tiles.
 - Add tag modes: replace tags, add tags, remove tags, split tags, and merge tags.
-- Add a title/author swap button with a clear icon and preview.
+- Add a preview screen for title/author swaps before applying large batches.
 - Add a preview screen for large batches before applying changes.
 - Add undo/history for batch metadata edits.
 - Add conflict reporting that lists skipped books when duplicate title/author rules prevent an update.

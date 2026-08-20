@@ -2021,6 +2021,44 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_multi_edit_swaps_title_and_author_for_selected_books()
+    {
+        var first = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl");
+        var second = CreateBook("Lee Child", ["Spervuur"], language: "nl");
+        var untouched = CreateBook("The Hobbit", ["J.R.R. Tolkien"], language: "en");
+        var repository = new StaticBookRepository([first, second, untouched]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new MetadataMultiEditResult(
+                UpdateAuthors: false,
+                AuthorsText: string.Empty,
+                UpdateSeries: false,
+                SeriesText: string.Empty,
+                UpdateTags: false,
+                TagsText: string.Empty,
+                UpdateLanguage: false,
+                LanguageText: string.Empty,
+                UpdateStatus: false,
+                Status: ReadingStatus.Unread,
+                SwapTitleAndAuthors: true)
+        };
+        var viewModel = CreateViewModel([first, second, untouched], interaction, repository: repository);
+
+        await viewModel.RefreshAsync();
+        viewModel.SetSelectedBooks(viewModel.VisibleBooks.Take(2));
+        await viewModel.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+
+        repository.UpdateCalls.Should().Be(2);
+        repository.BooksSnapshot.Single(book => book.Id == first.Id).Metadata.Title.Should().Be("Triptiek");
+        repository.BooksSnapshot.Single(book => book.Id == first.Id).Metadata.Authors.Should().Equal("Karin Slaughter");
+        repository.BooksSnapshot.Single(book => book.Id == second.Id).Metadata.Title.Should().Be("Spervuur");
+        repository.BooksSnapshot.Single(book => book.Id == second.Id).Metadata.Authors.Should().Equal("Lee Child");
+        repository.BooksSnapshot.Single(book => book.Id == untouched.Id).Metadata.Title.Should().Be("The Hobbit");
+        viewModel.AuthorFilters.Should().ContainSingle(filter => filter.Name == "Karin Slaughter" && filter.Count == 1);
+        viewModel.VisibleBooks.Select(book => book.Title).Should().Contain(["Triptiek", "Spervuur", "The Hobbit"]);
+    }
+
+    [Fact]
     public async Task Metadata_multi_edit_updates_custom_metadata_fields_and_refreshes_filters()
     {
         var first = CreateBook("First", ["Author"]);

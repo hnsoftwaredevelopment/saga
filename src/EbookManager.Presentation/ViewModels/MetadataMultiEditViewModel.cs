@@ -38,6 +38,9 @@ public sealed partial class MetadataMultiEditViewModel : ObservableObject
     private bool updateAuthors;
 
     [ObservableProperty]
+    private bool swapTitleAndAuthors;
+
+    [ObservableProperty]
     private string authorsText = string.Empty;
 
     [ObservableProperty]
@@ -65,6 +68,7 @@ public sealed partial class MetadataMultiEditViewModel : ObservableObject
     private ReadingStatus status = ReadingStatus.Unread;
 
     public bool HasSelectedChanges =>
+        SwapTitleAndAuthors ||
         UpdateAuthors ||
         UpdateSeries ||
         UpdateTags ||
@@ -84,6 +88,7 @@ public sealed partial class MetadataMultiEditViewModel : ObservableObject
             LanguageText,
             UpdateStatus,
             Status,
+            SwapTitleAndAuthors,
             CustomFields
                 .Where(field => field.UpdateValue)
                 .Select(field => new MetadataMultiEditCustomFieldResult(
@@ -93,7 +98,20 @@ public sealed partial class MetadataMultiEditViewModel : ObservableObject
                     field.ValueText))
                 .ToArray());
 
+    public bool CanEditAuthors => !SwapTitleAndAuthors;
+
     partial void OnUpdateAuthorsChanged(bool value) => OnChangeSelectionChanged();
+    partial void OnSwapTitleAndAuthorsChanged(bool value)
+    {
+        if (value)
+        {
+            UpdateAuthors = false;
+        }
+
+        OnPropertyChanged(nameof(CanEditAuthors));
+        OnChangeSelectionChanged();
+    }
+
     partial void OnUpdateSeriesChanged(bool value) => OnChangeSelectionChanged();
     partial void OnUpdateTagsChanged(bool value) => OnChangeSelectionChanged();
     partial void OnUpdateLanguageChanged(bool value) => OnChangeSelectionChanged();
@@ -125,6 +143,7 @@ public sealed record MetadataMultiEditResult(
     string LanguageText,
     bool UpdateStatus,
     ReadingStatus Status,
+    bool SwapTitleAndAuthors = false,
     IReadOnlyList<MetadataMultiEditCustomFieldResult>? CustomFields = null);
 
 public sealed record MetadataMultiEditCustomFieldResult(

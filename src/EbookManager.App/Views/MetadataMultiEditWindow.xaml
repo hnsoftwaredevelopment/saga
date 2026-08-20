@@ -41,11 +41,31 @@
                    Foreground="{DynamicResource TextSecondaryBrush}"
                    Margin="0,0,0,16" />
 
+        <Border Background="{DynamicResource AppBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="12"
+                Margin="0,0,0,14">
+          <StackPanel>
+            <CheckBox Content="{loc:Loc MetadataMultiEditSwapTitleAuthors}"
+                      IsChecked="{Binding SwapTitleAndAuthors}"
+                      FontWeight="SemiBold"
+                      Margin="0,0,0,4" />
+            <TextBlock Text="{loc:Loc MetadataMultiEditSwapTitleAuthorsHelp}"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextSecondaryBrush}"
+                       Margin="22,0,0,0" />
+          </StackPanel>
+        </Border>
+
         <CheckBox Content="{loc:Loc Authors}"
                   IsChecked="{Binding UpdateAuthors}"
+                  IsEnabled="{Binding CanEditAuthors}"
                   Margin="0,0,0,4" />
         <TextBox Text="{Binding AuthorsText, UpdateSourceTrigger=PropertyChanged}"
                  ToolTip="{loc:Loc MetadataMultiEditSemicolonTooltip}"
+                 IsEnabled="{Binding CanEditAuthors}"
                  Margin="22,0,0,12" />
 
         <CheckBox Content="{loc:Loc Series}"

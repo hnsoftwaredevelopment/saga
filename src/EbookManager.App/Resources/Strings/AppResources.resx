@@ -288,6 +288,7 @@
   <data name="Tags" xml:space="preserve"><value>Tags</value></data>
   <data name="Theme" xml:space="preserve"><value>Theme</value></data>
   <data name="Title" xml:space="preserve"><value>Title</value></data>
+  <data name="SwapTitleAndAuthorsTooltip" xml:space="preserve"><value>Swap title and authors</value></data>
   <data name="Type" xml:space="preserve"><value>Type</value></data>
   <data name="View" xml:space="preserve"><value>View</value></data>
   <data name="Undo" xml:space="preserve"><value>Undo</value></data>
@@ -297,6 +298,8 @@
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Edit metadata for the selected books</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Selected books</value></data>
   <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Check only the fields you want to change. Checked empty fields will be cleared.</value></data>
+  <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Swap title and authors</value></data>
+  <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Use this when imported books have title and author metadata reversed.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Use semicolons to separate multiple values.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Unchecked fields remain unchanged.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} selected book(s) were skipped because the edited title/author combination already exists.</value></data>

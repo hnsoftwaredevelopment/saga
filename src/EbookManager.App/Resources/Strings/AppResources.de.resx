@@ -419,6 +419,9 @@
   <data name="Title" xml:space="preserve">
     <value>Titel</value>
   </data>
+  <data name="SwapTitleAndAuthorsTooltip" xml:space="preserve">
+    <value>Titel und Autoren tauschen</value>
+  </data>
   <data name="Type" xml:space="preserve">
     <value>Typ</value>
   </data>
@@ -573,6 +576,8 @@
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Metadaten der ausgewählten Bücher bearbeiten</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Ausgewählte Bücher</value></data>
   <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Aktivieren Sie nur die Felder, die geändert werden sollen. Aktivierte leere Felder werden geleert.</value></data>
+  <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Titel und Autoren tauschen</value></data>
+  <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Verwenden Sie dies, wenn importierte Bücher Titel und Autor vertauscht haben.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Mehrere Werte mit Semikolon trennen.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Nicht aktivierte Felder bleiben unverändert.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} ausgewählte(s) Buch/Bücher wurden übersprungen, weil die geänderte Titel-/Autor-Kombination bereits vorhanden ist.</value></data>

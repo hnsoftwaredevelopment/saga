@@ -419,6 +419,9 @@
   <data name="Title" xml:space="preserve">
     <value>Titolo</value>
   </data>
+  <data name="SwapTitleAndAuthorsTooltip" xml:space="preserve">
+    <value>Scambia titolo e autori</value>
+  </data>
   <data name="Type" xml:space="preserve">
     <value>Tipo</value>
   </data>
@@ -573,6 +576,8 @@
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Modifica i metadati dei libri selezionati</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Libri selezionati</value></data>
   <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Seleziona solo i campi da modificare. I campi selezionati e vuoti verranno cancellati.</value></data>
+  <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Scambia titolo e autori</value></data>
+  <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Usalo quando i libri importati hanno titolo e autore invertiti.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Usa il punto e virgola per separare più valori.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>I campi non selezionati restano invariati.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} libro/i selezionato/i sono stati saltati perché la combinazione titolo/autore modificata esiste già.</value></data>
