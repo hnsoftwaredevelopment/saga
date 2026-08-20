@@ -307,6 +307,24 @@
   <data name="MetadataMultiEditTagsHelp" xml:space="preserve"><value>Vervangen wist eerst de huidige tags. Toevoegen behoudt bestaande tags. Verwijderen haalt alleen de opgegeven tags weg.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Niet-aangevinkte velden blijven ongewijzigd.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} geselecteerde boek(en) zijn overgeslagen omdat de gewijzigde titel/auteur-combinatie al bestaat.</value></data>
+  <data name="MetadataQualityDashboardTitle" xml:space="preserve"><value>Metadata kwaliteit</value></data>
+  <data name="MetadataQualityDashboardTooltip" xml:space="preserve"><value>Toon metadata kwaliteitsdashboard</value></data>
+  <data name="MetadataQualityDashboardDescription" xml:space="preserve"><value>Vind boeken met ontbrekende of verdachte metadata zodat de bibliotheek sneller kan worden opgeschoond.</value></data>
+  <data name="MetadataQualityDashboardBookCount" xml:space="preserve"><value>Boeken</value></data>
+  <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Signalen</value></data>
+  <data name="MetadataQualityNoRows" xml:space="preserve"><value>Geen boeken gevonden voor dit signaal.</value></data>
+  <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Ontbrekende auteur</value></data>
+  <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Boeken zonder bruikbare auteur.</value></data>
+  <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Onbekende taal</value></data>
+  <data name="MetadataQualityUnknownLanguageDescription" xml:space="preserve"><value>Boeken met een lege of onbekende taalwaarde.</value></data>
+  <data name="MetadataQualityMissingCover" xml:space="preserve"><value>Ontbrekende omslag</value></data>
+  <data name="MetadataQualityMissingCoverDescription" xml:space="preserve"><value>Boeken zonder opgeslagen omslag.</value></data>
+  <data name="MetadataQualitySeriesNumberWithoutSeries" xml:space="preserve"><value>Serienummer zonder serie</value></data>
+  <data name="MetadataQualitySeriesNumberWithoutSeriesDescription" xml:space="preserve"><value>Boeken met een serienummer maar zonder serienaam.</value></data>
+  <data name="MetadataQualityPossibleTitleAuthorSwap" xml:space="preserve"><value>Mogelijk titel/auteur omgewisseld</value></data>
+  <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Boeken waarbij de titel op een persoonsnaam lijkt en de auteur niet.</value></data>
+  <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Rommelige tags</value></data>
+  <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Tags met extra spaties of komma-gescheiden waarden.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
 </root>
 

@@ -184,6 +184,21 @@ public sealed class UserInteractionService(
         return Task.CompletedTask;
     }
 
+    public Task ShowMetadataQualityDashboardAsync(
+        MetadataQualityDashboardViewModel dashboard,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = new MetadataQualityDashboardWindow(dashboard);
+        if (System.Windows.Application.Current?.MainWindow is { } owner)
+        {
+            window.Owner = owner;
+        }
+
+        window.ShowDialog();
+        return Task.CompletedTask;
+    }
+
     public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
         MetadataMultiEditViewModel edit,
         CancellationToken cancellationToken)

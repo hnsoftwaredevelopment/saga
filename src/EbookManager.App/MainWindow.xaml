@@ -160,6 +160,15 @@
                   Height="22"
                   Stretch="Uniform" />
           </Button>
+          <Button Command="{Binding ShowMetadataQualityDashboardCommand}"
+                  Style="{StaticResource ToolbarIconButtonStyle}"
+                  ToolTip="{loc:Loc MetadataQualityDashboardTooltip}">
+            <Path Data="{StaticResource MetadataQualityIconGeometry}"
+                  Fill="{DynamicResource AccentBrush}"
+                  Width="22"
+                  Height="22"
+                  Stretch="Uniform" />
+          </Button>
           <Button Command="{Binding ShowMetadataMultiEditCommand}"
                   Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc MetadataMultiEditTooltip}">

@@ -397,6 +397,47 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public void Metadata_quality_dashboard_counts_first_quality_signals()
+    {
+        var missingAuthor = CreateBook("Onbekend", ["Unknown"], language: "nl", coverBytes: [1]);
+        var unknownLanguage = CreateBook("Dwaalspoor", ["Author"], language: "fictional", coverBytes: [1]);
+        var missingCover = CreateBook("Zonder omslag", ["Author"], language: "en");
+        var seriesNumberOnly = CreateBook("Serienummer", ["Author"], language: "en", seriesNumber: 2, coverBytes: [1]);
+        var swapped = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl", coverBytes: [1]);
+        var messyTags = CreateBook("Tags", ["Author"], language: "en", tags: ["thriller, crime"], coverBytes: [1]);
+
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [missingAuthor, unknownLanguage, missingCover, seriesNumberOnly, swapped, messyTags],
+            key => key);
+
+        dashboard.Issues.Single(issue => issue.Title == "MetadataQualityMissingAuthor").Count.Should().Be(1);
+        dashboard.Issues.Single(issue => issue.Title == "MetadataQualityUnknownLanguage").Count.Should().Be(1);
+        dashboard.Issues.Single(issue => issue.Title == "MetadataQualityMissingCover").Count.Should().Be(1);
+        dashboard.Issues.Single(issue => issue.Title == "MetadataQualitySeriesNumberWithoutSeries").Count.Should().Be(1);
+        dashboard.Issues.Single(issue => issue.Title == "MetadataQualityPossibleTitleAuthorSwap").Count.Should().Be(1);
+        dashboard.Issues.Single(issue => issue.Title == "MetadataQualityMessyTags").Count.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Show_metadata_quality_dashboard_opens_dashboard_for_current_library()
+    {
+        var book = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl");
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel([book], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityDashboard.Should().NotBeNull();
+        interaction.MetadataQualityDashboard!.TotalBookCount.Should().Be(1);
+        interaction.MetadataQualityDashboard.Issues
+            .Single(issue => issue.Title == "MetadataQualityPossibleTitleAuthorSwap")
+            .Rows
+            .Should()
+            .ContainSingle(row => row.Title == "Karin Slaughter");
+    }
+
+    [Fact]
     public async Task Custom_metadata_filter_value_can_be_renamed_for_matching_books()
     {
         var first = CreateBook("First", ["Author"]);
@@ -3803,6 +3844,7 @@ public sealed class LibraryViewModelTests
         public DuplicateExclusionsViewModel? DuplicateExclusions { get; private set; }
         public ImportHistoryViewModel? ImportHistory { get; private set; }
         public ImportResultViewModel? ShownImportResult { get; private set; }
+        public MetadataQualityDashboardViewModel? MetadataQualityDashboard { get; private set; }
 
         public Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<string>>(RecordPickBookFiles());
@@ -3873,6 +3915,14 @@ public sealed class LibraryViewModelTests
         public Task ShowDuplicateExclusionsAsync(DuplicateExclusionsViewModel exclusions, CancellationToken cancellationToken)
         {
             DuplicateExclusions = exclusions;
+            return Task.CompletedTask;
+        }
+
+        public Task ShowMetadataQualityDashboardAsync(
+            MetadataQualityDashboardViewModel dashboard,
+            CancellationToken cancellationToken)
+        {
+            MetadataQualityDashboard = dashboard;
             return Task.CompletedTask;
         }
 
