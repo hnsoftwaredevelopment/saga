@@ -108,7 +108,8 @@
                 Height="26"
                 Padding="5"
                 Margin="8,0,0,0"
-                ToolTip="{loc:Loc SwapTitleAndAuthorsTooltip}">
+                ToolTip="{loc:Loc SwapTitleAndAuthorsTooltip}"
+                AutomationProperties.Name="{loc:Loc SwapTitleAndAuthorsTooltip}">
           <Path Data="{StaticResource SwapTitleAuthorIconGeometry}"
                 Fill="{DynamicResource AccentBrush}"
                 Stretch="Uniform" />

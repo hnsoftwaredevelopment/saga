@@ -25,6 +25,7 @@ public sealed partial class BookDetailsViewModel(
     private string? currentLibraryPath;
     private Dictionary<Guid, string?> originalCustomMetadataValues = [];
     private bool isApplyingBook;
+    private string? singleAuthorText;
 
     [ObservableProperty]
     private Guid? bookId;
@@ -154,6 +155,7 @@ public sealed partial class BookDetailsViewModel(
     {
         originalBook = null;
         currentLibraryPath = null;
+        singleAuthorText = null;
         BookId = null;
         Title = string.Empty;
         AuthorsText = string.Empty;
@@ -191,7 +193,7 @@ public sealed partial class BookDetailsViewModel(
         {
             Metadata = new BookMetadata(
                 Title.Trim(),
-                SplitList(AuthorsText),
+                GetEditedAuthors(),
                 CleanDescription(Description),
                 NormalizeBlank(Language),
                 NormalizeBlank(Publisher),
@@ -287,13 +289,24 @@ public sealed partial class BookDetailsViewModel(
         }
 
         var titleToAuthor = Title.Trim();
-        Title = JoinList(SplitList(AuthorsText));
+        Title = JoinAuthorsForTitle(SplitList(AuthorsText));
         AuthorsText = titleToAuthor;
+        singleAuthorText = titleToAuthor;
         LastSaveResult = null;
     }
 
     partial void OnTitleChanged(string value) => RefreshDirtyState();
-    partial void OnAuthorsTextChanged(string value) => RefreshDirtyState();
+    partial void OnAuthorsTextChanged(string value)
+    {
+        if (!isApplyingBook &&
+            singleAuthorText is not null &&
+            !string.Equals(value, singleAuthorText, StringComparison.Ordinal))
+        {
+            singleAuthorText = null;
+        }
+
+        RefreshDirtyState();
+    }
     partial void OnDescriptionChanged(string? value) => RefreshDirtyState();
     partial void OnLanguageChanged(string? value)
     {
@@ -363,6 +376,7 @@ public sealed partial class BookDetailsViewModel(
             BookId = book.Id;
             Title = book.Metadata.Title;
             AuthorsText = JoinList(book.Metadata.Authors);
+            singleAuthorText = book.Metadata.Authors.Count == 1 ? book.Metadata.Authors[0] : null;
             FormatsText = FormatFormats(book.Formats);
             ApplyFormatFallback(book.Formats);
             Description = CleanDescription(book.Metadata.Description);
@@ -427,7 +441,7 @@ public sealed partial class BookDetailsViewModel(
         {
             Metadata = new BookMetadata(
                 book.Metadata.Title.Trim(),
-                SplitList(JoinList(book.Metadata.Authors)),
+                NormalizeAuthorsForEditing(book.Metadata.Authors),
                 CleanDescription(book.Metadata.Description),
                 NormalizeBlank(book.Metadata.Language),
                 NormalizeBlank(book.Metadata.Publisher),
@@ -440,6 +454,19 @@ public sealed partial class BookDetailsViewModel(
         };
 
     private static string JoinList(IReadOnlyList<string> values) => string.Join("; ", values);
+
+    private static string JoinAuthorsForTitle(IReadOnlyList<string> values) => string.Join(", ", values);
+
+    private IReadOnlyList<string> GetEditedAuthors() =>
+        singleAuthorText is not null &&
+        string.Equals(AuthorsText, singleAuthorText, StringComparison.Ordinal)
+            ? [singleAuthorText]
+            : SplitList(AuthorsText);
+
+    private static IReadOnlyList<string> NormalizeAuthorsForEditing(IReadOnlyList<string> authors) =>
+        authors.Count == 1
+            ? [authors[0].Trim()]
+            : SplitList(JoinList(authors));
 
     private static string FormatFormats(IReadOnlyList<EbookFormat> formats) =>
         string.Join(", ", formats

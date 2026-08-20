@@ -70,19 +70,20 @@ public sealed class BookDetailsViewModelTests
     public void Swap_title_and_authors_updates_edit_fields_and_undo_restores_original_values()
     {
         var viewModel = CreateViewModel(out _);
-        var book = CreateBook("Karin Slaughter", ["Triptiek"]);
+        var book = CreateBook("Deel 1; Deel 2", ["Author One", "Author Two"]);
 
         viewModel.Load(book);
         viewModel.SwapTitleAndAuthorsCommand.Execute(null);
 
-        viewModel.Title.Should().Be("Triptiek");
-        viewModel.AuthorsText.Should().Be("Karin Slaughter");
+        viewModel.Title.Should().Be("Author One, Author Two");
+        viewModel.AuthorsText.Should().Be("Deel 1; Deel 2");
         viewModel.HasUnsavedChanges.Should().BeTrue();
+        viewModel.ToBook()!.Metadata.Authors.Should().Equal("Deel 1; Deel 2");
 
         viewModel.UndoCommand.Execute(null);
 
-        viewModel.Title.Should().Be("Karin Slaughter");
-        viewModel.AuthorsText.Should().Be("Triptiek");
+        viewModel.Title.Should().Be("Deel 1; Deel 2");
+        viewModel.AuthorsText.Should().Be("Author One; Author Two");
         viewModel.HasUnsavedChanges.Should().BeFalse();
     }
 
