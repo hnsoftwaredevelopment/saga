@@ -1,0 +1,121 @@
+<Window x:Class="EbookManager.App.Views.MetadataQualityDashboardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:EbookManager.App.Localization"
+        Title="{loc:Loc MetadataQualityDashboardTitle}"
+        Width="1060"
+        Height="640"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="18">
+    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,14">
+      <TextBlock Text="{loc:Loc MetadataQualityDashboardTitle}"
+                 FontSize="22"
+                 FontWeight="SemiBold"
+                 Foreground="{DynamicResource TextPrimaryBrush}" />
+      <TextBlock Text="{loc:Loc MetadataQualityDashboardDescription}"
+                 TextWrapping="Wrap"
+                 Margin="0,4,0,0"
+                 Foreground="{DynamicResource TextSecondaryBrush}" />
+      <TextBlock Margin="0,8,0,0"
+                 Foreground="{DynamicResource TextSecondaryBrush}">
+        <Run Text="{loc:Loc MetadataQualityDashboardBookCount}" />
+        <Run Text=" " />
+        <Run Text="{Binding TotalBookCount, Mode=OneWay}" />
+        <Run Text=" - " />
+        <Run Text="{loc:Loc MetadataQualityDashboardIssueCount}" />
+        <Run Text=" " />
+        <Run Text="{Binding TotalIssueCount, Mode=OneWay}" />
+      </TextBlock>
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="0,14,0,0">
+      <Button Content="{loc:Loc Close}"
+              MinWidth="90"
+              Click="CloseClicked" />
+    </StackPanel>
+
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="320" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <ListBox Grid.Column="0"
+               ItemsSource="{Binding Issues}"
+               SelectedItem="{Binding SelectedIssue, Mode=TwoWay}"
+               BorderThickness="0"
+               Background="Transparent"
+               Margin="0,0,14,0">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Border Background="{DynamicResource PanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="12"
+                    Margin="0,0,0,10">
+              <DockPanel>
+                <Border DockPanel.Dock="Right"
+                        Background="{DynamicResource AccentBrush}"
+                        CornerRadius="12"
+                        MinWidth="44"
+                        Padding="8,4"
+                        Margin="10,0,0,0">
+                  <TextBlock Text="{Binding Count}"
+                             HorizontalAlignment="Center"
+                             FontWeight="SemiBold"
+                             Foreground="White" />
+                </Border>
+                <StackPanel>
+                  <TextBlock Text="{Binding Title}"
+                             FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Text="{Binding Description}"
+                             TextWrapping="Wrap"
+                             Margin="0,4,0,0"
+                             FontSize="12"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+              </DockPanel>
+            </Border>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+      <Grid Grid.Column="1">
+        <TextBlock Text="{loc:Loc MetadataQualityNoRows}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource TextSecondaryBrush}">
+          <TextBlock.Style>
+            <Style TargetType="TextBlock">
+              <Setter Property="Visibility" Value="Collapsed" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedIssue.Count}" Value="0">
+                  <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </TextBlock.Style>
+        </TextBlock>
+
+        <DataGrid ItemsSource="{Binding SelectedIssue.Rows}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  GridLinesVisibility="Horizontal"
+                  HeadersVisibility="Column">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="220" />
+            <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" Width="180" />
+            <DataGridTextColumn Header="{loc:Loc Series}" Binding="{Binding Series}" Width="140" />
+            <DataGridTextColumn Header="{loc:Loc Language}" Binding="{Binding Language}" Width="100" />
+            <DataGridTextColumn Header="{loc:Loc Tags}" Binding="{Binding Tags}" Width="*" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </Grid>
+    </Grid>
+  </DockPanel>
+</Window>
