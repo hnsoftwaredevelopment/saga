@@ -18,6 +18,17 @@ Milestone 19 starts metadata cleanup hardening.
 - If a bulk author cleanup would create a duplicate-key conflict, Saga falls back to per-book updates and skips only the conflicting book.
 - The UI refreshes the in-memory book list, visible rows, details pane, and filters after successful cleanup.
 
+## Milestone 25
+
+Milestone 25 extends filter-list cleanup to custom metadata values.
+
+- Users can rename custom metadata filter values for text, single-select, and multi-select fields.
+- Users can remove custom metadata filter values for text, single-select, and multi-select fields.
+- Multi-select cleanup edits only the selected value inside the semicolon-separated list and preserves other values.
+- When the last value is removed from a book, the custom metadata value is deleted for that book.
+- After cleanup, Saga refreshes custom metadata filters, visible rows, selected book details, and search results.
+- Number, date, and yes/no custom metadata filters remain filter-only for now because they use typed values.
+
 ## Deferred Follow-Up Candidates
 
 - Add bulk edit for selected books from the library grid, excluding title by default but allowing fields such as authors, series, tags, language, status, and selected custom metadata.
@@ -25,7 +36,7 @@ Milestone 19 starts metadata cleanup hardening.
 - Add batch tag tools such as add tag, remove tag, replace tag, split tag, and merge tags.
 - Add batch normalization tools for authors, language values, reading status, and common typo/casing differences.
 - Add clear read-only context menu feedback for filters that cannot be renamed or removed, such as format/type and device-derived e-reader state.
-- Add cleanup actions for custom metadata filter values.
+- Add cleanup actions for typed custom metadata filter values where that becomes useful, especially date normalization.
 - Add a metadata quality dashboard for missing authors, unknown language values, empty series, duplicate tags, and suspicious author spellings.
 - Add preview screens for large cleanup actions before applying changes.
 - Add undo/history for metadata cleanup batches.

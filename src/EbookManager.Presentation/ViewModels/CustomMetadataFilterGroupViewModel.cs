@@ -14,6 +14,10 @@ public sealed partial class CustomMetadataFilterGroupViewModel(
     public Guid FieldId => definition.Id;
     public string Name => definition.Name;
     public CustomMetadataFieldType Type => definition.Type;
+    public bool CanCleanupValues => Type is
+        CustomMetadataFieldType.Text or
+        CustomMetadataFieldType.SingleSelect or
+        CustomMetadataFieldType.MultiSelect;
     public ObservableCollection<FacetFilterViewModel> Filters { get; } = filters;
     public int VisibleFilterCount => Filters.Count(filter => filter.IsVisible);
     public int TotalFilterCount => Filters.Count;

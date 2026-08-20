@@ -397,6 +397,85 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Custom_metadata_filter_value_can_be_renamed_for_matching_books()
+    {
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        customMetadataRepository.SetValue(new CustomMetadataValue(first.Id, field.Id, TextValue: "Avondgroep"));
+        customMetadataRepository.SetValue(new CustomMetadataValue(second.Id, field.Id, TextValue: "Middaggroep"));
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "Ochtendgroep" };
+        var viewModel = CreateViewModel(
+            [first, second],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        await viewModel.RenameCustomMetadataFilterCommand.ExecuteAsync(
+            group.Filters.Single(filter => filter.Name == "Avondgroep"));
+
+        customMetadataRepository.ValuesSnapshot.Single(value => value.BookId == first.Id).TextValue.Should().Be("Ochtendgroep");
+        customMetadataRepository.ValuesSnapshot.Single(value => value.BookId == second.Id).TextValue.Should().Be("Middaggroep");
+        group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Filters.Select(filter => filter.Name).Should().Equal("Middaggroep", "Ochtendgroep");
+        viewModel.VisibleBooks.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task Multi_select_custom_metadata_filter_value_can_be_renamed_without_losing_other_values()
+    {
+        var book = CreateBook("First", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Genres", CustomMetadataFieldType.MultiSelect);
+        customMetadataRepository.SetValue(new CustomMetadataValue(book.Id, field.Id, TextValue: "Thriller; Fantasy"));
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "Detective" };
+        var viewModel = CreateViewModel(
+            [book],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        await viewModel.RenameCustomMetadataFilterCommand.ExecuteAsync(
+            group.Filters.Single(filter => filter.Name == "Thriller"));
+
+        customMetadataRepository.ValuesSnapshot.Single().TextValue.Should().Be("Detective; Fantasy");
+        group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Filters.Select(filter => filter.Name).Should().Equal("Detective", "Fantasy");
+    }
+
+    [Fact]
+    public async Task Custom_metadata_filter_value_can_be_removed_from_matching_books()
+    {
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Genres", CustomMetadataFieldType.MultiSelect);
+        customMetadataRepository.SetValue(new CustomMetadataValue(first.Id, field.Id, TextValue: "Thriller; Fantasy"));
+        customMetadataRepository.SetValue(new CustomMetadataValue(second.Id, field.Id, TextValue: "Thriller"));
+        var interaction = new ScriptedUserInteractionService { ConfirmMetadataValueRemovalResult = true };
+        var viewModel = CreateViewModel(
+            [first, second],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        await viewModel.RemoveCustomMetadataFilterCommand.ExecuteAsync(
+            group.Filters.Single(filter => filter.Name == "Thriller"));
+
+        customMetadataRepository.ValuesSnapshot.Single().TextValue.Should().Be("Fantasy");
+        customMetadataRepository.ValuesSnapshot.Single().BookId.Should().Be(first.Id);
+        group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Filters.Should().ContainSingle(filter => filter.Name == "Fantasy" && filter.Count == 1);
+    }
+
+    [Fact]
     public async Task Copy_current_view_creates_selected_custom_view_with_copied_layout()
     {
         var settingsStore = new InMemoryAppSettingsStore();

@@ -604,10 +604,50 @@
                              MaxHeight="120">
                       <ListBox.ItemTemplate>
                         <DataTemplate>
-                          <CheckBox Content="{Binding DisplayName}"
-                                    IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                    Margin="0,2"
-                                    Foreground="{DynamicResource TextSecondaryBrush}" />
+                          <DockPanel Margin="0,2">
+                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                      VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding DisplayName}"
+                                       Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       ToolTip="{Binding DataContext.CanCleanupValues, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                       ToolTipService.IsEnabled="False"
+                                       Margin="6,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextSecondaryBrush}">
+                              <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                  <MenuItem Header="{loc:Loc Rename}"
+                                            Command="{Binding PlacementTarget.Tag.RenameCustomMetadataFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                            CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <MenuItem.Style>
+                                      <Style TargetType="MenuItem">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                          <DataTrigger Binding="{Binding PlacementTarget.ToolTip, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                          </DataTrigger>
+                                        </Style.Triggers>
+                                      </Style>
+                                    </MenuItem.Style>
+                                  </MenuItem>
+                                  <MenuItem Header="{loc:Loc Delete}"
+                                            Command="{Binding PlacementTarget.Tag.RemoveCustomMetadataFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                            CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <MenuItem.Style>
+                                      <Style TargetType="MenuItem">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                          <DataTrigger Binding="{Binding PlacementTarget.ToolTip, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                          </DataTrigger>
+                                        </Style.Triggers>
+                                      </Style>
+                                    </MenuItem.Style>
+                                  </MenuItem>
+                                </ContextMenu>
+                              </TextBlock.ContextMenu>
+                            </TextBlock>
+                          </DockPanel>
                         </DataTemplate>
                       </ListBox.ItemTemplate>
                     </ListBox>
