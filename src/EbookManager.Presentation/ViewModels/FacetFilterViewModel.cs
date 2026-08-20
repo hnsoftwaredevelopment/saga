@@ -7,13 +7,15 @@ public sealed partial class FacetFilterViewModel(
     int count,
     bool isSelected,
     Action selectionChanged,
-    string? displayName = null)
+    string? displayName = null,
+    Guid? customMetadataFieldId = null)
     : ObservableObject
 {
     private readonly Action selectionChanged = selectionChanged;
 
     public string Name { get; } = name;
     public int Count { get; } = count;
+    public Guid? CustomMetadataFieldId { get; } = customMetadataFieldId;
     public string DisplayName => $"{DisplayText} ({Count})";
 
     [ObservableProperty]

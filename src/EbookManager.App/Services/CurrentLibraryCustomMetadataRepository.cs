@@ -60,6 +60,19 @@ public sealed class CurrentLibraryCustomMetadataRepository(
     public Task DeleteValueAsync(Guid bookId, Guid fieldId, CancellationToken cancellationToken) =>
         CreateRepository().DeleteValueAsync(bookId, fieldId, cancellationToken);
 
+    public Task<IReadOnlyList<Guid>> CleanupFilterValueAsync(
+        Guid fieldId,
+        string oldValue,
+        string? replacementValue,
+        bool remove,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult<IReadOnlyList<Guid>>([])
+            : repository.CleanupFilterValueAsync(fieldId, oldValue, replacementValue, remove, cancellationToken);
+    }
+
     private EfCustomMetadataRepository CreateRepository() =>
         TryCreateRepository() ?? throw new InvalidOperationException("No active library is loaded.");
 

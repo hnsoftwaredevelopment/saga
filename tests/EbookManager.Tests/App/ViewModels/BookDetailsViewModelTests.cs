@@ -804,6 +804,14 @@ public sealed class BookDetailsViewModelTests
             Values.Remove((bookId, fieldId));
             return Task.CompletedTask;
         }
+
+        public Task<IReadOnlyList<Guid>> CleanupFilterValueAsync(
+            Guid fieldId,
+            string oldValue,
+            string? replacementValue,
+            bool remove,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<Guid>>([]);
     }
 
     private sealed class NoopLibraryFileStore : ILibraryFileStore

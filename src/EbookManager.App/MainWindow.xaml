@@ -602,12 +602,66 @@
                     <ListBox ItemsSource="{Binding Filters}"
                              Style="{StaticResource FilterListBoxStyle}"
                              MaxHeight="120">
+                      <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                          <Setter Property="Padding" Value="0" />
+                          <Setter Property="Margin" Value="0" />
+                          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                          <Setter Property="Focusable" Value="True" />
+                          <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" />
+                          <Setter Property="ToolTip" Value="{Binding DataContext.CanCleanupValues, RelativeSource={RelativeSource AncestorType=ListBox}}" />
+                          <Setter Property="ToolTipService.IsEnabled" Value="False" />
+                          <Setter Property="ContextMenu">
+                            <Setter.Value>
+                              <ContextMenu>
+                                <MenuItem Header="{loc:Loc Rename}"
+                                          Command="{Binding PlacementTarget.Tag.RenameCustomMetadataFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                          CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                  <MenuItem.Style>
+                                    <Style TargetType="MenuItem">
+                                      <Setter Property="Visibility" Value="Collapsed" />
+                                      <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PlacementTarget.ToolTip, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                          <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                      </Style.Triggers>
+                                    </Style>
+                                  </MenuItem.Style>
+                                </MenuItem>
+                                <MenuItem Header="{loc:Loc Delete}"
+                                          Command="{Binding PlacementTarget.Tag.RemoveCustomMetadataFilterCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                          CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                  <MenuItem.Style>
+                                    <Style TargetType="MenuItem">
+                                      <Setter Property="Visibility" Value="Collapsed" />
+                                      <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PlacementTarget.ToolTip, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                          <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                      </Style.Triggers>
+                                    </Style>
+                                  </MenuItem.Style>
+                                </MenuItem>
+                              </ContextMenu>
+                            </Setter.Value>
+                          </Setter>
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsVisible}" Value="False">
+                              <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </ListBox.ItemContainerStyle>
                       <ListBox.ItemTemplate>
                         <DataTemplate>
-                          <CheckBox Content="{Binding DisplayName}"
-                                    IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                    Margin="0,2"
-                                    Foreground="{DynamicResource TextSecondaryBrush}" />
+                          <DockPanel Margin="0,2">
+                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                      VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding DisplayName}"
+                                       Margin="6,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                          </DockPanel>
                         </DataTemplate>
                       </ListBox.ItemTemplate>
                     </ListBox>

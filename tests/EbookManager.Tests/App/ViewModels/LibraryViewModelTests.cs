@@ -397,6 +397,91 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Custom_metadata_filter_value_can_be_renamed_for_matching_books()
+    {
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        customMetadataRepository.SetValue(new CustomMetadataValue(first.Id, field.Id, TextValue: "Avondgroep"));
+        customMetadataRepository.SetValue(new CustomMetadataValue(second.Id, field.Id, TextValue: "Middaggroep"));
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "Ochtendgroep" };
+        var viewModel = CreateViewModel(
+            [first, second],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        await viewModel.RenameCustomMetadataFilterCommand.ExecuteAsync(
+            group.Filters.Single(filter => filter.Name == "Avondgroep"));
+
+        customMetadataRepository.ValuesSnapshot.Single(value => value.BookId == first.Id).TextValue.Should().Be("Ochtendgroep");
+        customMetadataRepository.ValuesSnapshot.Single(value => value.BookId == second.Id).TextValue.Should().Be("Middaggroep");
+        group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Filters.Select(filter => filter.Name).Should().Equal("Middaggroep", "Ochtendgroep");
+        viewModel.VisibleBooks.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task Multi_select_custom_metadata_filter_value_can_be_renamed_without_losing_other_values()
+    {
+        var book = CreateBook("First", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Genres", CustomMetadataFieldType.MultiSelect);
+        await customMetadataRepository.UpdateDefinitionOptionsAsync(field.Id, ["Thriller", "Fantasy"], default);
+        customMetadataRepository.SetValue(new CustomMetadataValue(book.Id, field.Id, TextValue: "Thriller; Fantasy"));
+        var interaction = new ScriptedUserInteractionService { PromptTextResult = "Detective" };
+        var viewModel = CreateViewModel(
+            [book],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        await viewModel.RenameCustomMetadataFilterCommand.ExecuteAsync(
+            group.Filters.Single(filter => filter.Name == "Thriller"));
+
+        customMetadataRepository.ValuesSnapshot.Single().TextValue.Should().Be("Detective; Fantasy");
+        (await customMetadataRepository.ListDefinitionsAsync(default))
+            .Single(definition => definition.Id == field.Id)
+            .Options
+            .Should()
+            .Equal("Detective", "Fantasy");
+        group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Filters.Select(filter => filter.Name).Should().Equal("Detective", "Fantasy");
+    }
+
+    [Fact]
+    public async Task Custom_metadata_filter_value_can_be_removed_from_matching_books()
+    {
+        var first = CreateBook("First", ["Author"]);
+        var second = CreateBook("Second", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Genres", CustomMetadataFieldType.MultiSelect);
+        customMetadataRepository.SetValue(new CustomMetadataValue(first.Id, field.Id, TextValue: "Thriller; Fantasy"));
+        customMetadataRepository.SetValue(new CustomMetadataValue(second.Id, field.Id, TextValue: "Thriller"));
+        var interaction = new ScriptedUserInteractionService { ConfirmMetadataValueRemovalResult = true };
+        var viewModel = CreateViewModel(
+            [first, second],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        await viewModel.RemoveCustomMetadataFilterCommand.ExecuteAsync(
+            group.Filters.Single(filter => filter.Name == "Thriller"));
+
+        customMetadataRepository.ValuesSnapshot.Single().TextValue.Should().Be("Fantasy");
+        customMetadataRepository.ValuesSnapshot.Single().BookId.Should().Be(first.Id);
+        group = viewModel.CustomMetadataFilterGroups.Should().ContainSingle(item => item.FieldId == field.Id).Subject;
+        group.Filters.Should().ContainSingle(filter => filter.Name == "Fantasy" && filter.Count == 1);
+    }
+
+    [Fact]
     public async Task Copy_current_view_creates_selected_custom_view_with_copied_layout()
     {
         var settingsStore = new InMemoryAppSettingsStore();
@@ -3066,6 +3151,146 @@ public sealed class LibraryViewModelTests
             values.Remove((bookId, fieldId));
             return Task.CompletedTask;
         }
+
+        public Task<IReadOnlyList<Guid>> CleanupFilterValueAsync(
+            Guid fieldId,
+            string oldValue,
+            string? replacementValue,
+            bool remove,
+            CancellationToken cancellationToken)
+        {
+            var definitionIndex = definitions.FindIndex(definition => definition.Id == fieldId);
+            if (definitionIndex < 0)
+            {
+                return Task.FromResult<IReadOnlyList<Guid>>([]);
+            }
+
+            var definition = definitions[definitionIndex];
+            if (definition.Type is not (CustomMetadataFieldType.Text or CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect))
+            {
+                return Task.FromResult<IReadOnlyList<Guid>>([]);
+            }
+
+            var changedBookIds = new List<Guid>();
+            foreach (var value in values.Values.Where(value => value.FieldId == fieldId).ToArray())
+            {
+                var updatedText = definition.Type == CustomMetadataFieldType.MultiSelect
+                    ? EditListValue(value.TextValue, oldValue, replacementValue, remove)
+                    : EditScalarValue(value.TextValue, oldValue, replacementValue, remove);
+                if (string.Equals(value.TextValue, updatedText, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                changedBookIds.Add(value.BookId);
+                if (string.IsNullOrWhiteSpace(updatedText))
+                {
+                    values.Remove((value.BookId, value.FieldId));
+                    continue;
+                }
+
+                values[(value.BookId, value.FieldId)] = value with
+                {
+                    TextValue = updatedText,
+                    UpdatedUtc = DateTimeOffset.UtcNow
+                };
+            }
+
+            if (!remove &&
+                !string.IsNullOrWhiteSpace(replacementValue) &&
+                definition.Type is CustomMetadataFieldType.SingleSelect or CustomMetadataFieldType.MultiSelect)
+            {
+                definitions[definitionIndex] = definition with
+                {
+                    Options = RenameOption(definition.Options, oldValue, replacementValue.Trim())
+                };
+            }
+
+            return Task.FromResult<IReadOnlyList<Guid>>(changedBookIds.Distinct().ToArray());
+        }
+
+        private static string? EditScalarValue(
+            string? value,
+            string oldValue,
+            string? replacementValue,
+            bool remove) =>
+            string.Equals(value?.Trim(), oldValue.Trim(), StringComparison.OrdinalIgnoreCase)
+                ? remove ? null : replacementValue?.Trim()
+                : value;
+
+        private static string? EditListValue(
+            string? value,
+            string oldValue,
+            string? replacementValue,
+            bool remove)
+        {
+            var changed = false;
+            var values = new List<string>();
+            foreach (var item in SplitList(value))
+            {
+                if (string.Equals(item, oldValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    changed = true;
+                    if (!remove && !string.IsNullOrWhiteSpace(replacementValue))
+                    {
+                        values.Add(replacementValue.Trim());
+                    }
+                }
+                else
+                {
+                    values.Add(item);
+                }
+            }
+
+            if (!changed)
+            {
+                return value;
+            }
+
+            var distinctValues = values
+                .Where(item => !string.IsNullOrWhiteSpace(item))
+                .Select(item => item.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+            return distinctValues.Length == 0
+                ? null
+                : string.Join("; ", distinctValues);
+        }
+
+        private static IReadOnlyList<string> RenameOption(
+            IReadOnlyList<string> options,
+            string oldValue,
+            string replacementValue)
+        {
+            var changed = false;
+            var updated = new List<string>();
+            foreach (var option in options)
+            {
+                if (string.Equals(option, oldValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    changed = true;
+                    updated.Add(replacementValue);
+                }
+                else
+                {
+                    updated.Add(option);
+                }
+            }
+
+            if (!changed && !updated.Contains(replacementValue, StringComparer.OrdinalIgnoreCase))
+            {
+                updated.Add(replacementValue);
+            }
+
+            return updated
+                .Where(option => !string.IsNullOrWhiteSpace(option))
+                .Select(option => option.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+        }
+
+        private static IEnumerable<string> SplitList(string? value) =>
+            (value ?? string.Empty).Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
     }
 
     private sealed class CapturingLibraryPerformanceReporter : ILibraryPerformanceReporter
