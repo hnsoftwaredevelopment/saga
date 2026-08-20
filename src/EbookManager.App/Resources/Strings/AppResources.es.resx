@@ -579,6 +579,10 @@
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Intercambiar título y autores</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Use esto cuando los libros importados tengan el título y el autor invertidos.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Use punto y coma para separar varios valores.</value></data>
+  <data name="MetadataMultiEditTagActionReplace" xml:space="preserve"><value>Reemplazar</value></data>
+  <data name="MetadataMultiEditTagActionAdd" xml:space="preserve"><value>Añadir</value></data>
+  <data name="MetadataMultiEditTagActionRemove" xml:space="preserve"><value>Eliminar</value></data>
+  <data name="MetadataMultiEditTagsHelp" xml:space="preserve"><value>Reemplazar borra primero las etiquetas actuales. Añadir conserva las etiquetas existentes. Eliminar solo quita las etiquetas indicadas.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Los campos sin marcar no se modifican.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>Se omitieron {0} libro(s) seleccionados porque la combinación modificada de título/autor ya existe.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sí</value></data>

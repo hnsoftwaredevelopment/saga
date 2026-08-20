@@ -2967,7 +2967,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             authors = [metadata.Title.Trim()];
         }
 
-        var tags = result.UpdateTags ? SplitNullableList(result.TagsText) : metadata.Tags;
+        var tags = result.UpdateTags ? ApplyTagAction(metadata.Tags, result.TagAction, result.TagsText) : metadata.Tags;
         var series = result.UpdateSeries ? NormalizeBlank(result.SeriesText) : metadata.Series;
         var seriesNumber = result.UpdateSeries && series is null ? null : metadata.SeriesNumber;
         var language = result.UpdateLanguage ? NormalizeBlank(result.LanguageText) : metadata.Language;
@@ -3462,6 +3462,50 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         var values = SplitList(value, distinct: true);
         return values.Count == 0 ? null : values;
+    }
+
+    private static IReadOnlyList<string>? ApplyTagAction(
+        IReadOnlyList<string>? currentTags,
+        MetadataMultiEditTagAction action,
+        string? tagsText)
+    {
+        var editedTags = SplitList(tagsText, distinct: true);
+        return action switch
+        {
+            MetadataMultiEditTagAction.Add => AddTags(currentTags, editedTags),
+            MetadataMultiEditTagAction.Remove => RemoveTags(currentTags, editedTags),
+            _ => editedTags.Count == 0 ? null : editedTags
+        };
+    }
+
+    private static IReadOnlyList<string>? AddTags(
+        IReadOnlyList<string>? currentTags,
+        IReadOnlyList<string> tagsToAdd)
+    {
+        var tags = (currentTags ?? []).ToList();
+        foreach (var tag in tagsToAdd)
+        {
+            if (!tags.Contains(tag, StringComparer.OrdinalIgnoreCase))
+            {
+                tags.Add(tag);
+            }
+        }
+
+        return tags.Count == 0 ? null : tags;
+    }
+
+    private static IReadOnlyList<string>? RemoveTags(
+        IReadOnlyList<string>? currentTags,
+        IReadOnlyList<string> tagsToRemove)
+    {
+        if (currentTags is null || currentTags.Count == 0)
+        {
+            return null;
+        }
+
+        var removeSet = tagsToRemove.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var tags = currentTags.Where(tag => !removeSet.Contains(tag)).ToArray();
+        return tags.Length == 0 ? null : tags;
     }
 
     private static IReadOnlyList<string> SplitList(string? value, bool distinct = false) =>

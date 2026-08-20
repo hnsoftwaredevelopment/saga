@@ -301,6 +301,10 @@
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Titel en auteur omwisselen</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Gebruik dit wanneer geimporteerde boeken titel en auteur omgedraaid hebben.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Gebruik puntkomma's om meerdere waarden te scheiden.</value></data>
+  <data name="MetadataMultiEditTagActionReplace" xml:space="preserve"><value>Vervangen</value></data>
+  <data name="MetadataMultiEditTagActionAdd" xml:space="preserve"><value>Toevoegen</value></data>
+  <data name="MetadataMultiEditTagActionRemove" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="MetadataMultiEditTagsHelp" xml:space="preserve"><value>Vervangen wist eerst de huidige tags. Toevoegen behoudt bestaande tags. Verwijderen haalt alleen de opgegeven tags weg.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Niet-aangevinkte velden blijven ongewijzigd.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} geselecteerde boek(en) zijn overgeslagen omdat de gewijzigde titel/auteur-combinatie al bestaat.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
