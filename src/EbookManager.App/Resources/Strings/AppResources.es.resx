@@ -585,24 +585,24 @@
   <data name="MetadataMultiEditTagsHelp" xml:space="preserve"><value>Reemplazar borra primero las etiquetas actuales. Añadir conserva las etiquetas existentes. Eliminar solo quita las etiquetas indicadas.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Los campos sin marcar no se modifican.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>Se omitieron {0} libro(s) seleccionados porque la combinación modificada de título/autor ya existe.</value></data>
-  <data name="MetadataQualityDashboardTitle" xml:space="preserve"><value>Metadata quality</value></data>
-  <data name="MetadataQualityDashboardTooltip" xml:space="preserve"><value>Show metadata quality dashboard</value></data>
-  <data name="MetadataQualityDashboardDescription" xml:space="preserve"><value>Find books with missing or suspicious metadata so the library can be cleaned up faster.</value></data>
-  <data name="MetadataQualityDashboardBookCount" xml:space="preserve"><value>Books</value></data>
-  <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Signals</value></data>
-  <data name="MetadataQualityNoRows" xml:space="preserve"><value>No books found for this signal.</value></data>
-  <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Missing author</value></data>
-  <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Books without a useful author value.</value></data>
-  <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Unknown language</value></data>
-  <data name="MetadataQualityUnknownLanguageDescription" xml:space="preserve"><value>Books with an empty or unrecognized language value.</value></data>
-  <data name="MetadataQualityMissingCover" xml:space="preserve"><value>Missing cover</value></data>
-  <data name="MetadataQualityMissingCoverDescription" xml:space="preserve"><value>Books without a stored cover.</value></data>
-  <data name="MetadataQualitySeriesNumberWithoutSeries" xml:space="preserve"><value>Series number without series</value></data>
-  <data name="MetadataQualitySeriesNumberWithoutSeriesDescription" xml:space="preserve"><value>Books with a series number but no series name.</value></data>
-  <data name="MetadataQualityPossibleTitleAuthorSwap" xml:space="preserve"><value>Possible title/author swap</value></data>
-  <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Books where the title looks like a person name and the author does not.</value></data>
-  <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Messy tags</value></data>
-  <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Tags with extra spaces or comma-separated values.</value></data>
+  <data name="MetadataQualityDashboardTitle" xml:space="preserve"><value>Calidad de los metadatos</value></data>
+  <data name="MetadataQualityDashboardTooltip" xml:space="preserve"><value>Mostrar el panel de calidad de los metadatos</value></data>
+  <data name="MetadataQualityDashboardDescription" xml:space="preserve"><value>Encuentre libros con metadatos ausentes o sospechosos para limpiar la biblioteca más rápidamente.</value></data>
+  <data name="MetadataQualityDashboardBookCount" xml:space="preserve"><value>Libros</value></data>
+  <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Indicadores</value></data>
+  <data name="MetadataQualityNoRows" xml:space="preserve"><value>No se encontraron libros para este indicador.</value></data>
+  <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Autor ausente</value></data>
+  <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Libros sin un autor válido.</value></data>
+  <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Idioma desconocido</value></data>
+  <data name="MetadataQualityUnknownLanguageDescription" xml:space="preserve"><value>Libros con un valor de idioma vacío o no reconocido.</value></data>
+  <data name="MetadataQualityMissingCover" xml:space="preserve"><value>Portada ausente</value></data>
+  <data name="MetadataQualityMissingCoverDescription" xml:space="preserve"><value>Libros sin una portada guardada.</value></data>
+  <data name="MetadataQualitySeriesNumberWithoutSeries" xml:space="preserve"><value>Número de serie sin serie</value></data>
+  <data name="MetadataQualitySeriesNumberWithoutSeriesDescription" xml:space="preserve"><value>Libros con un número de serie, pero sin nombre de serie.</value></data>
+  <data name="MetadataQualityPossibleTitleAuthorSwap" xml:space="preserve"><value>Posible intercambio de título y autor</value></data>
+  <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Libros cuyo título parece el nombre de una persona, pero cuyo autor no.</value></data>
+  <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Etiquetas desordenadas</value></data>
+  <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Etiquetas con espacios adicionales o valores separados por comas.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sí</value></data>
 </root>
 
