@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 26 builds on version `0.1` with a metadata quality dashboard for finding cleanup opportunities across the active library.
+Milestone 27 builds on version `0.1` by turning the metadata quality dashboard into a direct navigation tool for library cleanup.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -48,11 +48,12 @@ Milestone 26 builds on version `0.1` with a metadata quality dashboard for findi
 - standard metadata search across language display names, dates, series numbers, formats, and system dates
 - sectioned settings foundation for duplicates and diagnostics preferences
 - duplicate merge default actions prepared in Settings and applied to merge previews
-- duplicate finder with compare, delete, ignore, and field-by-field merge workflows
+- duplicate finder with compare, delete, field-by-field merge, and a separate `Geen duplicaat` exclusion workflow for possible matches
+- duplicate merge currently updates SQLite but not the portable `metadata.json` sidecar; this remaining consistency gap is tracked in [issue #1](https://github.com/hnsoftwaredevelopment/saga/issues/1)
 - custom metadata fields with Calibre custom-column import
 - customizable column visibility, saved grid layouts, and user-defined views
 - multi-book metadata editing and cleanup actions for facets such as authors and tags
-- read-only metadata quality dashboard with issue counts and affected-book lists
+- metadata quality dashboard with issue counts, affected-book lists, and direct navigation to a selected library book
 - delete actions continue removing library records when managed file cleanup reports a warning
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
@@ -114,7 +115,7 @@ Metadata extraction is intentionally conservative:
 - CBZ: first supported image as cover, filename fallback for title/author
 - PDF, CBR, MOBI, AZW, AZW3, and KFX: safe import with filename fallback
 
-SQLite is authoritative for metadata inside the application. Metadata edits are also written to a portable `metadata.json` sidecar file next to the managed book file.
+SQLite is authoritative for metadata inside the application. Metadata edits are also written to a portable `metadata.json` sidecar file next to the managed book file, except duplicate merges: those currently update SQLite only, pending [issue #1](https://github.com/hnsoftwaredevelopment/saga/issues/1).
 
 During import, metadata is resolved in this order:
 
@@ -155,6 +156,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-24-checklist.md](docs/manual-tests/milestone-24-checklist.md)
 - [docs/manual-tests/milestone-25-checklist.md](docs/manual-tests/milestone-25-checklist.md)
 - [docs/manual-tests/milestone-26-checklist.md](docs/manual-tests/milestone-26-checklist.md)
+- [docs/manual-tests/milestone-27-checklist.md](docs/manual-tests/milestone-27-checklist.md)
 
 ## Later-Version Candidates
 

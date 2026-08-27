@@ -10,6 +10,11 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     [ObservableProperty]
     private MetadataQualityIssueViewModel? selectedIssue;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedBookId))]
+    [NotifyPropertyChangedFor(nameof(CanOpenSelectedBook))]
+    private MetadataQualityBookRowViewModel? selectedBook;
+
     public MetadataQualityDashboardViewModel(
         IReadOnlyList<Book> books,
         Func<string, string> localize)
@@ -24,6 +29,11 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     public ObservableCollection<MetadataQualityIssueViewModel> Issues { get; }
     public bool HasIssues => Issues.Any(issue => issue.Count > 0);
     public int TotalIssueCount => Issues.Sum(issue => issue.Count);
+    public Guid? SelectedBookId => SelectedBook?.Id;
+    public bool CanOpenSelectedBook => SelectedBook is not null;
+
+    partial void OnSelectedIssueChanged(MetadataQualityIssueViewModel? value) =>
+        SelectedBook = value?.Rows.FirstOrDefault();
 
     private static IReadOnlyList<MetadataQualityIssueViewModel> BuildIssues(
         IReadOnlyList<Book> books,

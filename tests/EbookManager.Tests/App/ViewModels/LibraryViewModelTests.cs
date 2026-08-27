@@ -438,6 +438,164 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_navigation_clears_search_that_hides_selected_book()
+    {
+        var target = CreateBook("Doelboek", ["Auteur A"]);
+        var other = CreateBook("Ander boek", ["Auteur B"]);
+        var interaction = new ScriptedUserInteractionService { MetadataQualityDashboardResult = target.Id };
+        var viewModel = CreateViewModel([target, other], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        viewModel.SearchText = "Ander boek";
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        viewModel.SearchText.Should().BeEmpty();
+        viewModel.SelectedBook!.Id.Should().Be(target.Id);
+    }
+
+    [Fact]
+    public async Task Metadata_quality_navigation_clears_selected_filters_that_hide_book()
+    {
+        var target = CreateBook("Doelboek", ["Auteur A"]);
+        var other = CreateBook("Ander boek", ["Auteur B"]);
+        var interaction = new ScriptedUserInteractionService { MetadataQualityDashboardResult = target.Id };
+        var viewModel = CreateViewModel([target, other], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        var blockingFilter = viewModel.AuthorFilters.Single(filter => filter.Name == "Auteur B");
+        blockingFilter.IsSelected = true;
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        blockingFilter.IsSelected.Should().BeFalse();
+        viewModel.SelectedBook!.Id.Should().Be(target.Id);
+    }
+
+    [Fact]
+    public async Task Metadata_quality_navigation_keeps_filter_that_already_allows_book()
+    {
+        var target = CreateBook("Doelboek", ["Auteur A"]);
+        var other = CreateBook("Ander boek", ["Auteur B"]);
+        var interaction = new ScriptedUserInteractionService { MetadataQualityDashboardResult = target.Id };
+        var viewModel = CreateViewModel([target, other], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        var matchingFilter = viewModel.AuthorFilters.Single(filter => filter.Name == "Auteur A");
+        matchingFilter.IsSelected = true;
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        matchingFilter.IsSelected.Should().BeTrue();
+        viewModel.SelectedBook!.Id.Should().Be(target.Id);
+    }
+
+    [Fact]
+    public async Task Metadata_quality_navigation_clears_custom_filter_that_hides_book()
+    {
+        var target = CreateBook("Doelboek", ["Auteur A"]);
+        var other = CreateBook("Ander boek", ["Auteur B"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        customMetadataRepository.SetValue(new CustomMetadataValue(target.Id, field.Id, TextValue: "Middag"));
+        customMetadataRepository.SetValue(new CustomMetadataValue(other.Id, field.Id, TextValue: "Avond"));
+        var interaction = new ScriptedUserInteractionService { MetadataQualityDashboardResult = target.Id };
+        var viewModel = CreateViewModel(
+            [target, other],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+
+        await viewModel.RefreshAsync();
+        var group = viewModel.CustomMetadataFilterGroups.Single(item => item.FieldId == field.Id);
+        var blockingFilter = group.Filters.Single(filter => filter.Name == "Avond");
+        blockingFilter.IsSelected = true;
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        blockingFilter.IsSelected.Should().BeFalse();
+        viewModel.SelectedBook!.Id.Should().Be(target.Id);
+    }
+
+    [Fact]
+    public async Task Closing_metadata_quality_dashboard_keeps_library_context_unchanged()
+    {
+        var first = CreateBook("Eerste", ["Auteur A"]);
+        var second = CreateBook("Tweede", ["Auteur B"]);
+        var viewModel = CreateViewModel(
+            [first, second],
+            new ScriptedUserInteractionService(),
+            currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        viewModel.SearchText = "Eerste";
+        var selectedBefore = viewModel.SelectedBook;
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        viewModel.SearchText.Should().Be("Eerste");
+        viewModel.SelectedBook.Should().BeSameAs(selectedBefore);
+    }
+
+    [Fact]
+    public async Task Metadata_quality_navigation_expands_group_path_to_selected_book()
+    {
+        var target = CreateBook("Doelboek", ["Auteur A"], series: "Serie A");
+        var interaction = new ScriptedUserInteractionService { MetadataQualityDashboardResult = target.Id };
+        var viewModel = CreateViewModel([target], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Series]);
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        var authorGroup = viewModel.GroupedLibraryNodes.Single();
+        authorGroup.IsExpanded.Should().BeTrue();
+        authorGroup.Groups.Single().IsExpanded.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Metadata_quality_navigation_publishes_new_reveal_request_each_time()
+    {
+        var target = CreateBook("Doelboek", ["Auteur A"]);
+        var interaction = new ScriptedUserInteractionService { MetadataQualityDashboardResult = target.Id };
+        var viewModel = CreateViewModel([target], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var firstRequest = viewModel.BookRevealRequest;
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        firstRequest.Should().NotBeNull();
+        viewModel.BookRevealRequest.Should().NotBeNull();
+        viewModel.BookRevealRequest!.BookId.Should().Be(target.Id);
+        viewModel.BookRevealRequest.Sequence.Should().BeGreaterThan(firstRequest!.Sequence);
+    }
+
+    [Fact]
+    public async Task Metadata_quality_navigation_reports_book_that_is_no_longer_available()
+    {
+        var book = CreateBook("Bestaand boek", ["Auteur"]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityDashboardResult = Guid.NewGuid()
+        };
+        var viewModel = CreateViewModel([book], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        viewModel.SearchText = "Bestaand";
+        var selectionBefore = viewModel.SelectedBook;
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        interaction.LastMessageTitle.Should().Be("MetadataQualityBookUnavailableTitle");
+        interaction.LastMessageText.Should().Be("MetadataQualityBookUnavailableMessage");
+        viewModel.SearchText.Should().Be("Bestaand");
+        viewModel.SelectedBook.Should().BeSameAs(selectionBefore);
+    }
+
+    [Fact]
     public async Task Custom_metadata_filter_value_can_be_renamed_for_matching_books()
     {
         var first = CreateBook("First", ["Author"]);
@@ -3833,6 +3991,7 @@ public sealed class LibraryViewModelTests
         public int? ConfirmLanguageNormalizationAffectedCount { get; private set; }
         public Guid? SelectedImportRunId { get; init; }
         public MetadataMultiEditResult? MetadataMultiEditResult { get; init; }
+        public Guid? MetadataQualityDashboardResult { get; init; }
         public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
         public string? LastMessageTitle { get; private set; }
         public string? LastMessageText { get; private set; }
@@ -3918,12 +4077,12 @@ public sealed class LibraryViewModelTests
             return Task.CompletedTask;
         }
 
-        public Task ShowMetadataQualityDashboardAsync(
+        public Task<Guid?> ShowMetadataQualityDashboardAsync(
             MetadataQualityDashboardViewModel dashboard,
             CancellationToken cancellationToken)
         {
             MetadataQualityDashboard = dashboard;
-            return Task.CompletedTask;
+            return Task.FromResult(MetadataQualityDashboardResult);
         }
 
         public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(

@@ -4,7 +4,7 @@
 
 Saga should give users a fast overview of metadata problems in the active library, especially after large Calibre imports or bulk cleanup work. The dashboard is intended as a navigation and insight tool first; repair actions can be added in later slices.
 
-## First slice
+## Milestone 26: First slice
 
 - Add a toolbar action that opens a metadata quality dashboard.
 - Show the total number of books and total number of detected quality signals.
@@ -21,10 +21,23 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Possible title/author swap: the title looks like a person name and the single author does not.
 - Messy tags: empty tags, leading/trailing whitespace, double spaces, or comma-separated tag text.
 
+## Milestone 27: Open in library
+
+- Select an affected book row in the dashboard.
+- Open the selected book with the `Open in library` button or by double-clicking its row.
+- Resize the issue pane when a title or description needs more horizontal space.
+- Keep the active library view, user-defined layout, sorting, columns, and grouping.
+- Clear only search text or selected filter values that prevent the chosen book from being visible.
+- Expand the first group path that contains the book and scroll it into view.
+- Report a clear message if the selected book is no longer available.
+
 ## Follow-up ideas
 
-- Select or open a book from the dashboard in the main library.
 - Add direct repair actions for common issues.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
 - Tune heuristics after testing on real-world Calibre libraries.
+
+## Status
+
+Milestones 26 and 27 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, and can navigate to a selected book while preserving the user’s existing library layout context.

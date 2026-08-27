@@ -591,6 +591,11 @@
   <data name="MetadataQualityDashboardBookCount" xml:space="preserve"><value>Bücher</value></data>
   <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Hinweise</value></data>
   <data name="MetadataQualityNoRows" xml:space="preserve"><value>Für diesen Hinweis wurden keine Bücher gefunden.</value></data>
+  <data name="MetadataQualityOpenInLibrary" xml:space="preserve"><value>In Bibliothek öffnen</value></data>
+  <data name="MetadataQualityResizeIssuePane" xml:space="preserve"><value>Größe des Problembereichs ändern</value></data>
+  <data name="ResizeFilterPane" xml:space="preserve"><value>Größe des Filterbereichs ändern</value></data>
+  <data name="MetadataQualityBookUnavailableTitle" xml:space="preserve"><value>Buch nicht mehr verfügbar</value></data>
+  <data name="MetadataQualityBookUnavailableMessage" xml:space="preserve"><value>Dieses Buch ist in der aktiven Bibliothek nicht mehr verfügbar. Aktualisieren Sie das Dashboard und versuchen Sie es erneut.</value></data>
   <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Fehlender Autor</value></data>
   <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Bücher ohne brauchbare Autorenangabe.</value></data>
   <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Unbekannte Sprache</value></data>
