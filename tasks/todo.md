@@ -2,7 +2,7 @@
 
 - [x] Functionele aannames bevestigd op 27 augustus 2026.
 - [x] Specificatie en acceptatiecriteria goedgekeurd op 27 augustus 2026.
-- [ ] Taak 1: stabiele signaalsleutels en domeincontract toevoegen.
+- [x] Taak 1: stabiele signaalsleutels en domeincontract toevoegen.
 - [ ] Taak 2: databasegedrag testgedreven modelleren.
 - [ ] Taak 3: additieve EF Core-migratie genereren en controleren.
 - [ ] Taak 4: repositorygedrag voor kwaliteitsuitzonderingen implementeren.
