@@ -15,8 +15,13 @@ public partial class MetadataQualityDashboardWindow : System.Windows.Window
     private void OpenSelectedBookClicked(object sender, System.Windows.RoutedEventArgs e) =>
         ConfirmSelectedBook();
 
-    private void BookRowMouseDoubleClicked(object sender, System.Windows.Input.MouseButtonEventArgs e) =>
-        ConfirmSelectedBook();
+    private void BookRowMouseDoubleClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (FindAncestor<System.Windows.Controls.DataGridRow>(e.OriginalSource as System.Windows.DependencyObject) is not null)
+        {
+            ConfirmSelectedBook();
+        }
+    }
 
     private void ConfirmSelectedBook()
     {
@@ -24,5 +29,21 @@ public partial class MetadataQualityDashboardWindow : System.Windows.Window
         {
             DialogResult = true;
         }
+    }
+
+    private static T? FindAncestor<T>(System.Windows.DependencyObject? source)
+        where T : System.Windows.DependencyObject
+    {
+        while (source is not null)
+        {
+            if (source is T match)
+            {
+                return match;
+            }
+
+            source = System.Windows.Media.VisualTreeHelper.GetParent(source);
+        }
+
+        return null;
     }
 }

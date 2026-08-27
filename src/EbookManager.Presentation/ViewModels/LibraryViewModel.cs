@@ -4186,5 +4186,3 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 }
-
-public sealed record LibraryBookRevealRequest(Guid BookId, int Sequence);
