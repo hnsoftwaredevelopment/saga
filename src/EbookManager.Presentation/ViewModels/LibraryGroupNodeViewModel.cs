@@ -33,6 +33,26 @@ public sealed partial class LibraryGroupNodeViewModel : ObservableObject
     [ObservableProperty]
     private bool isExpanded;
 
+    public bool TryExpandPathToBook(Guid bookId)
+    {
+        if (Books.Any(book => book.Id == bookId))
+        {
+            IsExpanded = true;
+            return true;
+        }
+
+        foreach (var group in Groups)
+        {
+            if (group.TryExpandPathToBook(bookId))
+            {
+                IsExpanded = true;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static int CountUniqueBooks(
         IEnumerable<LibraryGroupNodeViewModel> groups,
         IEnumerable<BookRowViewModel> books) =>

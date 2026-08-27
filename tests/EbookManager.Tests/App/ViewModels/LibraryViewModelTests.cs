@@ -538,6 +538,42 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_navigation_expands_group_path_to_selected_book()
+    {
+        var target = CreateBook("Doelboek", ["Auteur A"], series: "Serie A");
+        var interaction = new ScriptedUserInteractionService { MetadataQualityDashboardResult = target.Id };
+        var viewModel = CreateViewModel([target], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        viewModel.SetGroupingOptions([LibraryGroupOption.Author, LibraryGroupOption.Series]);
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        var authorGroup = viewModel.GroupedLibraryNodes.Single();
+        authorGroup.IsExpanded.Should().BeTrue();
+        authorGroup.Groups.Single().IsExpanded.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Metadata_quality_navigation_publishes_new_reveal_request_each_time()
+    {
+        var target = CreateBook("Doelboek", ["Auteur A"]);
+        var interaction = new ScriptedUserInteractionService { MetadataQualityDashboardResult = target.Id };
+        var viewModel = CreateViewModel([target], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var firstRequest = viewModel.BookRevealRequest;
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        firstRequest.Should().NotBeNull();
+        viewModel.BookRevealRequest.Should().NotBeNull();
+        viewModel.BookRevealRequest!.BookId.Should().Be(target.Id);
+        viewModel.BookRevealRequest.Sequence.Should().BeGreaterThan(firstRequest!.Sequence);
+    }
+
+    [Fact]
     public async Task Custom_metadata_filter_value_can_be_renamed_for_matching_books()
     {
         var first = CreateBook("First", ["Author"]);

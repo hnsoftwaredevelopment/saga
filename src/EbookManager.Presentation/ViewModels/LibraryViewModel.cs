@@ -54,6 +54,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private bool isSuppressingFilterRefresh;
     private bool hasAppliedDefaultView;
     private int selectionVersion;
+    private int bookRevealSequence;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
     private readonly Dictionary<string, List<LibraryGroupOption>> viewGroupings =
         BuiltInViewKeys().ToDictionary(key => key, _ => new List<LibraryGroupOption>(), StringComparer.Ordinal);
@@ -239,6 +240,9 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     [ObservableProperty]
     private BookRowViewModel? selectedBook;
+
+    [ObservableProperty]
+    private LibraryBookRevealRequest? bookRevealRequest;
 
     [ObservableProperty]
     private ImportResultViewModel? lastImportResult;
@@ -4060,6 +4064,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         {
             SelectedBook = selectedRow;
             SetSelectedBooks([selectedRow]);
+            ExpandFirstGroupPathToBook(bookId);
+            BookRevealRequest = new LibraryBookRevealRequest(bookId, ++bookRevealSequence);
+        }
+    }
+
+    private void ExpandFirstGroupPathToBook(Guid bookId)
+    {
+        foreach (var group in GroupedLibraryNodes)
+        {
+            if (group.TryExpandPathToBook(bookId))
+            {
+                return;
+            }
         }
     }
 
@@ -4165,3 +4182,5 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 }
+
+public sealed record LibraryBookRevealRequest(Guid BookId, int Sequence);
