@@ -3,7 +3,7 @@
 - [x] Bestaande dashboard-, filter-, selectie- en groeperingscode onderzocht.
 - [x] Ontwerp en acceptatiecriteria vastgelegd.
 - [x] Implementatievolgorde en teststrategie vastgelegd.
-- [ ] Menselijke goedkeuring op het ontwerp ontvangen.
+- [x] Menselijke goedkeuring op het ontwerp ontvangen op 27 augustus 2026.
 - [ ] Taken 1 tot en met 6 testgedreven uitvoeren.
 - [ ] Volledige test- en buildcontrole uitvoeren.
 - [ ] Markdown-documentatie naar Obsidian spiegelen.
