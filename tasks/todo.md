@@ -3,8 +3,8 @@
 - [x] Functionele aannames bevestigd op 27 augustus 2026.
 - [x] Specificatie en acceptatiecriteria goedgekeurd op 27 augustus 2026.
 - [x] Taak 1: stabiele signaalsleutels en domeincontract toevoegen.
-- [ ] Taak 2: databasegedrag testgedreven modelleren.
-- [ ] Taak 3: additieve EF Core-migratie genereren en controleren.
+- [x] Taak 2: databasegedrag testgedreven modelleren.
+- [x] Taak 3: additieve EF Core-migratie genereren en controleren.
 - [ ] Taak 4: repositorygedrag voor kwaliteitsuitzonderingen implementeren.
 - [ ] Checkpoint 1: domein- en repositorytests plus build groen.
 - [ ] Taak 5: dashboardfiltering en `Dit is correct` testgedreven implementeren.
