@@ -53,6 +53,22 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
     }
 
     [Fact]
+    public void MainWindow_MetadataCleanupOverlaySpansEveryContentColumn()
+    {
+        var document = XDocument.Load(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "MainWindow.xaml"));
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+
+        var cleanupOverlay = document
+            .Descendants(presentation + "Border")
+            .Single(element => element
+                .Descendants(presentation + "DataTrigger")
+                .Any(trigger => (string?)trigger.Attribute("Binding") == "{Binding IsCleaningMetadata}"));
+
+        RequiredAttribute(cleanupOverlay, "Grid.ColumnSpan").Should().Be("4");
+    }
+
+    [Fact]
     public void VerticalPaneSplitterStyle_HasVisibleGripAndInteractionFeedback()
     {
         var document = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "App.xaml"));

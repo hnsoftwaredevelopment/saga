@@ -945,7 +945,7 @@
         <views:BookDetailsView DataContext="{Binding Details}" />
       </Border>
 
-      <Border Grid.ColumnSpan="3"
+      <Border Grid.ColumnSpan="4"
               HorizontalAlignment="Center"
               VerticalAlignment="Top"
               Margin="0,22,0,0"
