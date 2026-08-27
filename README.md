@@ -48,7 +48,8 @@ Milestone 27 builds on version `0.1` by turning the metadata quality dashboard i
 - standard metadata search across language display names, dates, series numbers, formats, and system dates
 - sectioned settings foundation for duplicates and diagnostics preferences
 - duplicate merge default actions prepared in Settings and applied to merge previews
-- duplicate finder with compare, delete, ignore, and field-by-field merge workflows
+- duplicate finder with compare, delete, field-by-field merge, and a separate `Geen duplicaat` exclusion workflow for possible matches
+- duplicate merge currently updates SQLite but not the portable `metadata.json` sidecar; this remaining consistency gap is tracked in [issue #1](https://github.com/hnsoftwaredevelopment/saga/issues/1)
 - custom metadata fields with Calibre custom-column import
 - customizable column visibility, saved grid layouts, and user-defined views
 - multi-book metadata editing and cleanup actions for facets such as authors and tags
