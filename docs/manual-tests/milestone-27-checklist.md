@@ -25,8 +25,8 @@
 
 ## Resizable issue pane
 
-- [ ] Drag the vertical divider and confirm the issue pane can be widened and narrowed while both panes remain usable.
-- [ ] Focus the divider with the keyboard and confirm the arrow keys adjust the issue pane width.
+- [x] Drag the vertical divider and confirm the issue pane can be widened and narrowed while both panes remain usable.
+- [x] Focus the divider with the keyboard and confirm the arrow keys adjust the issue pane width.
 
 ## Unavailable book
 
