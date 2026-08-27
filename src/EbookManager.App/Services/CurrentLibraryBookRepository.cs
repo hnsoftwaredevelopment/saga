@@ -10,7 +10,7 @@ namespace EbookManager.App.Services;
 public sealed class CurrentLibraryBookRepository(
     CurrentLibrary currentLibrary,
     LibraryDbContextFactory contextFactory)
-    : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository
+    : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository, IMetadataQualityExclusionRepository
 {
     public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
@@ -119,6 +119,52 @@ public sealed class CurrentLibraryBookRepository(
         return repository is null
             ? Task.CompletedTask
             : repository.ClearDuplicateExclusionsAsync(cancellationToken);
+    }
+
+    public Task<IReadOnlySet<MetadataQualityExclusionKey>> ListMetadataQualityExclusionsAsync(
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult<IReadOnlySet<MetadataQualityExclusionKey>>(new HashSet<MetadataQualityExclusionKey>())
+            : repository.ListMetadataQualityExclusionsAsync(cancellationToken);
+    }
+
+    public Task<IReadOnlyList<MetadataQualityExclusion>> ListMetadataQualityExclusionDetailsAsync(
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult<IReadOnlyList<MetadataQualityExclusion>>([])
+            : repository.ListMetadataQualityExclusionDetailsAsync(cancellationToken);
+    }
+
+    public Task AddMetadataQualityExclusionsAsync(
+        IReadOnlyCollection<MetadataQualityExclusionKey> keys,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.CompletedTask
+            : repository.AddMetadataQualityExclusionsAsync(keys, cancellationToken);
+    }
+
+    public Task RemoveMetadataQualityExclusionsAsync(
+        IReadOnlyCollection<MetadataQualityExclusionKey> keys,
+        CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.CompletedTask
+            : repository.RemoveMetadataQualityExclusionsAsync(keys, cancellationToken);
+    }
+
+    public Task ClearMetadataQualityExclusionsAsync(CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.CompletedTask
+            : repository.ClearMetadataQualityExclusionsAsync(cancellationToken);
     }
 
     public Task AddAsync(Book book, BookFile file, CancellationToken cancellationToken) =>
