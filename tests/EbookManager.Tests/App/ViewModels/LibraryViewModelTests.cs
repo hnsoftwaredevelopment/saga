@@ -438,6 +438,34 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Show_metadata_quality_dashboard_loads_exclusions_and_connects_active_repository()
+    {
+        var book = CreateBook("Signal book", ["Unknown"], language: "fictional", coverBytes: [1]);
+        var excluded = new MetadataQualityExclusionKey(book.Id, MetadataQualitySignalKeys.MissingAuthor);
+        var qualityRepository = new RecordingMetadataQualityExclusionRepository([excluded]);
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel(
+            [book],
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            metadataQualityExclusionRepository: qualityRepository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MissingAuthor)
+            .Rows.Should().BeEmpty();
+        dashboard.SelectedIssue!.SignalKey.Should().Be(MetadataQualitySignalKeys.UnknownLanguage);
+        dashboard.MarkSelectedIssueCorrectCommand.CanExecute(null).Should().BeTrue();
+
+        await dashboard.MarkSelectedIssueCorrectCommand.ExecuteAsync(null);
+
+        qualityRepository.AddedKeys.Should().ContainSingle().Which.Should().Be(
+            new MetadataQualityExclusionKey(book.Id, MetadataQualitySignalKeys.UnknownLanguage));
+    }
+
+    [Fact]
     public async Task Metadata_quality_navigation_clears_search_that_hides_selected_book()
     {
         var target = CreateBook("Doelboek", ["Auteur A"]);
@@ -3183,6 +3211,7 @@ public sealed class LibraryViewModelTests
         IImportRepository? importRepository = null,
         ICustomMetadataRepository? customMetadataRepository = null,
         IDuplicateExclusionRepository? duplicateExclusionRepository = null,
+        IMetadataQualityExclusionRepository? metadataQualityExclusionRepository = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
@@ -3208,6 +3237,7 @@ public sealed class LibraryViewModelTests
             importRepository: importRepository,
             customMetadataRepository: customMetadataRepository,
             duplicateExclusionRepository: duplicateExclusionRepository,
+            metadataQualityExclusionRepository: metadataQualityExclusionRepository,
             performanceReporter: performanceReporter,
             localize: localize);
     }
@@ -4098,6 +4128,45 @@ public sealed class LibraryViewModelTests
         {
             PickBookFilesCalls++;
             return [];
+        }
+    }
+
+    private sealed class RecordingMetadataQualityExclusionRepository(
+        IReadOnlyCollection<MetadataQualityExclusionKey> initialKeys) : IMetadataQualityExclusionRepository
+    {
+        private readonly HashSet<MetadataQualityExclusionKey> keys = [.. initialKeys];
+
+        public List<MetadataQualityExclusionKey> AddedKeys { get; } = [];
+
+        public Task<IReadOnlySet<MetadataQualityExclusionKey>> ListMetadataQualityExclusionsAsync(
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlySet<MetadataQualityExclusionKey>>(new HashSet<MetadataQualityExclusionKey>(keys));
+
+        public Task<IReadOnlyList<MetadataQualityExclusion>> ListMetadataQualityExclusionDetailsAsync(
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<MetadataQualityExclusion>>([]);
+
+        public Task AddMetadataQualityExclusionsAsync(
+            IReadOnlyCollection<MetadataQualityExclusionKey> addedKeys,
+            CancellationToken cancellationToken)
+        {
+            AddedKeys.AddRange(addedKeys);
+            keys.UnionWith(addedKeys);
+            return Task.CompletedTask;
+        }
+
+        public Task RemoveMetadataQualityExclusionsAsync(
+            IReadOnlyCollection<MetadataQualityExclusionKey> removedKeys,
+            CancellationToken cancellationToken)
+        {
+            keys.ExceptWith(removedKeys);
+            return Task.CompletedTask;
+        }
+
+        public Task ClearMetadataQualityExclusionsAsync(CancellationToken cancellationToken)
+        {
+            keys.Clear();
+            return Task.CompletedTask;
         }
     }
 

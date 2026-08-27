@@ -147,6 +147,7 @@ public partial class App : System.Windows.Application
             provider.GetService<IImportRepository>(),
             provider.GetRequiredService<ICustomMetadataRepository>(),
             provider.GetRequiredService<IDuplicateExclusionRepository>(),
+            provider.GetRequiredService<IMetadataQualityExclusionRepository>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),
