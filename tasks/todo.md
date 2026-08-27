@@ -5,7 +5,7 @@
 - [x] Taak 1: stabiele signaalsleutels en domeincontract toevoegen.
 - [x] Taak 2: databasegedrag testgedreven modelleren.
 - [x] Taak 3: additieve EF Core-migratie genereren en controleren.
-- [ ] Taak 4: repositorygedrag voor kwaliteitsuitzonderingen implementeren.
+- [x] Taak 4: repositorygedrag voor kwaliteitsuitzonderingen implementeren.
 - [ ] Checkpoint 1: domein- en repositorytests plus build groen.
 - [ ] Taak 5: dashboardfiltering en `Dit is correct` testgedreven implementeren.
 - [ ] Taak 6: dashboardactie met actieve bibliotheek en WPF-view verbinden.
