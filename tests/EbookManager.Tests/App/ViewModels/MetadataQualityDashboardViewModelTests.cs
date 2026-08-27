@@ -35,11 +35,20 @@ public sealed class MetadataQualityDashboardViewModelTests
     [Fact]
     public void Selecting_empty_issue_clears_book_selection()
     {
-        var book = CreateBook("Compleet", ["Auteur"], coverBytes: [1]);
+        var book = CreateBook("Zonder auteur", ["Unknown"], coverBytes: [1]);
         var dashboard = new MetadataQualityDashboardViewModel([book], key => key);
 
-        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+        var issueWithBook = dashboard.Issues.Single(issue =>
             issue.Title == "MetadataQualityMissingAuthor");
+        dashboard.SelectedIssue = issueWithBook;
+        dashboard.SelectedBook = issueWithBook.Rows.Single();
+
+        dashboard.SelectedBook.Should().NotBeNull();
+        dashboard.SelectedBookId.Should().Be(book.Id);
+        dashboard.CanOpenSelectedBook.Should().BeTrue();
+
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.Title == "MetadataQualityMissingCover");
 
         dashboard.SelectedBook.Should().BeNull();
         dashboard.SelectedBookId.Should().BeNull();
