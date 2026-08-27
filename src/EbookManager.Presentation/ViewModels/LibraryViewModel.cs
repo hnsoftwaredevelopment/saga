@@ -319,6 +319,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IAsyncRelayCommand ShowDuplicateExclusionsCommand => showDuplicateExclusionsCommand ??= new AsyncRelayCommand(
         ShowDuplicateExclusionsAsync,
         () => duplicateExclusionRepository is not null && HasActiveLibrary);
+    public IAsyncRelayCommand ShowMetadataQualityDashboardCommand =>
+        showMetadataQualityDashboardCommand ??= new AsyncRelayCommand(ShowMetadataQualityDashboardAsync, () => HasActiveLibrary);
     public IRelayCommand CloseImportJobCommand => closeImportJobCommand ??= new RelayCommand(() => importAgent?.Job.Close());
     public IAsyncRelayCommand AddGroupingCommand => addGroupingCommand ??= new AsyncRelayCommand(AddGroupingAsync, CanAddGrouping);
     public IAsyncRelayCommand<LibraryGroupOption> RemoveGroupingCommand =>
@@ -372,6 +374,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand? showImportHistoryCommand;
     private AsyncRelayCommand? showDuplicateCandidatesCommand;
     private AsyncRelayCommand? showDuplicateExclusionsCommand;
+    private AsyncRelayCommand? showMetadataQualityDashboardCommand;
     private RelayCommand? closeImportJobCommand;
     private AsyncRelayCommand? addGroupingCommand;
     private AsyncRelayCommand<LibraryGroupOption>? removeGroupingCommand;
@@ -3991,6 +3994,18 @@ public sealed partial class LibraryViewModel : ObservableObject
         var exclusions = new DuplicateExclusionsViewModel(duplicateExclusionRepository);
         await exclusions.LoadAsync(cancellationToken);
         await userInteraction.ShowDuplicateExclusionsAsync(exclusions, cancellationToken);
+    }
+
+    private async Task ShowMetadataQualityDashboardAsync(CancellationToken cancellationToken)
+    {
+        if (!EnsureActiveLibraryStillExists("Create or open a library to get started."))
+        {
+            return;
+        }
+
+        await userInteraction.ShowMetadataQualityDashboardAsync(
+            new MetadataQualityDashboardViewModel(books, localize),
+            cancellationToken);
     }
 
     private async Task IgnoreDuplicateCandidatesAsync(

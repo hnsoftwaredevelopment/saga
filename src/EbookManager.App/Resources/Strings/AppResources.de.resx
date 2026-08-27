@@ -585,6 +585,24 @@
   <data name="MetadataMultiEditTagsHelp" xml:space="preserve"><value>Ersetzen leert zuerst die vorhandenen Tags. Hinzufügen behält vorhandene Tags. Entfernen löscht nur die angegebenen Tags.</value></data>
   <data name="MetadataMultiEditUncheckedFieldsHelp" xml:space="preserve"><value>Nicht aktivierte Felder bleiben unverändert.</value></data>
   <data name="MetadataMultiEditSkippedConflicts" xml:space="preserve"><value>{0} ausgewählte(s) Buch/Bücher wurden übersprungen, weil die geänderte Titel-/Autor-Kombination bereits vorhanden ist.</value></data>
+  <data name="MetadataQualityDashboardTitle" xml:space="preserve"><value>Metadatenqualität</value></data>
+  <data name="MetadataQualityDashboardTooltip" xml:space="preserve"><value>Dashboard zur Metadatenqualität anzeigen</value></data>
+  <data name="MetadataQualityDashboardDescription" xml:space="preserve"><value>Finden Sie Bücher mit fehlenden oder verdächtigen Metadaten, um die Bibliothek schneller zu bereinigen.</value></data>
+  <data name="MetadataQualityDashboardBookCount" xml:space="preserve"><value>Bücher</value></data>
+  <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Hinweise</value></data>
+  <data name="MetadataQualityNoRows" xml:space="preserve"><value>Für diesen Hinweis wurden keine Bücher gefunden.</value></data>
+  <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Fehlender Autor</value></data>
+  <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Bücher ohne brauchbare Autorenangabe.</value></data>
+  <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Unbekannte Sprache</value></data>
+  <data name="MetadataQualityUnknownLanguageDescription" xml:space="preserve"><value>Bücher mit einer leeren oder unbekannten Sprachangabe.</value></data>
+  <data name="MetadataQualityMissingCover" xml:space="preserve"><value>Fehlendes Cover</value></data>
+  <data name="MetadataQualityMissingCoverDescription" xml:space="preserve"><value>Bücher ohne gespeichertes Cover.</value></data>
+  <data name="MetadataQualitySeriesNumberWithoutSeries" xml:space="preserve"><value>Bandnummer ohne Reihe</value></data>
+  <data name="MetadataQualitySeriesNumberWithoutSeriesDescription" xml:space="preserve"><value>Bücher mit einer Bandnummer, aber ohne Reihennamen.</value></data>
+  <data name="MetadataQualityPossibleTitleAuthorSwap" xml:space="preserve"><value>Titel und Autor möglicherweise vertauscht</value></data>
+  <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Bücher, bei denen der Titel wie ein Personenname aussieht, der Autor jedoch nicht.</value></data>
+  <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Unsaubere Schlagwörter</value></data>
+  <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Schlagwörter mit zusätzlichen Leerzeichen oder kommagetrennten Werten.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
 </root>
 
