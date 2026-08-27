@@ -5,6 +5,7 @@
         Title="{loc:Loc MetadataQualityDashboardTitle}"
         Width="1060"
         Height="640"
+        MinWidth="760"
         WindowStartupLocation="CenterOwner">
   <DockPanel Margin="18">
     <StackPanel DockPanel.Dock="Top" Margin="0,0,0,14">
@@ -46,8 +47,12 @@
 
     <Grid>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="320" />
-        <ColumnDefinition Width="*" />
+        <ColumnDefinition x:Name="IssuePaneColumn"
+                          Width="320"
+                          MinWidth="240" />
+        <ColumnDefinition Width="12" />
+        <ColumnDefinition Width="*"
+                          MinWidth="360" />
       </Grid.ColumnDefinitions>
 
       <ListBox Grid.Column="0"
@@ -55,7 +60,7 @@
                SelectedItem="{Binding SelectedIssue, Mode=TwoWay}"
                BorderThickness="0"
                Background="Transparent"
-               Margin="0,0,14,0">
+               Margin="0,0,8,0">
         <ListBox.ItemTemplate>
           <DataTemplate>
             <Border Background="{DynamicResource PanelBackgroundBrush}"
@@ -92,7 +97,19 @@
         </ListBox.ItemTemplate>
       </ListBox>
 
-      <Grid Grid.Column="1">
+      <GridSplitter x:Name="IssuePaneSplitter"
+                    Grid.Column="1"
+                    Width="6"
+                    HorizontalAlignment="Center"
+                    ResizeDirection="Columns"
+                    ResizeBehavior="PreviousAndNext"
+                    Background="{DynamicResource BorderBrush}"
+                    Cursor="SizeWE"
+                    Focusable="True"
+                    ToolTip="{loc:Loc MetadataQualityResizeIssuePane}"
+                    AutomationProperties.Name="{loc:Loc MetadataQualityResizeIssuePane}" />
+
+      <Grid Grid.Column="2">
         <TextBlock Text="{loc:Loc MetadataQualityNoRows}"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"

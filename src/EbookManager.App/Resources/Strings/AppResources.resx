@@ -314,6 +314,7 @@
   <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Signals</value></data>
   <data name="MetadataQualityNoRows" xml:space="preserve"><value>No books found for this signal.</value></data>
   <data name="MetadataQualityOpenInLibrary" xml:space="preserve"><value>Open in library</value></data>
+  <data name="MetadataQualityResizeIssuePane" xml:space="preserve"><value>Resize issue pane</value></data>
   <data name="MetadataQualityBookUnavailableTitle" xml:space="preserve"><value>Book no longer available</value></data>
   <data name="MetadataQualityBookUnavailableMessage" xml:space="preserve"><value>This book is no longer available in the active library. Refresh the dashboard and try again.</value></data>
   <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Missing author</value></data>

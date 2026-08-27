@@ -32,4 +32,10 @@
     <ProjectReference Include="..\..\src\EbookManager.Presentation\EbookManager.Presentation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\src\EbookManager.App\Views\MetadataQualityDashboardWindow.xaml"
+          Link="TestAssets\MetadataQualityDashboardWindow.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

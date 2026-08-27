@@ -22,6 +22,7 @@ Het dashboard blijft modaal en read-only. Het krijgt één geselecteerde boekreg
 - `Openen in bibliotheek`: sluit het dashboard met het geselecteerde boek-id als resultaat;
 - `Sluiten`: sluit zonder navigatie;
 - dubbelklik op een regel: gelijk aan `Openen in bibliotheek`;
+- een verticale splitter maakt het linkerpaneel breder of smaller, met minimumruimte voor zowel de issuelijst als de boekentabel;
 - geen selectie: de primaire actie is uitgeschakeld;
 - wisselen van kwaliteitscategorie selecteert standaard de eerste boekregel van die categorie, of niets wanneer de categorie leeg is.
 
@@ -85,3 +86,4 @@ De WPF views blijven verantwoordelijk voor platformafhankelijk scrollgedrag. De 
 - Een verwijderd boek veroorzaakt geen crash en geeft een begrijpelijke melding.
 - Viewmodeltests dekken selectie, minimale filteraanpassing, groepering en het ontbrekende-boekscenario.
 - Een handmatige checklist dekt knop, dubbelklik en alle drie bibliotheekweergaven.
+- De breedte van het linkerpaneel kan met muis en toetsenbord worden aangepast zonder dat een van beide panelen onbruikbaar wordt.
