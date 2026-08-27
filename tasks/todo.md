@@ -6,7 +6,7 @@
 - [x] Taak 2: databasegedrag testgedreven modelleren.
 - [x] Taak 3: additieve EF Core-migratie genereren en controleren.
 - [x] Taak 4: repositorygedrag voor kwaliteitsuitzonderingen implementeren.
-- [ ] Checkpoint 1: domein- en repositorytests plus build groen.
+- [x] Checkpoint 1: domein- en repositorytests plus build groen; goedgekeurd op 27 augustus 2026.
 - [ ] Taak 5: dashboardfiltering en `Dit is correct` testgedreven implementeren.
 - [ ] Taak 6: dashboardactie met actieve bibliotheek en WPF-view verbinden.
 - [ ] Checkpoint 2: dashboardflow en bestaande navigatie groen.
