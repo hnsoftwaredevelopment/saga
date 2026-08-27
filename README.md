@@ -115,7 +115,7 @@ Metadata extraction is intentionally conservative:
 - CBZ: first supported image as cover, filename fallback for title/author
 - PDF, CBR, MOBI, AZW, AZW3, and KFX: safe import with filename fallback
 
-SQLite is authoritative for metadata inside the application. Metadata edits are also written to a portable `metadata.json` sidecar file next to the managed book file.
+SQLite is authoritative for metadata inside the application. Metadata edits are also written to a portable `metadata.json` sidecar file next to the managed book file, except duplicate merges: those currently update SQLite only, pending [issue #1](https://github.com/hnsoftwaredevelopment/saga/issues/1).
 
 During import, metadata is resolved in this order:
 
