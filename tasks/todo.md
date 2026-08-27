@@ -10,7 +10,7 @@
 - [x] Taak 5: dashboardfiltering en `Dit is correct` testgedreven implementeren.
 - [x] Taak 6: dashboardactie met actieve bibliotheek en WPF-view verbinden.
 - [x] Checkpoint 2: dashboardflow en bestaande navigatie groen; handmatig goedgekeurd op 27 augustus 2026.
-- [ ] Taak 7: beheer-viewmodel voor genegeerde meldingen implementeren.
+- [x] Taak 7: beheer-viewmodel voor genegeerde meldingen implementeren.
 - [ ] Taak 8: beheerwindow en interactiecontract toevoegen.
 - [ ] Taak 9: beheeractie vanuit Instellingen verbinden.
 - [ ] Checkpoint 3: beheerflow en cascade delete groen.
