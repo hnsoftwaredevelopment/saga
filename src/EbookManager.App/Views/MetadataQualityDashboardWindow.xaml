@@ -49,7 +49,8 @@
       <Grid.ColumnDefinitions>
         <ColumnDefinition x:Name="IssuePaneColumn"
                           Width="320"
-                          MinWidth="240" />
+                          MinWidth="240"
+                          MaxWidth="600" />
         <ColumnDefinition Width="12" />
         <ColumnDefinition Width="*"
                           MinWidth="360" />
@@ -99,12 +100,9 @@
 
       <GridSplitter x:Name="IssuePaneSplitter"
                     Grid.Column="1"
-                    Width="6"
-                    HorizontalAlignment="Center"
+                    Style="{StaticResource VisibleVerticalGridSplitterStyle}"
                     ResizeDirection="Columns"
                     ResizeBehavior="PreviousAndNext"
-                    Background="{DynamicResource BorderBrush}"
-                    Cursor="SizeWE"
                     Focusable="True"
                     ToolTip="{loc:Loc MetadataQualityResizeIssuePane}"
                     AutomationProperties.Name="{loc:Loc MetadataQualityResizeIssuePane}" />

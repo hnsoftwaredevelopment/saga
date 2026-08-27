@@ -33,6 +33,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\src\EbookManager.App\App.xaml"
+          Link="TestAssets\App.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\MainWindow.xaml"
+          Link="TestAssets\MainWindow.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\MetadataQualityDashboardWindow.xaml"
           Link="TestAssets\MetadataQualityDashboardWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />

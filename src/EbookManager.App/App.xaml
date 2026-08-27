@@ -8,6 +8,46 @@
                 <ResourceDictionary Source="Resources/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="VisibleVerticalGridSplitterStyle"
+                   TargetType="{x:Type GridSplitter}">
+                <Setter Property="Width" Value="12" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Cursor" Value="SizeWE" />
+                <Setter Property="Focusable" Value="True" />
+                <Setter Property="SnapsToDevicePixels" Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type GridSplitter}">
+                            <Grid Background="{TemplateBinding Background}">
+                                <Border x:Name="Grip"
+                                        Width="4"
+                                        Margin="0,8"
+                                        HorizontalAlignment="Center"
+                                        Background="{DynamicResource BorderBrush}"
+                                        CornerRadius="2" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Grip"
+                                            Property="Background"
+                                            Value="{DynamicResource AccentBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="Grip"
+                                            Property="Background"
+                                            Value="{DynamicResource AccentBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsDragging" Value="True">
+                                    <Setter TargetName="Grip"
+                                            Property="Background"
+                                            Value="{DynamicResource AccentBrush}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -213,8 +213,13 @@
 
     <Grid Grid.Row="2" Margin="16,0,16,0">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="220" />
-        <ColumnDefinition Width="*" />
+        <ColumnDefinition x:Name="LibraryFilterPaneColumn"
+                          Width="220"
+                          MinWidth="180"
+                          MaxWidth="520" />
+        <ColumnDefinition Width="12" />
+        <ColumnDefinition Width="*"
+                          MinWidth="320" />
         <ColumnDefinition Width="340" />
       </Grid.ColumnDefinitions>
 
@@ -222,7 +227,7 @@
               Background="{DynamicResource PanelBackgroundBrush}"
               CornerRadius="16"
               Padding="14"
-              Margin="0,0,12,0">
+              Margin="0">
         <ScrollViewer VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
@@ -686,7 +691,16 @@
         </ScrollViewer>
       </Border>
 
-      <Border Grid.Column="1"
+      <GridSplitter x:Name="LibraryFilterPaneSplitter"
+                    Grid.Column="1"
+                    Style="{StaticResource VisibleVerticalGridSplitterStyle}"
+                    ResizeDirection="Columns"
+                    ResizeBehavior="PreviousAndNext"
+                    Focusable="True"
+                    ToolTip="{loc:Loc ResizeFilterPane}"
+                    AutomationProperties.Name="{loc:Loc ResizeFilterPane}" />
+
+      <Border Grid.Column="2"
               Background="{DynamicResource PanelBackgroundBrush}"
               CornerRadius="16"
               Padding="10"
@@ -925,7 +939,7 @@
         </DockPanel>
       </Border>
 
-      <Border Grid.Column="2"
+      <Border Grid.Column="3"
               Background="{DynamicResource PanelBackgroundBrush}"
               CornerRadius="16">
         <views:BookDetailsView DataContext="{Binding Details}" />
