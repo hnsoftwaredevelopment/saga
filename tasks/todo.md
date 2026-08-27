@@ -8,7 +8,7 @@
 - [x] Taak 4: repositorygedrag voor kwaliteitsuitzonderingen implementeren.
 - [x] Checkpoint 1: domein- en repositorytests plus build groen; goedgekeurd op 27 augustus 2026.
 - [x] Taak 5: dashboardfiltering en `Dit is correct` testgedreven implementeren.
-- [ ] Taak 6: dashboardactie met actieve bibliotheek en WPF-view verbinden.
+- [x] Taak 6: dashboardactie met actieve bibliotheek en WPF-view verbinden.
 - [ ] Checkpoint 2: dashboardflow en bestaande navigatie groen.
 - [ ] Taak 7: beheer-viewmodel voor genegeerde meldingen implementeren.
 - [ ] Taak 8: beheerwindow en interactiecontract toevoegen.
