@@ -351,7 +351,8 @@
                                        View="Detailed"
                                        LayoutSnapshot="{Binding ActiveColumnLayoutSnapshot}" />
       </Border>
-      <ListBox Grid.Row="1"
+      <ListBox x:Name="DetailedGroupsList"
+               Grid.Row="1"
                ItemsSource="{Binding DetailedGroupedLibraryNodesSource}"
                ItemTemplate="{StaticResource DetailedGroupNodeTemplate}"
                BorderThickness="0"

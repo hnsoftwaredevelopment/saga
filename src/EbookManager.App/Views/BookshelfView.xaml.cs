@@ -64,6 +64,14 @@ public partial class BookshelfView : UserControl
 
     private void ViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(LibraryViewModel.BookRevealRequest) &&
+            attachedViewModel is { SelectedView: LibraryView.Bookshelf, BookRevealRequest: { } request } viewModel)
+        {
+            Dispatcher.BeginInvoke(
+                () => RevealBook(viewModel, request.BookId),
+                DispatcherPriority.Loaded);
+        }
+
         if (e.PropertyName is nameof(LibraryViewModel.BookshelfVisibleBooksSource)
             or nameof(LibraryViewModel.BookshelfGroupedLibraryNodesSource)
             or nameof(LibraryViewModel.IsBookshelfGrouped)
@@ -72,6 +80,20 @@ public partial class BookshelfView : UserControl
         {
             QueueBookshelfLayoutRefresh();
         }
+    }
+
+    private void RevealBook(LibraryViewModel viewModel, Guid bookId)
+    {
+        if (!IsVisible)
+        {
+            return;
+        }
+
+        BookRevealScrollHelper.ScrollListToBook(
+            viewModel.IsBookshelfGrouped ? BookshelfGroupsList : BookshelfBooksList,
+            viewModel,
+            bookId,
+            viewModel.IsBookshelfGrouped);
     }
 
     private void QueueBookshelfLayoutRefresh()

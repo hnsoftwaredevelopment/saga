@@ -53,6 +53,10 @@ public sealed partial class LibraryGroupNodeViewModel : ObservableObject
         return false;
     }
 
+    public bool ContainsBook(Guid bookId) =>
+        Books.Any(book => book.Id == bookId) ||
+        Groups.Any(group => group.ContainsBook(bookId));
+
     private static int CountUniqueBooks(
         IEnumerable<LibraryGroupNodeViewModel> groups,
         IEnumerable<BookRowViewModel> books) =>

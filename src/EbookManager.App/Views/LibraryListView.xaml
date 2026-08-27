@@ -334,7 +334,8 @@
                                          View="List"
                                          LayoutSnapshot="{Binding ActiveColumnLayoutSnapshot}" />
         </Border>
-        <ListBox Grid.Row="1"
+        <ListBox x:Name="ListGroupsList"
+                 Grid.Row="1"
                  ItemsSource="{Binding ListGroupedLibraryNodesSource}"
                  ItemTemplate="{StaticResource ListGroupNodeTemplate}"
                  BorderThickness="0"
