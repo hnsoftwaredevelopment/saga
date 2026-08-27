@@ -184,7 +184,7 @@ public sealed class UserInteractionService(
         return Task.CompletedTask;
     }
 
-    public Task ShowMetadataQualityDashboardAsync(
+    public Task<Guid?> ShowMetadataQualityDashboardAsync(
         MetadataQualityDashboardViewModel dashboard,
         CancellationToken cancellationToken)
     {
@@ -195,8 +195,10 @@ public sealed class UserInteractionService(
             window.Owner = owner;
         }
 
-        window.ShowDialog();
-        return Task.CompletedTask;
+        var result = window.ShowDialog() == true
+            ? dashboard.SelectedBookId
+            : null;
+        return Task.FromResult(result);
     }
 
     public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(

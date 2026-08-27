@@ -3833,6 +3833,7 @@ public sealed class LibraryViewModelTests
         public int? ConfirmLanguageNormalizationAffectedCount { get; private set; }
         public Guid? SelectedImportRunId { get; init; }
         public MetadataMultiEditResult? MetadataMultiEditResult { get; init; }
+        public Guid? MetadataQualityDashboardResult { get; init; }
         public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
         public string? LastMessageTitle { get; private set; }
         public string? LastMessageText { get; private set; }
@@ -3918,12 +3919,12 @@ public sealed class LibraryViewModelTests
             return Task.CompletedTask;
         }
 
-        public Task ShowMetadataQualityDashboardAsync(
+        public Task<Guid?> ShowMetadataQualityDashboardAsync(
             MetadataQualityDashboardViewModel dashboard,
             CancellationToken cancellationToken)
         {
             MetadataQualityDashboard = dashboard;
-            return Task.CompletedTask;
+            return Task.FromResult(MetadataQualityDashboardResult);
         }
 
         public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(

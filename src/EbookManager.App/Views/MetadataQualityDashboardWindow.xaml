@@ -34,7 +34,14 @@
                 Margin="0,14,0,0">
       <Button Content="{loc:Loc Close}"
               MinWidth="90"
+              IsCancel="True"
               Click="CloseClicked" />
+      <Button Content="{loc:Loc MetadataQualityOpenInLibrary}"
+              MinWidth="150"
+              Margin="8,0,0,0"
+              IsDefault="True"
+              IsEnabled="{Binding CanOpenSelectedBook}"
+              Click="OpenSelectedBookClicked" />
     </StackPanel>
 
     <Grid>
@@ -103,10 +110,13 @@
         </TextBlock>
 
         <DataGrid ItemsSource="{Binding SelectedIssue.Rows}"
+                  SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   GridLinesVisibility="Horizontal"
-                  HeadersVisibility="Column">
+                  HeadersVisibility="Column"
+                  SelectionMode="Single"
+                  MouseDoubleClick="BookRowMouseDoubleClicked">
           <DataGrid.Columns>
             <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="220" />
             <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" Width="180" />

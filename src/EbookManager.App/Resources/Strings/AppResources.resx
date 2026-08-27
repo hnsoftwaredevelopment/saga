@@ -313,6 +313,7 @@
   <data name="MetadataQualityDashboardBookCount" xml:space="preserve"><value>Books</value></data>
   <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Signals</value></data>
   <data name="MetadataQualityNoRows" xml:space="preserve"><value>No books found for this signal.</value></data>
+  <data name="MetadataQualityOpenInLibrary" xml:space="preserve"><value>Open in library</value></data>
   <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Missing author</value></data>
   <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Books without a useful author value.</value></data>
   <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Unknown language</value></data>

@@ -591,6 +591,7 @@
   <data name="MetadataQualityDashboardBookCount" xml:space="preserve"><value>Libri</value></data>
   <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Segnalazioni</value></data>
   <data name="MetadataQualityNoRows" xml:space="preserve"><value>Nessun libro trovato per questa segnalazione.</value></data>
+  <data name="MetadataQualityOpenInLibrary" xml:space="preserve"><value>Apri nella biblioteca</value></data>
   <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Autore mancante</value></data>
   <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Libri senza un autore valido.</value></data>
   <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Lingua sconosciuta</value></data>

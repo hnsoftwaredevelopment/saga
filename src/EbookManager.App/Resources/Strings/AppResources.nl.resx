@@ -313,6 +313,7 @@
   <data name="MetadataQualityDashboardBookCount" xml:space="preserve"><value>Boeken</value></data>
   <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Signalen</value></data>
   <data name="MetadataQualityNoRows" xml:space="preserve"><value>Geen boeken gevonden voor dit signaal.</value></data>
+  <data name="MetadataQualityOpenInLibrary" xml:space="preserve"><value>Openen in bibliotheek</value></data>
   <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Ontbrekende auteur</value></data>
   <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Boeken zonder bruikbare auteur.</value></data>
   <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Onbekende taal</value></data>

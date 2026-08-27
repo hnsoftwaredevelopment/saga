@@ -43,6 +43,17 @@ public sealed class MetadataQualityDashboardViewModelTests
 
         dashboard.SelectedBook.Should().BeNull();
         dashboard.SelectedBookId.Should().BeNull();
+        dashboard.CanOpenSelectedBook.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Selected_book_enables_open_in_library_action()
+    {
+        var book = CreateBook("Zonder auteur", ["Unknown"]);
+
+        var dashboard = new MetadataQualityDashboardViewModel([book], key => key);
+
+        dashboard.CanOpenSelectedBook.Should().BeTrue();
     }
 
     private static Book CreateBook(
