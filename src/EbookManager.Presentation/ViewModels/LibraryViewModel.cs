@@ -51,6 +51,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private long groupingSettingsSaveVersion;
     private bool isApplyingViewSortOption;
     private bool isApplyingViewDefinition;
+    private bool isSuppressingFilterRefresh;
     private bool hasAppliedDefaultView;
     private int selectionVersion;
     private AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName;
@@ -485,7 +486,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(LoadingLibraryProgressText));
     }
 
-    partial void OnSearchTextChanged(string value) => ApplyFilter();
+    partial void OnSearchTextChanged(string value) => ApplyFilterUnlessSuppressed();
 
     partial void OnSelectedViewChanged(LibraryView value)
     {
@@ -923,6 +924,14 @@ public sealed partial class LibraryViewModel : ObservableObject
             ? "This library is empty. Add books or scan a folder to begin."
             : "Create or open a library to get started.";
         ReportPerformance(performance, rows.Count);
+    }
+
+    private void ApplyFilterUnlessSuppressed()
+    {
+        if (!isSuppressingFilterRefresh)
+        {
+            ApplyFilter();
+        }
     }
 
     public void SetSelectedBooks(IEnumerable<BookRowViewModel> selectedRows)
@@ -2690,7 +2699,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                     value.Name,
                     value.Count,
                     isSelected,
-                    ApplyFilter,
+                    ApplyFilterUnlessSuppressed,
                     customMetadataFieldId: definition.Id));
             }
 
@@ -2774,7 +2783,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 value.Name,
                 value.Count,
                 isSelected,
-                ApplyFilter,
+                ApplyFilterUnlessSuppressed,
                 displayNameSelector?.Invoke(value.Name)));
         }
     }
@@ -2799,7 +2808,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
             var name = status.ToString();
             var isSelected = existingSelections.TryGetValue(name, out var existingSelection) && existingSelection;
-            StatusFilters.Add(new FacetFilterViewModel(name, count, isSelected, ApplyFilter));
+            StatusFilters.Add(new FacetFilterViewModel(name, count, isSelected, ApplyFilterUnlessSuppressed));
         }
     }
 
@@ -4003,9 +4012,77 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
-        await userInteraction.ShowMetadataQualityDashboardAsync(
+        var selectedBookId = await userInteraction.ShowMetadataQualityDashboardAsync(
             new MetadataQualityDashboardViewModel(books, localize),
             cancellationToken);
+        if (selectedBookId is { } bookId)
+        {
+            RevealBookInLibrary(bookId);
+        }
+    }
+
+    private void RevealBookInLibrary(Guid bookId)
+    {
+        var book = books.FirstOrDefault(candidate => candidate.Id == bookId);
+        if (book is null)
+        {
+            return;
+        }
+
+        if (VisibleBooks.All(row => row.Id != bookId))
+        {
+            isSuppressingFilterRefresh = true;
+            try
+            {
+                if (searchService.Filter(
+                        [book],
+                        SearchText,
+                        candidate => GetCustomMetadataValues(candidate.Id).Values).Count == 0)
+                {
+                    SearchText = string.Empty;
+                }
+
+                if (ApplyFacetFilters([book]).Count == 0)
+                {
+                    ClearSelectedFacetFilters();
+                }
+            }
+            finally
+            {
+                isSuppressingFilterRefresh = false;
+            }
+
+            ApplyFilter();
+        }
+
+        var selectedRow = VisibleBooks.FirstOrDefault(row => row.Id == bookId);
+        if (selectedRow is not null)
+        {
+            SelectedBook = selectedRow;
+            SetSelectedBooks([selectedRow]);
+        }
+    }
+
+    private void ClearSelectedFacetFilters()
+    {
+        foreach (var filter in StandardFacetFilterCollections()
+                     .SelectMany(filters => filters)
+                     .Concat(CustomMetadataFilterGroups.SelectMany(group => group.Filters))
+                     .Where(filter => filter.IsSelected))
+        {
+            filter.IsSelected = false;
+        }
+    }
+
+    private IEnumerable<ObservableCollection<FacetFilterViewModel>> StandardFacetFilterCollections()
+    {
+        yield return AuthorFilters;
+        yield return CategoryFilters;
+        yield return SeriesFilters;
+        yield return StatusFilters;
+        yield return EReaderFilters;
+        yield return LanguageFilters;
+        yield return FormatFilters;
     }
 
     private async Task IgnoreDuplicateCandidatesAsync(
