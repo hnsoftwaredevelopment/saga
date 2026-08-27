@@ -592,6 +592,8 @@
   <data name="MetadataQualityDashboardIssueCount" xml:space="preserve"><value>Signalements</value></data>
   <data name="MetadataQualityNoRows" xml:space="preserve"><value>Aucun livre trouvé pour ce signalement.</value></data>
   <data name="MetadataQualityOpenInLibrary" xml:space="preserve"><value>Ouvrir dans la bibliothèque</value></data>
+  <data name="MetadataQualityBookUnavailableTitle" xml:space="preserve"><value>Livre indisponible</value></data>
+  <data name="MetadataQualityBookUnavailableMessage" xml:space="preserve"><value>Ce livre n’est plus disponible dans la bibliothèque active. Actualisez le tableau de bord et réessayez.</value></data>
   <data name="MetadataQualityMissingAuthor" xml:space="preserve"><value>Auteur manquant</value></data>
   <data name="MetadataQualityMissingAuthorDescription" xml:space="preserve"><value>Livres sans auteur valide.</value></data>
   <data name="MetadataQualityUnknownLanguage" xml:space="preserve"><value>Langue inconnue</value></data>

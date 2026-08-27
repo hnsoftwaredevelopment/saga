@@ -4021,15 +4021,19 @@ public sealed partial class LibraryViewModel : ObservableObject
             cancellationToken);
         if (selectedBookId is { } bookId)
         {
-            RevealBookInLibrary(bookId);
+            await RevealBookInLibraryAsync(bookId, cancellationToken);
         }
     }
 
-    private void RevealBookInLibrary(Guid bookId)
+    private async Task RevealBookInLibraryAsync(Guid bookId, CancellationToken cancellationToken)
     {
         var book = books.FirstOrDefault(candidate => candidate.Id == bookId);
         if (book is null)
         {
+            await userInteraction.ShowMessageAsync(
+                localize("MetadataQualityBookUnavailableTitle"),
+                localize("MetadataQualityBookUnavailableMessage"),
+                cancellationToken);
             return;
         }
 

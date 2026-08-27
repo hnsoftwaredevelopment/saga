@@ -574,6 +574,28 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_navigation_reports_book_that_is_no_longer_available()
+    {
+        var book = CreateBook("Bestaand boek", ["Auteur"]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityDashboardResult = Guid.NewGuid()
+        };
+        var viewModel = CreateViewModel([book], interaction, currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+        viewModel.SearchText = "Bestaand";
+        var selectionBefore = viewModel.SelectedBook;
+
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        interaction.LastMessageTitle.Should().Be("MetadataQualityBookUnavailableTitle");
+        interaction.LastMessageText.Should().Be("MetadataQualityBookUnavailableMessage");
+        viewModel.SearchText.Should().Be("Bestaand");
+        viewModel.SelectedBook.Should().BeSameAs(selectionBefore);
+    }
+
+    [Fact]
     public async Task Custom_metadata_filter_value_can_be_renamed_for_matching_books()
     {
         var first = CreateBook("First", ["Author"]);
