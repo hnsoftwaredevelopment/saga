@@ -79,4 +79,6 @@ Deze instellingen hoeven niet in de eerste versie van de merge-workflow te zitte
 
 ## Status
 
-Uitgesteld. Dit is bewust geen onderdeel van de eerste duplicate finder-iteratie, omdat verwijderen al destructief genoeg is en samenvoegen een aparte veilige ontwerpstap verdient.
+Grotendeels geïmplementeerd. De duplicate finder ondersteunt inmiddels een merge-preview, een expliciete keuze van bron- en doelboek, acties per metadataveld, het behouden van gekoppelde bestandsformaten en verversing van de duplicate finder en hoofdweergave.
+
+Nog open: de samengevoegde metadata wordt in SQLite opgeslagen, maar de merge-route werkt de draagbare `metadata.json` sidecar nog niet bij. GitHub-issue #1 volgt uitsluitend dit resterende consistentiepunt en de bijbehorende regressietest. Totdat dit is opgelost, is het acceptatiecriterium voor de sidecar nog niet behaald.

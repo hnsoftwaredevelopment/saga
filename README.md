@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 10 builds on version `0.1` with import performance diagnostics and large-library hardening.
+Milestone 26 builds on version `0.1` with a metadata quality dashboard for finding cleanup opportunities across the active library.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -48,6 +48,11 @@ Milestone 10 builds on version `0.1` with import performance diagnostics and lar
 - standard metadata search across language display names, dates, series numbers, formats, and system dates
 - sectioned settings foundation for duplicates and diagnostics preferences
 - duplicate merge default actions prepared in Settings and applied to merge previews
+- duplicate finder with compare, delete, ignore, and field-by-field merge workflows
+- custom metadata fields with Calibre custom-column import
+- customizable column visibility, saved grid layouts, and user-defined views
+- multi-book metadata editing and cleanup actions for facets such as authors and tags
+- read-only metadata quality dashboard with issue counts and affected-book lists
 - delete actions continue removing library records when managed file cleanup reports a warning
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
@@ -124,6 +129,7 @@ Native write-back into ebook files remains a later opt-in feature per format, st
 
 Use these manual test checklists:
 
+- [docs/manual-tests/milestone-1-checklist.md](docs/manual-tests/milestone-1-checklist.md)
 - [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)
 - [docs/manual-tests/milestone-3-checklist.md](docs/manual-tests/milestone-3-checklist.md)
 - [docs/manual-tests/milestone-3-1-checklist.md](docs/manual-tests/milestone-3-1-checklist.md)
@@ -134,6 +140,21 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-8-checklist.md](docs/manual-tests/milestone-8-checklist.md)
 - [docs/manual-tests/milestone-9-checklist.md](docs/manual-tests/milestone-9-checklist.md)
 - [docs/manual-tests/milestone-10-checklist.md](docs/manual-tests/milestone-10-checklist.md)
+- [docs/manual-tests/milestone-11-checklist.md](docs/manual-tests/milestone-11-checklist.md)
+- [docs/manual-tests/milestone-12-checklist.md](docs/manual-tests/milestone-12-checklist.md)
+- [docs/manual-tests/milestone-13-checklist.md](docs/manual-tests/milestone-13-checklist.md)
+- [docs/manual-tests/milestone-14-checklist.md](docs/manual-tests/milestone-14-checklist.md)
+- [docs/manual-tests/milestone-15-checklist.md](docs/manual-tests/milestone-15-checklist.md)
+- [docs/manual-tests/milestone-16-checklist.md](docs/manual-tests/milestone-16-checklist.md)
+- [docs/manual-tests/milestone-18-checklist.md](docs/manual-tests/milestone-18-checklist.md)
+- [docs/manual-tests/milestone-19-checklist.md](docs/manual-tests/milestone-19-checklist.md)
+- [docs/manual-tests/milestone-20-checklist.md](docs/manual-tests/milestone-20-checklist.md)
+- [docs/manual-tests/milestone-21-checklist.md](docs/manual-tests/milestone-21-checklist.md)
+- [docs/manual-tests/milestone-22-checklist.md](docs/manual-tests/milestone-22-checklist.md)
+- [docs/manual-tests/milestone-23-checklist.md](docs/manual-tests/milestone-23-checklist.md)
+- [docs/manual-tests/milestone-24-checklist.md](docs/manual-tests/milestone-24-checklist.md)
+- [docs/manual-tests/milestone-25-checklist.md](docs/manual-tests/milestone-25-checklist.md)
+- [docs/manual-tests/milestone-26-checklist.md](docs/manual-tests/milestone-26-checklist.md)
 
 ## Later-Version Candidates
 
@@ -141,13 +162,9 @@ The following remain later-version candidates:
 
 - active e-reader detection and USB sync
 - native metadata write-back into ebook files
-- custom metadata fields
-- duplicate finder for possible duplicates, with options to delete one copy or merge metadata
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - optional cloud-file hydration for OneDrive files that are not available locally
-- richer metadata cleanup tools, including duplicate-aware merge flows and more bulk-edit diagnostics
-- per-view column visibility and user-defined grid layouts
-- user-defined views
+- direct repair actions from the metadata quality dashboard
 - ebook conversion
 - full-text search inside book contents
 - in-app bug reports and feature requests that can prepare or create GitHub issues after user review
