@@ -4107,6 +4107,11 @@ public sealed class LibraryViewModelTests
             return Task.CompletedTask;
         }
 
+        public Task ShowMetadataQualityExclusionsAsync(
+            MetadataQualityExclusionsViewModel exclusions,
+            CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
         public Task<Guid?> ShowMetadataQualityDashboardAsync(
             MetadataQualityDashboardViewModel dashboard,
             CancellationToken cancellationToken)
