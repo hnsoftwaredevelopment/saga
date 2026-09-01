@@ -13,7 +13,7 @@
 - [x] Taak 7: beheer-viewmodel voor genegeerde meldingen implementeren.
 - [x] Taak 8: beheerwindow en interactiecontract toevoegen.
 - [x] Taak 9: beheeractie vanuit Instellingen verbinden.
-- [ ] Checkpoint 3: beheerflow en cascade delete groen.
+- [x] Checkpoint 3: beheerflow en cascade delete groen; handmatig goedgekeurd op 1 september 2026.
 - [ ] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
 - [ ] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
 - [ ] Taak 12: featuredocumentatie en handmatige checklist afronden.
