@@ -1,22 +1,19 @@
-# Milestone 28 Todo
+# Milestone 29 Todo
 
-- [x] Functionele aannames bevestigd op 27 augustus 2026.
-- [x] Specificatie en acceptatiecriteria goedgekeurd op 27 augustus 2026.
-- [x] Taak 1: stabiele signaalsleutels en domeincontract toevoegen.
-- [x] Taak 2: databasegedrag testgedreven modelleren.
-- [x] Taak 3: additieve EF Core-migratie genereren en controleren.
-- [x] Taak 4: repositorygedrag voor kwaliteitsuitzonderingen implementeren.
-- [x] Checkpoint 1: domein- en repositorytests plus build groen; goedgekeurd op 27 augustus 2026.
-- [x] Taak 5: dashboardfiltering en `Dit is correct` testgedreven implementeren.
-- [x] Taak 6: dashboardactie met actieve bibliotheek en WPF-view verbinden.
-- [x] Checkpoint 2: dashboardflow en bestaande navigatie groen; handmatig goedgekeurd op 27 augustus 2026.
-- [x] Taak 7: beheer-viewmodel voor genegeerde meldingen implementeren.
-- [x] Taak 8: beheerwindow en interactiecontract toevoegen.
-- [x] Taak 9: beheeractie vanuit Instellingen verbinden.
-- [x] Checkpoint 3: beheerflow en cascade delete groen; handmatig goedgekeurd op 1 september 2026.
-- [x] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
-- [x] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
-- [x] Taak 12: featuredocumentatie en handmatige checklist afgerond en goedgekeurd op 1 september 2026.
-- [x] Volledige Release-tests en build zonder waarschuwingen uitgevoerd op 1 september 2026 (509 tests geslaagd; 0 waarschuwingen).
-- [x] Alle gewijzigde Markdown-documentatie naar Obsidian gespiegeld en gecontroleerd.
-- [ ] Zelfreview uitvoeren en een normale PR voor review openen.
+- [x] Functionele richting goedgekeurd op 1 september 2026.
+- [x] Specificatie en acceptatiecriteria goedgekeurd op 1 september 2026.
+- [ ] Uitvoeringsplan en taakvolgorde goedgekeurd.
+- [ ] Taak 1: herbruikbare kwaliteitsevaluatie implementeren.
+- [ ] Taak 2: veilige applicatieservice voor auteursherstel implementeren.
+- [ ] Checkpoint 1: fundamenttests en Release-build groen; zelfreview afgerond.
+- [ ] Taak 3: auteursinvoer en suggesties testgedreven modelleren.
+- [ ] Taak 4: compact herstelvenster en interactiecontract toevoegen.
+- [ ] Checkpoint 2: invoerervaring handmatig goedgekeurd.
+- [ ] Taak 5: dashboardcommando en gerichte herevaluatie implementeren.
+- [ ] Taak 6: actieve bibliotheek en WPF-dashboard verbinden.
+- [ ] Checkpoint 3: end-to-end herstelflow handmatig goedgekeurd.
+- [ ] Taak 7: lokalisatie en toegankelijkheidscontrole afronden.
+- [ ] Taak 8: documentatie, handmatige checklist en eindcontrole afronden.
+- [ ] Volledige Release-tests en build zonder waarschuwingen uitvoeren.
+- [ ] Alle gewijzigde Markdown-documentatie naar Obsidian spiegelen en controleren.
+- [ ] Zelfreview uitvoeren en een normale, niet-draft PR openen.
