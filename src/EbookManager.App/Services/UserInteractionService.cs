@@ -216,6 +216,20 @@ public sealed class UserInteractionService(
         return Task.FromResult(result);
     }
 
+    public Task<bool> ShowMetadataQualityAuthorRepairAsync(
+        MetadataQualityAuthorRepairViewModel repair,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = new MetadataQualityAuthorRepairWindow(repair);
+        if (System.Windows.Application.Current?.MainWindow is { } owner)
+        {
+            window.Owner = owner;
+        }
+
+        return Task.FromResult(window.ShowDialog() == true);
+    }
+
     public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
         MetadataMultiEditViewModel edit,
         CancellationToken cancellationToken)

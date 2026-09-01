@@ -7,7 +7,7 @@
 - [x] Taak 2: veilige applicatieservice voor auteursherstel implementeren.
 - [x] Checkpoint 1: 48 fundamenttests en Release-build groen; zelfreview afgerond met 0 waarschuwingen.
 - [x] Taak 3: auteursinvoer en suggesties testgedreven modelleren.
-- [ ] Taak 4: compact herstelvenster en interactiecontract toevoegen.
+- [x] Taak 4: compact herstelvenster en interactiecontract toevoegen.
 - [ ] Checkpoint 2: invoerervaring handmatig goedgekeurd.
 - [ ] Taak 5: dashboardcommando en gerichte herevaluatie implementeren.
 - [ ] Taak 6: actieve bibliotheek en WPF-dashboard verbinden.

@@ -4226,6 +4226,11 @@ public sealed class LibraryViewModelTests
             return Task.FromResult(MetadataQualityDashboardResult);
         }
 
+        public Task<bool> ShowMetadataQualityAuthorRepairAsync(
+            MetadataQualityAuthorRepairViewModel repair,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(false);
+
         public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
             MetadataMultiEditViewModel edit,
             CancellationToken cancellationToken)
