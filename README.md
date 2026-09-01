@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 28 builds on version `0.1` with reversible, library-specific quality decisions in the metadata quality dashboard.
+Milestone 29 builds on version `0.1` with the first direct repair action in the metadata quality dashboard: changing a missing author with suggestions from the active library or a new author name.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -55,6 +55,7 @@ Milestone 28 builds on version `0.1` with reversible, library-specific quality d
 - multi-book metadata editing and cleanup actions for facets such as authors and tags
 - metadata quality dashboard with issue counts, affected-book lists, direct navigation, and a reversible `This is correct` decision per book and signal
 - management of ignored quality issues from Settings, without changing the book metadata itself
+- direct missing-author repair from the quality dashboard with known-author suggestions and free entry for a new author
 - delete actions continue removing library records when managed file cleanup reports a warning
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
@@ -159,6 +160,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-26-checklist.md](docs/manual-tests/milestone-26-checklist.md)
 - [docs/manual-tests/milestone-27-checklist.md](docs/manual-tests/milestone-27-checklist.md)
 - [docs/manual-tests/milestone-28-checklist.md](docs/manual-tests/milestone-28-checklist.md)
+- [docs/manual-tests/milestone-29-checklist.md](docs/manual-tests/milestone-29-checklist.md)
 
 ## Later-Version Candidates
 
@@ -168,7 +170,7 @@ The following remain later-version candidates:
 - native metadata write-back into ebook files
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - optional cloud-file hydration for OneDrive files that are not available locally
-- direct repair actions from the metadata quality dashboard
+- additional direct repair actions from the metadata quality dashboard
 - ebook conversion
 - full-text search inside book contents
 - in-app bug reports and feature requests that can prepare or create GitHub issues after user review

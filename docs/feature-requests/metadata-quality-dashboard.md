@@ -2,7 +2,7 @@
 
 ## Goal
 
-Saga should give users a fast overview of metadata problems in the active library, especially after large Calibre imports or bulk cleanup work. The dashboard supports navigation and reversible quality decisions; actual metadata repair actions remain separate follow-up work.
+Saga should give users a fast overview of metadata problems in the active library, especially after large Calibre imports or bulk cleanup work. The dashboard supports navigation, reversible quality decisions, and incremental direct repair actions.
 
 ## Milestone 26: First slice
 
@@ -42,13 +42,25 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Remove stored decisions automatically when their book is deleted.
 - Keep all dashboard and management actions keyboard accessible and localized in every supported language.
 
+## Milestone 29: Repair a missing author
+
+- Select one book under `Missing author` and choose `Change author`.
+- Choose an existing author from live suggestions based on the active library or enter a completely new author.
+- Reject empty values and `Unknown` without changing the book.
+- Save through Saga's existing metadata, sidecar, and supported ebook write-back route.
+- Re-read the saved book and immediately re-evaluate every quality signal for that book.
+- Refresh the dashboard rows, counts, selection, main library rows, and author filters without restarting Saga.
+- Keep valid existing authors protected from this repair path.
+- Keep the workflow keyboard accessible and localized in all six supported languages.
+
 ## Follow-up ideas
 
-- Add direct repair actions for common issues.
+- Add direct repair actions for language, series, title/author, tags, and missing covers.
+- Let users select multiple missing-author books and apply one chosen author to all selected books.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
 - Tune heuristics after testing on real-world Calibre libraries.
 
 ## Status
 
-Milestones 26 through 28 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, and stores reversible quality decisions per active library. Metadata repair itself is not part of these decisions.
+Milestones 26 through 29 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, stores reversible quality decisions per active library, and repairs a missing author for one selected book. Further repair types and bulk repair remain follow-up work.

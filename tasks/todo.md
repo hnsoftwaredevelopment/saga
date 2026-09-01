@@ -13,7 +13,7 @@
 - [x] Taak 6: actieve bibliotheek en WPF-dashboard verbinden.
 - [x] Checkpoint 3: end-to-end auteursherstel handmatig goedgekeurd op 1 september 2026.
 - [x] Taak 7: lokalisatie en geautomatiseerde toegankelijkheidscontrole afgerond.
-- [ ] Taak 8: documentatie, handmatige checklist en eindcontrole afronden.
-- [ ] Volledige Release-tests en build zonder waarschuwingen uitvoeren.
-- [ ] Alle gewijzigde Markdown-documentatie naar Obsidian spiegelen en controleren.
-- [ ] Zelfreview uitvoeren en een normale, niet-draft PR openen.
+- [x] Taak 8: documentatie, handmatige checklist en eindcontrole afgerond.
+- [x] Volledige Release-tests (543 geslaagd) en build zonder waarschuwingen uitgevoerd.
+- [x] Alle gewijzigde Markdown-documentatie naar Obsidian gespiegeld en gecontroleerd.
+- [x] Zelfreview uitgevoerd; normale, niet-draft PR gereed om te openen.

@@ -19,7 +19,7 @@ Deze milestone bewijst het patroon voor directe kwaliteitsreparaties. Latere sli
 
 1. De gebruiker opent de metadata Quality Page en kiest `Ontbrekende auteur`.
 2. De gebruiker selecteert één boek.
-3. De actie `Herstellen` wordt beschikbaar.
+3. De actie `Auteur wijzigen` wordt beschikbaar.
 4. Saga opent `Ontbrekende auteur herstellen` met:
    - de boektitel als alleen-lezen context;
    - een bewerkbaar auteursveld;
@@ -29,7 +29,7 @@ Deze milestone bewijst het patroon voor directe kwaliteitsreparaties. Latere sli
 6. `Opslaan` is alleen beschikbaar voor een niet-lege, getrimde auteur die niet gelijk is aan `Unknown`.
 7. Na opslaan gebruikt Saga de bestaande metadata-opslag en write-backroute.
 8. Saga leest het opgeslagen boek opnieuw, beoordeelt alle kwaliteitssignalen opnieuw en werkt rijen, waarden, selectie en aantallen direct bij.
-9. Als de opslag mislukt, blijft het herstelvenster open en ziet de gebruiker een begrijpelijke foutmelding.
+9. Als de opslag mislukt, blijft de kwaliteitsrij zichtbaar, toont Saga een begrijpelijke foutmelding en blijft de actuele opgeslagen toestand leidend.
 10. `Annuleren` of sluiten verandert niets.
 
 ## Auteursuggesties
