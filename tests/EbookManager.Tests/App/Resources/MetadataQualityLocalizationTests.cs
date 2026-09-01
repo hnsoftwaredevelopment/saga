@@ -1,0 +1,60 @@
+using System.Xml.Linq;
+using FluentAssertions;
+
+namespace EbookManager.Tests.App.Resources;
+
+public sealed class MetadataQualityLocalizationTests
+{
+    private static readonly string[] RequiredFeatureKeys =
+    [
+        "MetadataQualityMarkCorrect",
+        "MetadataQualityMarkCorrectFailed",
+        "MetadataQualityExclusionsTitle",
+        "MetadataQualityExclusionsDescription",
+        "MetadataQualityExclusionsCountSuffix",
+        "RestoreSelectedQualityExclusions",
+        "RestoreAllQualityExclusions",
+        "MetadataQualityExclusionsNone",
+        "MetadataQualitySignal",
+        "RestoreAllQualityExclusionsConfirmationMessage",
+        "RestoreAllQualityExclusionsConfirmationTitle",
+        "MetadataQualityExclusionsSettingsTitle",
+        "MetadataQualityExclusionsSettingsDescription",
+        "ManageMetadataQualityExclusions"
+    ];
+
+    [Theory]
+    [InlineData("AppResources.resx")]
+    [InlineData("AppResources.nl.resx")]
+    [InlineData("AppResources.de.resx")]
+    public void Primary_resources_contain_understandable_quality_exclusion_texts(string fileName)
+    {
+        var values = LoadResourceValues(fileName);
+
+        foreach (var key in RequiredFeatureKeys)
+        {
+            values.Should().ContainKey(key);
+            values[key].Should().NotBeNullOrWhiteSpace();
+            values[key].Should().NotBe(key);
+        }
+    }
+
+    private static IReadOnlyDictionary<string, string> LoadResourceValues(string fileName)
+    {
+        var repositoryRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
+        var path = Path.Combine(
+            repositoryRoot,
+            "src",
+            "EbookManager.App",
+            "Resources",
+            "Strings",
+            fileName);
+        var document = XDocument.Load(path);
+        return document.Root!
+            .Elements("data")
+            .ToDictionary(
+                element => (string)element.Attribute("name")!,
+                element => element.Element("value")?.Value ?? string.Empty,
+                StringComparer.Ordinal);
+    }
+}

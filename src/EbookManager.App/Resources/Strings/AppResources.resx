@@ -331,5 +331,19 @@
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Messy tags</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Tags with extra spaces or comma-separated values.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>This is correct</value></data>
+  <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>This quality decision could not be saved. Try again.</value></data>
+  <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Ignored quality issues</value></data>
+  <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>These quality issues were marked as correct. Restore them to have Saga evaluate them again.</value></data>
+  <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> ignored quality issues</value></data>
+  <data name="RestoreSelectedQualityExclusions" xml:space="preserve"><value>Restore selected</value></data>
+  <data name="RestoreAllQualityExclusions" xml:space="preserve"><value>Restore all</value></data>
+  <data name="MetadataQualityExclusionsNone" xml:space="preserve"><value>No ignored quality issues.</value></data>
+  <data name="MetadataQualitySignal" xml:space="preserve"><value>Quality issue</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationMessage" xml:space="preserve"><value>Restore all ignored quality issues? They will appear again whenever the metadata still matches a quality rule.</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationTitle" xml:space="preserve"><value>Restore all ignored issues</value></data>
+  <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Ignored quality issues</value></data>
+  <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>View or restore quality issues that were previously marked as correct for the active library.</value></data>
+  <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Manage ignored quality issues</value></data>
 </root>
 
