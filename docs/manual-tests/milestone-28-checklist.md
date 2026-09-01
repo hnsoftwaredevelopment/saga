@@ -2,6 +2,8 @@
 
 Gebruik een testbibliotheek of een bibliotheek waarvan een actuele back-up beschikbaar is. De actie `Dit is correct` wijzigt geen boekmetadata; de verwijdertest hieronder verwijdert wel een testboek.
 
+Uitvoering afgerond op 1 september 2026. De dashboardactie, herstelfunctie, splitter en begrijpelijke Nederlandse teksten zijn door de gebruiker bevestigd. Bibliotheekisolatie, cascade-opruiming en alle ondersteunde vertalingen zijn aanvullend automatisch gecontroleerd.
+
 ## Dashboard en exacte melding
 
 - [ ] Open het metadata-kwaliteitsscherm en controleer dat de linker splitter zichtbaar en bedienbaar blijft.

@@ -16,7 +16,7 @@
 - [x] Checkpoint 3: beheerflow en cascade delete groen; handmatig goedgekeurd op 1 september 2026.
 - [x] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
 - [x] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
-- [ ] Taak 12: featuredocumentatie en handmatige checklist afronden.
+- [x] Taak 12: featuredocumentatie en handmatige checklist afgerond en goedgekeurd op 1 september 2026.
 - [x] Volledige Release-tests en build zonder waarschuwingen uitgevoerd op 1 september 2026 (509 tests geslaagd; 0 waarschuwingen).
 - [x] Alle gewijzigde Markdown-documentatie naar Obsidian gespiegeld en gecontroleerd.
 - [ ] Zelfreview uitvoeren en een normale PR voor review openen.
