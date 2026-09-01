@@ -32,6 +32,9 @@ public interface IUserInteractionService
     Task ShowDuplicateExclusionsAsync(DuplicateExclusionsViewModel exclusions, CancellationToken cancellationToken);
     Task ShowMetadataQualityExclusionsAsync(MetadataQualityExclusionsViewModel exclusions, CancellationToken cancellationToken);
     Task<Guid?> ShowMetadataQualityDashboardAsync(MetadataQualityDashboardViewModel dashboard, CancellationToken cancellationToken);
+    Task<bool> ShowMetadataQualityAuthorRepairAsync(
+        MetadataQualityAuthorRepairViewModel repair,
+        CancellationToken cancellationToken);
     Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
         MetadataMultiEditViewModel edit,
         CancellationToken cancellationToken);

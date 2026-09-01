@@ -1,5 +1,6 @@
 using EbookManager.Application.Books;
 using EbookManager.Application.Importing;
+using EbookManager.Application.Metadata;
 using EbookManager.App.Services;
 using EbookManager.App.Views;
 using EbookManager.Domain.Abstractions;
@@ -125,6 +126,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<ICustomMetadataRepository, CurrentLibraryCustomMetadataRepository>();
         services.AddSingleton<IImportRepository, CurrentLibraryImportRepository>();
         services.AddTransient<BookService>();
+        services.AddTransient<IMetadataQualityAuthorRepairService, MetadataQualityAuthorRepairService>();
         services.AddSingleton<ImportService>();
         services.AddSingleton<IImportRunner>(provider => provider.GetRequiredService<ImportService>());
         services.AddSingleton<ImportJobViewModel>();
@@ -148,6 +150,7 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<ICustomMetadataRepository>(),
             provider.GetRequiredService<IDuplicateExclusionRepository>(),
             provider.GetRequiredService<IMetadataQualityExclusionRepository>(),
+            provider.GetRequiredService<IMetadataQualityAuthorRepairService>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),

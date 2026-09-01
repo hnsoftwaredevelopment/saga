@@ -12,7 +12,13 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
 {
     private readonly Func<string, string> localize;
     private readonly IMetadataQualityExclusionRepository? repository;
+    private readonly IMetadataQualityAuthorRepairService? authorRepairService;
+    private readonly Func<MetadataQualityAuthorRepairViewModel, CancellationToken, Task<bool>>? showAuthorRepair;
+    private readonly Action<Book>? bookRepaired;
+    private readonly Dictionary<Guid, Book> books;
+    private readonly HashSet<MetadataQualityExclusionKey> exclusions;
     private readonly AsyncRelayCommand markSelectedIssueCorrectCommand;
+    private readonly AsyncRelayCommand repairMissingAuthorCommand;
 
     [ObservableProperty]
     private MetadataQualityIssueViewModel? selectedIssue;
@@ -29,19 +35,30 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         IReadOnlyList<Book> books,
         Func<string, string> localize,
         IReadOnlySet<MetadataQualityExclusionKey>? exclusions = null,
-        IMetadataQualityExclusionRepository? repository = null)
+        IMetadataQualityExclusionRepository? repository = null,
+        IMetadataQualityAuthorRepairService? authorRepairService = null,
+        Func<MetadataQualityAuthorRepairViewModel, CancellationToken, Task<bool>>? showAuthorRepair = null,
+        Action<Book>? bookRepaired = null)
     {
         this.localize = localize;
         this.repository = repository;
+        this.authorRepairService = authorRepairService;
+        this.showAuthorRepair = showAuthorRepair;
+        this.bookRepaired = bookRepaired;
+        this.books = books.ToDictionary(book => book.Id);
+        this.exclusions = exclusions is null ? [] : [.. exclusions];
         markSelectedIssueCorrectCommand = new AsyncRelayCommand(
             MarkSelectedIssueCorrectAsync,
             CanMarkSelectedIssueCorrect);
+        repairMissingAuthorCommand = new AsyncRelayCommand(
+            RepairMissingAuthorAsync,
+            CanRepairMissingAuthor);
         TotalBookCount = books.Count;
         Issues = new ObservableCollection<MetadataQualityIssueViewModel>(
             BuildIssues(
                 books,
                 localize,
-                exclusions ?? new HashSet<MetadataQualityExclusionKey>()));
+                this.exclusions));
         SelectedIssue = Issues.FirstOrDefault(issue => issue.Count > 0) ?? Issues.FirstOrDefault();
     }
 
@@ -52,18 +69,34 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     public Guid? SelectedBookId => SelectedBook?.Id;
     public bool CanOpenSelectedBook => SelectedBook is not null;
     public IAsyncRelayCommand MarkSelectedIssueCorrectCommand => markSelectedIssueCorrectCommand;
+    public IAsyncRelayCommand RepairMissingAuthorCommand => repairMissingAuthorCommand;
 
     partial void OnSelectedIssueChanged(MetadataQualityIssueViewModel? value)
     {
         SelectedBook = value?.Rows.FirstOrDefault();
         markSelectedIssueCorrectCommand.NotifyCanExecuteChanged();
+        repairMissingAuthorCommand.NotifyCanExecuteChanged();
     }
 
-    partial void OnSelectedBookChanged(MetadataQualityBookRowViewModel? value) =>
+    partial void OnSelectedBookChanged(MetadataQualityBookRowViewModel? value)
+    {
         markSelectedIssueCorrectCommand.NotifyCanExecuteChanged();
+        repairMissingAuthorCommand.NotifyCanExecuteChanged();
+    }
 
     private static IReadOnlyList<MetadataQualityIssueViewModel> BuildIssues(
         IReadOnlyList<Book> books,
+        Func<string, string> localize,
+        IReadOnlySet<MetadataQualityExclusionKey> exclusions) =>
+        BuildIssues(
+            books.Select(book => (
+                Book: book,
+                Signals: MetadataQualitySignalEvaluator.Evaluate(book))).ToArray(),
+            localize,
+            exclusions);
+
+    private static IReadOnlyList<MetadataQualityIssueViewModel> BuildIssues(
+        IReadOnlyList<(Book Book, IReadOnlySet<string> Signals)> evaluatedBooks,
         Func<string, string> localize,
         IReadOnlySet<MetadataQualityExclusionKey> exclusions) =>
         [
@@ -71,37 +104,37 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
                 MetadataQualitySignalKeys.MissingAuthor,
                 localize("MetadataQualityMissingAuthor"),
                 localize("MetadataQualityMissingAuthorDescription"),
-                books.Where(HasMissingAuthor),
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.UnknownLanguage,
                 localize("MetadataQualityUnknownLanguage"),
                 localize("MetadataQualityUnknownLanguageDescription"),
-                books.Where(HasUnknownLanguage),
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.MissingCover,
                 localize("MetadataQualityMissingCover"),
                 localize("MetadataQualityMissingCoverDescription"),
-                books.Where(HasMissingCover),
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.SeriesNumberWithoutSeries,
                 localize("MetadataQualitySeriesNumberWithoutSeries"),
                 localize("MetadataQualitySeriesNumberWithoutSeriesDescription"),
-                books.Where(HasSeriesNumberWithoutSeries),
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.PossibleTitleAuthorSwap,
                 localize("MetadataQualityPossibleTitleAuthorSwap"),
                 localize("MetadataQualityPossibleTitleAuthorSwapDescription"),
-                books.Where(HasPossibleTitleAuthorSwap),
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.MessyTags,
                 localize("MetadataQualityMessyTags"),
                 localize("MetadataQualityMessyTagsDescription"),
-                books.Where(HasMessyTags),
+                evaluatedBooks,
                 exclusions)
         ];
 
@@ -109,10 +142,12 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         string signalKey,
         string title,
         string description,
-        IEnumerable<Book> books,
+        IEnumerable<(Book Book, IReadOnlySet<string> Signals)> evaluatedBooks,
         IReadOnlySet<MetadataQualityExclusionKey> exclusions)
     {
-        var rows = books
+        var rows = evaluatedBooks
+            .Where(entry => entry.Signals.Contains(signalKey))
+            .Select(entry => entry.Book)
             .Where(book => !exclusions.Contains(new MetadataQualityExclusionKey(book.Id, signalKey)))
             .OrderBy(book => book.Metadata.Title, StringComparer.CurrentCultureIgnoreCase)
             .ThenBy(book => string.Join(", ", book.Metadata.Authors), StringComparer.CurrentCultureIgnoreCase)
@@ -147,6 +182,8 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
+        exclusions.Add(key);
+
         var removedIndex = issue.Rows.IndexOf(book);
         if (removedIndex < 0)
         {
@@ -163,73 +200,162 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         markSelectedIssueCorrectCommand.NotifyCanExecuteChanged();
     }
 
-    private static bool HasMissingAuthor(Book book) =>
-        book.Metadata.Authors.Count == 0 ||
-        book.Metadata.Authors.All(author =>
-            string.IsNullOrWhiteSpace(author) ||
-            author.Equals("Unknown", StringComparison.OrdinalIgnoreCase));
+    private bool CanRepairMissingAuthor() =>
+        authorRepairService is not null &&
+        showAuthorRepair is not null &&
+        SelectedIssue?.SignalKey == MetadataQualitySignalKeys.MissingAuthor &&
+        SelectedBook is not null &&
+        SelectedIssue.Rows.Contains(SelectedBook);
 
-    private static bool HasUnknownLanguage(Book book)
+    private async Task RepairMissingAuthorAsync(CancellationToken cancellationToken)
     {
-        var language = book.Metadata.Language;
-        if (string.IsNullOrWhiteSpace(language))
+        var selectedBook = SelectedBook;
+        if (!CanRepairMissingAuthor() || selectedBook is null ||
+            authorRepairService is null || showAuthorRepair is null)
         {
-            return true;
+            return;
         }
 
-        var key = LanguageDisplayService.FilterKey(language);
-        if (string.IsNullOrWhiteSpace(key))
+        var repair = new MetadataQualityAuthorRepairViewModel(
+            selectedBook.Title,
+            books.Values.SelectMany(book => book.Metadata.Authors));
+        if (!await showAuthorRepair(repair, cancellationToken) || repair.NormalizedAuthor is not { } author)
         {
-            return true;
+            return;
         }
 
+        MetadataQualityAuthorRepairItemResult? result;
         try
         {
-            _ = System.Globalization.CultureInfo.GetCultureInfo(key);
-            return false;
+            result = (await authorRepairService.RepairAsync([selectedBook.Id], author, cancellationToken))
+                .Items.SingleOrDefault(item => item.BookId == selectedBook.Id);
         }
-        catch (System.Globalization.CultureNotFoundException)
+        catch (OperationCanceledException)
         {
-            return true;
+            throw;
         }
-    }
-
-    private static bool HasMissingCover(Book book) =>
-        book.Metadata.CoverBytes is null &&
-        string.IsNullOrWhiteSpace(book.CoverRelativePath);
-
-    private static bool HasSeriesNumberWithoutSeries(Book book) =>
-        book.Metadata.SeriesNumber is not null &&
-        string.IsNullOrWhiteSpace(book.Metadata.Series);
-
-    private static bool HasPossibleTitleAuthorSwap(Book book)
-    {
-        if (book.Metadata.Authors.Count != 1)
+        catch (Exception)
         {
-            return false;
+            StatusMessage = localize("MetadataQualityAuthorRepairFailed");
+            return;
         }
 
-        var title = book.Metadata.Title.Trim();
-        var author = book.Metadata.Authors[0].Trim();
-        return LooksLikePersonName(title) && !LooksLikePersonName(author);
+        if (result?.Book is { } repairedBook)
+        {
+            ReconcileBook(repairedBook);
+        }
+        else if (result?.Status == MetadataQualityAuthorRepairStatus.NotFound)
+        {
+            RemoveBook(selectedBook.Id);
+        }
+
+        StatusMessage = result?.Status switch
+        {
+            MetadataQualityAuthorRepairStatus.Succeeded => null,
+            MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors =>
+                localize("MetadataQualityAuthorRepairWriteBackWarning"),
+            MetadataQualityAuthorRepairStatus.NotApplicable =>
+                localize("MetadataQualityAuthorRepairNotNeeded"),
+            MetadataQualityAuthorRepairStatus.NotFound =>
+                localize("MetadataQualityBookUnavailableMessage"),
+            _ => localize("MetadataQualityAuthorRepairFailed")
+        };
     }
 
-    private static bool HasMessyTags(Book book)
+    private void ReconcileBook(Book book)
     {
-        var tags = book.Metadata.Tags ?? [];
-        return tags.Any(tag =>
-            string.IsNullOrWhiteSpace(tag) ||
-            tag != tag.Trim() ||
-            tag.Contains("  ", StringComparison.Ordinal) ||
-            tag.Contains(',', StringComparison.Ordinal));
+        books[book.Id] = book;
+        bookRepaired?.Invoke(book);
+        var selectedIssue = SelectedIssue;
+        var selectedIndex = selectedIssue?.Rows.IndexOf(SelectedBook!) ?? -1;
+        var applicableSignals = MetadataQualitySignalEvaluator.Evaluate(book);
+
+        foreach (var issue in Issues)
+        {
+            var existing = issue.Rows.SingleOrDefault(row => row.Id == book.Id);
+            if (existing is not null)
+            {
+                issue.Rows.Remove(existing);
+            }
+
+            var shouldShow = applicableSignals.Contains(issue.SignalKey) &&
+                !exclusions.Contains(new MetadataQualityExclusionKey(book.Id, issue.SignalKey));
+            if (shouldShow)
+            {
+                InsertSorted(issue.Rows, new MetadataQualityBookRowViewModel(book));
+            }
+        }
+
+        RestoreSelectionAfterBookChange(selectedIssue, selectedIndex, book.Id);
+        NotifyDashboardStateChanged();
     }
 
-    private static bool LooksLikePersonName(string value)
+    private void RemoveBook(Guid bookId)
     {
-        var parts = value.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length is >= 2 and <= 4 &&
-            parts.All(part => part.Length > 1 && char.IsUpper(part[0]) && part.Skip(1).Any(char.IsLower));
+        books.Remove(bookId);
+        var selectedIssue = SelectedIssue;
+        var selectedIndex = selectedIssue?.Rows.IndexOf(SelectedBook!) ?? -1;
+        foreach (var issue in Issues)
+        {
+            var row = issue.Rows.SingleOrDefault(candidate => candidate.Id == bookId);
+            if (row is not null)
+            {
+                issue.Rows.Remove(row);
+            }
+        }
+
+        RestoreSelectionAfterBookChange(selectedIssue, selectedIndex, bookId);
+        NotifyDashboardStateChanged();
     }
+
+    private void RestoreSelectionAfterBookChange(
+        MetadataQualityIssueViewModel? selectedIssue,
+        int selectedIndex,
+        Guid bookId)
+    {
+        if (selectedIssue is null)
+        {
+            SelectedBook = null;
+            return;
+        }
+
+        SelectedBook = selectedIssue.Rows.SingleOrDefault(row => row.Id == bookId) ??
+            (selectedIssue.Rows.Count == 0
+                ? null
+                : selectedIssue.Rows[Math.Clamp(selectedIndex, 0, selectedIssue.Rows.Count - 1)]);
+    }
+
+    private static void InsertSorted(
+        ObservableCollection<MetadataQualityBookRowViewModel> rows,
+        MetadataQualityBookRowViewModel row)
+    {
+        var index = 0;
+        while (index < rows.Count && CompareRows(rows[index], row) <= 0)
+        {
+            index++;
+        }
+
+        rows.Insert(index, row);
+    }
+
+    private static int CompareRows(
+        MetadataQualityBookRowViewModel left,
+        MetadataQualityBookRowViewModel right)
+    {
+        var titleComparison = StringComparer.CurrentCultureIgnoreCase.Compare(left.Title, right.Title);
+        return titleComparison != 0
+            ? titleComparison
+            : StringComparer.CurrentCultureIgnoreCase.Compare(left.Authors, right.Authors);
+    }
+
+    private void NotifyDashboardStateChanged()
+    {
+        OnPropertyChanged(nameof(HasIssues));
+        OnPropertyChanged(nameof(TotalIssueCount));
+        markSelectedIssueCorrectCommand.NotifyCanExecuteChanged();
+        repairMissingAuthorCommand.NotifyCanExecuteChanged();
+    }
+
 }
 
 public sealed class MetadataQualityIssueViewModel : ObservableObject

@@ -623,5 +623,16 @@
   <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Signalements de qualité ignorés</value></data>
   <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Affichez ou rétablissez les signalements de qualité précédemment marqués comme corrects pour la bibliothèque active.</value></data>
   <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Gérer les signalements de qualité ignorés</value></data>
+  <data name="MetadataQualityAuthorRepairTitle" xml:space="preserve"><value>Corriger l’auteur manquant</value></data>
+  <data name="MetadataQualityAuthorRepairDescription" xml:space="preserve"><value>Choisissez un auteur connu ou saisissez un nouvel auteur pour ce livre.</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Nom de l’auteur</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>Les suggestions proviennent de la bibliothèque active. Vous pouvez également saisir un nouveau nom.</value></data>
+  <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Enregistrer l’auteur corrigé</value></data>
+  <data name="MetadataQualityRepair" xml:space="preserve"><value>Corriger</value></data>
+  <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Modifier l’auteur</value></data>
+  <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Corriger l’auteur manquant</value></data>
+  <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>L’auteur n’a pas pu être enregistré. Vérifiez le livre et réessayez.</value></data>
+  <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>L’auteur a été enregistré, mais certains fichiers de métadonnées ou de livre numérique associés n’ont pas pu être mis à jour.</value></data>
+  <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Ce livre a déjà un auteur. Saga a chargé les données actuelles du livre.</value></data>
 </root>
 

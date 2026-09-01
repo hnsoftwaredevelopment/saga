@@ -345,5 +345,16 @@
   <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Ignored quality issues</value></data>
   <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>View or restore quality issues that were previously marked as correct for the active library.</value></data>
   <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Manage ignored quality issues</value></data>
+  <data name="MetadataQualityAuthorRepairTitle" xml:space="preserve"><value>Repair missing author</value></data>
+  <data name="MetadataQualityAuthorRepairDescription" xml:space="preserve"><value>Choose a known author or enter a new author for this book.</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Author name</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>Suggestions come from the active library. A new name can also be entered.</value></data>
+  <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Save repaired author</value></data>
+  <data name="MetadataQualityRepair" xml:space="preserve"><value>Repair</value></data>
+  <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Change author</value></data>
+  <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Repair missing author</value></data>
+  <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>The author could not be saved. Check the book and try again.</value></data>
+  <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>The author was saved, but not every related metadata or ebook file could be updated.</value></data>
+  <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>This book already has an author. Saga refreshed the current book data.</value></data>
 </root>
 

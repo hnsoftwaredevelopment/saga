@@ -21,7 +21,18 @@ public sealed class MetadataQualityLocalizationTests
         "RestoreAllQualityExclusionsConfirmationTitle",
         "MetadataQualityExclusionsSettingsTitle",
         "MetadataQualityExclusionsSettingsDescription",
-        "ManageMetadataQualityExclusions"
+        "ManageMetadataQualityExclusions",
+        "MetadataQualityAuthorRepairTitle",
+        "MetadataQualityAuthorRepairDescription",
+        "MetadataQualityAuthorRepairAuthorInput",
+        "MetadataQualityAuthorRepairAuthorHelp",
+        "MetadataQualityAuthorRepairSave",
+        "MetadataQualityRepair",
+        "MetadataQualityChangeAuthor",
+        "MetadataQualityRepairMissingAuthor",
+        "MetadataQualityAuthorRepairFailed",
+        "MetadataQualityAuthorRepairWriteBackWarning",
+        "MetadataQualityAuthorRepairNotNeeded"
     ];
 
     [Theory]
@@ -31,7 +42,7 @@ public sealed class MetadataQualityLocalizationTests
     [InlineData("AppResources.fr.resx")]
     [InlineData("AppResources.es.resx")]
     [InlineData("AppResources.it.resx")]
-    public void Supported_resources_contain_understandable_quality_exclusion_texts(string fileName)
+    public void Supported_resources_contain_understandable_quality_workflow_texts(string fileName)
     {
         var values = LoadResourceValues(fileName);
 

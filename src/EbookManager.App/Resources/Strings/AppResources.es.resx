@@ -623,5 +623,16 @@
   <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Problemas de calidad ignorados</value></data>
   <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Vea o restaure los problemas de calidad marcados anteriormente como correctos para la biblioteca activa.</value></data>
   <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Gestionar problemas de calidad ignorados</value></data>
+  <data name="MetadataQualityAuthorRepairTitle" xml:space="preserve"><value>Corregir autor ausente</value></data>
+  <data name="MetadataQualityAuthorRepairDescription" xml:space="preserve"><value>Elija un autor conocido o introduzca un nuevo autor para este libro.</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Nombre del autor</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>Las sugerencias proceden de la biblioteca activa. También puede introducir un nombre nuevo.</value></data>
+  <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Guardar autor corregido</value></data>
+  <data name="MetadataQualityRepair" xml:space="preserve"><value>Corregir</value></data>
+  <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Cambiar autor</value></data>
+  <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Corregir autor ausente</value></data>
+  <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>No se pudo guardar el autor. Revise el libro e inténtelo de nuevo.</value></data>
+  <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>El autor se guardó, pero no se pudieron actualizar todos los archivos de metadatos o libros electrónicos relacionados.</value></data>
+  <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Este libro ya tiene un autor. Saga ha cargado los datos actuales del libro.</value></data>
 </root>
 

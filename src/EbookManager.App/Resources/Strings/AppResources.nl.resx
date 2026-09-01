@@ -345,5 +345,16 @@
   <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Genegeerde kwaliteitsmeldingen</value></data>
   <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Bekijk of herstel kwaliteitsmeldingen die eerder voor de actieve bibliotheek als correct zijn gemarkeerd.</value></data>
   <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Genegeerde kwaliteitsmeldingen beheren</value></data>
+  <data name="MetadataQualityAuthorRepairTitle" xml:space="preserve"><value>Ontbrekende auteur herstellen</value></data>
+  <data name="MetadataQualityAuthorRepairDescription" xml:space="preserve"><value>Kies een bekende auteur of voer voor dit boek een nieuwe auteur in.</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Naam van de auteur</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>Suggesties komen uit de actieve bibliotheek. Je kunt ook een nieuwe naam invoeren.</value></data>
+  <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Herstelde auteur opslaan</value></data>
+  <data name="MetadataQualityRepair" xml:space="preserve"><value>Herstellen</value></data>
+  <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Auteur wijzigen</value></data>
+  <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Ontbrekende auteur herstellen</value></data>
+  <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>De auteur kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
+  <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>De auteur is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
+  <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Dit boek heeft al een auteur. Saga heeft de actuele boekgegevens geladen.</value></data>
 </root>
 

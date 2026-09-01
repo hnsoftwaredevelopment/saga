@@ -623,5 +623,16 @@
   <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Ignorierte Qualitätsmeldungen</value></data>
   <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Zeigen Sie Qualitätsmeldungen an, die zuvor für die aktive Bibliothek als korrekt markiert wurden, oder stellen Sie sie wieder her.</value></data>
   <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Ignorierte Qualitätsmeldungen verwalten</value></data>
+  <data name="MetadataQualityAuthorRepairTitle" xml:space="preserve"><value>Fehlenden Autor ergänzen</value></data>
+  <data name="MetadataQualityAuthorRepairDescription" xml:space="preserve"><value>Wählen Sie einen bekannten Autor oder geben Sie für dieses Buch einen neuen Autor ein.</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Name des Autors</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>Die Vorschläge stammen aus der aktiven Bibliothek. Sie können auch einen neuen Namen eingeben.</value></data>
+  <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Ergänzten Autor speichern</value></data>
+  <data name="MetadataQualityRepair" xml:space="preserve"><value>Korrigieren</value></data>
+  <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Autor ändern</value></data>
+  <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Fehlenden Autor ergänzen</value></data>
+  <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>Der Autor konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>Der Autor wurde gespeichert, aber nicht jede zugehörige Metadaten- oder E-Book-Datei konnte aktualisiert werden.</value></data>
+  <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Dieses Buch hat bereits einen Autor. Saga hat die aktuellen Buchdaten geladen.</value></data>
 </root>
 

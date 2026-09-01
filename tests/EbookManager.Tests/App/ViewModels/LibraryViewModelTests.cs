@@ -1,5 +1,6 @@
 using EbookManager.Application.Books;
 using EbookManager.Application.Importing;
+using EbookManager.Application.Metadata;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.CustomMetadata;
@@ -463,6 +464,36 @@ public sealed class LibraryViewModelTests
 
         qualityRepository.AddedKeys.Should().ContainSingle().Which.Should().Be(
             new MetadataQualityExclusionKey(book.Id, MetadataQualitySignalKeys.UnknownLanguage));
+    }
+
+    [Fact]
+    public async Task Metadata_quality_author_repair_updates_the_active_library_and_author_filters()
+    {
+        var missing = CreateBook("Zonder auteur", ["Unknown"], language: "nl", coverBytes: [1]);
+        var known = CreateBook("Bekende auteur", ["Karin Slaughter"], language: "nl", coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityAuthorRepairResult = true,
+            MetadataQualityAuthorRepairAuthor = "Karin Slaughter"
+        };
+        var viewModel = CreateViewModel(
+            [missing, known],
+            interaction,
+            currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.MissingAuthor);
+        dashboard.SelectedBook = dashboard.SelectedIssue.Rows.Single();
+
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityAuthorRepair.Should().NotBeNull();
+        interaction.MetadataQualityAuthorRepair!.Suggestions.Should().Contain("Karin Slaughter");
+        viewModel.VisibleBooks.Single(row => row.Id == missing.Id).Authors.Should().Be("Karin Slaughter");
+        viewModel.AuthorFilters.Single(filter => filter.Name == "Karin Slaughter").Count.Should().Be(2);
+        viewModel.AuthorFilters.Should().NotContain(filter => filter.Name == "Unknown");
     }
 
     [Fact]
@@ -3307,6 +3338,7 @@ public sealed class LibraryViewModelTests
         ICustomMetadataRepository? customMetadataRepository = null,
         IDuplicateExclusionRepository? duplicateExclusionRepository = null,
         IMetadataQualityExclusionRepository? metadataQualityExclusionRepository = null,
+        IMetadataQualityAuthorRepairService? metadataQualityAuthorRepairService = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
@@ -3316,6 +3348,7 @@ public sealed class LibraryViewModelTests
             repository,
             new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver());
+        metadataQualityAuthorRepairService ??= new MetadataQualityAuthorRepairService(repository, bookService);
         details ??= new BookDetailsViewModel(bookService);
         return new LibraryViewModel(
             repository,
@@ -3333,6 +3366,7 @@ public sealed class LibraryViewModelTests
             customMetadataRepository: customMetadataRepository,
             duplicateExclusionRepository: duplicateExclusionRepository,
             metadataQualityExclusionRepository: metadataQualityExclusionRepository,
+            metadataQualityAuthorRepairService: metadataQualityAuthorRepairService,
             performanceReporter: performanceReporter,
             localize: localize);
     }
@@ -4124,6 +4158,8 @@ public sealed class LibraryViewModelTests
         public Guid? SelectedImportRunId { get; init; }
         public MetadataMultiEditResult? MetadataMultiEditResult { get; init; }
         public Guid? MetadataQualityDashboardResult { get; init; }
+        public bool MetadataQualityAuthorRepairResult { get; init; }
+        public string? MetadataQualityAuthorRepairAuthor { get; init; }
         public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
         public string? LastMessageTitle { get; private set; }
         public string? LastMessageText { get; private set; }
@@ -4137,6 +4173,7 @@ public sealed class LibraryViewModelTests
         public ImportResultViewModel? ShownImportResult { get; private set; }
         public MetadataQualityDashboardViewModel? MetadataQualityDashboard { get; private set; }
         public MetadataQualityExclusionsViewModel? MetadataQualityExclusions { get; private set; }
+        public MetadataQualityAuthorRepairViewModel? MetadataQualityAuthorRepair { get; private set; }
 
         public Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<string>>(RecordPickBookFiles());
@@ -4224,6 +4261,19 @@ public sealed class LibraryViewModelTests
         {
             MetadataQualityDashboard = dashboard;
             return Task.FromResult(MetadataQualityDashboardResult);
+        }
+
+        public Task<bool> ShowMetadataQualityAuthorRepairAsync(
+            MetadataQualityAuthorRepairViewModel repair,
+            CancellationToken cancellationToken)
+        {
+            MetadataQualityAuthorRepair = repair;
+            if (MetadataQualityAuthorRepairAuthor is not null)
+            {
+                repair.AuthorText = MetadataQualityAuthorRepairAuthor;
+            }
+
+            return Task.FromResult(MetadataQualityAuthorRepairResult);
         }
 
         public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
