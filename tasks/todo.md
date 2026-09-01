@@ -16,4 +16,4 @@
 - [x] Taak 8: documentatie, handmatige checklist en eindcontrole afgerond.
 - [x] Volledige Release-tests (543 geslaagd) en build zonder waarschuwingen uitgevoerd.
 - [x] Alle gewijzigde Markdown-documentatie naar Obsidian gespiegeld en gecontroleerd.
-- [x] Zelfreview uitgevoerd; normale, niet-draft PR gereed om te openen.
+- [x] Zelfreview uitgevoerd en normale, niet-draft PR #28 geopend.
