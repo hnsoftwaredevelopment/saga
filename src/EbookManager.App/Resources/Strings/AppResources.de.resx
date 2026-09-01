@@ -609,5 +609,19 @@
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Unsaubere Schlagwörter</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Schlagwörter mit zusätzlichen Leerzeichen oder kommagetrennten Werten.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
+  <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Das ist korrekt</value></data>
+  <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Diese Qualitätsentscheidung konnte nicht gespeichert werden. Versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Ignorierte Qualitätsmeldungen</value></data>
+  <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>Diese Qualitätsmeldungen wurden als korrekt markiert. Stellen Sie sie wieder her, damit Saga sie erneut prüft.</value></data>
+  <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> ignorierte Qualitätsmeldungen</value></data>
+  <data name="RestoreSelectedQualityExclusions" xml:space="preserve"><value>Ausgewählte wiederherstellen</value></data>
+  <data name="RestoreAllQualityExclusions" xml:space="preserve"><value>Alle wiederherstellen</value></data>
+  <data name="MetadataQualityExclusionsNone" xml:space="preserve"><value>Keine ignorierten Qualitätsmeldungen.</value></data>
+  <data name="MetadataQualitySignal" xml:space="preserve"><value>Qualitätsmeldung</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationMessage" xml:space="preserve"><value>Alle ignorierten Qualitätsmeldungen wiederherstellen? Sie werden erneut angezeigt, wenn die Metadaten weiterhin einer Qualitätsregel entsprechen.</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationTitle" xml:space="preserve"><value>Alle ignorierten Meldungen wiederherstellen</value></data>
+  <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Ignorierte Qualitätsmeldungen</value></data>
+  <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Zeigen Sie Qualitätsmeldungen an, die zuvor für die aktive Bibliothek als korrekt markiert wurden, oder stellen Sie sie wieder her.</value></data>
+  <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Ignorierte Qualitätsmeldungen verwalten</value></data>
 </root>
 

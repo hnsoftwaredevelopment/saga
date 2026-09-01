@@ -331,5 +331,19 @@
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Rommelige tags</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Tags met extra spaties of komma-gescheiden waarden.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
+  <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Dit is correct</value></data>
+  <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Deze kwaliteitsbeslissing kon niet worden opgeslagen. Probeer het opnieuw.</value></data>
+  <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Genegeerde kwaliteitsmeldingen</value></data>
+  <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>Deze kwaliteitsmeldingen zijn als correct gemarkeerd. Herstel ze om Saga ze opnieuw te laten beoordelen.</value></data>
+  <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> genegeerde kwaliteitsmeldingen</value></data>
+  <data name="RestoreSelectedQualityExclusions" xml:space="preserve"><value>Geselecteerde herstellen</value></data>
+  <data name="RestoreAllQualityExclusions" xml:space="preserve"><value>Alles herstellen</value></data>
+  <data name="MetadataQualityExclusionsNone" xml:space="preserve"><value>Geen genegeerde kwaliteitsmeldingen.</value></data>
+  <data name="MetadataQualitySignal" xml:space="preserve"><value>Kwaliteitsmelding</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationMessage" xml:space="preserve"><value>Alle genegeerde kwaliteitsmeldingen herstellen? Ze verschijnen opnieuw als de metadata nog steeds aan een kwaliteitsregel voldoet.</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationTitle" xml:space="preserve"><value>Alle genegeerde meldingen herstellen</value></data>
+  <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Genegeerde kwaliteitsmeldingen</value></data>
+  <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Bekijk of herstel kwaliteitsmeldingen die eerder voor de actieve bibliotheek als correct zijn gemarkeerd.</value></data>
+  <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Genegeerde kwaliteitsmeldingen beheren</value></data>
 </root>
 

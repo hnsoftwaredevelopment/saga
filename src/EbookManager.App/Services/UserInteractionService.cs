@@ -184,6 +184,21 @@ public sealed class UserInteractionService(
         return Task.CompletedTask;
     }
 
+    public Task ShowMetadataQualityExclusionsAsync(
+        MetadataQualityExclusionsViewModel exclusions,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var window = new MetadataQualityExclusionsWindow(exclusions);
+        if (System.Windows.Application.Current?.MainWindow is { } owner)
+        {
+            window.Owner = owner;
+        }
+
+        window.ShowDialog();
+        return Task.CompletedTask;
+    }
+
     public Task<Guid?> ShowMetadataQualityDashboardAsync(
         MetadataQualityDashboardViewModel dashboard,
         CancellationToken cancellationToken)

@@ -31,6 +31,24 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
     }
 
     [Fact]
+    public void MarkCorrectAction_IsCommandBoundAndKeyboardAccessible()
+    {
+        var document = XDocument.Load(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataQualityDashboardWindow.xaml"));
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+        var button = document
+            .Descendants(presentation + "Button")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "MarkSelectedIssueCorrectButton");
+
+        RequiredAttribute(button, "Content").Should().Be("{loc:Loc MetadataQualityMarkCorrect}");
+        RequiredAttribute(button, "Command").Should().Be("{Binding MarkSelectedIssueCorrectCommand}");
+        RequiredAttribute(button, "Focusable").Should().Be("True");
+        RequiredAttribute(button, "AutomationProperties.Name").Should().Be("{loc:Loc MetadataQualityMarkCorrect}");
+    }
+
+    [Fact]
     public void MainWindow_FilterPaneHasVisibleConstrainedSplitter()
     {
         var document = XDocument.Load(

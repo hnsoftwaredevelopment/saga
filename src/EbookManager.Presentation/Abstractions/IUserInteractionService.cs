@@ -30,6 +30,7 @@ public interface IUserInteractionService
     Task<Guid?> PickImportRunAsync(ImportHistoryViewModel history, CancellationToken cancellationToken);
     Task ShowDuplicateCandidatesAsync(DuplicateCandidatesViewModel candidates, CancellationToken cancellationToken);
     Task ShowDuplicateExclusionsAsync(DuplicateExclusionsViewModel exclusions, CancellationToken cancellationToken);
+    Task ShowMetadataQualityExclusionsAsync(MetadataQualityExclusionsViewModel exclusions, CancellationToken cancellationToken);
     Task<Guid?> ShowMetadataQualityDashboardAsync(MetadataQualityDashboardViewModel dashboard, CancellationToken cancellationToken);
     Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
         MetadataMultiEditViewModel edit,

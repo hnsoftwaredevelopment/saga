@@ -726,6 +726,131 @@ public sealed class LibraryDbContextTests
         (await repository.ListDuplicateExclusionsAsync(default)).Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task Metadata_quality_exclusions_round_trip_idempotently_support_management_and_cascade()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var first = CreateBook("Needs review", ["First Author", "Second Author"]);
+        var second = CreateBook("Also needs review", ["Third Author"]);
+        var missingAuthor = new MetadataQualityExclusionKey(first.Id, MetadataQualitySignalKeys.MissingAuthor);
+        var missingCover = new MetadataQualityExclusionKey(first.Id, MetadataQualitySignalKeys.MissingCover);
+        var unknownLanguage = new MetadataQualityExclusionKey(second.Id, MetadataQualitySignalKeys.UnknownLanguage);
+
+        await repository.AddAsync(first, CreateFile(first.Id, sha256: Hash('1')), default);
+        await repository.AddAsync(second, CreateFile(second.Id, sha256: Hash('2')), default);
+
+        await repository.AddMetadataQualityExclusionsAsync([missingAuthor, missingCover, unknownLanguage], default);
+        await repository.AddMetadataQualityExclusionsAsync([missingAuthor], default);
+
+        (await repository.ListMetadataQualityExclusionsAsync(default))
+            .Should().BeEquivalentTo([missingAuthor, missingCover, unknownLanguage]);
+        var details = await repository.ListMetadataQualityExclusionDetailsAsync(default);
+        details.Should().HaveCount(3);
+        details.Should().Contain(exclusion =>
+            exclusion.Key == missingAuthor &&
+            exclusion.BookTitle == "Needs review" &&
+            exclusion.BookAuthors.SequenceEqual(new[] { "First Author", "Second Author" }) &&
+            exclusion.CreatedAt.Offset == TimeSpan.Zero);
+
+        await repository.RemoveMetadataQualityExclusionsAsync([missingCover], default);
+
+        (await repository.ListMetadataQualityExclusionsAsync(default))
+            .Should().BeEquivalentTo([missingAuthor, unknownLanguage]);
+
+        await repository.ClearMetadataQualityExclusionsAsync(default);
+
+        (await repository.ListMetadataQualityExclusionsAsync(default)).Should().BeEmpty();
+
+        await repository.AddMetadataQualityExclusionsAsync([missingAuthor], default);
+        await repository.DeleteAsync(first.Id, default);
+
+        (await repository.ListMetadataQualityExclusionsAsync(default)).Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Metadata_quality_exclusion_model_uses_composite_key_and_cascade_delete()
+    {
+        var options = new DbContextOptionsBuilder<LibraryDbContext>()
+            .UseSqlite("Data Source=:memory:")
+            .Options;
+        using var context = new LibraryDbContext(options);
+
+        var entity = context.Model.FindEntityType(typeof(MetadataQualityExclusionEntity));
+
+        entity.Should().NotBeNull();
+        entity!.GetTableName().Should().Be("MetadataQualityExclusions");
+        entity.FindPrimaryKey()!.Properties.Select(property => property.Name)
+            .Should().Equal(nameof(MetadataQualityExclusionEntity.BookId), nameof(MetadataQualityExclusionEntity.SignalKey));
+        entity.GetForeignKeys().Should().ContainSingle().Which.DeleteBehavior.Should().Be(DeleteBehavior.Cascade);
+    }
+
+    [Fact]
+    public async Task Metadata_quality_exclusion_schema_allows_distinct_signals_rejects_duplicates_and_cascades()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+        var options = new DbContextOptionsBuilder<LibraryDbContext>()
+            .UseSqlite(connection)
+            .Options;
+        var bookId = Guid.NewGuid();
+        var now = DateTimeOffset.UtcNow;
+
+        await using (var context = new LibraryDbContext(options))
+        {
+            await context.Database.EnsureCreatedAsync();
+            context.Books.Add(new BookEntity
+            {
+                Id = bookId,
+                Title = "Accepted metadata",
+                NormalizedTitle = "accepted metadata",
+                DuplicateKey = "accepted metadata|author",
+                ReadingStatus = ReadingStatus.Unread,
+                CreatedUtc = now,
+                UpdatedUtc = now
+            });
+            context.MetadataQualityExclusions.AddRange(
+                new MetadataQualityExclusionEntity
+                {
+                    BookId = bookId,
+                    SignalKey = MetadataQualitySignalKeys.MissingAuthor,
+                    CreatedAt = now
+                },
+                new MetadataQualityExclusionEntity
+                {
+                    BookId = bookId,
+                    SignalKey = MetadataQualitySignalKeys.MissingCover,
+                    CreatedAt = now
+                });
+            await context.SaveChangesAsync();
+        }
+
+        await using (var duplicateContext = new LibraryDbContext(options))
+        {
+            duplicateContext.MetadataQualityExclusions.Add(new MetadataQualityExclusionEntity
+            {
+                BookId = bookId,
+                SignalKey = MetadataQualitySignalKeys.MissingAuthor,
+                CreatedAt = now
+            });
+
+            var saveDuplicate = () => duplicateContext.SaveChangesAsync();
+
+            await saveDuplicate.Should().ThrowAsync<DbUpdateException>();
+        }
+
+        await using (var deleteContext = new LibraryDbContext(options))
+        {
+            deleteContext.Books.Remove(await deleteContext.Books.SingleAsync(book => book.Id == bookId));
+            await deleteContext.SaveChangesAsync();
+        }
+
+        await using var verificationContext = new LibraryDbContext(options);
+        (await verificationContext.MetadataQualityExclusions.CountAsync()).Should().Be(0);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("ABC")]

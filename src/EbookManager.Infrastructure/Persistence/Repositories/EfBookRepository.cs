@@ -10,7 +10,7 @@ namespace EbookManager.Infrastructure.Persistence.Repositories;
 
 public sealed class EfBookRepository(
     LibraryDbContextFactory contextFactory,
-    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository
+    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository, IMetadataQualityExclusionRepository
 {
     private const int SqliteParameterChunkSize = 500;
 
@@ -238,6 +238,97 @@ public sealed class EfBookRepository(
     {
         await using var context = contextFactory.Create(libraryPath);
         await context.DuplicateExclusions.ExecuteDeleteAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlySet<MetadataQualityExclusionKey>> ListMetadataQualityExclusionsAsync(
+        CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var keys = await context.MetadataQualityExclusions
+            .AsNoTracking()
+            .Select(exclusion => new { exclusion.BookId, exclusion.SignalKey })
+            .ToListAsync(cancellationToken);
+        return keys
+            .Select(key => new MetadataQualityExclusionKey(key.BookId, key.SignalKey))
+            .ToHashSet();
+    }
+
+    public async Task<IReadOnlyList<MetadataQualityExclusion>> ListMetadataQualityExclusionDetailsAsync(
+        CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        var exclusions = await context.MetadataQualityExclusions
+            .AsNoTracking()
+            .Include(exclusion => exclusion.Book)
+                .ThenInclude(book => book.BookAuthors)
+                .ThenInclude(bookAuthor => bookAuthor.Author)
+            .AsSplitQuery()
+            .ToListAsync(cancellationToken);
+
+        return exclusions
+            .OrderByDescending(exclusion => exclusion.CreatedAt)
+            .ThenBy(exclusion => exclusion.Book.Title, StringComparer.CurrentCultureIgnoreCase)
+            .ThenBy(exclusion => exclusion.SignalKey, StringComparer.Ordinal)
+            .Select(exclusion => new MetadataQualityExclusion(
+                new MetadataQualityExclusionKey(exclusion.BookId, exclusion.SignalKey),
+                exclusion.Book.Title,
+                FormatAuthors(exclusion.Book),
+                exclusion.CreatedAt))
+            .ToList()
+            .AsReadOnly();
+    }
+
+    public async Task AddMetadataQualityExclusionsAsync(
+        IReadOnlyCollection<MetadataQualityExclusionKey> keys,
+        CancellationToken cancellationToken)
+    {
+        if (keys.Count == 0)
+        {
+            return;
+        }
+
+        var distinctKeys = keys.Distinct().ToList();
+        await using var context = contextFactory.Create(libraryPath);
+        var createdAt = DateTimeOffset.UtcNow;
+        foreach (var key in distinctKeys)
+        {
+            await context.Database.ExecuteSqlInterpolatedAsync(
+                $"""
+                INSERT OR IGNORE INTO MetadataQualityExclusions (BookId, SignalKey, CreatedAt)
+                VALUES ({key.BookId}, {key.SignalKey}, {createdAt})
+                """,
+                cancellationToken);
+        }
+    }
+
+    public async Task RemoveMetadataQualityExclusionsAsync(
+        IReadOnlyCollection<MetadataQualityExclusionKey> keys,
+        CancellationToken cancellationToken)
+    {
+        if (keys.Count == 0)
+        {
+            return;
+        }
+
+        await using var context = contextFactory.Create(libraryPath);
+        foreach (var key in keys.Distinct())
+        {
+            var entity = await context.MetadataQualityExclusions.SingleOrDefaultAsync(
+                exclusion => exclusion.BookId == key.BookId && exclusion.SignalKey == key.SignalKey,
+                cancellationToken);
+            if (entity is not null)
+            {
+                context.MetadataQualityExclusions.Remove(entity);
+            }
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ClearMetadataQualityExclusionsAsync(CancellationToken cancellationToken)
+    {
+        await using var context = contextFactory.Create(libraryPath);
+        await context.MetadataQualityExclusions.ExecuteDeleteAsync(cancellationToken);
     }
 
     public async Task AddAsync(

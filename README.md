@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 27 builds on version `0.1` by turning the metadata quality dashboard into a direct navigation tool for library cleanup.
+Milestone 28 builds on version `0.1` with reversible, library-specific quality decisions in the metadata quality dashboard.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -53,7 +53,8 @@ Milestone 27 builds on version `0.1` by turning the metadata quality dashboard i
 - custom metadata fields with Calibre custom-column import
 - customizable column visibility, saved grid layouts, and user-defined views
 - multi-book metadata editing and cleanup actions for facets such as authors and tags
-- metadata quality dashboard with issue counts, affected-book lists, and direct navigation to a selected library book
+- metadata quality dashboard with issue counts, affected-book lists, direct navigation, and a reversible `This is correct` decision per book and signal
+- management of ignored quality issues from Settings, without changing the book metadata itself
 - delete actions continue removing library records when managed file cleanup reports a warning
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
@@ -157,6 +158,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-25-checklist.md](docs/manual-tests/milestone-25-checklist.md)
 - [docs/manual-tests/milestone-26-checklist.md](docs/manual-tests/milestone-26-checklist.md)
 - [docs/manual-tests/milestone-27-checklist.md](docs/manual-tests/milestone-27-checklist.md)
+- [docs/manual-tests/milestone-28-checklist.md](docs/manual-tests/milestone-28-checklist.md)
 
 ## Later-Version Candidates
 

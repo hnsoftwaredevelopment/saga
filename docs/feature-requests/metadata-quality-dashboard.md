@@ -2,7 +2,7 @@
 
 ## Goal
 
-Saga should give users a fast overview of metadata problems in the active library, especially after large Calibre imports or bulk cleanup work. The dashboard is intended as a navigation and insight tool first; repair actions can be added in later slices.
+Saga should give users a fast overview of metadata problems in the active library, especially after large Calibre imports or bulk cleanup work. The dashboard supports navigation and reversible quality decisions; actual metadata repair actions remain separate follow-up work.
 
 ## Milestone 26: First slice
 
@@ -31,6 +31,17 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Expand the first group path that contains the book and scroll it into view.
 - Report a clear message if the selected book is no longer available.
 
+## Milestone 28: Reversible quality decisions
+
+- Mark one quality signal for one book as correct without changing that book's metadata.
+- Hide only the exact book-and-signal combination; other signals for the same book remain visible.
+- Keep the decision in the active library's SQLite database and apply it again when the dashboard reopens.
+- Keep selection and issue counts current after a decision.
+- Manage ignored quality issues from Settings, including restoring selected entries or all entries.
+- Re-evaluate a restored signal the next time the dashboard opens.
+- Remove stored decisions automatically when their book is deleted.
+- Keep all dashboard and management actions keyboard accessible and localized in every supported language.
+
 ## Follow-up ideas
 
 - Add direct repair actions for common issues.
@@ -40,4 +51,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 and 27 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, and can navigate to a selected book while preserving the user’s existing library layout context.
+Milestones 26 through 28 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, and stores reversible quality decisions per active library. Metadata repair itself is not part of these decisions.

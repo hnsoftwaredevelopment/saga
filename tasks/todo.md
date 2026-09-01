@@ -1,10 +1,22 @@
-# Milestone 27 Todo
+# Milestone 28 Todo
 
-- [x] Bestaande dashboard-, filter-, selectie- en groeperingscode onderzocht.
-- [x] Ontwerp en acceptatiecriteria vastgelegd.
-- [x] Implementatievolgorde en teststrategie vastgelegd.
-- [x] Menselijke goedkeuring op het ontwerp ontvangen op 27 augustus 2026.
-- [x] Taken 1 tot en met 6 testgedreven uitvoeren.
-- [x] Volledige test- en buildcontrole uitvoeren: 473 tests, build zonder waarschuwingen.
-- [x] Markdown-documentatie naar Obsidian spiegelen.
-- [ ] Draft-PR openen en reviewfeedback verwerken.
+- [x] Functionele aannames bevestigd op 27 augustus 2026.
+- [x] Specificatie en acceptatiecriteria goedgekeurd op 27 augustus 2026.
+- [x] Taak 1: stabiele signaalsleutels en domeincontract toevoegen.
+- [x] Taak 2: databasegedrag testgedreven modelleren.
+- [x] Taak 3: additieve EF Core-migratie genereren en controleren.
+- [x] Taak 4: repositorygedrag voor kwaliteitsuitzonderingen implementeren.
+- [x] Checkpoint 1: domein- en repositorytests plus build groen; goedgekeurd op 27 augustus 2026.
+- [x] Taak 5: dashboardfiltering en `Dit is correct` testgedreven implementeren.
+- [x] Taak 6: dashboardactie met actieve bibliotheek en WPF-view verbinden.
+- [x] Checkpoint 2: dashboardflow en bestaande navigatie groen; handmatig goedgekeurd op 27 augustus 2026.
+- [x] Taak 7: beheer-viewmodel voor genegeerde meldingen implementeren.
+- [x] Taak 8: beheerwindow en interactiecontract toevoegen.
+- [x] Taak 9: beheeractie vanuit Instellingen verbinden.
+- [x] Checkpoint 3: beheerflow en cascade delete groen; handmatig goedgekeurd op 1 september 2026.
+- [x] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
+- [x] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
+- [x] Taak 12: featuredocumentatie en handmatige checklist afgerond en goedgekeurd op 1 september 2026.
+- [x] Volledige Release-tests en build zonder waarschuwingen uitgevoerd op 1 september 2026 (509 tests geslaagd; 0 waarschuwingen).
+- [x] Alle gewijzigde Markdown-documentatie naar Obsidian gespiegeld en gecontroleerd.
+- [ ] Zelfreview uitvoeren en een normale PR voor review openen.

@@ -12,6 +12,7 @@ using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Importing;
+using EbookManager.Domain.Metadata;
 using EbookManager.Domain.Settings;
 using EbookManager.Libraries;
 using EbookManager.Presentation.Abstractions;
@@ -37,6 +38,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IImportRepository? importRepository;
     private readonly ICustomMetadataRepository? customMetadataRepository;
     private readonly IDuplicateExclusionRepository? duplicateExclusionRepository;
+    private readonly IMetadataQualityExclusionRepository? metadataQualityExclusionRepository;
     private readonly LibraryService? libraryService;
     private readonly CurrentLibrary? currentLibrary;
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
@@ -92,6 +94,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         IImportRepository? importRepository = null,
         ICustomMetadataRepository? customMetadataRepository = null,
         IDuplicateExclusionRepository? duplicateExclusionRepository = null,
+        IMetadataQualityExclusionRepository? metadataQualityExclusionRepository = null,
         LibraryService? libraryService = null,
         CurrentLibrary? currentLibrary = null,
         ILibraryDatabaseInitializer? databaseInitializer = null,
@@ -112,6 +115,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.importRepository = importRepository;
         this.customMetadataRepository = customMetadataRepository;
         this.duplicateExclusionRepository = duplicateExclusionRepository;
+        this.metadataQualityExclusionRepository = metadataQualityExclusionRepository;
         this.libraryService = libraryService;
         this.currentLibrary = currentLibrary;
         this.databaseInitializer = databaseInitializer;
@@ -324,6 +328,10 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IAsyncRelayCommand ShowDuplicateExclusionsCommand => showDuplicateExclusionsCommand ??= new AsyncRelayCommand(
         ShowDuplicateExclusionsAsync,
         () => duplicateExclusionRepository is not null && HasActiveLibrary);
+    public IAsyncRelayCommand ShowMetadataQualityExclusionsCommand =>
+        showMetadataQualityExclusionsCommand ??= new AsyncRelayCommand(
+            ShowMetadataQualityExclusionsAsync,
+            () => metadataQualityExclusionRepository is not null && HasActiveLibrary);
     public IAsyncRelayCommand ShowMetadataQualityDashboardCommand =>
         showMetadataQualityDashboardCommand ??= new AsyncRelayCommand(ShowMetadataQualityDashboardAsync, () => HasActiveLibrary);
     public IRelayCommand CloseImportJobCommand => closeImportJobCommand ??= new RelayCommand(() => importAgent?.Job.Close());
@@ -379,6 +387,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand? showImportHistoryCommand;
     private AsyncRelayCommand? showDuplicateCandidatesCommand;
     private AsyncRelayCommand? showDuplicateExclusionsCommand;
+    private AsyncRelayCommand? showMetadataQualityExclusionsCommand;
     private AsyncRelayCommand? showMetadataQualityDashboardCommand;
     private RelayCommand? closeImportJobCommand;
     private AsyncRelayCommand? addGroupingCommand;
@@ -3715,6 +3724,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasActiveLibrary));
         showDuplicateExclusionsCommand?.NotifyCanExecuteChanged();
+        showMetadataQualityExclusionsCommand?.NotifyCanExecuteChanged();
     }
 
     public bool ApplyDefaultViewPreference(string? defaultView)
@@ -4009,6 +4019,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         await userInteraction.ShowDuplicateExclusionsAsync(exclusions, cancellationToken);
     }
 
+    private async Task ShowMetadataQualityExclusionsAsync(CancellationToken cancellationToken)
+    {
+        if (metadataQualityExclusionRepository is null ||
+            !EnsureActiveLibraryStillExists("Create or open a library to get started."))
+        {
+            return;
+        }
+
+        var exclusions = new MetadataQualityExclusionsViewModel(metadataQualityExclusionRepository, localize);
+        await exclusions.LoadAsync(cancellationToken);
+        await userInteraction.ShowMetadataQualityExclusionsAsync(exclusions, cancellationToken);
+    }
+
     private async Task ShowMetadataQualityDashboardAsync(CancellationToken cancellationToken)
     {
         if (!EnsureActiveLibraryStillExists("Create or open a library to get started."))
@@ -4016,8 +4039,15 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
+        IReadOnlySet<MetadataQualityExclusionKey> exclusions = metadataQualityExclusionRepository is null
+            ? new HashSet<MetadataQualityExclusionKey>()
+            : await metadataQualityExclusionRepository.ListMetadataQualityExclusionsAsync(cancellationToken);
         var selectedBookId = await userInteraction.ShowMetadataQualityDashboardAsync(
-            new MetadataQualityDashboardViewModel(books, localize),
+            new MetadataQualityDashboardViewModel(
+                books,
+                localize,
+                exclusions,
+                metadataQualityExclusionRepository),
             cancellationToken);
         if (selectedBookId is { } bookId)
         {

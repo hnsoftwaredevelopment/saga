@@ -609,5 +609,19 @@
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Etiquetas desordenadas</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Etiquetas con espacios adicionales o valores separados por comas.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sí</value></data>
+  <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Esto es correcto</value></data>
+  <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>No se pudo guardar esta decisión de calidad. Inténtelo de nuevo.</value></data>
+  <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Problemas de calidad ignorados</value></data>
+  <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>Estos problemas de calidad se marcaron como correctos. Restáurelos para que Saga vuelva a evaluarlos.</value></data>
+  <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> problemas de calidad ignorados</value></data>
+  <data name="RestoreSelectedQualityExclusions" xml:space="preserve"><value>Restaurar seleccionados</value></data>
+  <data name="RestoreAllQualityExclusions" xml:space="preserve"><value>Restaurar todos</value></data>
+  <data name="MetadataQualityExclusionsNone" xml:space="preserve"><value>No hay problemas de calidad ignorados.</value></data>
+  <data name="MetadataQualitySignal" xml:space="preserve"><value>Problema de calidad</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationMessage" xml:space="preserve"><value>¿Restaurar todos los problemas de calidad ignorados? Volverán a aparecer si los metadatos siguen coincidiendo con una regla de calidad.</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationTitle" xml:space="preserve"><value>Restaurar todos los problemas ignorados</value></data>
+  <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Problemas de calidad ignorados</value></data>
+  <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Vea o restaure los problemas de calidad marcados anteriormente como correctos para la biblioteca activa.</value></data>
+  <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Gestionar problemas de calidad ignorados</value></data>
 </root>
 
