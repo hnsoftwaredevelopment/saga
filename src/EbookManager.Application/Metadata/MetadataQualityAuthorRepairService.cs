@@ -5,9 +5,17 @@ using EbookManager.Domain.Metadata;
 
 namespace EbookManager.Application.Metadata;
 
+public interface IMetadataQualityAuthorRepairService
+{
+    Task<MetadataQualityAuthorRepairBatchResult> RepairAsync(
+        IReadOnlyCollection<Guid> bookIds,
+        string author,
+        CancellationToken cancellationToken);
+}
+
 public sealed class MetadataQualityAuthorRepairService(
     IBookRepository bookRepository,
-    BookService bookService)
+    BookService bookService) : IMetadataQualityAuthorRepairService
 {
     private readonly IBookRepository bookRepository = bookRepository;
     private readonly BookService bookService = bookService;

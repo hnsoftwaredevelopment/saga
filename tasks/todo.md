@@ -9,7 +9,7 @@
 - [x] Taak 3: auteursinvoer en suggesties testgedreven modelleren.
 - [x] Taak 4: compact herstelvenster en interactiecontract toevoegen.
 - [ ] Checkpoint 2: invoerervaring handmatig goedgekeurd.
-- [ ] Taak 5: dashboardcommando en gerichte herevaluatie implementeren.
+- [x] Taak 5: dashboardcommando en gerichte herevaluatie implementeren.
 - [ ] Taak 6: actieve bibliotheek en WPF-dashboard verbinden.
 - [ ] Checkpoint 3: end-to-end herstelflow handmatig goedgekeurd.
 - [ ] Taak 7: lokalisatie en toegankelijkheidscontrole afronden.
