@@ -350,5 +350,8 @@
   <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Author name</value></data>
   <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>Suggestions come from the active library. A new name can also be entered.</value></data>
   <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Save repaired author</value></data>
+  <data name="MetadataQualityRepair" xml:space="preserve"><value>Repair</value></data>
+  <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Repair missing author</value></data>
+  <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>The author could not be saved. Check the book and try again.</value></data>
 </root>
 

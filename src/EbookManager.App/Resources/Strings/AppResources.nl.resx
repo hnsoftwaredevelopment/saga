@@ -350,5 +350,8 @@
   <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Naam van de auteur</value></data>
   <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>Suggesties komen uit de actieve bibliotheek. Je kunt ook een nieuwe naam invoeren.</value></data>
   <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Herstelde auteur opslaan</value></data>
+  <data name="MetadataQualityRepair" xml:space="preserve"><value>Herstellen</value></data>
+  <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Ontbrekende auteur herstellen</value></data>
+  <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>De auteur kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
 </root>
 

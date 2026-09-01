@@ -14,6 +14,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private readonly IMetadataQualityExclusionRepository? repository;
     private readonly IMetadataQualityAuthorRepairService? authorRepairService;
     private readonly Func<MetadataQualityAuthorRepairViewModel, CancellationToken, Task<bool>>? showAuthorRepair;
+    private readonly Action<Book>? bookRepaired;
     private readonly Dictionary<Guid, Book> books;
     private readonly HashSet<MetadataQualityExclusionKey> exclusions;
     private readonly AsyncRelayCommand markSelectedIssueCorrectCommand;
@@ -36,12 +37,14 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         IReadOnlySet<MetadataQualityExclusionKey>? exclusions = null,
         IMetadataQualityExclusionRepository? repository = null,
         IMetadataQualityAuthorRepairService? authorRepairService = null,
-        Func<MetadataQualityAuthorRepairViewModel, CancellationToken, Task<bool>>? showAuthorRepair = null)
+        Func<MetadataQualityAuthorRepairViewModel, CancellationToken, Task<bool>>? showAuthorRepair = null,
+        Action<Book>? bookRepaired = null)
     {
         this.localize = localize;
         this.repository = repository;
         this.authorRepairService = authorRepairService;
         this.showAuthorRepair = showAuthorRepair;
+        this.bookRepaired = bookRepaired;
         this.books = books.ToDictionary(book => book.Id);
         this.exclusions = exclusions is null ? [] : [.. exclusions];
         markSelectedIssueCorrectCommand = new AsyncRelayCommand(
@@ -244,6 +247,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private void ReconcileBook(Book book)
     {
         books[book.Id] = book;
+        bookRepaired?.Invoke(book);
         var selectedIssue = SelectedIssue;
         var selectedIndex = selectedIssue?.Rows.IndexOf(SelectedBook!) ?? -1;
         var applicableSignals = MetadataQualitySignalEvaluator.Evaluate(book);

@@ -10,7 +10,7 @@
 - [x] Taak 4: compact herstelvenster en interactiecontract toevoegen.
 - [ ] Checkpoint 2: invoerervaring handmatig goedgekeurd.
 - [x] Taak 5: dashboardcommando en gerichte herevaluatie implementeren.
-- [ ] Taak 6: actieve bibliotheek en WPF-dashboard verbinden.
+- [x] Taak 6: actieve bibliotheek en WPF-dashboard verbinden.
 - [ ] Checkpoint 3: end-to-end herstelflow handmatig goedgekeurd.
 - [ ] Taak 7: lokalisatie en toegankelijkheidscontrole afronden.
 - [ ] Taak 8: documentatie, handmatige checklist en eindcontrole afronden.
