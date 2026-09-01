@@ -17,6 +17,6 @@
 - [x] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
 - [x] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
 - [ ] Taak 12: featuredocumentatie en handmatige checklist afronden.
-- [ ] Volledige Release-tests en build zonder waarschuwingen uitvoeren.
-- [ ] Alle gewijzigde Markdown-documentatie naar Obsidian spiegelen.
+- [x] Volledige Release-tests en build zonder waarschuwingen uitgevoerd op 1 september 2026 (509 tests geslaagd; 0 waarschuwingen).
+- [x] Alle gewijzigde Markdown-documentatie naar Obsidian gespiegeld en gecontroleerd.
 - [ ] Zelfreview uitvoeren en een normale PR voor review openen.

@@ -31,7 +31,7 @@ public sealed class MetadataQualityLocalizationTests
     [InlineData("AppResources.fr.resx")]
     [InlineData("AppResources.es.resx")]
     [InlineData("AppResources.it.resx")]
-    public void Primary_resources_contain_understandable_quality_exclusion_texts(string fileName)
+    public void Supported_resources_contain_understandable_quality_exclusion_texts(string fileName)
     {
         var values = LoadResourceValues(fileName);
 
