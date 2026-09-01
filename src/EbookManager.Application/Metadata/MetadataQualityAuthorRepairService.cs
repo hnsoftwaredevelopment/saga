@@ -29,7 +29,7 @@ public sealed class MetadataQualityAuthorRepairService(
         ArgumentException.ThrowIfNullOrWhiteSpace(author);
 
         var normalizedAuthor = author.Trim();
-        if (normalizedAuthor.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
+        if (!MetadataQualityAuthorRules.IsUsable(normalizedAuthor))
         {
             throw new ArgumentException("A usable author is required.", nameof(author));
         }
@@ -53,7 +53,7 @@ public sealed class MetadataQualityAuthorRepairService(
                 continue;
             }
 
-            if (!MetadataQualitySignalEvaluator.Applies(currentBook, MetadataQualitySignalKeys.MissingAuthor))
+            if (currentBook.Metadata.Authors.Any(MetadataQualityAuthorRules.IsUsable))
             {
                 results.Add(new MetadataQualityAuthorRepairItemResult(
                     bookId,
@@ -69,11 +69,22 @@ public sealed class MetadataQualityAuthorRepairService(
             };
             var saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
             var reloadedBook = await bookRepository.GetAsync(bookId, cancellationToken);
+            var databaseWasUpdated = reloadedBook?.Metadata.Authors is [var storedAuthor] &&
+                storedAuthor.Equals(normalizedAuthor, StringComparison.Ordinal);
+            var hasFileWriteBackError = saveResult.FileResults.Any(file =>
+                file.Result.Status == MetadataWriteBackStatus.Failed);
+            var status = saveResult.Status switch
+            {
+                BookSaveStatus.Succeeded when hasFileWriteBackError =>
+                    MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors,
+                BookSaveStatus.Succeeded => MetadataQualityAuthorRepairStatus.Succeeded,
+                BookSaveStatus.Failed when databaseWasUpdated =>
+                    MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors,
+                _ => MetadataQualityAuthorRepairStatus.Failed
+            };
             results.Add(new MetadataQualityAuthorRepairItemResult(
                 bookId,
-                saveResult.Status == BookSaveStatus.Succeeded
-                    ? MetadataQualityAuthorRepairStatus.Succeeded
-                    : MetadataQualityAuthorRepairStatus.Failed,
+                status,
                 reloadedBook,
                 saveResult.Message,
                 saveResult.FileResults));
@@ -110,6 +121,7 @@ public sealed record MetadataQualityAuthorRepairItemResult(
 public enum MetadataQualityAuthorRepairStatus
 {
     Succeeded,
+    SavedWithWriteBackErrors,
     NotFound,
     NotApplicable,
     Failed

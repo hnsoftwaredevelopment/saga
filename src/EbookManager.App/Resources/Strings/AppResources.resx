@@ -354,5 +354,7 @@
   <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Change author</value></data>
   <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Repair missing author</value></data>
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>The author could not be saved. Check the book and try again.</value></data>
+  <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>The author was saved, but not every related metadata or ebook file could be updated.</value></data>
+  <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>This book already has an author. Saga refreshed the current book data.</value></data>
 </root>
 

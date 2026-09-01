@@ -632,5 +632,7 @@
   <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Autor ändern</value></data>
   <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Fehlenden Autor ergänzen</value></data>
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>Der Autor konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>Der Autor wurde gespeichert, aber nicht jede zugehörige Metadaten- oder E-Book-Datei konnte aktualisiert werden.</value></data>
+  <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Dieses Buch hat bereits einen Autor. Saga hat die aktuellen Buchdaten geladen.</value></data>
 </root>
 

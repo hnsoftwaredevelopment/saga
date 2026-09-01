@@ -354,5 +354,7 @@
   <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Auteur wijzigen</value></data>
   <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Ontbrekende auteur herstellen</value></data>
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>De auteur kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
+  <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>De auteur is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
+  <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Dit boek heeft al een auteur. Saga heeft de actuele boekgegevens geladen.</value></data>
 </root>
 

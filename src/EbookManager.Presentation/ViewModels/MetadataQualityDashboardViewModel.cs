@@ -88,42 +88,53 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         IReadOnlyList<Book> books,
         Func<string, string> localize,
         IReadOnlySet<MetadataQualityExclusionKey> exclusions) =>
+        BuildIssues(
+            books.Select(book => (
+                Book: book,
+                Signals: MetadataQualitySignalEvaluator.Evaluate(book))).ToArray(),
+            localize,
+            exclusions);
+
+    private static IReadOnlyList<MetadataQualityIssueViewModel> BuildIssues(
+        IReadOnlyList<(Book Book, IReadOnlySet<string> Signals)> evaluatedBooks,
+        Func<string, string> localize,
+        IReadOnlySet<MetadataQualityExclusionKey> exclusions) =>
         [
             CreateIssue(
                 MetadataQualitySignalKeys.MissingAuthor,
                 localize("MetadataQualityMissingAuthor"),
                 localize("MetadataQualityMissingAuthorDescription"),
-                books,
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.UnknownLanguage,
                 localize("MetadataQualityUnknownLanguage"),
                 localize("MetadataQualityUnknownLanguageDescription"),
-                books,
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.MissingCover,
                 localize("MetadataQualityMissingCover"),
                 localize("MetadataQualityMissingCoverDescription"),
-                books,
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.SeriesNumberWithoutSeries,
                 localize("MetadataQualitySeriesNumberWithoutSeries"),
                 localize("MetadataQualitySeriesNumberWithoutSeriesDescription"),
-                books,
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.PossibleTitleAuthorSwap,
                 localize("MetadataQualityPossibleTitleAuthorSwap"),
                 localize("MetadataQualityPossibleTitleAuthorSwapDescription"),
-                books,
+                evaluatedBooks,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.MessyTags,
                 localize("MetadataQualityMessyTags"),
                 localize("MetadataQualityMessyTagsDescription"),
-                books,
+                evaluatedBooks,
                 exclusions)
         ];
 
@@ -131,11 +142,12 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         string signalKey,
         string title,
         string description,
-        IEnumerable<Book> books,
+        IEnumerable<(Book Book, IReadOnlySet<string> Signals)> evaluatedBooks,
         IReadOnlySet<MetadataQualityExclusionKey> exclusions)
     {
-        var rows = books
-            .Where(book => MetadataQualitySignalEvaluator.Applies(book, signalKey))
+        var rows = evaluatedBooks
+            .Where(entry => entry.Signals.Contains(signalKey))
+            .Select(entry => entry.Book)
             .Where(book => !exclusions.Contains(new MetadataQualityExclusionKey(book.Id, signalKey)))
             .OrderBy(book => book.Metadata.Title, StringComparer.CurrentCultureIgnoreCase)
             .ThenBy(book => string.Join(", ", book.Metadata.Authors), StringComparer.CurrentCultureIgnoreCase)
@@ -237,11 +249,17 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             RemoveBook(selectedBook.Id);
         }
 
-        StatusMessage = result?.Status == MetadataQualityAuthorRepairStatus.Succeeded
-            ? null
-            : localize(result?.Status == MetadataQualityAuthorRepairStatus.NotFound
-                ? "MetadataQualityBookUnavailableMessage"
-                : "MetadataQualityAuthorRepairFailed");
+        StatusMessage = result?.Status switch
+        {
+            MetadataQualityAuthorRepairStatus.Succeeded => null,
+            MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors =>
+                localize("MetadataQualityAuthorRepairWriteBackWarning"),
+            MetadataQualityAuthorRepairStatus.NotApplicable =>
+                localize("MetadataQualityAuthorRepairNotNeeded"),
+            MetadataQualityAuthorRepairStatus.NotFound =>
+                localize("MetadataQualityBookUnavailableMessage"),
+            _ => localize("MetadataQualityAuthorRepairFailed")
+        };
     }
 
     private void ReconcileBook(Book book)

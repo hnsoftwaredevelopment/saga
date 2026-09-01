@@ -30,7 +30,9 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityRepair",
         "MetadataQualityChangeAuthor",
         "MetadataQualityRepairMissingAuthor",
-        "MetadataQualityAuthorRepairFailed"
+        "MetadataQualityAuthorRepairFailed",
+        "MetadataQualityAuthorRepairWriteBackWarning",
+        "MetadataQualityAuthorRepairNotNeeded"
     ];
 
     [Theory]

@@ -50,6 +50,7 @@ De kernworkflow met auteursuggesties, vrije invoer, annuleren, directe dashboard
 - [ ] Wissel van bibliotheek en controleer dat alleen auteurs uit de actieve bibliotheek als suggestie verschijnen.
 - [ ] Controleer dat een boek dat inmiddels een geldige auteur heeft niet via deze herstelroute wordt overschreven.
 - [ ] Simuleer indien praktisch een opslagfout en controleer dat Saga een duidelijke melding toont en de actuele opgeslagen toestand blijft weergeven.
+- [ ] Simuleer indien praktisch dat de auteur wel wordt opgeslagen maar een bijbehorend metadata- of ebookbestand niet kan worden bijgewerkt; controleer dat de kwaliteitsrij verdwijnt en Saga een duidelijke waarschuwing toont.
 
 ## Lokalisatie
 

@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using EbookManager.Application.Metadata;
 
 namespace EbookManager.Presentation.ViewModels;
 
@@ -22,7 +23,7 @@ public sealed partial class MetadataQualityAuthorRepairViewModel : ObservableObj
 
         BookTitle = bookTitle;
         this.knownAuthors = knownAuthors
-            .Where(IsUsableAuthor)
+            .Where(MetadataQualityAuthorRules.IsUsable)
             .Select(author => author.Trim())
             .Distinct(StringComparer.CurrentCultureIgnoreCase)
             .OrderBy(author => author, StringComparer.CurrentCultureIgnoreCase)
@@ -31,7 +32,7 @@ public sealed partial class MetadataQualityAuthorRepairViewModel : ObservableObj
     }
 
     public string BookTitle { get; }
-    public string? NormalizedAuthor => IsUsableAuthor(AuthorText) ? AuthorText.Trim() : null;
+    public string? NormalizedAuthor => MetadataQualityAuthorRules.IsUsable(AuthorText) ? AuthorText.Trim() : null;
     public bool CanSave => NormalizedAuthor is not null;
 
     public void UseSuggestion(string? author)
@@ -59,8 +60,4 @@ public sealed partial class MetadataQualityAuthorRepairViewModel : ObservableObj
             .ThenBy(author => author, StringComparer.CurrentCultureIgnoreCase)
             .ToArray();
     }
-
-    private static bool IsUsableAuthor(string? author) =>
-        !string.IsNullOrWhiteSpace(author) &&
-        !author.Trim().Equals("Unknown", StringComparison.OrdinalIgnoreCase);
 }

@@ -117,6 +117,23 @@ public sealed class MetadataQualityAuthorRepairServiceTests
             .Should().Be(MetadataQualityAuthorRepairStatus.Succeeded);
     }
 
+    [Fact]
+    public async Task RepairAsync_reports_saved_with_writeback_errors_when_database_update_succeeded()
+    {
+        var original = CreateBook("Boek", ["Unknown"]);
+        var repository = new InMemoryBookRepository([original])
+        {
+            ThrowWhenListingFiles = true
+        };
+        var service = CreateService(repository);
+
+        var result = await service.RepairAsync([original.Id], "Nieuwe Auteur", default);
+
+        var repaired = result.Items.Should().ContainSingle().Which;
+        repaired.Status.Should().Be(MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors);
+        repaired.Book!.Metadata.Authors.Should().Equal("Nieuwe Auteur");
+    }
+
     private static MetadataQualityAuthorRepairService CreateService(InMemoryBookRepository repository)
     {
         var bookService = new BookService(
@@ -160,6 +177,7 @@ public sealed class MetadataQualityAuthorRepairServiceTests
         public int GetCalls { get; private set; }
         public int UpdateCalls { get; private set; }
         public HashSet<Guid> ConflictingBookIds { get; } = [];
+        public bool ThrowWhenListingFiles { get; init; }
 
         public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Book>>(books.Values.ToArray());
@@ -183,7 +201,9 @@ public sealed class MetadataQualityAuthorRepairServiceTests
         }
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<BookFile>>([]);
+            ThrowWhenListingFiles
+                ? throw new IOException("Write-back unavailable.")
+                : Task.FromResult<IReadOnlyList<BookFile>>([]);
 
         public Task<bool> HasHashAsync(string sha256, CancellationToken cancellationToken) => Task.FromResult(false);
         public Task<bool> HasNormalizedTitleAndAuthorAsync(string title, IReadOnlyList<string> authors, CancellationToken cancellationToken) => Task.FromResult(false);

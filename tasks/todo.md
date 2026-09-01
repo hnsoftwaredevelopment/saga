@@ -14,6 +14,7 @@
 - [x] Checkpoint 3: end-to-end auteursherstel handmatig goedgekeurd op 1 september 2026.
 - [x] Taak 7: lokalisatie en geautomatiseerde toegankelijkheidscontrole afgerond.
 - [x] Taak 8: documentatie, handmatige checklist en eindcontrole afgerond.
-- [x] Volledige Release-tests (543 geslaagd) en build zonder waarschuwingen uitgevoerd.
+- [x] Volledige Release-tests (546 geslaagd) en build zonder waarschuwingen uitgevoerd.
 - [x] Alle gewijzigde Markdown-documentatie naar Obsidian gespiegeld en gecontroleerd.
 - [x] Zelfreview uitgevoerd en normale, niet-draft PR #28 geopend.
+- [x] De vier opmerkingen uit de CodeRabbit-review van PR #28 verwerkt en opnieuw gevalideerd.

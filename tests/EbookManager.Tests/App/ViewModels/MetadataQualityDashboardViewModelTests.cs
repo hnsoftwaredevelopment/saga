@@ -275,6 +275,58 @@ public sealed class MetadataQualityDashboardViewModelTests
         dashboard.StatusMessage.Should().Be("localized:MetadataQualityAuthorRepairFailed");
     }
 
+    [Fact]
+    public async Task Repair_missing_author_shows_warning_when_author_was_saved_but_writeback_failed()
+    {
+        var book = CreateBook("Boek", ["Unknown"], coverBytes: [1]);
+        var repairedBook = book with
+        {
+            Metadata = new BookMetadata("Boek", ["Auteur"], Language: "nl", CoverBytes: [1])
+        };
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [book],
+            key => $"localized:{key}",
+            authorRepairService: new RecordingAuthorRepairService(
+                repairedBook,
+                MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors),
+            showAuthorRepair: (repair, _) =>
+            {
+                repair.AuthorText = "Auteur";
+                return Task.FromResult(true);
+            });
+
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+
+        dashboard.SelectedIssue!.Rows.Should().BeEmpty();
+        dashboard.StatusMessage.Should().Be("localized:MetadataQualityAuthorRepairWriteBackWarning");
+    }
+
+    [Fact]
+    public async Task Repair_missing_author_reports_neutrally_when_book_already_has_an_author()
+    {
+        var staleBook = CreateBook("Boek", ["Unknown"], coverBytes: [1]);
+        var currentBook = staleBook with
+        {
+            Metadata = new BookMetadata("Boek", ["Bestaande Auteur"], Language: "nl", CoverBytes: [1])
+        };
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [staleBook],
+            key => $"localized:{key}",
+            authorRepairService: new RecordingAuthorRepairService(
+                currentBook,
+                MetadataQualityAuthorRepairStatus.NotApplicable),
+            showAuthorRepair: (repair, _) =>
+            {
+                repair.AuthorText = "Nieuwe Auteur";
+                return Task.FromResult(true);
+            });
+
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+
+        dashboard.SelectedIssue!.Rows.Should().BeEmpty();
+        dashboard.StatusMessage.Should().Be("localized:MetadataQualityAuthorRepairNotNeeded");
+    }
+
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,

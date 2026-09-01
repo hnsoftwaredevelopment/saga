@@ -29,7 +29,7 @@ Deze milestone bewijst het patroon voor directe kwaliteitsreparaties. Latere sli
 6. `Opslaan` is alleen beschikbaar voor een niet-lege, getrimde auteur die niet gelijk is aan `Unknown`.
 7. Na opslaan gebruikt Saga de bestaande metadata-opslag en write-backroute.
 8. Saga leest het opgeslagen boek opnieuw, beoordeelt alle kwaliteitssignalen opnieuw en werkt rijen, waarden, selectie en aantallen direct bij.
-9. Als de opslag mislukt, blijft de kwaliteitsrij zichtbaar, toont Saga een begrijpelijke foutmelding en blijft de actuele opgeslagen toestand leidend.
+9. Als de databaseopslag mislukt, blijft de kwaliteitsrij zichtbaar en toont Saga een begrijpelijke foutmelding. Als de auteur wel in de database is opgeslagen maar een bijbehorend metadata- of ebookbestand niet kon worden bijgewerkt, toont Saga een waarschuwing en geeft het dashboard de opnieuw ingelezen databasewerkelijkheid weer.
 10. `Annuleren` of sluiten verandert niets.
 
 ## Auteursuggesties
@@ -59,6 +59,7 @@ Deze milestone bewijst het patroon voor directe kwaliteitsreparaties. Latere sli
 - Haal vlak voor opslaan het actuele boek op via de actieve bibliotheekrepository om verlies van tussentijdse wijzigingen te voorkomen.
 - Wijzig uitsluitend `BookMetadata.Authors` en `UpdatedUtc`; alle andere boekmetadata, leesstatus, formaten en kwaliteitsuitzonderingen blijven behouden.
 - Lees het boek na de opslag opnieuw uit de repository voordat het dashboard wordt bijgewerkt.
+- Maak onderscheid tussen een volledig mislukte opslag en een opgeslagen auteur met fouten bij het bijwerken van aanvullende metadata- of ebookbestanden. Alleen in het tweede geval verdwijnt de opgeloste kwaliteitsrij en verschijnt een waarschuwing.
 - Voeg geen databasekolom, migratie of externe dependency toe.
 - Houd de reparatie-invoer en validatie in een zelfstandig, testbaar presentatie-viewmodel.
 - Houd de signaalevaluatie op één plaats, zodat initiële dashboardopbouw en herevaluatie exact dezelfde regels gebruiken.
@@ -154,7 +155,7 @@ var updatedBook = currentBook with
 - Lege invoer en `Unknown` kunnen niet worden opgeslagen.
 - Opslaan wijzigt uitsluitend de auteur van het actuele geselecteerde boek via de bestaande veilige opslagroute.
 - Na succes wordt het boek opnieuw gelezen en worden alle kwaliteitssignalen, rijen en aantallen direct bijgewerkt.
-- Annuleren en opslagfouten laten het dashboard en het boek ongewijzigd of tonen duidelijk eventuele bestaande write-backstatus.
+- Annuleren en volledig mislukte opslag laten het boek ongewijzigd. Bij een gedeeltelijk geslaagde opslag toont het dashboard de opnieuw ingelezen auteur en een duidelijke waarschuwing over de niet-bijgewerkte bestanden.
 - De nieuwe workflow is toetsenbordtoegankelijk en volledig vertaald in alle zes ondersteunde talen.
 - Alle geautomatiseerde tests en de Release-build slagen zonder waarschuwingen.
 

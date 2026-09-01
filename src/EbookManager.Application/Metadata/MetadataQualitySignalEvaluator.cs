@@ -31,10 +31,7 @@ public static class MetadataQualitySignalEvaluator
     }
 
     private static bool HasMissingAuthor(Book book) =>
-        book.Metadata.Authors.Count == 0 ||
-        book.Metadata.Authors.All(author =>
-            string.IsNullOrWhiteSpace(author) ||
-            author.Equals("Unknown", StringComparison.OrdinalIgnoreCase));
+        !book.Metadata.Authors.Any(MetadataQualityAuthorRules.IsUsable);
 
     private static bool HasUnknownLanguage(Book book)
     {
