@@ -45,6 +45,9 @@
     <None Include="..\..\src\EbookManager.App\Views\MetadataQualityExclusionsWindow.xaml"
           Link="TestAssets\MetadataQualityExclusionsWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\SettingsWindow.xaml"
+          Link="TestAssets\SettingsWindow.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

@@ -328,6 +328,10 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IAsyncRelayCommand ShowDuplicateExclusionsCommand => showDuplicateExclusionsCommand ??= new AsyncRelayCommand(
         ShowDuplicateExclusionsAsync,
         () => duplicateExclusionRepository is not null && HasActiveLibrary);
+    public IAsyncRelayCommand ShowMetadataQualityExclusionsCommand =>
+        showMetadataQualityExclusionsCommand ??= new AsyncRelayCommand(
+            ShowMetadataQualityExclusionsAsync,
+            () => metadataQualityExclusionRepository is not null && HasActiveLibrary);
     public IAsyncRelayCommand ShowMetadataQualityDashboardCommand =>
         showMetadataQualityDashboardCommand ??= new AsyncRelayCommand(ShowMetadataQualityDashboardAsync, () => HasActiveLibrary);
     public IRelayCommand CloseImportJobCommand => closeImportJobCommand ??= new RelayCommand(() => importAgent?.Job.Close());
@@ -383,6 +387,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private AsyncRelayCommand? showImportHistoryCommand;
     private AsyncRelayCommand? showDuplicateCandidatesCommand;
     private AsyncRelayCommand? showDuplicateExclusionsCommand;
+    private AsyncRelayCommand? showMetadataQualityExclusionsCommand;
     private AsyncRelayCommand? showMetadataQualityDashboardCommand;
     private RelayCommand? closeImportJobCommand;
     private AsyncRelayCommand? addGroupingCommand;
@@ -3719,6 +3724,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(HasActiveLibrary));
         showDuplicateExclusionsCommand?.NotifyCanExecuteChanged();
+        showMetadataQualityExclusionsCommand?.NotifyCanExecuteChanged();
     }
 
     public bool ApplyDefaultViewPreference(string? defaultView)
@@ -4011,6 +4017,19 @@ public sealed partial class LibraryViewModel : ObservableObject
         var exclusions = new DuplicateExclusionsViewModel(duplicateExclusionRepository);
         await exclusions.LoadAsync(cancellationToken);
         await userInteraction.ShowDuplicateExclusionsAsync(exclusions, cancellationToken);
+    }
+
+    private async Task ShowMetadataQualityExclusionsAsync(CancellationToken cancellationToken)
+    {
+        if (metadataQualityExclusionRepository is null ||
+            !EnsureActiveLibraryStillExists("Create or open a library to get started."))
+        {
+            return;
+        }
+
+        var exclusions = new MetadataQualityExclusionsViewModel(metadataQualityExclusionRepository, localize);
+        await exclusions.LoadAsync(cancellationToken);
+        await userInteraction.ShowMetadataQualityExclusionsAsync(exclusions, cancellationToken);
     }
 
     private async Task ShowMetadataQualityDashboardAsync(CancellationToken cancellationToken)

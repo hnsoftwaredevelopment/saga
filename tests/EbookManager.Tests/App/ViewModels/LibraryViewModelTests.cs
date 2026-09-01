@@ -466,6 +466,101 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Show_metadata_quality_exclusions_is_disabled_without_active_library()
+    {
+        var interaction = new ScriptedUserInteractionService();
+        var currentLibrary = new CurrentLibrary();
+        var repository = new CurrentLibraryMetadataQualityExclusionRepository(
+            currentLibrary,
+            new Dictionary<string, IReadOnlyList<MetadataQualityExclusion>>());
+        var viewModel = CreateViewModel(
+            [], interaction, currentLibrary: currentLibrary, metadataQualityExclusionRepository: repository);
+
+        viewModel.ShowMetadataQualityExclusionsCommand.CanExecute(null).Should().BeFalse();
+        await viewModel.ShowMetadataQualityExclusionsCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityExclusions.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Show_metadata_quality_exclusions_loads_active_library_rows()
+    {
+        var currentLibrary = CreateActiveLibrary();
+        var exclusion = CreateQualityExclusion("Active book", MetadataQualitySignalKeys.MissingCover);
+        var repository = new CurrentLibraryMetadataQualityExclusionRepository(
+            currentLibrary,
+            new Dictionary<string, IReadOnlyList<MetadataQualityExclusion>> { ["Test"] = [exclusion] });
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel(
+            [], interaction, currentLibrary: currentLibrary, metadataQualityExclusionRepository: repository);
+
+        await viewModel.ShowMetadataQualityExclusionsCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityExclusions.Should().NotBeNull();
+        interaction.MetadataQualityExclusions!.Rows.Should().ContainSingle()
+            .Which.BookTitle.Should().Be("Active book");
+    }
+
+    [Fact]
+    public async Task Show_metadata_quality_exclusions_reloads_after_library_switch()
+    {
+        var currentLibrary = new CurrentLibrary();
+        currentLibrary.Set(new LibraryDescriptor("First", Path.GetTempPath(), DateTimeOffset.UtcNow));
+        var repository = new CurrentLibraryMetadataQualityExclusionRepository(
+            currentLibrary,
+            new Dictionary<string, IReadOnlyList<MetadataQualityExclusion>>
+            {
+                ["First"] = [CreateQualityExclusion("First library", MetadataQualitySignalKeys.MissingCover)],
+                ["Second"] = [CreateQualityExclusion("Second library", MetadataQualitySignalKeys.MessyTags)]
+            });
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel(
+            [], interaction, currentLibrary: currentLibrary, metadataQualityExclusionRepository: repository);
+
+        await viewModel.ShowMetadataQualityExclusionsCommand.ExecuteAsync(null);
+        interaction.MetadataQualityExclusions!.Rows.Select(row => row.BookTitle).Should().Equal("First library");
+
+        currentLibrary.Set(new LibraryDescriptor("Second", Path.GetTempPath(), DateTimeOffset.UtcNow));
+        await viewModel.ShowMetadataQualityExclusionsCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityExclusions!.Rows.Select(row => row.BookTitle).Should().Equal("Second library");
+    }
+
+    [Fact]
+    public async Task Restored_quality_exclusion_is_evaluated_again_when_dashboard_reopens()
+    {
+        var book = CreateBook("Restored book", ["Unknown"], language: "nl", coverBytes: [1]);
+        var currentLibrary = CreateActiveLibrary();
+        var repository = new CurrentLibraryMetadataQualityExclusionRepository(
+            currentLibrary,
+            new Dictionary<string, IReadOnlyList<MetadataQualityExclusion>>
+            {
+                ["Test"] =
+                [
+                    new MetadataQualityExclusion(
+                        new MetadataQualityExclusionKey(book.Id, MetadataQualitySignalKeys.MissingAuthor),
+                        book.Metadata.Title,
+                        book.Metadata.Authors,
+                        DateTimeOffset.UtcNow)
+                ]
+            });
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel(
+            [book], interaction, currentLibrary: currentLibrary, metadataQualityExclusionRepository: repository);
+        await viewModel.RefreshAsync();
+
+        await viewModel.ShowMetadataQualityExclusionsCommand.ExecuteAsync(null);
+        var exclusions = interaction.MetadataQualityExclusions!;
+        exclusions.SetSelectedRows(exclusions.Rows);
+        await exclusions.RestoreSelectedCommand.ExecuteAsync(null);
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityDashboard!.Issues
+            .Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MissingAuthor)
+            .Rows.Should().ContainSingle(row => row.Id == book.Id);
+    }
+
+    [Fact]
     public async Task Metadata_quality_navigation_clears_search_that_hides_selected_book()
     {
         var target = CreateBook("Doelboek", ["Auteur A"]);
@@ -3529,6 +3624,13 @@ public sealed class LibraryViewModelTests
         public void Report(LibraryPerformanceSnapshot snapshot) => Snapshots.Add(snapshot);
     }
 
+    private static MetadataQualityExclusion CreateQualityExclusion(string title, string signalKey) =>
+        new(
+            new MetadataQualityExclusionKey(Guid.NewGuid(), signalKey),
+            title,
+            ["Author"],
+            DateTimeOffset.UtcNow);
+
     private static CurrentLibrary CreateActiveLibrary()
     {
         var currentLibrary = new CurrentLibrary();
@@ -4034,6 +4136,7 @@ public sealed class LibraryViewModelTests
         public ImportHistoryViewModel? ImportHistory { get; private set; }
         public ImportResultViewModel? ShownImportResult { get; private set; }
         public MetadataQualityDashboardViewModel? MetadataQualityDashboard { get; private set; }
+        public MetadataQualityExclusionsViewModel? MetadataQualityExclusions { get; private set; }
 
         public Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<string>>(RecordPickBookFiles());
@@ -4109,8 +4212,11 @@ public sealed class LibraryViewModelTests
 
         public Task ShowMetadataQualityExclusionsAsync(
             MetadataQualityExclusionsViewModel exclusions,
-            CancellationToken cancellationToken) =>
-            Task.CompletedTask;
+            CancellationToken cancellationToken)
+        {
+            MetadataQualityExclusions = exclusions;
+            return Task.CompletedTask;
+        }
 
         public Task<Guid?> ShowMetadataQualityDashboardAsync(
             MetadataQualityDashboardViewModel dashboard,
@@ -4172,6 +4278,56 @@ public sealed class LibraryViewModelTests
         {
             keys.Clear();
             return Task.CompletedTask;
+        }
+    }
+
+    private sealed class CurrentLibraryMetadataQualityExclusionRepository(
+        CurrentLibrary currentLibrary,
+        IReadOnlyDictionary<string, IReadOnlyList<MetadataQualityExclusion>> exclusionsByLibrary)
+        : IMetadataQualityExclusionRepository
+    {
+        private readonly Dictionary<string, List<MetadataQualityExclusion>> exclusionsByLibrary =
+            exclusionsByLibrary.ToDictionary(pair => pair.Key, pair => pair.Value.ToList(), StringComparer.Ordinal);
+
+        public Task<IReadOnlySet<MetadataQualityExclusionKey>> ListMetadataQualityExclusionsAsync(
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlySet<MetadataQualityExclusionKey>>(
+                CurrentExclusions().Select(exclusion => exclusion.Key).ToHashSet());
+
+        public Task<IReadOnlyList<MetadataQualityExclusion>> ListMetadataQualityExclusionDetailsAsync(
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<MetadataQualityExclusion>>(CurrentExclusions().ToArray());
+
+        public Task AddMetadataQualityExclusionsAsync(
+            IReadOnlyCollection<MetadataQualityExclusionKey> keys,
+            CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task RemoveMetadataQualityExclusionsAsync(
+            IReadOnlyCollection<MetadataQualityExclusionKey> keys,
+            CancellationToken cancellationToken)
+        {
+            var keySet = keys.ToHashSet();
+            CurrentExclusions().RemoveAll(exclusion => keySet.Contains(exclusion.Key));
+            return Task.CompletedTask;
+        }
+
+        public Task ClearMetadataQualityExclusionsAsync(CancellationToken cancellationToken)
+        {
+            CurrentExclusions().Clear();
+            return Task.CompletedTask;
+        }
+
+        private List<MetadataQualityExclusion> CurrentExclusions()
+        {
+            var name = currentLibrary.Current?.Name ?? string.Empty;
+            if (!exclusionsByLibrary.TryGetValue(name, out var exclusions))
+            {
+                exclusions = [];
+                exclusionsByLibrary[name] = exclusions;
+            }
+
+            return exclusions;
         }
     }
 
