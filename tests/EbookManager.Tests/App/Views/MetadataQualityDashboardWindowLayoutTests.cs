@@ -60,7 +60,7 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
             .Descendants(presentation + "Button")
             .Single(element => (string?)element.Attribute(xaml + "Name") == "RepairMissingAuthorButton");
 
-        RequiredAttribute(button, "Content").Should().Be("{loc:Loc MetadataQualityRepair}");
+        RequiredAttribute(button, "Content").Should().Be("{loc:Loc MetadataQualityChangeAuthor}");
         RequiredAttribute(button, "Command").Should().Be("{Binding RepairMissingAuthorCommand}");
         RequiredAttribute(button, "Focusable").Should().Be("True");
         RequiredAttribute(button, "AutomationProperties.Name").Should().Be("{loc:Loc MetadataQualityRepairMissingAuthor}");

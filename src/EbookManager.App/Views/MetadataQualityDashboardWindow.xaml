@@ -48,7 +48,7 @@
                 IsCancel="True"
                 Click="CloseClicked" />
         <Button x:Name="RepairMissingAuthorButton"
-                Content="{loc:Loc MetadataQualityRepair}"
+                Content="{loc:Loc MetadataQualityChangeAuthor}"
                 Command="{Binding RepairMissingAuthorCommand}"
                 MinWidth="110"
                 Margin="8,0,0,0"

@@ -28,6 +28,7 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityAuthorRepairAuthorHelp",
         "MetadataQualityAuthorRepairSave",
         "MetadataQualityRepair",
+        "MetadataQualityChangeAuthor",
         "MetadataQualityRepairMissingAuthor",
         "MetadataQualityAuthorRepairFailed"
     ];

@@ -629,6 +629,7 @@
   <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>I suggerimenti provengono dalla biblioteca attiva. Puoi anche inserire un nuovo nome.</value></data>
   <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Salva autore corretto</value></data>
   <data name="MetadataQualityRepair" xml:space="preserve"><value>Correggi</value></data>
+  <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Modifica autore</value></data>
   <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Correggi autore mancante</value></data>
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare l’autore. Controlla il libro e riprova.</value></data>
 </root>
