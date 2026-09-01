@@ -1,4 +1,5 @@
 using System.Xml.Linq;
+using EbookManager.Domain.Metadata;
 using FluentAssertions;
 
 namespace EbookManager.Tests.App.Resources;
@@ -27,6 +28,9 @@ public sealed class MetadataQualityLocalizationTests
     [InlineData("AppResources.resx")]
     [InlineData("AppResources.nl.resx")]
     [InlineData("AppResources.de.resx")]
+    [InlineData("AppResources.fr.resx")]
+    [InlineData("AppResources.es.resx")]
+    [InlineData("AppResources.it.resx")]
     public void Primary_resources_contain_understandable_quality_exclusion_texts(string fileName)
     {
         var values = LoadResourceValues(fileName);
@@ -37,6 +41,8 @@ public sealed class MetadataQualityLocalizationTests
             values[key].Should().NotBeNullOrWhiteSpace();
             values[key].Should().NotBe(key);
         }
+
+        values.Values.Should().NotContain(value => MetadataQualitySignalKeys.All.Contains(value));
     }
 
     private static IReadOnlyDictionary<string, string> LoadResourceValues(string fileName)

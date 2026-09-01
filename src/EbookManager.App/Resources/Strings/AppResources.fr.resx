@@ -609,5 +609,19 @@
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Étiquettes incohérentes</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Étiquettes contenant des espaces superflus ou des valeurs séparées par des virgules.</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>
+  <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>C'est correct</value></data>
+  <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Cette décision de qualité n'a pas pu être enregistrée. Réessayez.</value></data>
+  <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Signalements de qualité ignorés</value></data>
+  <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>Ces signalements de qualité ont été marqués comme corrects. Rétablissez-les pour que Saga les évalue à nouveau.</value></data>
+  <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> signalements de qualité ignorés</value></data>
+  <data name="RestoreSelectedQualityExclusions" xml:space="preserve"><value>Rétablir la sélection</value></data>
+  <data name="RestoreAllQualityExclusions" xml:space="preserve"><value>Tout rétablir</value></data>
+  <data name="MetadataQualityExclusionsNone" xml:space="preserve"><value>Aucun signalement de qualité ignoré.</value></data>
+  <data name="MetadataQualitySignal" xml:space="preserve"><value>Signalement de qualité</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationMessage" xml:space="preserve"><value>Rétablir tous les signalements de qualité ignorés ? Ils réapparaîtront si les métadonnées correspondent toujours à une règle de qualité.</value></data>
+  <data name="RestoreAllQualityExclusionsConfirmationTitle" xml:space="preserve"><value>Rétablir tous les signalements ignorés</value></data>
+  <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Signalements de qualité ignorés</value></data>
+  <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Affichez ou rétablissez les signalements de qualité précédemment marqués comme corrects pour la bibliothèque active.</value></data>
+  <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Gérer les signalements de qualité ignorés</value></data>
 </root>
 
