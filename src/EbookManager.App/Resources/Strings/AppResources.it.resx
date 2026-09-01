@@ -623,5 +623,13 @@
   <data name="MetadataQualityExclusionsSettingsTitle" xml:space="preserve"><value>Segnalazioni di qualità ignorate</value></data>
   <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>Visualizza o ripristina le segnalazioni di qualità contrassegnate in precedenza come corrette per la biblioteca attiva.</value></data>
   <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Gestisci le segnalazioni di qualità ignorate</value></data>
+  <data name="MetadataQualityAuthorRepairTitle" xml:space="preserve"><value>Correggi autore mancante</value></data>
+  <data name="MetadataQualityAuthorRepairDescription" xml:space="preserve"><value>Scegli un autore noto o inserisci un nuovo autore per questo libro.</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Nome dell’autore</value></data>
+  <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>I suggerimenti provengono dalla biblioteca attiva. Puoi anche inserire un nuovo nome.</value></data>
+  <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Salva autore corretto</value></data>
+  <data name="MetadataQualityRepair" xml:space="preserve"><value>Correggi</value></data>
+  <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Correggi autore mancante</value></data>
+  <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare l’autore. Controlla il libro e riprova.</value></data>
 </root>
 

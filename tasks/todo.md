@@ -12,7 +12,7 @@
 - [x] Taak 5: dashboardcommando en gerichte herevaluatie implementeren.
 - [x] Taak 6: actieve bibliotheek en WPF-dashboard verbinden.
 - [ ] Checkpoint 3: end-to-end herstelflow handmatig goedgekeurd.
-- [ ] Taak 7: lokalisatie en toegankelijkheidscontrole afronden.
+- [x] Taak 7: lokalisatie en geautomatiseerde toegankelijkheidscontrole afgerond.
 - [ ] Taak 8: documentatie, handmatige checklist en eindcontrole afronden.
 - [ ] Volledige Release-tests en build zonder waarschuwingen uitvoeren.
 - [ ] Alle gewijzigde Markdown-documentatie naar Obsidian spiegelen en controleren.
