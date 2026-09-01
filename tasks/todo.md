@@ -3,7 +3,7 @@
 - [x] Functionele richting goedgekeurd op 1 september 2026.
 - [x] Specificatie en acceptatiecriteria goedgekeurd op 1 september 2026.
 - [x] Uitvoeringsplan en taakvolgorde goedgekeurd op 1 september 2026.
-- [ ] Taak 1: herbruikbare kwaliteitsevaluatie implementeren.
+- [x] Taak 1: herbruikbare kwaliteitsevaluatie implementeren.
 - [ ] Taak 2: veilige applicatieservice voor auteursherstel implementeren.
 - [ ] Checkpoint 1: fundamenttests en Release-build groen; zelfreview afgerond.
 - [ ] Taak 3: auteursinvoer en suggesties testgedreven modelleren.

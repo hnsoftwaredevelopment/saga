@@ -71,37 +71,37 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
                 MetadataQualitySignalKeys.MissingAuthor,
                 localize("MetadataQualityMissingAuthor"),
                 localize("MetadataQualityMissingAuthorDescription"),
-                books.Where(HasMissingAuthor),
+                books,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.UnknownLanguage,
                 localize("MetadataQualityUnknownLanguage"),
                 localize("MetadataQualityUnknownLanguageDescription"),
-                books.Where(HasUnknownLanguage),
+                books,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.MissingCover,
                 localize("MetadataQualityMissingCover"),
                 localize("MetadataQualityMissingCoverDescription"),
-                books.Where(HasMissingCover),
+                books,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.SeriesNumberWithoutSeries,
                 localize("MetadataQualitySeriesNumberWithoutSeries"),
                 localize("MetadataQualitySeriesNumberWithoutSeriesDescription"),
-                books.Where(HasSeriesNumberWithoutSeries),
+                books,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.PossibleTitleAuthorSwap,
                 localize("MetadataQualityPossibleTitleAuthorSwap"),
                 localize("MetadataQualityPossibleTitleAuthorSwapDescription"),
-                books.Where(HasPossibleTitleAuthorSwap),
+                books,
                 exclusions),
             CreateIssue(
                 MetadataQualitySignalKeys.MessyTags,
                 localize("MetadataQualityMessyTags"),
                 localize("MetadataQualityMessyTagsDescription"),
-                books.Where(HasMessyTags),
+                books,
                 exclusions)
         ];
 
@@ -113,6 +113,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         IReadOnlySet<MetadataQualityExclusionKey> exclusions)
     {
         var rows = books
+            .Where(book => MetadataQualitySignalEvaluator.Applies(book, signalKey))
             .Where(book => !exclusions.Contains(new MetadataQualityExclusionKey(book.Id, signalKey)))
             .OrderBy(book => book.Metadata.Title, StringComparer.CurrentCultureIgnoreCase)
             .ThenBy(book => string.Join(", ", book.Metadata.Authors), StringComparer.CurrentCultureIgnoreCase)
@@ -163,73 +164,6 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         markSelectedIssueCorrectCommand.NotifyCanExecuteChanged();
     }
 
-    private static bool HasMissingAuthor(Book book) =>
-        book.Metadata.Authors.Count == 0 ||
-        book.Metadata.Authors.All(author =>
-            string.IsNullOrWhiteSpace(author) ||
-            author.Equals("Unknown", StringComparison.OrdinalIgnoreCase));
-
-    private static bool HasUnknownLanguage(Book book)
-    {
-        var language = book.Metadata.Language;
-        if (string.IsNullOrWhiteSpace(language))
-        {
-            return true;
-        }
-
-        var key = LanguageDisplayService.FilterKey(language);
-        if (string.IsNullOrWhiteSpace(key))
-        {
-            return true;
-        }
-
-        try
-        {
-            _ = System.Globalization.CultureInfo.GetCultureInfo(key);
-            return false;
-        }
-        catch (System.Globalization.CultureNotFoundException)
-        {
-            return true;
-        }
-    }
-
-    private static bool HasMissingCover(Book book) =>
-        book.Metadata.CoverBytes is null &&
-        string.IsNullOrWhiteSpace(book.CoverRelativePath);
-
-    private static bool HasSeriesNumberWithoutSeries(Book book) =>
-        book.Metadata.SeriesNumber is not null &&
-        string.IsNullOrWhiteSpace(book.Metadata.Series);
-
-    private static bool HasPossibleTitleAuthorSwap(Book book)
-    {
-        if (book.Metadata.Authors.Count != 1)
-        {
-            return false;
-        }
-
-        var title = book.Metadata.Title.Trim();
-        var author = book.Metadata.Authors[0].Trim();
-        return LooksLikePersonName(title) && !LooksLikePersonName(author);
-    }
-
-    private static bool HasMessyTags(Book book)
-    {
-        var tags = book.Metadata.Tags ?? [];
-        return tags.Any(tag =>
-            string.IsNullOrWhiteSpace(tag) ||
-            tag != tag.Trim() ||
-            tag.Contains("  ", StringComparison.Ordinal) ||
-            tag.Contains(',', StringComparison.Ordinal));
-    }
-
-    private static bool LooksLikePersonName(string value)
-    {
-        var parts = value.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length is >= 2 and <= 4 &&
-            parts.All(part => part.Length > 1 && char.IsUpper(part[0]) && part.Skip(1).Any(char.IsLower));
-    }
 }
 
 public sealed class MetadataQualityIssueViewModel : ObservableObject
