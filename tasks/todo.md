@@ -12,7 +12,7 @@
 - [x] Checkpoint 2: dashboardflow en bestaande navigatie groen; handmatig goedgekeurd op 27 augustus 2026.
 - [x] Taak 7: beheer-viewmodel voor genegeerde meldingen implementeren.
 - [x] Taak 8: beheerwindow en interactiecontract toevoegen.
-- [ ] Taak 9: beheeractie vanuit Instellingen verbinden.
+- [x] Taak 9: beheeractie vanuit Instellingen verbinden.
 - [ ] Checkpoint 3: beheerflow en cascade delete groen.
 - [ ] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
 - [ ] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
