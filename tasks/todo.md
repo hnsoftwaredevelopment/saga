@@ -14,7 +14,7 @@
 - [x] Taak 8: beheerwindow en interactiecontract toevoegen.
 - [x] Taak 9: beheeractie vanuit Instellingen verbinden.
 - [x] Checkpoint 3: beheerflow en cascade delete groen; handmatig goedgekeurd op 1 september 2026.
-- [ ] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
+- [x] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
 - [ ] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
 - [ ] Taak 12: featuredocumentatie en handmatige checklist afronden.
 - [ ] Volledige Release-tests en build zonder waarschuwingen uitvoeren.
