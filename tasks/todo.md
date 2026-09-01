@@ -15,7 +15,7 @@
 - [x] Taak 9: beheeractie vanuit Instellingen verbinden.
 - [x] Checkpoint 3: beheerflow en cascade delete groen; handmatig goedgekeurd op 1 september 2026.
 - [x] Taak 10: basisteksten en Nederlands/Duits lokaliseren.
-- [ ] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
+- [x] Taak 11: Frans/Spaans/Italiaans en lokalisatiecontrole afronden.
 - [ ] Taak 12: featuredocumentatie en handmatige checklist afronden.
 - [ ] Volledige Release-tests en build zonder waarschuwingen uitvoeren.
 - [ ] Alle gewijzigde Markdown-documentatie naar Obsidian spiegelen.
