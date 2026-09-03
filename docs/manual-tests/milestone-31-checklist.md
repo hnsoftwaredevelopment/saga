@@ -35,6 +35,8 @@ Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe`.
 
 ## Foutafhandeling en regressie
 
-- [ ] Controleer, indien praktisch na te bootsen, dat een opslagfout een duidelijke melding geeft en de actuele boekgegevens zichtbaar laat.
+- [ ] Open na een geslaagd herstel de `metadata.json` naast het boekbestand en controleer dat de serienaam is gewijzigd en het serienummer gelijk is gebleven.
+- [ ] Controleer dat het ebookbestand zelf niet wordt gewijzigd. Native metadata-write-back is in deze milestone nog voor geen enkel ebookformaat ondersteund; de draagbare metadata wordt opgeslagen in `metadata.json`.
+- [ ] Controleer in een gecontroleerde fouttest dat een mislukte sidecar- of ebook-write-back een duidelijke waarschuwing geeft en de actuele boekgegevens zichtbaar laat. Als deze fout handmatig niet veilig en betrouwbaar is na te bootsen, leg dat vast; de route wordt ook afgedekt door `RepairAsync_reports_saved_with_writeback_errors_when_database_update_succeeded`.
 - [ ] Controleer dat `Auteur wijzigen`, `Taal wijzigen`, `Dit is correct` en `Openen in bibliotheek` nog steeds werken in hun eigen context.
 - [ ] Sluit Saga, open dezelfde bibliotheek opnieuw en controleer dat de opgeslagen serienaam en het serienummer behouden zijn.
