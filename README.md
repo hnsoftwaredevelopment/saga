@@ -90,11 +90,10 @@ dotnet test EbookManager.sln
 dotnet build EbookManager.sln
 ```
 
-Builds and intermediate files are stored centrally under `Builds` in the repository root:
+The ready-to-run Debug build is stored under `Builds` in the repository root. Internal compiler and test output remains in the ignored `.build` folder:
 
-- Debug app: `Builds\bin\EbookManager.App\debug\Saga.exe`
-- Release app: `Builds\bin\EbookManager.App\release\Saga.exe`
-- Future Release publish output: `Builds\publish\EbookManager.App\release`
+- Debug app: `Builds\Debug\Saga.exe`
+- Future installer input: `Builds\Publish`
 
 Create the future publish output with:
 
