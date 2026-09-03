@@ -6,7 +6,7 @@
 - [x] Taak 1: veilige omwisselservice testgedreven implementeren (7 gerichte tests groen).
 - [x] Taak 2: bevestigingsmodel en WPF-venster toevoegen.
 - [x] Checkpoint 1: 12 gerichte tests en Release-build zonder waarschuwingen groen.
-- [ ] Taak 3: Quality Page en actieve bibliotheek koppelen.
+- [x] Taak 3: Quality Page en actieve bibliotheek gekoppeld (123 metadata-kwaliteitstests groen).
 - [ ] Taak 4: lokalisatie, documentatie en handmatige checklist afronden.
 - [ ] Volledige Release-tests en build zonder waarschuwingen uitvoeren.
 - [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken.

@@ -94,6 +94,24 @@
             </Style>
           </Button.Style>
         </Button>
+        <Button x:Name="RepairTitleAuthorButton"
+                Content="{loc:Loc MetadataQualitySwapTitleAuthor}"
+                Command="{Binding RepairTitleAuthorCommand}"
+                MinWidth="150"
+                Margin="8,0,0,0"
+                Focusable="True"
+                AutomationProperties.Name="{loc:Loc MetadataQualitySwapTitleAuthor}">
+          <Button.Style>
+            <Style TargetType="Button">
+              <Setter Property="Visibility" Value="Collapsed" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedIssue.SignalKey}" Value="possible-title-author-swap">
+                  <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Button.Style>
+        </Button>
         <Button x:Name="MarkSelectedIssueCorrectButton"
                 Content="{loc:Loc MetadataQualityMarkCorrect}"
                 Command="{Binding MarkSelectedIssueCorrectCommand}"
