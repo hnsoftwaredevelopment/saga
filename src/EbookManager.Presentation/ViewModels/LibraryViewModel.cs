@@ -41,6 +41,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IMetadataQualityExclusionRepository? metadataQualityExclusionRepository;
     private readonly IMetadataQualityAuthorRepairService? metadataQualityAuthorRepairService;
     private readonly IMetadataQualityLanguageRepairService? metadataQualityLanguageRepairService;
+    private readonly IMetadataQualitySeriesRepairService? metadataQualitySeriesRepairService;
     private readonly LibraryService? libraryService;
     private readonly CurrentLibrary? currentLibrary;
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
@@ -99,6 +100,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         IMetadataQualityExclusionRepository? metadataQualityExclusionRepository = null,
         IMetadataQualityAuthorRepairService? metadataQualityAuthorRepairService = null,
         IMetadataQualityLanguageRepairService? metadataQualityLanguageRepairService = null,
+        IMetadataQualitySeriesRepairService? metadataQualitySeriesRepairService = null,
         LibraryService? libraryService = null,
         CurrentLibrary? currentLibrary = null,
         ILibraryDatabaseInitializer? databaseInitializer = null,
@@ -122,6 +124,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.metadataQualityExclusionRepository = metadataQualityExclusionRepository;
         this.metadataQualityAuthorRepairService = metadataQualityAuthorRepairService;
         this.metadataQualityLanguageRepairService = metadataQualityLanguageRepairService;
+        this.metadataQualitySeriesRepairService = metadataQualitySeriesRepairService;
         this.libraryService = libraryService;
         this.currentLibrary = currentLibrary;
         this.databaseInitializer = databaseInitializer;
@@ -4058,6 +4061,8 @@ public sealed partial class LibraryViewModel : ObservableObject
                 userInteraction.ShowMetadataQualityAuthorRepairAsync,
                 metadataQualityLanguageRepairService,
                 userInteraction.ShowMetadataQualityLanguageRepairAsync,
+                metadataQualitySeriesRepairService,
+                userInteraction.ShowMetadataQualitySeriesRepairAsync,
                 repairedBook => ApplyPersistedMetadataChanges([repairedBook])),
             cancellationToken);
         if (selectedBookId is { } bookId)

@@ -42,7 +42,17 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityLanguageRepairSave",
         "MetadataQualityLanguageRepairFailed",
         "MetadataQualityLanguageRepairWriteBackWarning",
-        "MetadataQualityLanguageRepairNotNeeded"
+        "MetadataQualityLanguageRepairNotNeeded",
+        "MetadataQualityChangeSeries",
+        "MetadataQualityRepairMissingSeries",
+        "MetadataQualitySeriesRepairTitle",
+        "MetadataQualitySeriesRepairDescription",
+        "MetadataQualitySeriesRepairInput",
+        "MetadataQualitySeriesRepairHelp",
+        "MetadataQualitySeriesRepairSave",
+        "MetadataQualitySeriesRepairFailed",
+        "MetadataQualitySeriesRepairWriteBackWarning",
+        "MetadataQualitySeriesRepairNotNeeded"
     ];
 
     [Theory]

@@ -64,9 +64,20 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Keep an existing valid language protected from this repair path.
 - Keep the workflow keyboard accessible and localized in all six supported languages.
 
+## Milestone 31: Repair a missing series name
+
+- Show `Change series` only while the series-number-without-series issue and one affected book are selected.
+- Show the existing series number as read-only context and leave it unchanged.
+- Choose an existing series from live suggestions based on the active library or enter a completely new series name.
+- Reject empty values without changing the book.
+- Save through Saga's existing metadata, sidecar, and supported ebook write-back route.
+- Re-read the saved book and immediately refresh the dashboard, main library row, and series filters.
+- Keep valid existing series names protected from stale dashboard data.
+- Keep the workflow keyboard accessible, usable with longer translated labels, and localized in all six supported languages.
+
 ## Follow-up ideas
 
-- Add direct repair actions for series, title/author, tags, and missing covers.
+- Add direct repair actions for title/author, tags, and missing covers.
 - Let users select multiple missing-author books and apply one chosen author to all selected books.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
@@ -74,4 +85,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 30 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, stores reversible quality decisions per active library, and repairs a missing author or missing or unknown language for one selected book. Further repair types and bulk repair remain follow-up work.
+Milestones 26 through 31 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, stores reversible quality decisions per active library, and repairs a missing author, missing or unknown language, or missing series name for one selected book. Further repair types and bulk repair remain follow-up work.

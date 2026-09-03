@@ -366,5 +366,15 @@
   <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>The language could not be saved. Check the book and try again.</value></data>
   <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>The language was saved, but not every related metadata or ebook file could be updated.</value></data>
   <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>This book already has a valid language. Saga refreshed the current book data.</value></data>
+  <data name="MetadataQualityChangeSeries" xml:space="preserve"><value>Change series</value></data>
+  <data name="MetadataQualityRepairMissingSeries" xml:space="preserve"><value>Repair missing series name</value></data>
+  <data name="MetadataQualitySeriesRepairTitle" xml:space="preserve"><value>Change series</value></data>
+  <data name="MetadataQualitySeriesRepairDescription" xml:space="preserve"><value>Choose a known series or enter a new series name. The existing series number remains unchanged.</value></data>
+  <data name="MetadataQualitySeriesRepairInput" xml:space="preserve"><value>Series name</value></data>
+  <data name="MetadataQualitySeriesRepairHelp" xml:space="preserve"><value>Suggestions come from the active library. A new series name can also be entered.</value></data>
+  <data name="MetadataQualitySeriesRepairSave" xml:space="preserve"><value>Save series</value></data>
+  <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>The series could not be saved. Check the book and try again.</value></data>
+  <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>The series was saved, but not every related metadata or ebook file could be updated.</value></data>
+  <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>This book no longer has a missing series name. Saga refreshed the current book data.</value></data>
 </root>
 

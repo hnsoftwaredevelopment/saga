@@ -644,5 +644,15 @@
   <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>La langue n’a pas pu être enregistrée. Vérifiez le livre et réessayez.</value></data>
   <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>La langue a été enregistrée, mais certains fichiers de métadonnées ou de livre numérique associés n’ont pas pu être mis à jour.</value></data>
   <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Ce livre possède déjà une langue valide. Saga a chargé les données actuelles du livre.</value></data>
+  <data name="MetadataQualityChangeSeries" xml:space="preserve"><value>Modifier la série</value></data>
+  <data name="MetadataQualityRepairMissingSeries" xml:space="preserve"><value>Ajouter le nom de série manquant</value></data>
+  <data name="MetadataQualitySeriesRepairTitle" xml:space="preserve"><value>Modifier la série</value></data>
+  <data name="MetadataQualitySeriesRepairDescription" xml:space="preserve"><value>Choisissez une série connue ou saisissez un nouveau nom. Le numéro de série existant reste inchangé.</value></data>
+  <data name="MetadataQualitySeriesRepairInput" xml:space="preserve"><value>Nom de la série</value></data>
+  <data name="MetadataQualitySeriesRepairHelp" xml:space="preserve"><value>Les suggestions proviennent de la bibliothèque active. Vous pouvez également saisir un nouveau nom de série.</value></data>
+  <data name="MetadataQualitySeriesRepairSave" xml:space="preserve"><value>Enregistrer la série</value></data>
+  <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>La série n’a pas pu être enregistrée. Vérifiez le livre et réessayez.</value></data>
+  <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>La série a été enregistrée, mais certains fichiers de métadonnées ou de livre numérique associés n’ont pas pu être mis à jour.</value></data>
+  <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Le nom de série ne manque plus pour ce livre. Saga a chargé les données actuelles du livre.</value></data>
 </root>
 
