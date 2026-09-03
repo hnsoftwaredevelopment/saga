@@ -356,5 +356,15 @@
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>The author could not be saved. Check the book and try again.</value></data>
   <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>The author was saved, but not every related metadata or ebook file could be updated.</value></data>
   <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>This book already has an author. Saga refreshed the current book data.</value></data>
+  <data name="MetadataQualityChangeLanguage" xml:space="preserve"><value>Change language</value></data>
+  <data name="MetadataQualityRepairUnknownLanguage" xml:space="preserve"><value>Repair missing or unknown language</value></data>
+  <data name="MetadataQualityLanguageRepairTitle" xml:space="preserve"><value>Change language</value></data>
+  <data name="MetadataQualityLanguageRepairDescription" xml:space="preserve"><value>Choose the correct language for this book.</value></data>
+  <data name="MetadataQualityLanguageRepairInput" xml:space="preserve"><value>Language</value></data>
+  <data name="MetadataQualityLanguageRepairHelp" xml:space="preserve"><value>Languages are shown by name and saved as a consistent language code.</value></data>
+  <data name="MetadataQualityLanguageRepairSave" xml:space="preserve"><value>Save language</value></data>
+  <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>The language could not be saved. Check the book and try again.</value></data>
+  <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>The language was saved, but not every related metadata or ebook file could be updated.</value></data>
+  <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>This book already has a valid language. Saga refreshed the current book data.</value></data>
 </root>
 

@@ -634,5 +634,15 @@
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare l’autore. Controlla il libro e riprova.</value></data>
   <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>L’autore è stato salvato, ma non è stato possibile aggiornare tutti i file di metadati o ebook collegati.</value></data>
   <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Questo libro ha già un autore. Saga ha caricato i dati aggiornati del libro.</value></data>
+  <data name="MetadataQualityChangeLanguage" xml:space="preserve"><value>Modifica lingua</value></data>
+  <data name="MetadataQualityRepairUnknownLanguage" xml:space="preserve"><value>Correggi lingua mancante o sconosciuta</value></data>
+  <data name="MetadataQualityLanguageRepairTitle" xml:space="preserve"><value>Modifica lingua</value></data>
+  <data name="MetadataQualityLanguageRepairDescription" xml:space="preserve"><value>Scegli la lingua corretta per questo libro.</value></data>
+  <data name="MetadataQualityLanguageRepairInput" xml:space="preserve"><value>Lingua</value></data>
+  <data name="MetadataQualityLanguageRepairHelp" xml:space="preserve"><value>Le lingue sono mostrate per nome e salvate con un codice coerente.</value></data>
+  <data name="MetadataQualityLanguageRepairSave" xml:space="preserve"><value>Salva lingua</value></data>
+  <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare la lingua. Controlla il libro e riprova.</value></data>
+  <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>La lingua è stata salvata, ma non è stato possibile aggiornare tutti i file di metadati o ebook collegati.</value></data>
+  <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Questo libro ha già una lingua valida. Saga ha caricato i dati aggiornati del libro.</value></data>
 </root>
 
