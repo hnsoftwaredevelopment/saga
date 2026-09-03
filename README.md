@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 29 builds on version `0.1` with the first direct repair action in the metadata quality dashboard: changing a missing author with suggestions from the active library or a new author name.
+Milestone 30 builds on version `0.1` with direct repair actions in the metadata quality dashboard for missing authors and missing or unknown languages.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -56,6 +56,7 @@ Milestone 29 builds on version `0.1` with the first direct repair action in the 
 - metadata quality dashboard with issue counts, affected-book lists, direct navigation, and a reversible `This is correct` decision per book and signal
 - management of ignored quality issues from Settings, without changing the book metadata itself
 - direct missing-author repair from the quality dashboard with known-author suggestions and free entry for a new author
+- direct missing- or unknown-language repair from the quality dashboard with a searchable list of valid languages
 - delete actions continue removing library records when managed file cleanup reports a warning
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
@@ -181,7 +182,7 @@ The following remain later-version candidates:
 - native metadata write-back into ebook files
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - optional cloud-file hydration for OneDrive files that are not available locally
-- additional direct repair actions from the metadata quality dashboard
+- additional direct repair actions for series, title/author, tags, and covers from the metadata quality dashboard
 - ebook conversion
 - full-text search inside book contents
 - in-app bug reports and feature requests that can prepare or create GitHub issues after user review

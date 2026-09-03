@@ -53,9 +53,20 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Keep valid existing authors protected from this repair path.
 - Keep the workflow keyboard accessible and localized in all six supported languages.
 
+## Milestone 30: Repair a missing or unknown language
+
+- Show `Change language` only while the unknown-language issue and one affected book are selected.
+- Hide the author action outside the missing-author issue so the available action always matches the selected problem.
+- Choose from a searchable, localized list of valid languages.
+- Store the selected language as a consistent language code.
+- Save through Saga's existing metadata, sidecar, and supported ebook write-back route.
+- Re-read the saved book and immediately refresh the dashboard, main library row, and language filters.
+- Keep an existing valid language protected from this repair path.
+- Keep the workflow keyboard accessible and localized in all six supported languages.
+
 ## Follow-up ideas
 
-- Add direct repair actions for language, series, title/author, tags, and missing covers.
+- Add direct repair actions for series, title/author, tags, and missing covers.
 - Let users select multiple missing-author books and apply one chosen author to all selected books.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
@@ -63,4 +74,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 29 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, stores reversible quality decisions per active library, and repairs a missing author for one selected book. Further repair types and bulk repair remain follow-up work.
+Milestones 26 through 30 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, stores reversible quality decisions per active library, and repairs a missing author or missing or unknown language for one selected book. Further repair types and bulk repair remain follow-up work.
