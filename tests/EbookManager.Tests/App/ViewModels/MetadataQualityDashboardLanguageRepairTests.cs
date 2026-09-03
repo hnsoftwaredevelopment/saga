@@ -76,6 +76,82 @@ public sealed class MetadataQualityDashboardLanguageRepairTests
         dashboard.SelectedIssue.Rows.Should().ContainSingle();
     }
 
+    [Fact]
+    public async Task Repair_unknown_language_keeps_row_and_sets_status_when_save_fails()
+    {
+        var book = CreateBook(language: null);
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [book],
+            key => $"localized:{key}",
+            languageRepairService: new RecordingLanguageRepairService(
+                book,
+                MetadataQualityLanguageRepairStatus.Failed),
+            showLanguageRepair: SelectDutchLanguage);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        dashboard.SelectedIssue.Rows.Should().ContainSingle();
+        dashboard.StatusMessage.Should().Be("localized:MetadataQualityLanguageRepairFailed");
+    }
+
+    [Fact]
+    public async Task Repair_unknown_language_shows_warning_after_a_partial_writeback_failure()
+    {
+        var book = CreateBook(language: null);
+        var repairedBook = book with
+        {
+            Metadata = CopyMetadataWithLanguage(book.Metadata, "nl")
+        };
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [book],
+            key => $"localized:{key}",
+            languageRepairService: new RecordingLanguageRepairService(
+                repairedBook,
+                MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors),
+            showLanguageRepair: SelectDutchLanguage);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        dashboard.SelectedIssue.Rows.Should().BeEmpty();
+        dashboard.StatusMessage.Should().Be("localized:MetadataQualityLanguageRepairWriteBackWarning");
+    }
+
+    [Fact]
+    public async Task Repair_unknown_language_reports_neutrally_when_language_is_already_valid()
+    {
+        var staleBook = CreateBook(language: null);
+        var currentBook = staleBook with
+        {
+            Metadata = CopyMetadataWithLanguage(staleBook.Metadata, "en")
+        };
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [staleBook],
+            key => $"localized:{key}",
+            languageRepairService: new RecordingLanguageRepairService(
+                currentBook,
+                MetadataQualityLanguageRepairStatus.NotApplicable),
+            showLanguageRepair: SelectDutchLanguage);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        dashboard.SelectedIssue.Rows.Should().BeEmpty();
+        dashboard.StatusMessage.Should().Be("localized:MetadataQualityLanguageRepairNotNeeded");
+    }
+
+    private static Task<bool> SelectDutchLanguage(
+        MetadataQualityLanguageRepairViewModel repair,
+        CancellationToken cancellationToken)
+    {
+        repair.SelectedLanguage = repair.Languages.Single(option => option.Code == "nl");
+        return Task.FromResult(true);
+    }
+
     private static MetadataQualityDashboardViewModel CreateDashboard(
         Book book,
         IMetadataQualityLanguageRepairService service) =>

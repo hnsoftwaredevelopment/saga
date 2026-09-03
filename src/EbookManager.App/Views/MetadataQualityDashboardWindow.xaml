@@ -58,7 +58,7 @@
             <Style TargetType="Button">
               <Setter Property="Visibility" Value="Collapsed" />
               <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedIssue.SignalKey}" Value="MissingAuthor">
+                <DataTrigger Binding="{Binding SelectedIssue.SignalKey}" Value="missing-author">
                   <Setter Property="Visibility" Value="Visible" />
                 </DataTrigger>
               </Style.Triggers>
@@ -76,7 +76,7 @@
             <Style TargetType="Button">
               <Setter Property="Visibility" Value="Collapsed" />
               <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedIssue.SignalKey}" Value="UnknownLanguage">
+                <DataTrigger Binding="{Binding SelectedIssue.SignalKey}" Value="unknown-language">
                   <Setter Property="Visibility" Value="Visible" />
                 </DataTrigger>
               </Style.Triggers>

@@ -64,7 +64,7 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
         RequiredAttribute(button, "Command").Should().Be("{Binding RepairMissingAuthorCommand}");
         RequiredAttribute(button, "Focusable").Should().Be("True");
         RequiredAttribute(button, "AutomationProperties.Name").Should().Be("{loc:Loc MetadataQualityRepairMissingAuthor}");
-        HasVisibilityTrigger(button, "MissingAuthor").Should().BeTrue();
+        HasVisibilityTrigger(button, "missing-author").Should().BeTrue();
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
         RequiredAttribute(button, "Command").Should().Be("{Binding RepairUnknownLanguageCommand}");
         RequiredAttribute(button, "Focusable").Should().Be("True");
         RequiredAttribute(button, "AutomationProperties.Name").Should().Be("{loc:Loc MetadataQualityRepairUnknownLanguage}");
-        HasVisibilityTrigger(button, "UnknownLanguage").Should().BeTrue();
+        HasVisibilityTrigger(button, "unknown-language").Should().BeTrue();
     }
 
     [Fact]
