@@ -4,5 +4,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ArtifactsPath>$(MSBuildThisFileDirectory).build\artifacts</ArtifactsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EbookManager.App'">
+    <UseArtifactsOutput>false</UseArtifactsOutput>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)Builds\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory).build\obj\EbookManager.App\</BaseIntermediateOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\bin\**;$(MSBuildProjectDirectory)\obj\**</DefaultItemExcludes>
+    <PublishDir>$(MSBuildThisFileDirectory)Builds\Publish\</PublishDir>
   </PropertyGroup>
 </Project>

@@ -90,6 +90,17 @@ dotnet test EbookManager.sln
 dotnet build EbookManager.sln
 ```
 
+The ready-to-run Debug build is stored under `Builds` in the repository root. Internal compiler and test output remains in the ignored `.build` folder:
+
+- Debug app: `Builds\Debug\Saga.exe`
+- Future installer input: `Builds\Publish`
+
+Create the future publish output with:
+
+```powershell
+dotnet publish src/EbookManager.App/EbookManager.App.csproj -c Release
+```
+
 Run the desktop app:
 
 ```powershell

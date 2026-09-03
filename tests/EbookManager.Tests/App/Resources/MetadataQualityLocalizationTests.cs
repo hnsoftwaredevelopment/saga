@@ -58,12 +58,9 @@ public sealed class MetadataQualityLocalizationTests
 
     private static IReadOnlyDictionary<string, string> LoadResourceValues(string fileName)
     {
-        var repositoryRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".."));
         var path = Path.Combine(
-            repositoryRoot,
-            "src",
-            "EbookManager.App",
-            "Resources",
+            AppContext.BaseDirectory,
+            "TestAssets",
             "Strings",
             fileName);
         var document = XDocument.Load(path);
