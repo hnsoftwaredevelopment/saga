@@ -64,6 +64,26 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
         RequiredAttribute(button, "Command").Should().Be("{Binding RepairMissingAuthorCommand}");
         RequiredAttribute(button, "Focusable").Should().Be("True");
         RequiredAttribute(button, "AutomationProperties.Name").Should().Be("{loc:Loc MetadataQualityRepairMissingAuthor}");
+        HasVisibilityTrigger(button, "missing-author").Should().BeTrue();
+    }
+
+    [Fact]
+    public void RepairLanguageAction_IsCommandBoundAndKeyboardAccessible()
+    {
+        var document = XDocument.Load(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataQualityDashboardWindow.xaml"));
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+        var button = document
+            .Descendants(presentation + "Button")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "RepairUnknownLanguageButton");
+
+        RequiredAttribute(button, "Content").Should().Be("{loc:Loc MetadataQualityChangeLanguage}");
+        RequiredAttribute(button, "Command").Should().Be("{Binding RepairUnknownLanguageCommand}");
+        RequiredAttribute(button, "Focusable").Should().Be("True");
+        RequiredAttribute(button, "AutomationProperties.Name").Should().Be("{loc:Loc MetadataQualityRepairUnknownLanguage}");
+        HasVisibilityTrigger(button, "unknown-language").Should().BeTrue();
     }
 
     [Fact]
@@ -130,4 +150,17 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
     private static string RequiredAttribute(XElement element, XName name) =>
         element.Attribute(name)?.Value ?? throw new InvalidOperationException(
             $"Required attribute '{name}' is missing from '{element.Name.LocalName}'.");
+
+    private static bool HasVisibilityTrigger(XElement button, string signalKey)
+    {
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        return button
+            .Descendants(presentation + "DataTrigger")
+            .Any(trigger =>
+                (string?)trigger.Attribute("Binding") == "{Binding SelectedIssue.SignalKey}" &&
+                (string?)trigger.Attribute("Value") == signalKey &&
+                trigger.Elements(presentation + "Setter").Any(setter =>
+                    (string?)setter.Attribute("Property") == "Visibility" &&
+                    (string?)setter.Attribute("Value") == "Visible"));
+    }
 }

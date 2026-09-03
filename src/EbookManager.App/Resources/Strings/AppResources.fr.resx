@@ -634,5 +634,15 @@
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>L’auteur n’a pas pu être enregistré. Vérifiez le livre et réessayez.</value></data>
   <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>L’auteur a été enregistré, mais certains fichiers de métadonnées ou de livre numérique associés n’ont pas pu être mis à jour.</value></data>
   <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Ce livre a déjà un auteur. Saga a chargé les données actuelles du livre.</value></data>
+  <data name="MetadataQualityChangeLanguage" xml:space="preserve"><value>Modifier la langue</value></data>
+  <data name="MetadataQualityRepairUnknownLanguage" xml:space="preserve"><value>Corriger la langue manquante ou inconnue</value></data>
+  <data name="MetadataQualityLanguageRepairTitle" xml:space="preserve"><value>Modifier la langue</value></data>
+  <data name="MetadataQualityLanguageRepairDescription" xml:space="preserve"><value>Choisissez la langue correcte pour ce livre.</value></data>
+  <data name="MetadataQualityLanguageRepairInput" xml:space="preserve"><value>Langue</value></data>
+  <data name="MetadataQualityLanguageRepairHelp" xml:space="preserve"><value>Les langues sont affichées par nom et enregistrées avec un code cohérent.</value></data>
+  <data name="MetadataQualityLanguageRepairSave" xml:space="preserve"><value>Enregistrer la langue</value></data>
+  <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>La langue n’a pas pu être enregistrée. Vérifiez le livre et réessayez.</value></data>
+  <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>La langue a été enregistrée, mais certains fichiers de métadonnées ou de livre numérique associés n’ont pas pu être mis à jour.</value></data>
+  <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Ce livre possède déjà une langue valide. Saga a chargé les données actuelles du livre.</value></data>
 </root>
 

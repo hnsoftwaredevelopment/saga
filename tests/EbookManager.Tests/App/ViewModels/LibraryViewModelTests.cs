@@ -497,6 +497,34 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_language_repair_updates_the_active_library_and_language_filters()
+    {
+        var missing = CreateBook("Zonder taal", ["Auteur"], language: null, coverBytes: [1]);
+        var known = CreateBook("Nederlands", ["Auteur"], language: "nl", coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityLanguageRepairResult = true,
+            MetadataQualityLanguageRepairCode = "nl"
+        };
+        var viewModel = CreateViewModel(
+            [missing, known],
+            interaction,
+            currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+        dashboard.SelectedBook = dashboard.SelectedIssue.Rows.Single();
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityLanguageRepair.Should().NotBeNull();
+        viewModel.VisibleBooks.Single(row => row.Id == missing.Id).Language.Should().NotBe("-");
+        viewModel.LanguageFilters.Single(filter => filter.Name == "nl").Count.Should().Be(2);
+    }
+
+    [Fact]
     public async Task Show_metadata_quality_exclusions_is_disabled_without_active_library()
     {
         var interaction = new ScriptedUserInteractionService();
@@ -3339,6 +3367,7 @@ public sealed class LibraryViewModelTests
         IDuplicateExclusionRepository? duplicateExclusionRepository = null,
         IMetadataQualityExclusionRepository? metadataQualityExclusionRepository = null,
         IMetadataQualityAuthorRepairService? metadataQualityAuthorRepairService = null,
+        IMetadataQualityLanguageRepairService? metadataQualityLanguageRepairService = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
@@ -3349,6 +3378,7 @@ public sealed class LibraryViewModelTests
             new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver());
         metadataQualityAuthorRepairService ??= new MetadataQualityAuthorRepairService(repository, bookService);
+        metadataQualityLanguageRepairService ??= new MetadataQualityLanguageRepairService(repository, bookService);
         details ??= new BookDetailsViewModel(bookService);
         return new LibraryViewModel(
             repository,
@@ -3367,6 +3397,7 @@ public sealed class LibraryViewModelTests
             duplicateExclusionRepository: duplicateExclusionRepository,
             metadataQualityExclusionRepository: metadataQualityExclusionRepository,
             metadataQualityAuthorRepairService: metadataQualityAuthorRepairService,
+            metadataQualityLanguageRepairService: metadataQualityLanguageRepairService,
             performanceReporter: performanceReporter,
             localize: localize);
     }
@@ -4160,6 +4191,8 @@ public sealed class LibraryViewModelTests
         public Guid? MetadataQualityDashboardResult { get; init; }
         public bool MetadataQualityAuthorRepairResult { get; init; }
         public string? MetadataQualityAuthorRepairAuthor { get; init; }
+        public bool MetadataQualityLanguageRepairResult { get; init; }
+        public string? MetadataQualityLanguageRepairCode { get; init; }
         public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
         public string? LastMessageTitle { get; private set; }
         public string? LastMessageText { get; private set; }
@@ -4174,6 +4207,7 @@ public sealed class LibraryViewModelTests
         public MetadataQualityDashboardViewModel? MetadataQualityDashboard { get; private set; }
         public MetadataQualityExclusionsViewModel? MetadataQualityExclusions { get; private set; }
         public MetadataQualityAuthorRepairViewModel? MetadataQualityAuthorRepair { get; private set; }
+        public MetadataQualityLanguageRepairViewModel? MetadataQualityLanguageRepair { get; private set; }
 
         public Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<string>>(RecordPickBookFiles());
@@ -4274,6 +4308,20 @@ public sealed class LibraryViewModelTests
             }
 
             return Task.FromResult(MetadataQualityAuthorRepairResult);
+        }
+
+        public Task<bool> ShowMetadataQualityLanguageRepairAsync(
+            MetadataQualityLanguageRepairViewModel repair,
+            CancellationToken cancellationToken)
+        {
+            MetadataQualityLanguageRepair = repair;
+            if (MetadataQualityLanguageRepairCode is not null)
+            {
+                repair.SelectedLanguage = repair.Languages.Single(option =>
+                    option.Code == MetadataQualityLanguageRepairCode);
+            }
+
+            return Task.FromResult(MetadataQualityLanguageRepairResult);
         }
 
         public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(

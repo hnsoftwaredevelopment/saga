@@ -53,7 +53,36 @@
                 MinWidth="110"
                 Margin="8,0,0,0"
                 Focusable="True"
-                AutomationProperties.Name="{loc:Loc MetadataQualityRepairMissingAuthor}" />
+                AutomationProperties.Name="{loc:Loc MetadataQualityRepairMissingAuthor}">
+          <Button.Style>
+            <Style TargetType="Button">
+              <Setter Property="Visibility" Value="Collapsed" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedIssue.SignalKey}" Value="missing-author">
+                  <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Button.Style>
+        </Button>
+        <Button x:Name="RepairUnknownLanguageButton"
+                Content="{loc:Loc MetadataQualityChangeLanguage}"
+                Command="{Binding RepairUnknownLanguageCommand}"
+                MinWidth="110"
+                Margin="8,0,0,0"
+                Focusable="True"
+                AutomationProperties.Name="{loc:Loc MetadataQualityRepairUnknownLanguage}">
+          <Button.Style>
+            <Style TargetType="Button">
+              <Setter Property="Visibility" Value="Collapsed" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedIssue.SignalKey}" Value="unknown-language">
+                  <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Button.Style>
+        </Button>
         <Button x:Name="MarkSelectedIssueCorrectButton"
                 Content="{loc:Loc MetadataQualityMarkCorrect}"
                 Command="{Binding MarkSelectedIssueCorrectCommand}"

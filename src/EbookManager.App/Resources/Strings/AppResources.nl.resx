@@ -356,5 +356,15 @@
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>De auteur kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
   <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>De auteur is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
   <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Dit boek heeft al een auteur. Saga heeft de actuele boekgegevens geladen.</value></data>
+  <data name="MetadataQualityChangeLanguage" xml:space="preserve"><value>Taal wijzigen</value></data>
+  <data name="MetadataQualityRepairUnknownLanguage" xml:space="preserve"><value>Ontbrekende of onbekende taal herstellen</value></data>
+  <data name="MetadataQualityLanguageRepairTitle" xml:space="preserve"><value>Taal wijzigen</value></data>
+  <data name="MetadataQualityLanguageRepairDescription" xml:space="preserve"><value>Kies de juiste taal voor dit boek.</value></data>
+  <data name="MetadataQualityLanguageRepairInput" xml:space="preserve"><value>Taal</value></data>
+  <data name="MetadataQualityLanguageRepairHelp" xml:space="preserve"><value>Talen worden met hun naam getoond en als consistente taalcode opgeslagen.</value></data>
+  <data name="MetadataQualityLanguageRepairSave" xml:space="preserve"><value>Taal opslaan</value></data>
+  <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>De taal kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
+  <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>De taal is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
+  <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Dit boek heeft al een geldige taal. Saga heeft de actuele boekgegevens geladen.</value></data>
 </root>
 

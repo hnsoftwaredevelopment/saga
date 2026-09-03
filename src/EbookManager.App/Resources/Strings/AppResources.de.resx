@@ -634,5 +634,15 @@
   <data name="MetadataQualityAuthorRepairFailed" xml:space="preserve"><value>Der Autor konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
   <data name="MetadataQualityAuthorRepairWriteBackWarning" xml:space="preserve"><value>Der Autor wurde gespeichert, aber nicht jede zugehörige Metadaten- oder E-Book-Datei konnte aktualisiert werden.</value></data>
   <data name="MetadataQualityAuthorRepairNotNeeded" xml:space="preserve"><value>Dieses Buch hat bereits einen Autor. Saga hat die aktuellen Buchdaten geladen.</value></data>
+  <data name="MetadataQualityChangeLanguage" xml:space="preserve"><value>Sprache ändern</value></data>
+  <data name="MetadataQualityRepairUnknownLanguage" xml:space="preserve"><value>Fehlende oder unbekannte Sprache korrigieren</value></data>
+  <data name="MetadataQualityLanguageRepairTitle" xml:space="preserve"><value>Sprache ändern</value></data>
+  <data name="MetadataQualityLanguageRepairDescription" xml:space="preserve"><value>Wählen Sie die richtige Sprache für dieses Buch.</value></data>
+  <data name="MetadataQualityLanguageRepairInput" xml:space="preserve"><value>Sprache</value></data>
+  <data name="MetadataQualityLanguageRepairHelp" xml:space="preserve"><value>Sprachen werden mit Namen angezeigt und als einheitlicher Sprachcode gespeichert.</value></data>
+  <data name="MetadataQualityLanguageRepairSave" xml:space="preserve"><value>Sprache speichern</value></data>
+  <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>Die Sprache konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>Die Sprache wurde gespeichert, aber nicht alle zugehörigen Metadaten- oder E-Book-Dateien konnten aktualisiert werden.</value></data>
+  <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Dieses Buch hat bereits eine gültige Sprache. Saga hat die aktuellen Buchdaten geladen.</value></data>
 </root>
 
