@@ -654,5 +654,14 @@
   <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>La série n’a pas pu être enregistrée. Vérifiez le livre et réessayez.</value></data>
   <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>La série a été enregistrée, mais certains fichiers de métadonnées ou de livre numérique associés n’ont pas pu être mis à jour.</value></data>
   <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Le nom de série ne manque plus pour ce livre. Saga a chargé les données actuelles du livre.</value></data>
+  <data name="MetadataQualitySwapTitleAuthor" xml:space="preserve"><value>Intervertir le titre et l'auteur</value></data>
+  <data name="MetadataQualityTitleAuthorRepairTitle" xml:space="preserve"><value>Intervertir le titre et l'auteur</value></data>
+  <data name="MetadataQualityTitleAuthorRepairDescription" xml:space="preserve"><value>Verifiez les valeurs actuelles et nouvelles. Saga modifiera uniquement le titre et l'auteur.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairCurrent" xml:space="preserve"><value>Actuel</value></data>
+  <data name="MetadataQualityTitleAuthorRepairAfter" xml:space="preserve"><value>Apres interversion</value></data>
+  <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Intervertir</value></data>
+  <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>Le titre et l'auteur n'ont pas pu etre intervertis. Verifiez le livre et reessayez.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>Le titre et l'auteur ont ete enregistres, mais certains fichiers de metadonnees ou ebooks n'ont pas pu etre mis a jour.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Le titre et l'auteur ne semblent plus intervertis. Saga a charge les donnees actuelles du livre.</value></data>
 </root>
 

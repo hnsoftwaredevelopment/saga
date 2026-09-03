@@ -654,5 +654,14 @@
   <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>Die Reihe konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
   <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>Die Reihe wurde gespeichert, aber nicht alle zugehörigen Metadaten- oder E-Book-Dateien konnten aktualisiert werden.</value></data>
   <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Bei diesem Buch fehlt der Reihenname nicht mehr. Saga hat die aktuellen Buchdaten geladen.</value></data>
+  <data name="MetadataQualitySwapTitleAuthor" xml:space="preserve"><value>Titel und Autor tauschen</value></data>
+  <data name="MetadataQualityTitleAuthorRepairTitle" xml:space="preserve"><value>Titel und Autor tauschen</value></data>
+  <data name="MetadataQualityTitleAuthorRepairDescription" xml:space="preserve"><value>Pruefen Sie die aktuellen und neuen Werte. Saga aendert nur Titel und Autor.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairCurrent" xml:space="preserve"><value>Aktuell</value></data>
+  <data name="MetadataQualityTitleAuthorRepairAfter" xml:space="preserve"><value>Nach dem Tausch</value></data>
+  <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Tauschen</value></data>
+  <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>Titel und Autor konnten nicht getauscht werden. Pruefen Sie das Buch und versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>Titel und Autor wurden gespeichert, aber nicht jede zugehoerige Metadaten- oder E-Book-Datei konnte aktualisiert werden.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Titel und Autor scheinen nicht mehr vertauscht zu sein. Saga hat die aktuellen Buchdaten geladen.</value></data>
 </root>
 

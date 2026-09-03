@@ -54,11 +54,10 @@ Volg de bestaande immutable record-kopie en expliciete resultaatstatussen:
 ```csharp
 var updatedBook = currentBook with
 {
-    Metadata = currentBook.Metadata with
-    {
-        Title = currentAuthor,
-        Authors = [currentTitle]
-    },
+    Metadata = CopyMetadataWithSwappedTitleAndAuthor(
+        currentBook.Metadata,
+        currentAuthor,
+        currentTitle),
     UpdatedUtc = DateTimeOffset.UtcNow
 };
 ```

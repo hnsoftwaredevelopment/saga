@@ -7,8 +7,9 @@
 - [x] Taak 2: bevestigingsmodel en WPF-venster toevoegen.
 - [x] Checkpoint 1: 12 gerichte tests en Release-build zonder waarschuwingen groen.
 - [x] Taak 3: Quality Page en actieve bibliotheek gekoppeld (123 metadata-kwaliteitstests groen).
-- [ ] Taak 4: lokalisatie, documentatie en handmatige checklist afronden.
-- [ ] Volledige Release-tests en build zonder waarschuwingen uitvoeren.
-- [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken.
-- [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
-- [ ] Zelfreview uitvoeren en een normale, niet-draft PR openen.
+- [x] Taak 4: lokalisatie, documentatie en handmatige checklist afgerond.
+- [x] Volledige Debug-tests (605 geslaagd, 0 overgeslagen) en build zonder waarschuwingen uitgevoerd.
+- [x] Actuele Debug-build `2026.9.3.46` uitsluitend in `Builds/Debug` gemaakt.
+- [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld.
+- [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitgevoerd.
+- [ ] Normale, niet-draft PR openen.

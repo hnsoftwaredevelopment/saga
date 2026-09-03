@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 30 builds on version `0.1` with direct repair actions in the metadata quality dashboard for missing authors and missing or unknown languages.
+Milestone 32 builds on version `0.1` with direct repair actions in the metadata quality dashboard for missing authors, missing or unknown languages, missing series names, and likely swapped titles and authors.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -57,6 +57,8 @@ Milestone 30 builds on version `0.1` with direct repair actions in the metadata 
 - management of ignored quality issues from Settings, without changing the book metadata itself
 - direct missing-author repair from the quality dashboard with known-author suggestions and free entry for a new author
 - direct missing- or unknown-language repair from the quality dashboard with a searchable list of valid languages
+- direct missing-series repair with live suggestions while preserving the existing series number
+- confirmed title-and-author swap repair with a clear before-and-after preview
 - delete actions continue removing library records when managed file cleanup reports a warning
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
@@ -175,6 +177,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-29-checklist.md](docs/manual-tests/milestone-29-checklist.md)
 - [docs/manual-tests/milestone-30-checklist.md](docs/manual-tests/milestone-30-checklist.md)
 - [docs/manual-tests/milestone-31-checklist.md](docs/manual-tests/milestone-31-checklist.md)
+- [docs/manual-tests/milestone-32-checklist.md](docs/manual-tests/milestone-32-checklist.md)
 
 ## Later-Version Candidates
 
@@ -184,7 +187,7 @@ The following remain later-version candidates:
 - native metadata write-back into ebook files
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - optional cloud-file hydration for OneDrive files that are not available locally
-- additional direct repair actions for title/author, tags, and covers from the metadata quality dashboard
+- additional direct repair actions for tags and covers from the metadata quality dashboard
 - ebook conversion
 - full-text search inside book contents
 - in-app bug reports and feature requests that can prepare or create GitHub issues after user review

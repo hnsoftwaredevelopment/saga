@@ -376,5 +376,14 @@
   <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>De serie kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
   <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>De serie is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
   <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Bij dit boek ontbreekt de serienaam niet meer. Saga heeft de actuele boekgegevens geladen.</value></data>
+  <data name="MetadataQualitySwapTitleAuthor" xml:space="preserve"><value>Titel en auteur omwisselen</value></data>
+  <data name="MetadataQualityTitleAuthorRepairTitle" xml:space="preserve"><value>Titel en auteur omwisselen</value></data>
+  <data name="MetadataQualityTitleAuthorRepairDescription" xml:space="preserve"><value>Controleer de huidige en nieuwe waarden. Saga wijzigt alleen de titel en auteur.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairCurrent" xml:space="preserve"><value>Huidig</value></data>
+  <data name="MetadataQualityTitleAuthorRepairAfter" xml:space="preserve"><value>Na omwisselen</value></data>
+  <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Omwisselen</value></data>
+  <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>De titel en auteur konden niet worden omgewisseld. Controleer het boek en probeer het opnieuw.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>De titel en auteur zijn opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>De titel en auteur lijken bij dit boek niet meer omgewisseld. Saga heeft de actuele boekgegevens geladen.</value></data>
 </root>
 

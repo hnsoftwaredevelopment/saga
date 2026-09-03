@@ -376,5 +376,14 @@
   <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>The series could not be saved. Check the book and try again.</value></data>
   <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>The series was saved, but not every related metadata or ebook file could be updated.</value></data>
   <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>This book no longer has a missing series name. Saga refreshed the current book data.</value></data>
+  <data name="MetadataQualitySwapTitleAuthor" xml:space="preserve"><value>Swap title and author</value></data>
+  <data name="MetadataQualityTitleAuthorRepairTitle" xml:space="preserve"><value>Swap title and author</value></data>
+  <data name="MetadataQualityTitleAuthorRepairDescription" xml:space="preserve"><value>Review the current and new values. Saga will change only the title and author.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairCurrent" xml:space="preserve"><value>Current</value></data>
+  <data name="MetadataQualityTitleAuthorRepairAfter" xml:space="preserve"><value>After swapping</value></data>
+  <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Swap</value></data>
+  <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>The title and author could not be swapped. Check the book and try again.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>The title and author were saved, but not every related metadata or ebook file could be updated.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>The title and author no longer appear to be swapped. Saga refreshed the current book data.</value></data>
 </root>
 
