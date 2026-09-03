@@ -173,6 +173,8 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-27-checklist.md](docs/manual-tests/milestone-27-checklist.md)
 - [docs/manual-tests/milestone-28-checklist.md](docs/manual-tests/milestone-28-checklist.md)
 - [docs/manual-tests/milestone-29-checklist.md](docs/manual-tests/milestone-29-checklist.md)
+- [docs/manual-tests/milestone-30-checklist.md](docs/manual-tests/milestone-30-checklist.md)
+- [docs/manual-tests/milestone-31-checklist.md](docs/manual-tests/milestone-31-checklist.md)
 
 ## Later-Version Candidates
 
@@ -182,7 +184,7 @@ The following remain later-version candidates:
 - native metadata write-back into ebook files
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - optional cloud-file hydration for OneDrive files that are not available locally
-- additional direct repair actions for series, title/author, tags, and covers from the metadata quality dashboard
+- additional direct repair actions for title/author, tags, and covers from the metadata quality dashboard
 - ebook conversion
 - full-text search inside book contents
 - in-app bug reports and feature requests that can prepare or create GitHub issues after user review
