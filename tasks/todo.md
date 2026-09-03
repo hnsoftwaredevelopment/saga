@@ -12,4 +12,4 @@
 - [x] Actuele Debug-build `2026.9.3.46` uitsluitend in `Builds/Debug` gemaakt.
 - [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld.
 - [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitgevoerd.
-- [ ] Normale, niet-draft PR openen.
+- [x] Normale, niet-draft PR #33 geopend.
