@@ -6,7 +6,7 @@ namespace EbookManager.Tests.App.Views;
 public sealed class MetadataQualitySeriesRepairWindowLayoutTests
 {
     [Fact]
-    public void Window_shows_the_series_number_and_exposes_accessible_editable_suggestions()
+    public void Window_keeps_typed_text_separate_from_the_changing_suggestion_list()
     {
         var document = XDocument.Load(
             Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataQualitySeriesRepairWindow.xaml"));
@@ -17,14 +17,24 @@ public sealed class MetadataQualitySeriesRepairWindowLayoutTests
             .Single(element => (string?)element.Attribute(xaml + "Name") == "SeriesNumberValue");
         RequiredAttribute(seriesNumber, "Text").Should().Be("{Binding SeriesNumber}");
 
-        var input = document.Descendants(presentation + "ComboBox")
+        var input = document.Descendants(presentation + "TextBox")
             .Single(element => (string?)element.Attribute(xaml + "Name") == "SeriesInput");
-        RequiredAttribute(input, "IsEditable").Should().Be("True");
-        RequiredAttribute(input, "ItemsSource").Should().Be("{Binding Suggestions}");
         RequiredAttribute(input, "Text").Should().Contain("SeriesText");
         RequiredAttribute(input, "AutomationProperties.Name").Should().NotBeNullOrWhiteSpace();
         RequiredAttribute(input, "Loaded").Should().Be("SeriesInputLoaded");
+        RequiredAttribute(input, "TextChanged").Should().Be("SeriesInputTextChanged");
         RequiredAttribute(input, "PreviewKeyDown").Should().Be("SeriesInputPreviewKeyDown");
+
+        var popup = document.Descendants(presentation + "Popup")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "SeriesSuggestionsPopup");
+        RequiredAttribute(popup, "PlacementTarget").Should().Be("{Binding ElementName=SeriesInput}");
+
+        var suggestions = popup.Descendants(presentation + "ListBox")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "SeriesSuggestions");
+        RequiredAttribute(suggestions, "ItemsSource").Should().Be("{Binding Suggestions}");
+        RequiredAttribute(suggestions, "PreviewKeyDown").Should().Be("SeriesSuggestionsPreviewKeyDown");
+        RequiredAttribute(suggestions, "PreviewMouseLeftButtonUp")
+            .Should().Be("SeriesSuggestionsMouseLeftButtonUp");
 
         var save = Button(document, xaml, "SaveSeriesRepairButton");
         RequiredAttribute(save, "IsDefault").Should().Be("True");

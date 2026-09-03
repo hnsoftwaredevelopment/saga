@@ -54,17 +54,32 @@
                  Margin="0,4,0,12"
                  Foreground="{DynamicResource TextSecondaryBrush}" />
       <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" />
-      <ComboBox x:Name="SeriesInput"
-                ItemsSource="{Binding Suggestions}"
-                Text="{Binding SeriesText, UpdateSourceTrigger=PropertyChanged}"
-                IsEditable="True"
-                IsTextSearchEnabled="False"
-                StaysOpenOnEdit="True"
-                MaxDropDownHeight="180"
-                Margin="0,4,0,6"
-                Loaded="SeriesInputLoaded"
-                PreviewKeyDown="SeriesInputPreviewKeyDown"
-                AutomationProperties.Name="{loc:Loc MetadataQualitySeriesRepairInput}" />
+      <TextBox x:Name="SeriesInput"
+               Text="{Binding SeriesText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+               Margin="0,4,0,6"
+               Loaded="SeriesInputLoaded"
+               TextChanged="SeriesInputTextChanged"
+               PreviewKeyDown="SeriesInputPreviewKeyDown"
+               AutomationProperties.Name="{loc:Loc MetadataQualitySeriesRepairInput}" />
+      <Popup x:Name="SeriesSuggestionsPopup"
+             PlacementTarget="{Binding ElementName=SeriesInput}"
+             Placement="Bottom"
+             StaysOpen="False"
+             AllowsTransparency="True"
+             PopupAnimation="Fade">
+        <Border Width="{Binding ActualWidth, ElementName=SeriesInput}"
+                MaxHeight="180"
+                Background="{DynamicResource PanelBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1">
+          <ListBox x:Name="SeriesSuggestions"
+                   ItemsSource="{Binding Suggestions}"
+                   MaxHeight="180"
+                   PreviewKeyDown="SeriesSuggestionsPreviewKeyDown"
+                   PreviewMouseLeftButtonUp="SeriesSuggestionsMouseLeftButtonUp"
+                   AutomationProperties.Name="{loc:Loc MetadataQualitySeriesRepairInput}" />
+        </Border>
+      </Popup>
       <TextBlock Text="{loc:Loc MetadataQualitySeriesRepairHelp}"
                  TextWrapping="Wrap"
                  FontSize="12"

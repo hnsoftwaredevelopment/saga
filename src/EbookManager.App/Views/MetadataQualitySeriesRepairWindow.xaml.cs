@@ -7,7 +7,7 @@ namespace EbookManager.App.Views;
 
 public partial class MetadataQualitySeriesRepairWindow : Window
 {
-    private TextBox? editableTextBox;
+    private bool isApplyingSuggestion;
 
     public MetadataQualitySeriesRepairWindow(MetadataQualitySeriesRepairViewModel viewModel)
     {
@@ -17,40 +17,87 @@ public partial class MetadataQualitySeriesRepairWindow : Window
 
     private void SeriesInputLoaded(object sender, RoutedEventArgs e)
     {
-        editableTextBox = SeriesInput.Template.FindName("PART_EditableTextBox", SeriesInput) as TextBox;
-        if (editableTextBox is not null)
-        {
-            editableTextBox.TextChanged += SeriesTextChanged;
-        }
-
         SeriesInput.Focus();
-        Keyboard.Focus(editableTextBox is not null ? editableTextBox : SeriesInput);
+        Keyboard.Focus(SeriesInput);
+        SeriesInput.CaretIndex = SeriesInput.Text.Length;
     }
 
-    private void SeriesTextChanged(object sender, TextChangedEventArgs e)
+    private void SeriesInputTextChanged(object sender, TextChangedEventArgs e)
     {
+        if (isApplyingSuggestion)
+        {
+            return;
+        }
+
         Dispatcher.BeginInvoke(() =>
         {
             if (DataContext is MetadataQualitySeriesRepairViewModel viewModel &&
                 viewModel.Suggestions.Count > 0 &&
-                SeriesInput.IsKeyboardFocusWithin)
+                SeriesInput.IsKeyboardFocused &&
+                !string.IsNullOrWhiteSpace(SeriesInput.Text))
             {
-                SeriesInput.IsDropDownOpen = true;
+                SeriesSuggestionsPopup.IsOpen = true;
+            }
+            else
+            {
+                SeriesSuggestionsPopup.IsOpen = false;
             }
         });
     }
 
     private void SeriesInputPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter &&
-            SeriesInput.IsDropDownOpen &&
-            SeriesInput.SelectedItem is string selectedSeries &&
-            DataContext is MetadataQualitySeriesRepairViewModel viewModel)
+        if (e.Key == Key.Down &&
+            SeriesSuggestionsPopup.IsOpen &&
+            SeriesSuggestions.Items.Count > 0)
+        {
+            SeriesSuggestions.SelectedIndex = 0;
+            SeriesSuggestions.ScrollIntoView(SeriesSuggestions.SelectedItem);
+            Keyboard.Focus(SeriesSuggestions);
+            e.Handled = true;
+        }
+    }
+
+    private void SeriesSuggestionsPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && SeriesSuggestions.SelectedItem is string selectedSeries)
+        {
+            UseSuggestion(selectedSeries);
+            e.Handled = true;
+        }
+    }
+
+    private void SeriesSuggestionsMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        var item = ItemsControl.ContainerFromElement(
+            SeriesSuggestions,
+            e.OriginalSource as DependencyObject) as ListBoxItem;
+        if (item?.DataContext is string selectedSeries)
+        {
+            UseSuggestion(selectedSeries);
+            e.Handled = true;
+        }
+    }
+
+    private void UseSuggestion(string selectedSeries)
+    {
+        if (DataContext is not MetadataQualitySeriesRepairViewModel viewModel)
+        {
+            return;
+        }
+
+        isApplyingSuggestion = true;
+        try
         {
             viewModel.UseSuggestion(selectedSeries);
-            SeriesInput.IsDropDownOpen = false;
-            editableTextBox?.CaretIndex = editableTextBox.Text.Length;
-            e.Handled = true;
+            SeriesSuggestionsPopup.IsOpen = false;
+            SeriesInput.Focus();
+            Keyboard.Focus(SeriesInput);
+            SeriesInput.CaretIndex = SeriesInput.Text.Length;
+        }
+        finally
+        {
+            isApplyingSuggestion = false;
         }
     }
 
