@@ -48,6 +48,9 @@
     <None Include="..\..\src\EbookManager.App\Views\MetadataQualityLanguageRepairWindow.xaml"
           Link="TestAssets\MetadataQualityLanguageRepairWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\MetadataQualitySeriesRepairWindow.xaml"
+          Link="TestAssets\MetadataQualitySeriesRepairWindow.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\MetadataQualityExclusionsWindow.xaml"
           Link="TestAssets\MetadataQualityExclusionsWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />

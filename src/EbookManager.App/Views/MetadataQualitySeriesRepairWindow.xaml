@@ -1,0 +1,74 @@
+<Window x:Class="EbookManager.App.Views.MetadataQualitySeriesRepairWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:EbookManager.App.Localization"
+        Title="{loc:Loc MetadataQualitySeriesRepairTitle}"
+        Width="520"
+        Height="350"
+        MinWidth="440"
+        MinHeight="310"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="20">
+    <StackPanel DockPanel.Dock="Top">
+      <TextBlock Text="{loc:Loc MetadataQualitySeriesRepairTitle}"
+                 FontSize="20"
+                 FontWeight="SemiBold"
+                 Foreground="{DynamicResource TextPrimaryBrush}" />
+      <TextBlock Text="{loc:Loc MetadataQualitySeriesRepairDescription}"
+                 Margin="0,5,0,16"
+                 TextWrapping="Wrap"
+                 Foreground="{DynamicResource TextSecondaryBrush}" />
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="0,18,0,0">
+      <Button x:Name="CancelSeriesRepairButton"
+              Content="{loc:Loc Cancel}"
+              MinWidth="90"
+              IsCancel="True"
+              Focusable="True"
+              AutomationProperties.Name="{loc:Loc Cancel}" />
+      <Button x:Name="SaveSeriesRepairButton"
+              Content="{loc:Loc Save}"
+              MinWidth="90"
+              Margin="8,0,0,0"
+              IsDefault="True"
+              IsEnabled="{Binding CanSave}"
+              Focusable="True"
+              Click="SaveClicked"
+              AutomationProperties.Name="{loc:Loc MetadataQualitySeriesRepairSave}" />
+    </StackPanel>
+
+    <StackPanel>
+      <TextBlock Text="{loc:Loc Title}" FontWeight="SemiBold" />
+      <TextBlock Text="{Binding BookTitle}"
+                 Margin="0,4,0,12"
+                 TextWrapping="Wrap"
+                 Foreground="{DynamicResource TextSecondaryBrush}" />
+      <TextBlock Text="{loc:Loc SeriesNumber}" FontWeight="SemiBold" />
+      <TextBlock x:Name="SeriesNumberValue"
+                 Text="{Binding SeriesNumber}"
+                 Margin="0,4,0,12"
+                 Foreground="{DynamicResource TextSecondaryBrush}" />
+      <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" />
+      <ComboBox x:Name="SeriesInput"
+                ItemsSource="{Binding Suggestions}"
+                Text="{Binding SeriesText, UpdateSourceTrigger=PropertyChanged}"
+                IsEditable="True"
+                IsTextSearchEnabled="False"
+                StaysOpenOnEdit="True"
+                MaxDropDownHeight="180"
+                Margin="0,4,0,6"
+                Loaded="SeriesInputLoaded"
+                PreviewKeyDown="SeriesInputPreviewKeyDown"
+                AutomationProperties.Name="{loc:Loc MetadataQualitySeriesRepairInput}" />
+      <TextBlock Text="{loc:Loc MetadataQualitySeriesRepairHelp}"
+                 TextWrapping="Wrap"
+                 FontSize="12"
+                 Foreground="{DynamicResource TextSecondaryBrush}" />
+    </StackPanel>
+  </DockPanel>
+</Window>

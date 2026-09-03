@@ -38,6 +38,9 @@ public interface IUserInteractionService
     Task<bool> ShowMetadataQualityLanguageRepairAsync(
         MetadataQualityLanguageRepairViewModel repair,
         CancellationToken cancellationToken);
+    Task<bool> ShowMetadataQualitySeriesRepairAsync(
+        MetadataQualitySeriesRepairViewModel repair,
+        CancellationToken cancellationToken);
     Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
         MetadataMultiEditViewModel edit,
         CancellationToken cancellationToken);

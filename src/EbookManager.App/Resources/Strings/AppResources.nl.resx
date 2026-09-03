@@ -366,5 +366,15 @@
   <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>De taal kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
   <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>De taal is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
   <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Dit boek heeft al een geldige taal. Saga heeft de actuele boekgegevens geladen.</value></data>
+  <data name="MetadataQualityChangeSeries" xml:space="preserve"><value>Serie wijzigen</value></data>
+  <data name="MetadataQualityRepairMissingSeries" xml:space="preserve"><value>Ontbrekende serienaam herstellen</value></data>
+  <data name="MetadataQualitySeriesRepairTitle" xml:space="preserve"><value>Serie wijzigen</value></data>
+  <data name="MetadataQualitySeriesRepairDescription" xml:space="preserve"><value>Kies een bekende serie of voer een nieuwe serienaam in. Het bestaande serienummer blijft ongewijzigd.</value></data>
+  <data name="MetadataQualitySeriesRepairInput" xml:space="preserve"><value>Serienaam</value></data>
+  <data name="MetadataQualitySeriesRepairHelp" xml:space="preserve"><value>Suggesties komen uit de actieve bibliotheek. Je kunt ook een nieuwe serienaam invoeren.</value></data>
+  <data name="MetadataQualitySeriesRepairSave" xml:space="preserve"><value>Serie opslaan</value></data>
+  <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>De serie kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
+  <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>De serie is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
+  <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Bij dit boek ontbreekt de serienaam niet meer. Saga heeft de actuele boekgegevens geladen.</value></data>
 </root>
 

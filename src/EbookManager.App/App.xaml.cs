@@ -128,6 +128,7 @@ public partial class App : System.Windows.Application
         services.AddTransient<BookService>();
         services.AddTransient<IMetadataQualityAuthorRepairService, MetadataQualityAuthorRepairService>();
         services.AddTransient<IMetadataQualityLanguageRepairService, MetadataQualityLanguageRepairService>();
+        services.AddTransient<IMetadataQualitySeriesRepairService, MetadataQualitySeriesRepairService>();
         services.AddSingleton<ImportService>();
         services.AddSingleton<IImportRunner>(provider => provider.GetRequiredService<ImportService>());
         services.AddSingleton<ImportJobViewModel>();
@@ -153,6 +154,7 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<IMetadataQualityExclusionRepository>(),
             provider.GetRequiredService<IMetadataQualityAuthorRepairService>(),
             provider.GetRequiredService<IMetadataQualityLanguageRepairService>(),
+            provider.GetRequiredService<IMetadataQualitySeriesRepairService>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),

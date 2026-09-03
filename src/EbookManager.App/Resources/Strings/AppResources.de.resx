@@ -644,5 +644,15 @@
   <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>Die Sprache konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
   <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>Die Sprache wurde gespeichert, aber nicht alle zugehörigen Metadaten- oder E-Book-Dateien konnten aktualisiert werden.</value></data>
   <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Dieses Buch hat bereits eine gültige Sprache. Saga hat die aktuellen Buchdaten geladen.</value></data>
+  <data name="MetadataQualityChangeSeries" xml:space="preserve"><value>Reihe ändern</value></data>
+  <data name="MetadataQualityRepairMissingSeries" xml:space="preserve"><value>Fehlenden Reihennamen ergänzen</value></data>
+  <data name="MetadataQualitySeriesRepairTitle" xml:space="preserve"><value>Reihe ändern</value></data>
+  <data name="MetadataQualitySeriesRepairDescription" xml:space="preserve"><value>Wählen Sie eine bekannte Reihe oder geben Sie einen neuen Reihennamen ein. Die vorhandene Bandnummer bleibt unverändert.</value></data>
+  <data name="MetadataQualitySeriesRepairInput" xml:space="preserve"><value>Reihenname</value></data>
+  <data name="MetadataQualitySeriesRepairHelp" xml:space="preserve"><value>Die Vorschläge stammen aus der aktiven Bibliothek. Sie können auch einen neuen Reihennamen eingeben.</value></data>
+  <data name="MetadataQualitySeriesRepairSave" xml:space="preserve"><value>Reihe speichern</value></data>
+  <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>Die Reihe konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>Die Reihe wurde gespeichert, aber nicht alle zugehörigen Metadaten- oder E-Book-Dateien konnten aktualisiert werden.</value></data>
+  <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Bei diesem Buch fehlt der Reihenname nicht mehr. Saga hat die aktuellen Buchdaten geladen.</value></data>
 </root>
 

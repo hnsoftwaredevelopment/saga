@@ -644,5 +644,15 @@
   <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>No se pudo guardar el idioma. Revise el libro e inténtelo de nuevo.</value></data>
   <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>El idioma se guardó, pero no se pudieron actualizar todos los archivos de metadatos o libros electrónicos relacionados.</value></data>
   <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Este libro ya tiene un idioma válido. Saga ha cargado los datos actuales del libro.</value></data>
+  <data name="MetadataQualityChangeSeries" xml:space="preserve"><value>Cambiar serie</value></data>
+  <data name="MetadataQualityRepairMissingSeries" xml:space="preserve"><value>Completar el nombre de serie ausente</value></data>
+  <data name="MetadataQualitySeriesRepairTitle" xml:space="preserve"><value>Cambiar serie</value></data>
+  <data name="MetadataQualitySeriesRepairDescription" xml:space="preserve"><value>Elija una serie conocida o introduzca un nombre nuevo. El número de serie existente no cambiará.</value></data>
+  <data name="MetadataQualitySeriesRepairInput" xml:space="preserve"><value>Nombre de la serie</value></data>
+  <data name="MetadataQualitySeriesRepairHelp" xml:space="preserve"><value>Las sugerencias proceden de la biblioteca activa. También puede introducir un nombre de serie nuevo.</value></data>
+  <data name="MetadataQualitySeriesRepairSave" xml:space="preserve"><value>Guardar serie</value></data>
+  <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>No se pudo guardar la serie. Revise el libro e inténtelo de nuevo.</value></data>
+  <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>La serie se guardó, pero no se pudieron actualizar todos los archivos de metadatos o libros electrónicos relacionados.</value></data>
+  <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Este libro ya no tiene un nombre de serie ausente. Saga ha cargado los datos actuales del libro.</value></data>
 </root>
 
