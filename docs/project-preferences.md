@@ -1,5 +1,9 @@
 # Saga Project Preferences
 
+## Definition Of Done
+
+Gebruik [de Saga Definition of Done](definition-of-done.md) als vaste eindcontrole voor iedere wijziging. Projectspecifieke eisen in dat document gaan voor op algemene werkwijzeadviezen uit lokale skills.
+
 ## Execution Style
 
 For Saga implementation work, use **Inline Execution** as the default execution style.
