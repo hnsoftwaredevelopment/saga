@@ -1,18 +1,21 @@
-# Milestone 32 Todo
+# Milestone 33 Todo
 
-- [x] Functionele richting goedgekeurd op 3 september 2026.
+- [x] Calibre-coverworkflow onderzocht als gedragsreferentie.
+- [x] Officiële Open Library Search- en Covers API-documentatie gecontroleerd.
+- [x] Functionele richting en aannames goedgekeurd op 4 september 2026.
 - [x] Specificatie en grenzen vastgelegd.
-- [x] Uitvoeringsplan en taakvolgorde door gebruiker bevestigd op 3 september 2026.
-- [x] Taak 1: veilige omwisselservice testgedreven implementeren (7 gerichte tests groen).
-- [x] Taak 2: bevestigingsmodel en WPF-venster toevoegen.
-- [x] Checkpoint 1: 12 gerichte tests en Release-build zonder waarschuwingen groen.
-- [x] Taak 3: Quality Page en actieve bibliotheek gekoppeld (123 metadata-kwaliteitstests groen).
-- [x] Taak 4: lokalisatie, documentatie en handmatige checklist afgerond.
-- [x] Volledige Debug-tests (605 geslaagd, 0 overgeslagen) en build zonder waarschuwingen uitgevoerd.
-- [x] Actuele Debug-build `2026.9.3.46` uitsluitend in `Builds/Debug` gemaakt.
-- [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld.
-- [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitgevoerd.
-- [x] Normale, niet-draft PR #33 geopend.
-- [x] Handmatige checklist op 4 september 2026 door de gebruiker afgerond; geen functionele fouten gevonden.
-- [x] Praktijkbevinding vastgelegd: veel mogelijke titel-/auteurwissels zijn correct en worden veilig met `Dit is correct` afgehandeld.
-- [x] Vervolgvoorstel vastgelegd: een eigen tabblad `Kwaliteit` in Instellingen en later bulkgewijs `Dit is correct`.
+- [x] Uitvoeringsplan en taakvolgorde opgesteld.
+- [ ] Uitvoeringsplan door gebruiker goedgekeurd.
+- [ ] Taak 1: brononafhankelijk zoekcontract en begrensde Open Library-client testgedreven implementeren.
+- [ ] Taak 2: veilige download en JPEG-validatie testgedreven implementeren.
+- [ ] Checkpoint 1: externe-invoergrenzen, architectuur en build controleren.
+- [ ] Taak 3: beheerde `cover.jpg`-opslag en herstelservice testgedreven implementeren.
+- [ ] Taak 4: toegankelijk omslagkeuzevenster implementeren.
+- [ ] Checkpoint 2: zoeken, selecteren en annuleren end-to-end met testdubbels controleren.
+- [ ] Taak 5: Quality Page en actieve bibliotheek koppelen.
+- [ ] Taak 6: zes vertalingen, documentatie en handmatige checklist afronden.
+- [ ] Volledige Debug-tests en build zonder waarschuwingen uitvoeren.
+- [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken.
+- [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
+- [ ] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
+- [ ] Normale, niet-draft PR openen.
