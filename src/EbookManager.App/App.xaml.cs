@@ -134,7 +134,15 @@ public partial class App : System.Windows.Application
         services.AddTransient<IMetadataQualitySeriesRepairService, MetadataQualitySeriesRepairService>();
         services.AddTransient<IMetadataQualityTitleAuthorRepairService, MetadataQualityTitleAuthorRepairService>();
         services.AddSingleton(_ => CreateBookCoverHttpClient());
-        services.AddSingleton<IBookCoverSearchService, OpenLibraryBookCoverSearchService>();
+        services.AddSingleton<OpenLibraryBookCoverSearchService>();
+        services.AddSingleton<GoogleBooksBookCoverSource>();
+        services.AddSingleton<SagaGeneratedBookCoverSource>();
+        services.AddSingleton<IBookCoverSearchService>(provider => new CompositeBookCoverSearchService(
+            [
+                provider.GetRequiredService<GoogleBooksBookCoverSource>(),
+                provider.GetRequiredService<OpenLibraryBookCoverSearchService>()
+            ],
+            provider.GetRequiredService<SagaGeneratedBookCoverSource>()));
         services.AddTransient<IMetadataQualityCoverRepairService, MetadataQualityCoverRepairService>();
         services.AddSingleton<ImportService>();
         services.AddSingleton<IImportRunner>(provider => provider.GetRequiredService<ImportService>());
