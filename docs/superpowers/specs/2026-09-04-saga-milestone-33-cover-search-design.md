@@ -65,7 +65,7 @@ Alle gegevens van Open Library zijn onbetrouwbare externe invoer. De implementat
 
 - gebruikt uitsluitend HTTPS en vaste Open Library-hostnamen;
 - accepteert alleen numerieke Cover ID's uit het zoekantwoord;
-- begrenst antwoordgrootte, aantal resultaten, downloadtijd en afbeeldingsgrootte;
+- begrenst antwoordgrootte, aantal resultaten, downloadtijd en iedere afbeelding tot 10 MiB, gelijk aan Saga's bestaande importgrens voor omslagen;
 - accepteert alleen een decodeerbare JPEG met redelijke afmetingen;
 - weigert afbeeldingen kleiner dan 50 bij 50 pixels, lege bestanden en buitensporig grote afbeeldingen;
 - toont een gelokaliseerde fout zonder het boek te wijzigen wanneer zoeken of downloaden mislukt.
@@ -181,4 +181,4 @@ Resultaatstatussen zijn expliciete records of enums; verwachte netwerk- en opsla
 
 ## Open vragen
 
-Geen blokkerende functionele vragen. Tijdens implementatie wordt alleen de technische maximumgrootte van een veilige omslag op basis van bestaande importlimieten vastgesteld; dit verandert het gebruikersverloop niet.
+Geen blokkerende vragen. De bestaande Saga-grens van 10 MiB wordt ook voor online omslagen gebruikt.

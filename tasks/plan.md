@@ -45,7 +45,7 @@ Zoekcontract en Open Library-client
 **Acceptatiecriteria:**
 
 - [ ] Alleen providergegenereerde Cover ID's kunnen een download starten; willekeurige URL's zijn onmogelijk.
-- [ ] Lege, niet-JPEG, te kleine of buitensporig grote afbeeldingen worden geweigerd.
+- [ ] Lege, niet-JPEG, te kleine of grotere dan 10 MiB afbeeldingen worden geweigerd.
 - [ ] Kandidaten bevatten betrouwbare breedte en hoogte en kunnen op oppervlak worden gesorteerd.
 
 **Verificatie:** Gerichte tests voor geldige JPEG, afgekapt bestand, foutief type, grenswaarden en annulering.
