@@ -58,7 +58,7 @@ public sealed class MetadataQualityDashboardCoverRepairTests
             book.Metadata.Title,
             book.Metadata.Authors,
             book.Metadata.Isbn));
-        searchService.DownloadedCandidateId.Should().Be(candidate.CandidateId);
+        searchService.DownloadedCandidate.Should().BeSameAs(candidate);
         repairService.BookId.Should().Be(book.Id);
         repairService.CoverBytes.Should().Equal(bytes);
         notifiedBook.Should().BeSameAs(repairedBook);
@@ -83,7 +83,7 @@ public sealed class MetadataQualityDashboardCoverRepairTests
 
         await dashboard.SearchCoverCommand.ExecuteAsync(null);
 
-        searchService.DownloadedCandidateId.Should().BeNull();
+        searchService.DownloadedCandidate.Should().BeNull();
         repairService.BookId.Should().BeNull();
         dashboard.SelectedIssue.Rows.Should().ContainSingle();
     }
@@ -173,7 +173,7 @@ public sealed class MetadataQualityDashboardCoverRepairTests
     }
 
     private static BookCoverCandidate Candidate() =>
-        new(42, "Open Library", "The book", ["The author"], [0xFF, 0xD8, 0xFF, 0xD9], 400, 600);
+        new("open-library", "42", "Open Library", "The book", ["The author"], [0xFF, 0xD8, 0xFF, 0xD9], 400, 600);
 
     private static BookMetadata CopyMetadataWithCover(BookMetadata metadata, byte[] coverBytes) =>
         new(
@@ -212,7 +212,7 @@ public sealed class MetadataQualityDashboardCoverRepairTests
         }
 
         public BookCoverSearchQuery? SearchQuery { get; private set; }
-        public string? DownloadedCandidateId { get; private set; }
+        public BookCoverCandidate? DownloadedCandidate { get; private set; }
 
         public Task<BookCoverSearchResult> SearchAsync(
             BookCoverSearchQuery query,
@@ -225,10 +225,10 @@ public sealed class MetadataQualityDashboardCoverRepairTests
         }
 
         public Task<BookCoverDownloadResult> DownloadAsync(
-            string candidateId,
+            BookCoverCandidate candidate,
             CancellationToken cancellationToken)
         {
-            DownloadedCandidateId = candidateId;
+            DownloadedCandidate = candidate;
             return Task.FromResult(downloadResult);
         }
     }

@@ -69,7 +69,7 @@ public sealed class MetadataQualityCoverSearchViewModelTests
     }
 
     private static BookCoverCandidate Candidate(long id, int width, int height) =>
-        new(id, "Open Library", $"Title {id}", ["Author"], [0xFF, 0xD8, 0xFF, 0xD9], width, height);
+        new("open-library", id.ToString(), "Open Library", $"Title {id}", ["Author"], [0xFF, 0xD8, 0xFF, 0xD9], width, height);
 
     private sealed class StubCoverSearchService(BookCoverSearchResult result) : IBookCoverSearchService
     {
@@ -78,7 +78,7 @@ public sealed class MetadataQualityCoverSearchViewModelTests
             CancellationToken cancellationToken) => Task.FromResult(result);
 
         public Task<BookCoverDownloadResult> DownloadAsync(
-            string candidateId,
+            BookCoverCandidate candidate,
             CancellationToken cancellationToken) => throw new NotSupportedException();
     }
 }

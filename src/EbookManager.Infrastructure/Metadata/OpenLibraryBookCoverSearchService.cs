@@ -5,8 +5,9 @@ using EbookManager.Application.Metadata;
 
 namespace EbookManager.Infrastructure.Metadata;
 
-public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : IBookCoverSearchService
+public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : IBookCoverSource
 {
+    public const string Key = "open-library";
     private const int MaximumCandidates = 12;
     private const int SearchResultLimit = 24;
     private const int MinimumDimension = 50;
@@ -19,6 +20,8 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
     private static readonly TimeSpan SearchTimeout = TimeSpan.FromSeconds(15);
 
     private readonly HttpClient httpClient = httpClient;
+
+    public string SourceKey => Key;
 
     public async Task<BookCoverSearchResult> SearchAsync(
         BookCoverSearchQuery query,
@@ -73,7 +76,8 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
                 }
 
                 candidates.Add(new BookCoverCandidate(
-                    row.CoverId,
+                    Key,
+                    row.CoverId.ToString(CultureInfo.InvariantCulture),
                     SourceName,
                     row.Title,
                     row.Authors,
@@ -93,7 +97,7 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
 
             var ordered = candidates
                 .OrderByDescending(candidate => (long)candidate.Width * candidate.Height)
-                .ThenBy(candidate => candidate.CoverId)
+                .ThenBy(candidate => candidate.CandidateId, StringComparer.Ordinal)
                 .ToArray();
             return new(BookCoverSearchStatus.Succeeded, ordered);
         }

@@ -37,8 +37,9 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
             CancellationToken.None);
 
         result.Status.Should().Be(BookCoverSearchStatus.Succeeded);
-        result.Candidates.Select(candidate => candidate.CoverId).Should().Equal(30, 20, 10);
-        result.Candidates.Should().OnlyHaveUniqueItems(candidate => candidate.CoverId);
+        result.Candidates.Select(candidate => candidate.CandidateId).Should().Equal("30", "20", "10");
+        result.Candidates.Should().OnlyHaveUniqueItems(candidate => candidate.CandidateId);
+        result.Candidates.Should().OnlyContain(candidate => candidate.SourceKey == OpenLibraryBookCoverSearchService.Key);
         result.Candidates[0].Source.Should().Be("Open Library");
         result.Candidates[0].PreviewBytes.Should().NotBeEmpty();
         requests.Should().Contain(uri => uri.Query.Contains("title=De%20titel", StringComparison.Ordinal));

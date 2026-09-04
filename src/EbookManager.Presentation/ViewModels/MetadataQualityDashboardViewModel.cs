@@ -546,7 +546,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         try
         {
             downloadResult = await coverSearchService.DownloadAsync(
-                candidate.CandidateId,
+                candidate,
                 cancellationToken);
         }
         catch (OperationCanceledException)
