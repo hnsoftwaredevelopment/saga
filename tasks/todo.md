@@ -5,7 +5,7 @@
 - [x] Functionele richting en aannames goedgekeurd op 4 september 2026.
 - [x] Specificatie en grenzen vastgelegd.
 - [x] Uitvoeringsplan en taakvolgorde opgesteld.
-- [ ] Uitvoeringsplan door gebruiker goedgekeurd.
+- [x] Uitvoeringsplan door gebruiker goedgekeurd op 4 september 2026.
 - [ ] Taak 1: brononafhankelijk zoekcontract en begrensde Open Library-client testgedreven implementeren.
 - [ ] Taak 2: veilige download en JPEG-validatie testgedreven implementeren.
 - [ ] Checkpoint 1: externe-invoergrenzen, architectuur en build controleren.

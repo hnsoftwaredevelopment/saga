@@ -163,4 +163,4 @@ Zoekcontract en Open Library-client
 
 ## Open vragen
 
-Geen blokkerende vragen. Functionele richting en aannames zijn goedgekeurd op 4 september 2026; implementatie start pas na goedkeuring van dit plan.
+Geen blokkerende vragen. Functionele richting, aannames en dit uitvoeringsplan zijn goedgekeurd op 4 september 2026.
