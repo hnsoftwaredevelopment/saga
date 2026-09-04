@@ -15,12 +15,20 @@ public sealed partial class BookDetailsViewModel(
     BookService bookService,
     BookFileExportService? exportService = null,
     IBookFileInteractionService? fileInteraction = null,
-    ICustomMetadataRepository? customMetadataRepository = null) : ObservableObject
+    ICustomMetadataRepository? customMetadataRepository = null,
+    IBookCoverSearchService? coverSearchService = null,
+    Func<MetadataQualityCoverSearchViewModel, CancellationToken, Task<bool>>? showCoverSearch = null,
+    IBookCoverUpdateService? coverUpdateService = null,
+    Func<string, string>? localize = null) : ObservableObject
 {
     private readonly BookService bookService = bookService;
     private readonly BookFileExportService? exportService = exportService;
     private readonly IBookFileInteractionService? fileInteraction = fileInteraction;
     private readonly ICustomMetadataRepository? customMetadataRepository = customMetadataRepository;
+    private readonly IBookCoverSearchService? coverSearchService = coverSearchService;
+    private readonly Func<MetadataQualityCoverSearchViewModel, CancellationToken, Task<bool>>? showCoverSearch = showCoverSearch;
+    private readonly IBookCoverUpdateService? coverUpdateService = coverUpdateService;
+    private readonly Func<string, string> localize = localize ?? (key => key);
     private Book? originalBook;
     private string? currentLibraryPath;
     private Dictionary<Guid, string?> originalCustomMetadataValues = [];
@@ -118,15 +126,22 @@ public sealed partial class BookDetailsViewModel(
     [ObservableProperty]
     private BookDeleteResult? lastDeleteResult;
 
+    [ObservableProperty]
+    private string? coverChangeErrorMessage;
+
+    public bool HasCoverChangeError => !string.IsNullOrWhiteSpace(CoverChangeErrorMessage);
+
     public IAsyncRelayCommand SaveCommand => saveCommand ??= new AsyncRelayCommand(SaveAsync, CanEdit);
     public IAsyncRelayCommand DeleteCommand => deleteCommand ??= new AsyncRelayCommand(DeleteAsync, CanEdit);
     public IRelayCommand UndoCommand => undoCommand ??= new RelayCommand(Undo, CanEdit);
     public IRelayCommand SwapTitleAndAuthorsCommand => swapTitleAndAuthorsCommand ??= new RelayCommand(SwapTitleAndAuthors, CanEdit);
+    public IAsyncRelayCommand ChangeCoverCommand => changeCoverCommand ??= new AsyncRelayCommand(ChangeCoverAsync, CanChangeCover);
 
     private AsyncRelayCommand? saveCommand;
     private AsyncRelayCommand? deleteCommand;
     private RelayCommand? undoCommand;
     private RelayCommand? swapTitleAndAuthorsCommand;
+    private AsyncRelayCommand? changeCoverCommand;
 
     public event EventHandler<Book>? BookSaved;
     public event EventHandler<Guid>? BookDeleted;
@@ -137,6 +152,8 @@ public sealed partial class BookDetailsViewModel(
         OnPropertyChanged(nameof(SaveErrorMessage));
     }
 
+    partial void OnCoverChangeErrorMessageChanged(string? value) => OnPropertyChanged(nameof(HasCoverChangeError));
+
     public void Load(Book book, string? libraryPath = null)
     {
         ArgumentNullException.ThrowIfNull(book);
@@ -146,6 +163,7 @@ public sealed partial class BookDetailsViewModel(
         Apply(book, libraryPath);
         LastSaveResult = null;
         LastDeleteResult = null;
+        CoverChangeErrorMessage = null;
         RefreshLocalizedDisplayNames();
         RefreshDirtyState();
         NotifyCommandState();
@@ -177,6 +195,7 @@ public sealed partial class BookDetailsViewModel(
         CoverPath = null;
         LastSaveResult = null;
         LastDeleteResult = null;
+        CoverChangeErrorMessage = null;
         RefreshLocalizedDisplayNames();
         RefreshDirtyState();
         NotifyCommandState();
@@ -222,7 +241,21 @@ public sealed partial class BookDetailsViewModel(
             return;
         }
 
-        LastSaveResult = await bookService.SaveAsync(book, cancellationToken);
+        Book savedBook = book;
+        if (CoverBytes is { Length: > 0 } coverBytes &&
+            originalBook is not null &&
+            !CoverEquals(originalBook.Metadata.CoverBytes, coverBytes) &&
+            coverUpdateService is not null)
+        {
+            var updateResult = await coverUpdateService.UpdateAsync(book, coverBytes, cancellationToken);
+            LastSaveResult = updateResult.SaveResult;
+            savedBook = updateResult.Book ?? book;
+        }
+        else
+        {
+            LastSaveResult = await bookService.SaveAsync(book, cancellationToken);
+        }
+
         if (LastSaveResult.Status == BookSaveStatus.Succeeded)
         {
             var customMetadataSaved = await SaveCustomMetadataValuesAsync(customMetadataChanges, cancellationToken);
@@ -231,12 +264,55 @@ public sealed partial class BookDetailsViewModel(
                 return;
             }
 
-            originalBook = book;
+            originalBook = savedBook;
             originalCustomMetadataValues = SnapshotCustomMetadataValues();
+            Apply(savedBook, currentLibraryPath);
             RefreshLocalizedDisplayNames();
             RefreshDirtyState();
-            BookSaved?.Invoke(this, book);
+            BookSaved?.Invoke(this, savedBook);
         }
+    }
+
+    private async Task ChangeCoverAsync(CancellationToken cancellationToken)
+    {
+        if (originalBook is null || coverSearchService is null || showCoverSearch is null || coverUpdateService is null)
+        {
+            return;
+        }
+
+        CoverChangeErrorMessage = null;
+        var search = new MetadataQualityCoverSearchViewModel(
+            new BookCoverSearchQuery(Title.Trim(), GetEditedAuthors(), NormalizeBlank(Isbn)),
+            coverSearchService,
+            localize);
+        if (!await showCoverSearch(search, cancellationToken) || search.SelectedCandidate is not { } candidate)
+        {
+            return;
+        }
+
+        BookCoverDownloadResult download;
+        try
+        {
+            download = await coverSearchService.DownloadAsync(candidate, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            CoverChangeErrorMessage = localize("MetadataQualityCoverDownloadFailed");
+            return;
+        }
+        if (download.Status != BookCoverDownloadStatus.Succeeded || download.Bytes is not { Length: > 0 } bytes)
+        {
+            CoverChangeErrorMessage = localize("MetadataQualityCoverDownloadFailed");
+            return;
+        }
+
+        CoverBytes = bytes;
+        CoverPath = null;
+        LastSaveResult = null;
     }
 
     private async Task DeleteAsync(CancellationToken cancellationToken)
@@ -278,6 +354,7 @@ public sealed partial class BookDetailsViewModel(
             }
         });
         LastSaveResult = null;
+        CoverChangeErrorMessage = null;
         RefreshDirtyState();
     }
 
@@ -424,13 +501,20 @@ public sealed partial class BookDetailsViewModel(
 
     private bool CanEdit() => originalBook is not null;
 
+    private bool CanChangeCover() =>
+        CanEdit() && coverSearchService is not null && showCoverSearch is not null && coverUpdateService is not null;
+
     private void NotifyCommandState()
     {
         saveCommand?.NotifyCanExecuteChanged();
         deleteCommand?.NotifyCanExecuteChanged();
         undoCommand?.NotifyCanExecuteChanged();
         swapTitleAndAuthorsCommand?.NotifyCanExecuteChanged();
+        changeCoverCommand?.NotifyCanExecuteChanged();
     }
+
+    private static bool CoverEquals(byte[]? first, byte[]? second) =>
+        ReferenceEquals(first, second) || first is not null && second is not null && first.SequenceEqual(second);
 
     private static bool BooksEquivalentForEditing(Book first, Book second) =>
         NormalizeForEditing(first).Metadata == NormalizeForEditing(second).Metadata &&

@@ -44,6 +44,9 @@ public interface IUserInteractionService
     Task<bool> ShowMetadataQualityTitleAuthorRepairAsync(
         MetadataQualityTitleAuthorRepairViewModel repair,
         CancellationToken cancellationToken);
+    Task<bool> ShowMetadataQualityCoverSearchAsync(
+        MetadataQualityCoverSearchViewModel search,
+        CancellationToken cancellationToken);
     Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
         MetadataMultiEditViewModel edit,
         CancellationToken cancellationToken);
