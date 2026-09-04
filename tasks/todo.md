@@ -13,3 +13,6 @@
 - [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld.
 - [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitgevoerd.
 - [x] Normale, niet-draft PR #33 geopend.
+- [x] Handmatige checklist op 4 september 2026 door de gebruiker afgerond; geen functionele fouten gevonden.
+- [x] Praktijkbevinding vastgelegd: veel mogelijke titel-/auteurwissels zijn correct en worden veilig met `Dit is correct` afgehandeld.
+- [x] Vervolgvoorstel vastgelegd: een eigen tabblad `Kwaliteit` in Instellingen en later bulkgewijs `Dit is correct`.

@@ -84,14 +84,23 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Save through Saga's existing metadata and sidecar route and immediately refresh dashboard, main library rows, and author filters.
 - Keep the workflow modal, keyboard accessible, usable with longer translated labels, and localized in all six supported languages.
 
+## Proposed milestone 33: Dedicated quality settings
+
+- Give quality decisions their own `Quality` tab in Settings, matching the separate Quality Page in Saga.
+- Move management of books and quality signals marked as correct out of the `Duplicates` tab.
+- Preserve all existing ignored-quality decisions, restore actions, active-library isolation, and keyboard behavior.
+- Keep the change organizational: do not change the quality heuristics or stored decision format in this slice.
+- Localize the tab and its contents in all six supported languages.
+
 ## Follow-up ideas
 
 - Add direct repair actions for tags and missing covers.
 - Let users select multiple missing-author books and apply one chosen author to all selected books.
+- Let users select multiple quality rows and mark them as correct in one action.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
 - Tune heuristics after testing on real-world Calibre libraries.
 
 ## Status
 
-Milestones 26 through 32 are implemented. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, stores reversible quality decisions per active library, and repairs a missing author, missing or unknown language, missing series name, or likely swapped title and author for one selected book. Tag and cover repair plus bulk repair remain follow-up work.
+Milestones 26 through 32 are implemented and milestone 32 was accepted through manual testing on 4 September 2026. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, stores reversible quality decisions per active library, and repairs a missing author, missing or unknown language, missing series name, or likely swapped title and author for one selected book. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. A dedicated Quality tab in Settings is proposed as milestone 33. Tag and cover repair, bulk decisions, bulk repair, and heuristic tuning remain follow-up work.
