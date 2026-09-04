@@ -20,6 +20,9 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private readonly Func<MetadataQualitySeriesRepairViewModel, CancellationToken, Task<bool>>? showSeriesRepair;
     private readonly IMetadataQualityTitleAuthorRepairService? titleAuthorRepairService;
     private readonly Func<MetadataQualityTitleAuthorRepairViewModel, CancellationToken, Task<bool>>? showTitleAuthorRepair;
+    private readonly IBookCoverSearchService? coverSearchService;
+    private readonly Func<MetadataQualityCoverSearchViewModel, CancellationToken, Task<bool>>? showCoverSearch;
+    private readonly IMetadataQualityCoverRepairService? coverRepairService;
     private readonly Action<Book>? bookRepaired;
     private readonly Dictionary<Guid, Book> books;
     private readonly HashSet<MetadataQualityExclusionKey> exclusions;
@@ -28,6 +31,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private readonly AsyncRelayCommand repairUnknownLanguageCommand;
     private readonly AsyncRelayCommand repairMissingSeriesCommand;
     private readonly AsyncRelayCommand repairTitleAuthorCommand;
+    private readonly AsyncRelayCommand searchCoverCommand;
 
     [ObservableProperty]
     private MetadataQualityIssueViewModel? selectedIssue;
@@ -53,7 +57,10 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         Func<MetadataQualitySeriesRepairViewModel, CancellationToken, Task<bool>>? showSeriesRepair = null,
         Action<Book>? bookRepaired = null,
         IMetadataQualityTitleAuthorRepairService? titleAuthorRepairService = null,
-        Func<MetadataQualityTitleAuthorRepairViewModel, CancellationToken, Task<bool>>? showTitleAuthorRepair = null)
+        Func<MetadataQualityTitleAuthorRepairViewModel, CancellationToken, Task<bool>>? showTitleAuthorRepair = null,
+        IBookCoverSearchService? coverSearchService = null,
+        Func<MetadataQualityCoverSearchViewModel, CancellationToken, Task<bool>>? showCoverSearch = null,
+        IMetadataQualityCoverRepairService? coverRepairService = null)
     {
         this.localize = localize;
         this.repository = repository;
@@ -65,6 +72,9 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         this.showSeriesRepair = showSeriesRepair;
         this.titleAuthorRepairService = titleAuthorRepairService;
         this.showTitleAuthorRepair = showTitleAuthorRepair;
+        this.coverSearchService = coverSearchService;
+        this.showCoverSearch = showCoverSearch;
+        this.coverRepairService = coverRepairService;
         this.bookRepaired = bookRepaired;
         this.books = books.ToDictionary(book => book.Id);
         this.exclusions = exclusions is null ? [] : [.. exclusions];
@@ -83,6 +93,9 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         repairTitleAuthorCommand = new AsyncRelayCommand(
             RepairTitleAuthorAsync,
             CanRepairTitleAuthor);
+        searchCoverCommand = new AsyncRelayCommand(
+            SearchCoverAsync,
+            CanSearchCover);
         TotalBookCount = books.Count;
         Issues = new ObservableCollection<MetadataQualityIssueViewModel>(
             BuildIssues(
@@ -103,6 +116,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     public IAsyncRelayCommand RepairUnknownLanguageCommand => repairUnknownLanguageCommand;
     public IAsyncRelayCommand RepairMissingSeriesCommand => repairMissingSeriesCommand;
     public IAsyncRelayCommand RepairTitleAuthorCommand => repairTitleAuthorCommand;
+    public IAsyncRelayCommand SearchCoverCommand => searchCoverCommand;
 
     partial void OnSelectedIssueChanged(MetadataQualityIssueViewModel? value)
     {
@@ -112,6 +126,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         repairUnknownLanguageCommand.NotifyCanExecuteChanged();
         repairMissingSeriesCommand.NotifyCanExecuteChanged();
         repairTitleAuthorCommand.NotifyCanExecuteChanged();
+        searchCoverCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnSelectedBookChanged(MetadataQualityBookRowViewModel? value)
@@ -121,6 +136,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         repairUnknownLanguageCommand.NotifyCanExecuteChanged();
         repairMissingSeriesCommand.NotifyCanExecuteChanged();
         repairTitleAuthorCommand.NotifyCanExecuteChanged();
+        searchCoverCommand.NotifyCanExecuteChanged();
     }
 
     private static IReadOnlyList<MetadataQualityIssueViewModel> BuildIssues(
@@ -491,6 +507,102 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             MetadataQualityTitleAuthorRepairStatus.NotFound =>
                 localize("MetadataQualityBookUnavailableMessage"),
             _ => localize("MetadataQualityTitleAuthorRepairFailed")
+        };
+    }
+
+    private bool CanSearchCover() =>
+        coverSearchService is not null &&
+        showCoverSearch is not null &&
+        coverRepairService is not null &&
+        SelectedIssue?.SignalKey == MetadataQualitySignalKeys.MissingCover &&
+        SelectedBook is not null &&
+        SelectedIssue.Rows.Contains(SelectedBook) &&
+        books.ContainsKey(SelectedBook.Id);
+
+    private async Task SearchCoverAsync(CancellationToken cancellationToken)
+    {
+        var selectedBook = SelectedBook;
+        if (!CanSearchCover() || selectedBook is null ||
+            coverSearchService is null || showCoverSearch is null || coverRepairService is null ||
+            !books.TryGetValue(selectedBook.Id, out var book))
+        {
+            return;
+        }
+
+        var search = new MetadataQualityCoverSearchViewModel(
+            new BookCoverSearchQuery(
+                book.Metadata.Title,
+                book.Metadata.Authors,
+                book.Metadata.Isbn),
+            coverSearchService,
+            localize);
+        if (!await showCoverSearch(search, cancellationToken) ||
+            search.SelectedCandidate is not { } candidate)
+        {
+            return;
+        }
+
+        BookCoverDownloadResult downloadResult;
+        try
+        {
+            downloadResult = await coverSearchService.DownloadAsync(
+                candidate.CandidateId,
+                cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            StatusMessage = localize("MetadataQualityCoverDownloadFailed");
+            return;
+        }
+
+        if (downloadResult.Status != BookCoverDownloadStatus.Succeeded ||
+            downloadResult.Bytes is not { Length: > 0 } coverBytes)
+        {
+            StatusMessage = localize("MetadataQualityCoverDownloadFailed");
+            return;
+        }
+
+        MetadataQualityCoverRepairResult repairResult;
+        try
+        {
+            repairResult = await coverRepairService.RepairAsync(
+                selectedBook.Id,
+                coverBytes,
+                cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            StatusMessage = localize("MetadataQualityCoverRepairFailed");
+            return;
+        }
+
+        if (repairResult.Book is { } repairedBook)
+        {
+            ReconcileBook(repairedBook);
+        }
+        else if (repairResult.Status == MetadataQualityCoverRepairStatus.NotFound)
+        {
+            RemoveBook(selectedBook.Id);
+        }
+
+        StatusMessage = repairResult.Status switch
+        {
+            MetadataQualityCoverRepairStatus.Succeeded => null,
+            MetadataQualityCoverRepairStatus.SavedWithWriteBackErrors =>
+                localize("MetadataQualityCoverRepairWriteBackWarning"),
+            MetadataQualityCoverRepairStatus.NotApplicable =>
+                localize("MetadataQualityCoverRepairNotNeeded"),
+            MetadataQualityCoverRepairStatus.NotFound =>
+                localize("MetadataQualityBookUnavailableMessage"),
+            _ => localize("MetadataQualityCoverRepairFailed")
         };
     }
 

@@ -663,5 +663,17 @@
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>Non e stato possibile scambiare il titolo e l'autore. Controlla il libro e riprova.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>Il titolo e l'autore sono stati salvati, ma non e stato possibile aggiornare tutti i file di metadati o ebook correlati.</value></data>
   <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Il titolo e l'autore non sembrano piu scambiati. Saga ha caricato i dati aggiornati del libro.</value></data>
+  <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Cerca copertina</value></data>
+  <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Cerca una copertina</value></data>
+  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga cerca in Open Library usando titolo, autore e ISBN. Seleziona la copertina da usare.</value></data>
+  <data name="MetadataQualityUseCover" xml:space="preserve"><value>Usa questa copertina</value></data>
+  <data name="MetadataQualityCoverSearchResults" xml:space="preserve"><value>Copertine disponibili</value></data>
+  <data name="MetadataQualityCoverSearchLoading" xml:space="preserve"><value>Ricerca delle copertine…</value></data>
+  <data name="MetadataQualityCoverSearchNoResults" xml:space="preserve"><value>Non sono state trovate copertine adatte per questo libro.</value></data>
+  <data name="MetadataQualityCoverSearchFailed" xml:space="preserve"><value>La ricerca delle copertine non è temporaneamente disponibile. Riprova più tardi.</value></data>
+  <data name="MetadataQualityCoverDownloadFailed" xml:space="preserve"><value>Non è stato possibile scaricare la copertina selezionata. Scegline un’altra o riprova più tardi.</value></data>
+  <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare la copertina. Controlla il libro e riprova.</value></data>
+  <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>La copertina è stata salvata in Saga, ma non è stato possibile aggiornare tutti i relativi file di metadati o ebook.</value></data>
+  <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Questo libro ha già una copertina. Saga ha aggiornato i dati correnti del libro.</value></data>
 </root>
 

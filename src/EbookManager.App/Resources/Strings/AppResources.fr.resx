@@ -663,5 +663,17 @@
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>Le titre et l'auteur n'ont pas pu etre intervertis. Verifiez le livre et reessayez.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>Le titre et l'auteur ont ete enregistres, mais certains fichiers de metadonnees ou ebooks n'ont pas pu etre mis a jour.</value></data>
   <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Le titre et l'auteur ne semblent plus intervertis. Saga a charge les donnees actuelles du livre.</value></data>
+  <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Rechercher une couverture</value></data>
+  <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Rechercher une couverture</value></data>
+  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga recherche dans Open Library à partir du titre, de l’auteur et de l’ISBN. Sélectionnez la couverture à utiliser.</value></data>
+  <data name="MetadataQualityUseCover" xml:space="preserve"><value>Utiliser cette couverture</value></data>
+  <data name="MetadataQualityCoverSearchResults" xml:space="preserve"><value>Couvertures disponibles</value></data>
+  <data name="MetadataQualityCoverSearchLoading" xml:space="preserve"><value>Recherche de couvertures…</value></data>
+  <data name="MetadataQualityCoverSearchNoResults" xml:space="preserve"><value>Aucune couverture appropriée n’a été trouvée pour ce livre.</value></data>
+  <data name="MetadataQualityCoverSearchFailed" xml:space="preserve"><value>La recherche de couvertures est temporairement indisponible. Réessayez plus tard.</value></data>
+  <data name="MetadataQualityCoverDownloadFailed" xml:space="preserve"><value>La couverture sélectionnée n’a pas pu être téléchargée. Choisissez-en une autre ou réessayez plus tard.</value></data>
+  <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>La couverture n’a pas pu être enregistrée. Vérifiez le livre et réessayez.</value></data>
+  <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>La couverture a été enregistrée dans Saga, mais certains fichiers de métadonnées ou ebooks associés n’ont pas pu être mis à jour.</value></data>
+  <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Ce livre possède déjà une couverture. Saga a actualisé les données du livre.</value></data>
 </root>
 

@@ -26,9 +26,9 @@ Zoekcontract en Open Library-client
 
 **Acceptatiecriteria:**
 
-- [ ] Titel en auteurs vormen een correct geëncodeerde zoekvraag; een beschikbaar ISBN voegt een exacte zoekroute toe en beide resultaatsets worden samengevoegd.
-- [ ] Alleen unieke numerieke Cover ID's worden geaccepteerd en maximaal twaalf kandidaten teruggegeven.
-- [ ] Time-outs, annulering, ongeldige JSON, te grote antwoorden en serverfouten leveren een gecontroleerd resultaat.
+- [x] Titel en auteurs vormen een correct geëncodeerde zoekvraag; een beschikbaar ISBN voegt een exacte zoekroute toe en beide resultaatsets worden samengevoegd.
+- [x] Alleen unieke numerieke Cover ID's worden geaccepteerd en maximaal twaalf kandidaten teruggegeven.
+- [x] Time-outs, annulering, ongeldige JSON, te grote antwoorden en serverfouten leveren een gecontroleerd resultaat.
 
 **Verificatie:** Eerst falende tests met een gecontroleerde HTTP-handler; daarna alle zoekclienttests groen.
 
@@ -44,9 +44,9 @@ Zoekcontract en Open Library-client
 
 **Acceptatiecriteria:**
 
-- [ ] Alleen providergegenereerde Cover ID's kunnen een download starten; willekeurige URL's zijn onmogelijk.
-- [ ] Lege, niet-JPEG, te kleine of grotere dan 10 MiB afbeeldingen worden geweigerd.
-- [ ] Kandidaten bevatten betrouwbare breedte en hoogte en kunnen op oppervlak worden gesorteerd.
+- [x] Alleen providergegenereerde Cover ID's kunnen een download starten; willekeurige URL's zijn onmogelijk.
+- [x] Lege, niet-JPEG, te kleine, buitenproportionele of grotere dan 10 MiB afbeeldingen worden geweigerd.
+- [x] Kandidaten bevatten betrouwbare breedte en hoogte en kunnen op oppervlak worden gesorteerd.
 
 **Verificatie:** Gerichte tests voor geldige JPEG, afgekapt bestand, foutief type, grenswaarden en annulering.
 
@@ -58,9 +58,9 @@ Zoekcontract en Open Library-client
 
 ## Checkpoint 1
 
-- [ ] Alle externe invoer is begrensd en getest zonder werkelijk internetverkeer.
-- [ ] De applicatielaag kent Open Library niet bij naam.
-- [ ] De solution bouwt zonder waarschuwingen.
+- [x] Alle externe invoer is begrensd en getest zonder werkelijk internetverkeer.
+- [x] De applicatielaag kent Open Library niet bij naam.
+- [x] De solution bouwt zonder waarschuwingen.
 
 ## Taak 3: Beheerde omslag veilig opslaan
 
@@ -68,9 +68,9 @@ Zoekcontract en Open Library-client
 
 **Acceptatiecriteria:**
 
-- [ ] Alleen `books/<boek-id>/cover.jpg` binnen de actieve bibliotheek kan worden geschreven.
-- [ ] Alleen coverbytes, relatief coverpad en wijzigingstijd veranderen; alle overige boekgegevens blijven gelijk.
-- [ ] Niet gevonden, niet meer van toepassing, opslagfout en write-backwaarschuwing zijn expliciete uitkomsten; het bestand wordt alleen opgeruimd wanneer herladen bewijst dat de database niet is bijgewerkt.
+- [x] Alleen `books/<boek-id>/cover.jpg` binnen de actieve bibliotheek kan worden geschreven.
+- [x] Alleen coverbytes, relatief coverpad en wijzigingstijd veranderen; alle overige boekgegevens blijven gelijk.
+- [x] Niet gevonden, niet meer van toepassing, opslagfout en write-backwaarschuwing zijn expliciete uitkomsten; het bestand wordt alleen opgeruimd wanneer herladen bewijst dat de database niet is bijgewerkt.
 
 **Verificatie:** Eerst falende pad-, bestands- en servicetests; daarna gerichte groene tests.
 
@@ -86,9 +86,9 @@ Zoekcontract en Open Library-client
 
 **Acceptatiecriteria:**
 
-- [ ] De gebruiker ziet een duidelijke laad-, leeg-, fout- en resultaatstatus.
-- [ ] `Omslag gebruiken` is alleen actief bij een geldige selectie; Enter, dubbelklik, Escape en annuleren werken.
-- [ ] Sluiten annuleert actief netwerkwerk en alle teksten komen uit resources.
+- [x] De gebruiker ziet een duidelijke laad-, leeg-, fout- en resultaatstatus.
+- [x] `Deze omslag gebruiken` is alleen actief bij een geldige selectie; Enter, dubbelklik, Escape en annuleren werken.
+- [x] Sluiten annuleert actief netwerkwerk en alle teksten komen uit resources.
 
 **Verificatie:** Viewmodeltests, layouttests en een WPF-build.
 
@@ -100,9 +100,9 @@ Zoekcontract en Open Library-client
 
 ## Checkpoint 2
 
-- [ ] Zoeken, selecteren en annuleren werken end-to-end met testdubbels.
-- [ ] Een mislukte zoekactie kan nooit een boek of bestand wijzigen.
-- [ ] Toetsenbord- en toegankelijkheidstests zijn groen.
+- [x] Zoeken, selecteren en annuleren werken end-to-end met testdubbels.
+- [x] Een mislukte zoekactie kan nooit een boek of bestand wijzigen.
+- [x] Toetsenbord- en toegankelijkheidstests zijn groen.
 
 ## Taak 5: Quality Page en bibliotheek koppelen
 
@@ -110,9 +110,9 @@ Zoekcontract en Open Library-client
 
 **Acceptatiecriteria:**
 
-- [ ] De actie is uitsluitend beschikbaar voor één geselecteerde rij onder `Geen omslag`.
-- [ ] Succes herevalueert alle signalen, werkt tellingen bij en verwijdert de herstelde rij.
-- [ ] Annuleren, geen resultaten en alle foutstatussen laten rij en metadata intact.
+- [x] De actie is uitsluitend beschikbaar voor één geselecteerde rij onder `Geen omslag`.
+- [x] Succes herevalueert alle signalen, werkt tellingen bij en verwijdert de herstelde rij.
+- [x] Annuleren, geen resultaten en alle foutstatussen laten rij en metadata intact.
 
 **Verificatie:** Eerst falende dashboard- en LibraryViewModel-tests; daarna gerichte regressietests.
 
@@ -128,10 +128,10 @@ Zoekcontract en Open Library-client
 
 **Acceptatiecriteria:**
 
-- [ ] Basis/Engels, Nederlands, Duits, Frans, Spaans en Italiaans bevatten alle nieuwe zichtbare en toegankelijke teksten.
-- [ ] De checklist dekt zoeken met en zonder ISBN, keuze, annuleren, lege resultaten, echte netwerkfout en directe verversing.
-- [ ] Alle Markdown is exact naar Obsidian gespiegeld.
-- [ ] Volledige tests, Debug-build en zelfreview zijn geslaagd.
+- [x] Basis/Engels, Nederlands, Duits, Frans, Spaans en Italiaans bevatten alle nieuwe zichtbare en toegankelijke teksten.
+- [x] De checklist dekt zoeken met en zonder ISBN, keuze, annuleren, lege resultaten, echte netwerkfout en directe verversing.
+- [x] Alle Markdown is exact naar Obsidian gespiegeld.
+- [x] Volledige tests, Debug-build en zelfreview zijn geslaagd; handmatige acceptatie staat nog open.
 
 **Verificatie:** Volledige Definition of Done en daarna handmatige gebruikerscontrole.
 

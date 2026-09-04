@@ -20,6 +20,12 @@ public sealed class ByteArrayToImageSourceConverter : IValueConverter
             var image = new BitmapImage();
             image.BeginInit();
             image.CacheOption = BitmapCacheOption.OnLoad;
+            if (parameter is string text &&
+                int.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out var decodeWidth) &&
+                decodeWidth > 0)
+            {
+                image.DecodePixelWidth = decodeWidth;
+            }
             image.StreamSource = stream;
             image.EndInit();
             image.Freeze();

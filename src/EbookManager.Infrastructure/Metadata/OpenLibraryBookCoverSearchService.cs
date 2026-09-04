@@ -16,6 +16,7 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
     private const int MaximumPreviewImageBytes = 2 * 1024 * 1024;
     private const int MaximumImageBytes = 10 * 1024 * 1024;
     private const string SourceName = "Open Library";
+    private static readonly TimeSpan SearchTimeout = TimeSpan.FromSeconds(15);
 
     private readonly HttpClient httpClient = httpClient;
 
@@ -25,6 +26,9 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
     {
         ArgumentNullException.ThrowIfNull(query);
         cancellationToken.ThrowIfCancellationRequested();
+        using var searchCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        searchCancellation.CancelAfter(SearchTimeout);
+        var searchToken = searchCancellation.Token;
 
         try
         {
@@ -34,7 +38,7 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
             {
                 try
                 {
-                    rows.AddRange(await SearchRowsAsync(requestUri, cancellationToken));
+                    rows.AddRange(await SearchRowsAsync(requestUri, searchToken));
                 }
                 catch (Exception exception) when (IsExpectedExternalFailure(exception, cancellationToken))
                 {
@@ -57,12 +61,12 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
             var candidates = new List<BookCoverCandidate>(MaximumCandidates);
             foreach (var row in uniqueRows)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                searchToken.ThrowIfCancellationRequested();
                 var image = await TryDownloadImageAsync(
                     row.CoverId,
                     "M",
                     MaximumPreviewImageBytes,
-                    cancellationToken);
+                    searchToken);
                 if (image is null)
                 {
                     continue;

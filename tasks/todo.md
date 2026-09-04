@@ -6,16 +6,17 @@
 - [x] Specificatie en grenzen vastgelegd.
 - [x] Uitvoeringsplan en taakvolgorde opgesteld.
 - [x] Uitvoeringsplan door gebruiker goedgekeurd op 4 september 2026.
-- [ ] Taak 1: brononafhankelijk zoekcontract en begrensde Open Library-client testgedreven implementeren.
-- [ ] Taak 2: veilige download en JPEG-validatie testgedreven implementeren.
-- [ ] Checkpoint 1: externe-invoergrenzen, architectuur en build controleren.
-- [ ] Taak 3: beheerde `cover.jpg`-opslag en herstelservice testgedreven implementeren.
-- [ ] Taak 4: toegankelijk omslagkeuzevenster implementeren.
-- [ ] Checkpoint 2: zoeken, selecteren en annuleren end-to-end met testdubbels controleren.
-- [ ] Taak 5: Quality Page en actieve bibliotheek koppelen.
-- [ ] Taak 6: zes vertalingen, documentatie en handmatige checklist afronden.
-- [ ] Volledige Debug-tests en build zonder waarschuwingen uitvoeren.
-- [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken.
-- [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
-- [ ] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
+- [x] Taak 1: brononafhankelijk zoekcontract en begrensde Open Library-client testgedreven implementeren.
+- [x] Taak 2: veilige download en JPEG-validatie testgedreven implementeren.
+- [x] Checkpoint 1: externe-invoergrenzen, architectuur en build controleren.
+- [x] Taak 3: beheerde `cover.jpg`-opslag en herstelservice testgedreven implementeren.
+- [x] Taak 4: toegankelijk omslagkeuzevenster implementeren.
+- [x] Checkpoint 2: zoeken, selecteren en annuleren end-to-end met testdubbels controleren.
+- [x] Taak 5: Quality Page en actieve bibliotheek koppelen.
+- [x] Taak 6: zes vertalingen, documentatie en handmatige checklist afronden.
+- [x] Volledige Debug-tests en build zonder waarschuwingen uitvoeren.
+- [x] Actuele Debug-build uitsluitend in `Builds/Debug` maken.
+- [ ] Handmatige checklist door gebruiker laten uitvoeren.
+- [x] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
+- [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
 - [ ] Normale, niet-draft PR openen.

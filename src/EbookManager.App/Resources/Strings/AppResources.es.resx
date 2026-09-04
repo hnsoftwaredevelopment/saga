@@ -663,5 +663,17 @@
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>No se pudieron intercambiar el titulo y el autor. Revise el libro e intentelo de nuevo.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>El titulo y el autor se guardaron, pero no se pudieron actualizar todos los archivos de metadatos o ebooks relacionados.</value></data>
   <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>El titulo y el autor ya no parecen estar intercambiados. Saga ha cargado los datos actuales del libro.</value></data>
+  <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Buscar portada</value></data>
+  <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Buscar una portada</value></data>
+  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga busca en Open Library mediante el título, el autor y el ISBN. Seleccione la portada que desea usar.</value></data>
+  <data name="MetadataQualityUseCover" xml:space="preserve"><value>Usar esta portada</value></data>
+  <data name="MetadataQualityCoverSearchResults" xml:space="preserve"><value>Portadas disponibles</value></data>
+  <data name="MetadataQualityCoverSearchLoading" xml:space="preserve"><value>Buscando portadas…</value></data>
+  <data name="MetadataQualityCoverSearchNoResults" xml:space="preserve"><value>No se encontraron portadas adecuadas para este libro.</value></data>
+  <data name="MetadataQualityCoverSearchFailed" xml:space="preserve"><value>La búsqueda de portadas no está disponible temporalmente. Inténtelo más tarde.</value></data>
+  <data name="MetadataQualityCoverDownloadFailed" xml:space="preserve"><value>No se pudo descargar la portada seleccionada. Elija otra o inténtelo más tarde.</value></data>
+  <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>No se pudo guardar la portada. Compruebe el libro e inténtelo de nuevo.</value></data>
+  <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>La portada se guardó en Saga, pero no se pudieron actualizar todos los archivos de metadatos o ebooks relacionados.</value></data>
+  <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Este libro ya tiene una portada. Saga actualizó los datos actuales del libro.</value></data>
 </root>
 

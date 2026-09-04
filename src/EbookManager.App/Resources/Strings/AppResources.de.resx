@@ -663,5 +663,17 @@
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>Titel und Autor konnten nicht getauscht werden. Pruefen Sie das Buch und versuchen Sie es erneut.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>Titel und Autor wurden gespeichert, aber nicht jede zugehoerige Metadaten- oder E-Book-Datei konnte aktualisiert werden.</value></data>
   <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Titel und Autor scheinen nicht mehr vertauscht zu sein. Saga hat die aktuellen Buchdaten geladen.</value></data>
+  <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Cover suchen</value></data>
+  <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Cover suchen</value></data>
+  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga durchsucht Open Library anhand von Titel, Autor und ISBN. Wählen Sie das gewünschte Cover aus.</value></data>
+  <data name="MetadataQualityUseCover" xml:space="preserve"><value>Dieses Cover verwenden</value></data>
+  <data name="MetadataQualityCoverSearchResults" xml:space="preserve"><value>Verfügbare Cover</value></data>
+  <data name="MetadataQualityCoverSearchLoading" xml:space="preserve"><value>Cover werden gesucht…</value></data>
+  <data name="MetadataQualityCoverSearchNoResults" xml:space="preserve"><value>Für dieses Buch wurden keine geeigneten Cover gefunden.</value></data>
+  <data name="MetadataQualityCoverSearchFailed" xml:space="preserve"><value>Die Coversuche ist vorübergehend nicht verfügbar. Versuchen Sie es später erneut.</value></data>
+  <data name="MetadataQualityCoverDownloadFailed" xml:space="preserve"><value>Das ausgewählte Cover konnte nicht geladen werden. Wählen Sie ein anderes Cover oder versuchen Sie es später erneut.</value></data>
+  <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>Das Cover konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>Das Cover wurde in Saga gespeichert, aber nicht alle zugehörigen Metadaten- oder E-Book-Dateien konnten aktualisiert werden.</value></data>
+  <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Dieses Buch hat bereits ein Cover. Saga hat die aktuellen Buchdaten aktualisiert.</value></data>
 </root>
 

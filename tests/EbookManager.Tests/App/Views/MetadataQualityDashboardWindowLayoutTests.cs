@@ -126,6 +126,47 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
     }
 
     [Fact]
+    public void CoverSearchAction_IsCommandBoundAndKeyboardAccessible()
+    {
+        var document = XDocument.Load(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataQualityDashboardWindow.xaml"));
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+        var button = document
+            .Descendants(presentation + "Button")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "SearchCoverButton");
+
+        RequiredAttribute(button, "Content").Should().Be("{loc:Loc MetadataQualitySearchCover}");
+        RequiredAttribute(button, "Command").Should().Be("{Binding SearchCoverCommand}");
+        RequiredAttribute(button, "Focusable").Should().Be("True");
+        RequiredAttribute(button, "AutomationProperties.Name")
+            .Should().Be("{loc:Loc MetadataQualitySearchCover}");
+        HasVisibilityTrigger(button, "missing-cover").Should().BeTrue();
+    }
+
+    [Fact]
+    public void CoverSearchWindow_ShowsAKeyboardAccessibleWrappingGallery()
+    {
+        var document = XDocument.Load(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataQualityCoverSearchWindow.xaml"));
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+        var list = document.Descendants(presentation + "ListBox")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "CoverCandidates");
+        var useButton = document.Descendants(presentation + "Button")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "UseCoverButton");
+
+        list.Descendants(presentation + "WrapPanel").Should().ContainSingle();
+        RequiredAttribute(list, "SelectedItem").Should().Be("{Binding SelectedCandidate, Mode=TwoWay}");
+        RequiredAttribute(list, "AutomationProperties.Name")
+            .Should().Be("{loc:Loc MetadataQualityCoverSearchResults}");
+        RequiredAttribute(useButton, "IsDefault").Should().Be("True");
+        RequiredAttribute(useButton, "IsEnabled").Should().Be("{Binding CanUseCover}");
+    }
+
+    [Fact]
     public void FooterActions_can_wrap_when_translated_labels_need_more_space()
     {
         var document = XDocument.Load(

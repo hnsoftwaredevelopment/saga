@@ -16,6 +16,7 @@ using EbookManager.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Syncfusion.Licensing;
 using System.Globalization;
+using System.Net.Http;
 using System.Reflection;
 
 namespace EbookManager.App;
@@ -116,7 +117,9 @@ public partial class App : System.Windows.Application
         services.AddSingleton<BookSearchService>();
         services.AddSingleton<DuplicateCandidateService>();
         services.AddSingleton<DuplicateMergeService>();
-        services.AddSingleton<ILibraryFileStore, CurrentLibraryFileStore>();
+        services.AddSingleton<CurrentLibraryFileStore>();
+        services.AddSingleton<ILibraryFileStore>(provider => provider.GetRequiredService<CurrentLibraryFileStore>());
+        services.AddSingleton<IBookCoverStore>(provider => provider.GetRequiredService<CurrentLibraryFileStore>());
         services.AddSingleton<BookFileExportService>();
         services.AddSingleton<IBookFileInteractionService, BookFileInteractionService>();
         services.AddSingleton<CurrentLibraryBookRepository>();
@@ -130,6 +133,9 @@ public partial class App : System.Windows.Application
         services.AddTransient<IMetadataQualityLanguageRepairService, MetadataQualityLanguageRepairService>();
         services.AddTransient<IMetadataQualitySeriesRepairService, MetadataQualitySeriesRepairService>();
         services.AddTransient<IMetadataQualityTitleAuthorRepairService, MetadataQualityTitleAuthorRepairService>();
+        services.AddSingleton(_ => CreateBookCoverHttpClient());
+        services.AddSingleton<IBookCoverSearchService, OpenLibraryBookCoverSearchService>();
+        services.AddTransient<IMetadataQualityCoverRepairService, MetadataQualityCoverRepairService>();
         services.AddSingleton<ImportService>();
         services.AddSingleton<IImportRunner>(provider => provider.GetRequiredService<ImportService>());
         services.AddSingleton<ImportJobViewModel>();
@@ -163,7 +169,9 @@ public partial class App : System.Windows.Application
             provider.GetService<DirectoryScanner>(),
             provider.GetRequiredService<IAppSettingsStore>(),
             provider.GetRequiredService<ILibraryPerformanceReporter>(),
-            provider.GetRequiredService<LocalizationService>().GetString));
+            provider.GetRequiredService<LocalizationService>().GetString,
+            provider.GetRequiredService<IBookCoverSearchService>(),
+            provider.GetRequiredService<IMetadataQualityCoverRepairService>()));
         services.AddTransient<SettingsViewModel>();
         services.AddSingleton<MainWindow>();
 
@@ -173,6 +181,20 @@ public partial class App : System.Windows.Application
                 ValidateOnBuild = true,
                 ValidateScopes = true
             });
+    }
+
+    private static HttpClient CreateBookCoverHttpClient()
+    {
+        var handler = new HttpClientHandler
+        {
+            AllowAutoRedirect = false,
+            AutomaticDecompression = System.Net.DecompressionMethods.GZip |
+                System.Net.DecompressionMethods.Deflate
+        };
+        return new HttpClient(handler)
+        {
+            Timeout = TimeSpan.FromSeconds(15)
+        };
     }
 
     private static void RegisterSyncfusionLicense()

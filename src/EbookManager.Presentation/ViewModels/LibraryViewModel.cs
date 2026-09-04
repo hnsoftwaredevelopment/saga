@@ -43,6 +43,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IMetadataQualityLanguageRepairService? metadataQualityLanguageRepairService;
     private readonly IMetadataQualitySeriesRepairService? metadataQualitySeriesRepairService;
     private readonly IMetadataQualityTitleAuthorRepairService? metadataQualityTitleAuthorRepairService;
+    private readonly IBookCoverSearchService? bookCoverSearchService;
+    private readonly IMetadataQualityCoverRepairService? metadataQualityCoverRepairService;
     private readonly LibraryService? libraryService;
     private readonly CurrentLibrary? currentLibrary;
     private readonly ILibraryDatabaseInitializer? databaseInitializer;
@@ -109,7 +111,9 @@ public sealed partial class LibraryViewModel : ObservableObject
         DirectoryScanner? directoryScanner = null,
         IAppSettingsStore? settingsStore = null,
         ILibraryPerformanceReporter? performanceReporter = null,
-        Func<string, string>? localize = null)
+        Func<string, string>? localize = null,
+        IBookCoverSearchService? bookCoverSearchService = null,
+        IMetadataQualityCoverRepairService? metadataQualityCoverRepairService = null)
     {
         this.bookRepository = bookRepository;
         this.searchService = searchService;
@@ -128,6 +132,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.metadataQualityLanguageRepairService = metadataQualityLanguageRepairService;
         this.metadataQualitySeriesRepairService = metadataQualitySeriesRepairService;
         this.metadataQualityTitleAuthorRepairService = metadataQualityTitleAuthorRepairService;
+        this.bookCoverSearchService = bookCoverSearchService;
+        this.metadataQualityCoverRepairService = metadataQualityCoverRepairService;
         this.libraryService = libraryService;
         this.currentLibrary = currentLibrary;
         this.databaseInitializer = databaseInitializer;
@@ -4068,7 +4074,10 @@ public sealed partial class LibraryViewModel : ObservableObject
                 userInteraction.ShowMetadataQualitySeriesRepairAsync,
                 repairedBook => ApplyPersistedMetadataChanges([repairedBook]),
                 metadataQualityTitleAuthorRepairService,
-                userInteraction.ShowMetadataQualityTitleAuthorRepairAsync),
+                userInteraction.ShowMetadataQualityTitleAuthorRepairAsync,
+                bookCoverSearchService,
+                userInteraction.ShowMetadataQualityCoverSearchAsync,
+                metadataQualityCoverRepairService),
             cancellationToken);
         if (selectedBookId is { } bookId)
         {

@@ -61,7 +61,19 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityTitleAuthorRepairConfirm",
         "MetadataQualityTitleAuthorRepairFailed",
         "MetadataQualityTitleAuthorRepairWriteBackWarning",
-        "MetadataQualityTitleAuthorRepairNotNeeded"
+        "MetadataQualityTitleAuthorRepairNotNeeded",
+        "MetadataQualitySearchCover",
+        "MetadataQualityCoverSearchTitle",
+        "MetadataQualityCoverSearchDescription",
+        "MetadataQualityUseCover",
+        "MetadataQualityCoverSearchResults",
+        "MetadataQualityCoverSearchLoading",
+        "MetadataQualityCoverSearchNoResults",
+        "MetadataQualityCoverSearchFailed",
+        "MetadataQualityCoverDownloadFailed",
+        "MetadataQualityCoverRepairFailed",
+        "MetadataQualityCoverRepairWriteBackWarning",
+        "MetadataQualityCoverRepairNotNeeded"
     ];
 
     [Theory]
