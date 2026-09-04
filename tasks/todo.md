@@ -45,6 +45,6 @@
 - [x] Openstaande reviewpunten rond parallel zoeken en herstellen, echte beelddecodering, veilige opslagpaden en gecontroleerde foutuitkomsten oplossen.
 - [x] BoekenBase als kandidaat voor een latere Nederlandse metadatazoekfunctie vastleggen.
 - [x] Alle gerichte en volledige tests uitvoeren.
-- [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken zodra de actieve Saga-testbuild is afgesloten.
+- [x] Actuele Debug-build uitsluitend in `Builds/Debug` maken zodra de actieve Saga-testbuild is afgesloten.
 - [ ] De aangescherpte omslagzoekroute handmatig controleren.
-- [ ] Correcties committen, pushen en PR #34 bijwerken.
+- [x] Correcties committen, pushen en PR #34 bijwerken.

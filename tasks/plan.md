@@ -189,11 +189,11 @@ Geen blokkerende vragen. Functionele richting, aannames en dit uitvoeringsplan z
 
 ### Taak 10: Correctie op relevantie en veiligheid na praktijktest
 
-- [ ] Valideer de controlewaarde van ISBN-10 en ISBN-13 en gebruik ongeldige veldinhoud nooit voor een ISBN-zoekroute.
-- [ ] Maak de Google Books-vraag veldgericht en toon alleen kandidaten met een exact ISBN of een sterke titel-en-auteurovereenkomst.
-- [ ] Bied de lokale Saga-omslag aan wanneer geen voldoende betrouwbare online kandidaat resteert.
-- [ ] Los de openstaande reviewpunten rond parallel gebruik, beelddecodering, opslagpaden en gecontroleerde hersteluitkomsten op.
-- [ ] Werk gerichte en volledige tests, uitsluitend `Builds/Debug`, documentatiemirror en PR #34 bij.
+- [x] Valideer de controlewaarde van ISBN-10 en ISBN-13 en gebruik ongeldige veldinhoud nooit voor een ISBN-zoekroute.
+- [x] Maak de Google Books-vraag veldgericht en toon alleen kandidaten met een exact ISBN of een sterke titel-en-auteurovereenkomst.
+- [x] Bied de lokale Saga-omslag aan wanneer geen voldoende betrouwbare online kandidaat resteert.
+- [x] Los de openstaande reviewpunten rond parallel gebruik, beelddecodering, opslagpaden en gecontroleerde hersteluitkomsten op.
+- [x] Werk gerichte en volledige tests, uitsluitend `Builds/Debug`, documentatiemirror en PR #34 bij.
 
 ### Vervolg na PR #34
 
