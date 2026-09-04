@@ -61,6 +61,7 @@
   <data name="ResetView" xml:space="preserve"><value>Weergave herstellen</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Weergave herstellen voor: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Omslag</value></data>
+  <data name="ChangeCover" xml:space="preserve"><value>Omslag wijzigen</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Maak een nieuwe bibliotheek</value></data>
   <data name="CreateLibrary" xml:space="preserve"><value>Nieuwe bibliotheek</value></data>
   <data name="Culture" xml:space="preserve"><value>Taal</value></data>
@@ -387,7 +388,7 @@
   <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>De titel en auteur lijken bij dit boek niet meer omgewisseld. Saga heeft de actuele boekgegevens geladen.</value></data>
   <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Omslag zoeken</value></data>
   <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Omslag zoeken</value></data>
-  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga zoekt bij Open Library met de titel, auteur en het ISBN. Kies de omslag die je wilt gebruiken.</value></data>
+  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga zoekt online met de titel, auteur en het ISBN. Kies de omslag die je wilt gebruiken.</value></data>
   <data name="MetadataQualityUseCover" xml:space="preserve"><value>Deze omslag gebruiken</value></data>
   <data name="MetadataQualityCoverSearchResults" xml:space="preserve"><value>Beschikbare omslagen</value></data>
   <data name="MetadataQualityCoverSearchLoading" xml:space="preserve"><value>Omslagen zoeken…</value></data>

@@ -73,7 +73,8 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityCoverDownloadFailed",
         "MetadataQualityCoverRepairFailed",
         "MetadataQualityCoverRepairWriteBackWarning",
-        "MetadataQualityCoverRepairNotNeeded"
+        "MetadataQualityCoverRepairNotNeeded",
+        "ChangeCover"
     ];
 
     [Theory]

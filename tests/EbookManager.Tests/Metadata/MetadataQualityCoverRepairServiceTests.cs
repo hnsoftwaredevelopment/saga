@@ -10,6 +10,47 @@ namespace EbookManager.Tests.Metadata;
 public sealed class MetadataQualityCoverRepairServiceTests
 {
     [Fact]
+    public async Task General_update_replaces_an_existing_cover_and_preserves_edited_metadata()
+    {
+        var original = CreateBook() with
+        {
+            Metadata = CopyMetadata(CreateBook().Metadata, [9, 9]),
+            CoverRelativePath = "books/existing/cover.jpg"
+        };
+        var repository = new InMemoryBookRepository(original);
+        var coverStore = new RecordingCoverStore();
+        var service = CreateUpdateService(repository, coverStore);
+        var edited = original with { Metadata = CopyMetadata(original.Metadata, [1, 2, 3], "Gewijzigd") };
+
+        var result = await service.UpdateAsync(edited, [1, 2, 3], CancellationToken.None);
+
+        result.SaveResult.Status.Should().Be(BookSaveStatus.Succeeded);
+        result.Book!.Metadata.Title.Should().Be("Gewijzigd");
+        result.Book.Metadata.CoverBytes.Should().Equal(1, 2, 3);
+        result.Book.CoverRelativePath.Should().Be($"books/{original.Id:N}/cover.jpg");
+    }
+
+    [Fact]
+    public async Task General_update_restores_the_previous_cover_when_database_save_conflicts()
+    {
+        var original = CreateBook() with
+        {
+            Metadata = CopyMetadata(CreateBook().Metadata, [9, 9]),
+            CoverRelativePath = "books/existing/cover.jpg"
+        };
+        var repository = new InMemoryBookRepository(original) { ThrowConflict = true };
+        var coverStore = new RecordingCoverStore();
+        var service = CreateUpdateService(repository, coverStore);
+
+        var result = await service.UpdateAsync(original, [1, 2, 3], CancellationToken.None);
+
+        result.SaveResult.Status.Should().Be(BookSaveStatus.Conflict);
+        coverStore.SavedBytes.Should().HaveCount(2);
+        coverStore.SavedBytes[0].Should().Equal(1, 2, 3);
+        coverStore.SavedBytes[1].Should().Equal(9, 9);
+    }
+
+    [Fact]
     public async Task Repair_saves_cover_and_preserves_other_book_data()
     {
         var original = CreateBook();
@@ -101,6 +142,14 @@ public sealed class MetadataQualityCoverRepairServiceTests
             new BookService(repository, new NoopLibraryFileStore(), new ThrowingMetadataAdapterResolver()),
             coverStore);
 
+    private static BookCoverUpdateService CreateUpdateService(
+        InMemoryBookRepository repository,
+        IBookCoverStore coverStore) =>
+        new(
+            repository,
+            new BookService(repository, new NoopLibraryFileStore(), new ThrowingMetadataAdapterResolver()),
+            coverStore);
+
     private static Book CreateBook()
     {
         var now = DateTimeOffset.UtcNow;
@@ -123,9 +172,9 @@ public sealed class MetadataQualityCoverRepairServiceTests
             now.AddDays(-1));
     }
 
-    private static BookMetadata CopyMetadata(BookMetadata metadata, byte[] coverBytes) =>
+    private static BookMetadata CopyMetadata(BookMetadata metadata, byte[] coverBytes, string? title = null) =>
         new(
-            metadata.Title,
+            title ?? metadata.Title,
             metadata.Authors,
             metadata.Description,
             metadata.Language,
@@ -141,10 +190,12 @@ public sealed class MetadataQualityCoverRepairServiceTests
     {
         public int SaveCalls { get; private set; }
         public int DeleteCalls { get; private set; }
+        public List<byte[]> SavedBytes { get; } = [];
 
         public Task<string> SaveAsync(Guid bookId, byte[] coverBytes, CancellationToken cancellationToken)
         {
             SaveCalls++;
+            SavedBytes.Add([.. coverBytes]);
             return Task.FromResult($"books/{bookId:N}/cover.jpg");
         }
 

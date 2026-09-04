@@ -480,6 +480,7 @@
   <data name="ResetView" xml:space="preserve"><value>Réinitialiser la vue</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Réinitialiser la vue pour : {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Couverture</value></data>
+  <data name="ChangeCover" xml:space="preserve"><value>Modifier la couverture</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Créer une nouvelle bibliothèque</value></data>
   <data name="File" xml:space="preserve"><value>Fichier</value></data>
   <data name="FilterHelp" xml:space="preserve"><value>Les filtres reposent sur les métadonnées trouvées lors de l’importation.</value></data>
@@ -665,7 +666,7 @@
   <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Le titre et l'auteur ne semblent plus intervertis. Saga a charge les donnees actuelles du livre.</value></data>
   <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Rechercher une couverture</value></data>
   <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Rechercher une couverture</value></data>
-  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga recherche dans Open Library à partir du titre, de l’auteur et de l’ISBN. Sélectionnez la couverture à utiliser.</value></data>
+  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga recherche en ligne à partir du titre, de l’auteur et de l’ISBN. Sélectionnez la couverture à utiliser.</value></data>
   <data name="MetadataQualityUseCover" xml:space="preserve"><value>Utiliser cette couverture</value></data>
   <data name="MetadataQualityCoverSearchResults" xml:space="preserve"><value>Couvertures disponibles</value></data>
   <data name="MetadataQualityCoverSearchLoading" xml:space="preserve"><value>Recherche de couvertures…</value></data>

@@ -98,7 +98,35 @@
                      Foreground="{DynamicResource TextSecondaryBrush}" />
           <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=320}"
                  Stretch="Uniform" />
+          <Image Source="{Binding CoverBytes, Converter={StaticResource ByteArrayToImageSourceConverter}, ConverterParameter=320}"
+                 Stretch="Uniform" />
+          <Button Command="{Binding ChangeCoverCommand}"
+                  Content="{loc:Loc ChangeCover}"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Bottom"
+                  Margin="10"
+                  Padding="12,6"
+                  AutomationProperties.Name="{loc:Loc ChangeCover}" />
         </Grid>
+      </Border>
+
+      <Border Background="#FFF8D7DA"
+              CornerRadius="8"
+              Padding="10"
+              Margin="0,0,0,12">
+        <Border.Style>
+          <Style TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding HasCoverChangeError}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Text="{Binding CoverChangeErrorMessage}"
+                   TextWrapping="Wrap"
+                   Foreground="#FF842029" />
       </Border>
 
       <DockPanel>

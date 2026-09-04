@@ -144,6 +144,7 @@ public partial class App : System.Windows.Application
             ],
             provider.GetRequiredService<SagaGeneratedBookCoverSource>()));
         services.AddTransient<IMetadataQualityCoverRepairService, MetadataQualityCoverRepairService>();
+        services.AddTransient<IBookCoverUpdateService, BookCoverUpdateService>();
         services.AddSingleton<ImportService>();
         services.AddSingleton<IImportRunner>(provider => provider.GetRequiredService<ImportService>());
         services.AddSingleton<ImportJobViewModel>();
@@ -152,7 +153,11 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<BookService>(),
             provider.GetRequiredService<BookFileExportService>(),
             provider.GetRequiredService<IBookFileInteractionService>(),
-            provider.GetRequiredService<ICustomMetadataRepository>()));
+            provider.GetRequiredService<ICustomMetadataRepository>(),
+            provider.GetRequiredService<IBookCoverSearchService>(),
+            provider.GetRequiredService<IUserInteractionService>().ShowMetadataQualityCoverSearchAsync,
+            provider.GetRequiredService<IBookCoverUpdateService>(),
+            provider.GetRequiredService<LocalizationService>().GetString));
         services.AddTransient(provider => new LibraryViewModel(
             provider.GetRequiredService<IBookRepository>(),
             provider.GetRequiredService<BookSearchService>(),
