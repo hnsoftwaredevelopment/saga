@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 33 builds on version `0.1` with an explicit Open Library search and selection workflow for books without a cover, alongside the existing metadata quality repair actions.
+Milestone 33 builds on version `0.1` with an explicit multi-source cover search, a locally generated fallback cover, and cover replacement from both the Quality Page and book details.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -59,7 +59,7 @@ Milestone 33 builds on version `0.1` with an explicit Open Library search and se
 - direct missing- or unknown-language repair from the quality dashboard with a searchable list of valid languages
 - direct missing-series repair with live suggestions while preserving the existing series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
-- explicit missing-cover search with up to twelve validated Open Library choices and safe managed cover storage
+- explicit cover search with up to twelve validated Google Books and Open Library choices, a locally generated fallback, safe managed storage, and replacement from book details
 - delete actions continue removing library records when managed file cleanup reports a warning
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views

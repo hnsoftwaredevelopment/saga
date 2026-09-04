@@ -25,13 +25,14 @@
 
 - [x] Calibre-bronnen, Google Books-toegang en beperkingen van Amazon en bol.com onderzocht.
 - [x] Uitbreiding met Google Books, lokale noodomslag en blijvende detailactie goedgekeurd op 4 september 2026.
-- [ ] Zoekcontract geschikt maken voor meerdere vaste bronnen en brongebonden downloads.
-- [ ] Google Books-feed testgedreven toevoegen en resultaten veilig combineren.
-- [ ] Lokale Saga-omslag genereren wanneer beide online bronnen leeg zijn.
-- [ ] Algemene veilige omslagwijziging voor een geladen boek toevoegen.
-- [ ] `Omslag wijzigen` in het detailscherm toevoegen met bestaand Opslaan/Ongedaan maken-gedrag.
-- [ ] Zes vertalingen, documentatie en handmatige checklist bijwerken.
-- [ ] Volledige tests en Debug-build zonder waarschuwingen uitvoeren.
-- [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken.
-- [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
-- [ ] Zelfreview uitvoeren en PR #34 bijwerken.
+- [x] Zoekcontract geschikt maken voor meerdere vaste bronnen en brongebonden downloads.
+- [x] Google Books-feed testgedreven toevoegen en resultaten veilig combineren.
+- [x] Lokale Saga-omslag genereren wanneer beide online bronnen leeg zijn.
+- [x] Algemene veilige omslagwijziging voor een geladen boek toevoegen.
+- [x] `Omslag wijzigen` in het detailscherm toevoegen met bestaand Opslaan/Ongedaan maken-gedrag.
+- [x] Zes vertalingen, documentatie en handmatige checklist bijwerken.
+- [x] Volledige tests en Debug-build zonder waarschuwingen uitvoeren.
+- [x] Actuele Debug-build uitsluitend in `Builds/Debug` maken.
+- [ ] Uitgebreide handmatige checklist door gebruiker laten uitvoeren.
+- [x] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
+- [x] Zelfreview uitvoeren en PR #34 bijwerken.

@@ -169,22 +169,22 @@ Geen blokkerende vragen. Functionele richting, aannames en dit uitvoeringsplan z
 
 ### Taak 7: Meerdere omslagbronnen
 
-- [ ] Maak kandidaat-ID's brongebonden en ondoorzichtig en routeer downloads alleen naar geregistreerde bronnen.
-- [ ] Voeg de sleutelvrije Google Books-feed als begrensde, fouttolerante compatibiliteitsbron toe.
-- [ ] Voeg Open Library- en Google-resultaten eerlijk samen tot maximaal twaalf kandidaten.
-- [ ] Toon alleen wanneer beide online bronnen leeg zijn één lokaal door Saga gegenereerde omslag met titel en auteur.
+- [x] Maak kandidaat-ID's brongebonden en ondoorzichtig en routeer downloads alleen naar geregistreerde bronnen.
+- [x] Voeg de sleutelvrije Google Books-feed als begrensde, fouttolerante compatibiliteitsbron toe.
+- [x] Voeg Open Library- en Google-resultaten eerlijk samen tot maximaal twaalf kandidaten.
+- [x] Toon alleen wanneer beide online bronnen leeg zijn één lokaal door Saga gegenereerde omslag met titel en auteur.
 
 ### Taak 8: Omslag wijzigen in details
 
-- [ ] Toon voor ieder geladen boek een duidelijke actie `Omslag wijzigen`, ook als al een omslag bestaat.
-- [ ] Zoek met de actuele waarden uit het detailscherm en neem de gekozen omslag zichtbaar maar nog niet definitief over.
-- [ ] Laat het bestaande `Opslaan` omslag en metadata veilig samen bewaren; `Ongedaan maken` herstelt de oorspronkelijke omslag.
-- [ ] Houd de bestaande directe herstelroute op de Quality Page ongewijzigd.
+- [x] Toon voor ieder geladen boek een duidelijke actie `Omslag wijzigen`, ook als al een omslag bestaat.
+- [x] Zoek met de actuele waarden uit het detailscherm en neem de gekozen omslag zichtbaar maar nog niet definitief over.
+- [x] Laat het bestaande `Opslaan` omslag en metadata veilig samen bewaren; `Ongedaan maken` herstelt de oorspronkelijke omslag.
+- [x] Houd de bestaande directe herstelroute op de Quality Page ongewijzigd.
 
 ### Taak 9: Afronding uitbreiding
 
-- [ ] Lever alle nieuwe teksten in zes talen en breid de handmatige checklist uit.
-- [ ] Voer gerichte tests, volledige tests, Debug-build en zelfreview uit.
-- [ ] Maak uitsluitend `Builds/Debug` opnieuw en werk PR #34 bij.
+- [x] Lever alle nieuwe teksten in zes talen en breid de handmatige checklist uit.
+- [x] Voer gerichte tests, volledige tests, Debug-build en zelfreview uit.
+- [x] Maak uitsluitend `Builds/Debug` opnieuw en werk PR #34 bij.
 
 Deze uitbreiding is functioneel goedgekeurd op 4 september 2026.

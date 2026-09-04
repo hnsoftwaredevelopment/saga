@@ -87,10 +87,12 @@ Saga should give users a fast overview of metadata problems in the active librar
 ## Milestone 33: Find and repair a missing cover
 
 - Show `Search for cover` only while the missing-cover issue and one affected book are selected.
-- Search Open Library only after an explicit user action, combining a title-and-author search with an exact ISBN search where available.
+- Search Google Books and Open Library only after an explicit user action, combining current title, author and ISBN metadata where available.
 - Show at most twelve validated, unique candidates with source and dimensions; require the user to select one explicitly.
+- When neither online source returns a usable candidate, offer one locally generated Saga cover with title and author.
 - Let the user choose with mouse, Enter, or double-click and cancel without changing the book.
 - Store the chosen image safely as the managed `cover.jpg`, update cover bytes and relative path, and refresh every visible library surface immediately.
+- Keep `Change cover` available in book details even when a cover already exists; stage the selected cover until the user chooses the normal `Save`, and restore it with `Undo`.
 - Keep external responses bounded and untrusted, use fixed HTTPS hosts, and report no-results, network, validation, and storage failures without metadata loss.
 - Keep the workflow localized in all six supported languages and do not add a package, API key, or database migration.
 
@@ -106,4 +108,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 implements an explicit Open Library cover search for one selected book without a cover: Saga combines ISBN and title/author searches, validates and limits the choices, requires an explicit selection, stores the selected cover safely, and refreshes the dashboard and active library. Its manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Messy-tag repair, a dedicated Quality settings tab, bulk decisions, bulk repair, and heuristic tuning remain follow-up work.
+Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Messy-tag repair, a dedicated Quality settings tab, bulk decisions, bulk repair, and heuristic tuning remain follow-up work.

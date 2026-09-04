@@ -107,7 +107,7 @@ Gerichte tests worden tijdens implementatie met `dotnet test` en een `FullyQuali
 ## Projectstructuur
 
 - `src/EbookManager.Application/Metadata` bevat zoekcontracten en de herstelworkflow.
-- `src/EbookManager.Infrastructure/Metadata` bevat de Open Library-client en afbeeldingsvalidatie.
+- `src/EbookManager.Infrastructure/Metadata` bevat de Open Library- en Google Books-clients en afbeeldingsvalidatie.
 - `src/EbookManager.Infrastructure/Files` bevat veilige beheerde omslagopslag.
 - `src/EbookManager.Presentation/ViewModels` bevat het keuzemodel en de dashboardkoppeling.
 - `src/EbookManager.App/Views` bevat het WPF-keuzevenster.
@@ -132,12 +132,12 @@ Resultaatstatussen zijn expliciete records of enums; verwachte netwerk- en opsla
 ## Teststrategie
 
 - Contracttests voor zoekopbouw, JSON-verwerking, deduplicatie, limieten, annulering en ongeldige antwoorden.
-- Netwerktests gebruiken een gecontroleerde HTTP-handler en benaderen Open Library niet werkelijk.
+- Netwerktests gebruiken een gecontroleerde HTTP-handler en benaderen de online bronnen niet werkelijk.
 - Opslagtests controleren padbeveiliging, tijdelijk schrijven, vervangen en opruimen wanneer de database aantoonbaar niet is bijgewerkt.
 - Servicetests controleren herladen, opnieuw evalueren, behoud van overige metadata en foutstatussen.
 - Viewmodel- en layouttests controleren knopcontext, laden, selectie, annuleren, Enter, dubbelklik, foutmeldingen en lokalisatie.
 - Volledige bestaande tests en een Debug-build moeten groen blijven.
-- Een handmatige checklist controleert de echte Open Library-route met een representatief boek met en zonder ISBN.
+- Een handmatige checklist controleert beide online bronnen, de lokale noodomslag en het wijzigen van een bestaande omslag met een representatief boek met en zonder ISBN.
 - Aanvullende tests controleren broncombinatie, Google-feedverwerking, lokale generatie en het vervangen, annuleren en ongedaan maken van een bestaande omslag in het detailscherm.
 
 ## Grenzen
