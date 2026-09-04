@@ -1,20 +1,18 @@
-# Milestone 29 Todo
+# Milestone 32 Todo
 
-- [x] Functionele richting goedgekeurd op 1 september 2026.
-- [x] Specificatie en acceptatiecriteria goedgekeurd op 1 september 2026.
-- [x] Uitvoeringsplan en taakvolgorde goedgekeurd op 1 september 2026.
-- [x] Taak 1: herbruikbare kwaliteitsevaluatie implementeren.
-- [x] Taak 2: veilige applicatieservice voor auteursherstel implementeren.
-- [x] Checkpoint 1: 48 fundamenttests en Release-build groen; zelfreview afgerond met 0 waarschuwingen.
-- [x] Taak 3: auteursinvoer en suggesties testgedreven modelleren.
-- [x] Taak 4: compact herstelvenster en interactiecontract toevoegen.
-- [x] Checkpoint 2: auteursuggesties, vrije invoer en annuleren handmatig goedgekeurd op 1 september 2026.
-- [x] Taak 5: dashboardcommando en gerichte herevaluatie implementeren.
-- [x] Taak 6: actieve bibliotheek en WPF-dashboard verbinden.
-- [x] Checkpoint 3: end-to-end auteursherstel handmatig goedgekeurd op 1 september 2026.
-- [x] Taak 7: lokalisatie en geautomatiseerde toegankelijkheidscontrole afgerond.
-- [x] Taak 8: documentatie, handmatige checklist en eindcontrole afgerond.
-- [x] Volledige Release-tests (546 geslaagd) en build zonder waarschuwingen uitgevoerd.
-- [x] Alle gewijzigde Markdown-documentatie naar Obsidian gespiegeld en gecontroleerd.
-- [x] Zelfreview uitgevoerd en normale, niet-draft PR #28 geopend.
-- [x] De vier opmerkingen uit de CodeRabbit-review van PR #28 verwerkt en opnieuw gevalideerd.
+- [x] Functionele richting goedgekeurd op 3 september 2026.
+- [x] Specificatie en grenzen vastgelegd.
+- [x] Uitvoeringsplan en taakvolgorde door gebruiker bevestigd op 3 september 2026.
+- [x] Taak 1: veilige omwisselservice testgedreven implementeren (7 gerichte tests groen).
+- [x] Taak 2: bevestigingsmodel en WPF-venster toevoegen.
+- [x] Checkpoint 1: 12 gerichte tests en Release-build zonder waarschuwingen groen.
+- [x] Taak 3: Quality Page en actieve bibliotheek gekoppeld (123 metadata-kwaliteitstests groen).
+- [x] Taak 4: lokalisatie, documentatie en handmatige checklist afgerond.
+- [x] Volledige Debug-tests (605 geslaagd, 0 overgeslagen) en build zonder waarschuwingen uitgevoerd.
+- [x] Actuele Debug-build `2026.9.3.46` uitsluitend in `Builds/Debug` gemaakt.
+- [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld.
+- [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitgevoerd.
+- [x] Normale, niet-draft PR #33 geopend.
+- [x] Handmatige checklist op 4 september 2026 door de gebruiker afgerond; geen functionele fouten gevonden.
+- [x] Praktijkbevinding vastgelegd: veel mogelijke titel-/auteurwissels zijn correct en worden veilig met `Dit is correct` afgehandeld.
+- [x] Vervolgvoorstel vastgelegd: een eigen tabblad `Kwaliteit` in Instellingen en later bulkgewijs `Dit is correct`.

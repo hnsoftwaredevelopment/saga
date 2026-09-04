@@ -52,7 +52,16 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualitySeriesRepairSave",
         "MetadataQualitySeriesRepairFailed",
         "MetadataQualitySeriesRepairWriteBackWarning",
-        "MetadataQualitySeriesRepairNotNeeded"
+        "MetadataQualitySeriesRepairNotNeeded",
+        "MetadataQualitySwapTitleAuthor",
+        "MetadataQualityTitleAuthorRepairTitle",
+        "MetadataQualityTitleAuthorRepairDescription",
+        "MetadataQualityTitleAuthorRepairCurrent",
+        "MetadataQualityTitleAuthorRepairAfter",
+        "MetadataQualityTitleAuthorRepairConfirm",
+        "MetadataQualityTitleAuthorRepairFailed",
+        "MetadataQualityTitleAuthorRepairWriteBackWarning",
+        "MetadataQualityTitleAuthorRepairNotNeeded"
     ];
 
     [Theory]

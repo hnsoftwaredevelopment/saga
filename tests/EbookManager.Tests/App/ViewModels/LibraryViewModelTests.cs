@@ -565,6 +565,39 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_title_author_repair_updates_the_active_library_and_author_filters()
+    {
+        var swapped = CreateBook(
+            "Jan Jansen",
+            ["De verdwenen stad"],
+            language: "nl",
+            coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityTitleAuthorRepairResult = true
+        };
+        var viewModel = CreateViewModel(
+            [swapped],
+            interaction,
+            currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+        dashboard.SelectedBook = dashboard.SelectedIssue.Rows.Single();
+
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityTitleAuthorRepair.Should().NotBeNull();
+        var updated = viewModel.VisibleBooks.Single(row => row.Id == swapped.Id);
+        updated.Title.Should().Be("De verdwenen stad");
+        updated.Authors.Should().Be("Jan Jansen");
+        viewModel.AuthorFilters.Should().ContainSingle(filter => filter.Name == "Jan Jansen");
+        viewModel.AuthorFilters.Should().NotContain(filter => filter.Name == "De verdwenen stad");
+    }
+
+    [Fact]
     public async Task Show_metadata_quality_exclusions_is_disabled_without_active_library()
     {
         var interaction = new ScriptedUserInteractionService();
@@ -3409,6 +3442,7 @@ public sealed class LibraryViewModelTests
         IMetadataQualityAuthorRepairService? metadataQualityAuthorRepairService = null,
         IMetadataQualityLanguageRepairService? metadataQualityLanguageRepairService = null,
         IMetadataQualitySeriesRepairService? metadataQualitySeriesRepairService = null,
+        IMetadataQualityTitleAuthorRepairService? metadataQualityTitleAuthorRepairService = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null)
@@ -3421,6 +3455,7 @@ public sealed class LibraryViewModelTests
         metadataQualityAuthorRepairService ??= new MetadataQualityAuthorRepairService(repository, bookService);
         metadataQualityLanguageRepairService ??= new MetadataQualityLanguageRepairService(repository, bookService);
         metadataQualitySeriesRepairService ??= new MetadataQualitySeriesRepairService(repository, bookService);
+        metadataQualityTitleAuthorRepairService ??= new MetadataQualityTitleAuthorRepairService(repository, bookService);
         details ??= new BookDetailsViewModel(bookService);
         return new LibraryViewModel(
             repository,
@@ -3441,6 +3476,7 @@ public sealed class LibraryViewModelTests
             metadataQualityAuthorRepairService: metadataQualityAuthorRepairService,
             metadataQualityLanguageRepairService: metadataQualityLanguageRepairService,
             metadataQualitySeriesRepairService: metadataQualitySeriesRepairService,
+            metadataQualityTitleAuthorRepairService: metadataQualityTitleAuthorRepairService,
             performanceReporter: performanceReporter,
             localize: localize);
     }
@@ -4238,6 +4274,7 @@ public sealed class LibraryViewModelTests
         public string? MetadataQualityLanguageRepairCode { get; init; }
         public bool MetadataQualitySeriesRepairResult { get; init; }
         public string? MetadataQualitySeriesRepairSeries { get; init; }
+        public bool MetadataQualityTitleAuthorRepairResult { get; init; }
         public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
         public string? LastMessageTitle { get; private set; }
         public string? LastMessageText { get; private set; }
@@ -4254,6 +4291,7 @@ public sealed class LibraryViewModelTests
         public MetadataQualityAuthorRepairViewModel? MetadataQualityAuthorRepair { get; private set; }
         public MetadataQualityLanguageRepairViewModel? MetadataQualityLanguageRepair { get; private set; }
         public MetadataQualitySeriesRepairViewModel? MetadataQualitySeriesRepair { get; private set; }
+        public MetadataQualityTitleAuthorRepairViewModel? MetadataQualityTitleAuthorRepair { get; private set; }
 
         public Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<string>>(RecordPickBookFiles());
@@ -4381,6 +4419,14 @@ public sealed class LibraryViewModelTests
             }
 
             return Task.FromResult(MetadataQualitySeriesRepairResult);
+        }
+
+        public Task<bool> ShowMetadataQualityTitleAuthorRepairAsync(
+            MetadataQualityTitleAuthorRepairViewModel repair,
+            CancellationToken cancellationToken)
+        {
+            MetadataQualityTitleAuthorRepair = repair;
+            return Task.FromResult(MetadataQualityTitleAuthorRepairResult);
         }
 
         public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(

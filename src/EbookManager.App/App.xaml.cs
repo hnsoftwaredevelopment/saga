@@ -129,6 +129,7 @@ public partial class App : System.Windows.Application
         services.AddTransient<IMetadataQualityAuthorRepairService, MetadataQualityAuthorRepairService>();
         services.AddTransient<IMetadataQualityLanguageRepairService, MetadataQualityLanguageRepairService>();
         services.AddTransient<IMetadataQualitySeriesRepairService, MetadataQualitySeriesRepairService>();
+        services.AddTransient<IMetadataQualityTitleAuthorRepairService, MetadataQualityTitleAuthorRepairService>();
         services.AddSingleton<ImportService>();
         services.AddSingleton<IImportRunner>(provider => provider.GetRequiredService<ImportService>());
         services.AddSingleton<ImportJobViewModel>();
@@ -155,6 +156,7 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<IMetadataQualityAuthorRepairService>(),
             provider.GetRequiredService<IMetadataQualityLanguageRepairService>(),
             provider.GetRequiredService<IMetadataQualitySeriesRepairService>(),
+            provider.GetRequiredService<IMetadataQualityTitleAuthorRepairService>(),
             provider.GetService<LibraryService>(),
             provider.GetService<CurrentLibrary>(),
             provider.GetService<ILibraryDatabaseInitializer>(),

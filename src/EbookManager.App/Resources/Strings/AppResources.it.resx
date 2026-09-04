@@ -654,5 +654,14 @@
   <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare la serie. Controlla il libro e riprova.</value></data>
   <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>La serie è stata salvata, ma non è stato possibile aggiornare tutti i file di metadati o ebook collegati.</value></data>
   <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Il nome della serie non manca più per questo libro. Saga ha caricato i dati aggiornati del libro.</value></data>
+  <data name="MetadataQualitySwapTitleAuthor" xml:space="preserve"><value>Scambia titolo e autore</value></data>
+  <data name="MetadataQualityTitleAuthorRepairTitle" xml:space="preserve"><value>Scambia titolo e autore</value></data>
+  <data name="MetadataQualityTitleAuthorRepairDescription" xml:space="preserve"><value>Controlla i valori attuali e nuovi. Saga modifichera solo il titolo e l'autore.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairCurrent" xml:space="preserve"><value>Attuale</value></data>
+  <data name="MetadataQualityTitleAuthorRepairAfter" xml:space="preserve"><value>Dopo lo scambio</value></data>
+  <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Scambia</value></data>
+  <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>Non e stato possibile scambiare il titolo e l'autore. Controlla il libro e riprova.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>Il titolo e l'autore sono stati salvati, ma non e stato possibile aggiornare tutti i file di metadati o ebook correlati.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Il titolo e l'autore non sembrano piu scambiati. Saga ha caricato i dati aggiornati del libro.</value></data>
 </root>
 
