@@ -275,7 +275,7 @@ public sealed partial class BookDetailsViewModel(
 
     private async Task ChangeCoverAsync(CancellationToken cancellationToken)
     {
-        if (originalBook is null || coverSearchService is null || showCoverSearch is null)
+        if (originalBook is null || coverSearchService is null || showCoverSearch is null || coverUpdateService is null)
         {
             return;
         }
@@ -501,7 +501,8 @@ public sealed partial class BookDetailsViewModel(
 
     private bool CanEdit() => originalBook is not null;
 
-    private bool CanChangeCover() => CanEdit() && coverSearchService is not null && showCoverSearch is not null;
+    private bool CanChangeCover() =>
+        CanEdit() && coverSearchService is not null && showCoverSearch is not null && coverUpdateService is not null;
 
     private void NotifyCommandState()
     {

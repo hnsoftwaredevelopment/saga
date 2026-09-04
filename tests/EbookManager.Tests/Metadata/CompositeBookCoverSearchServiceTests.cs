@@ -35,6 +35,21 @@ public sealed class CompositeBookCoverSearchServiceTests
     }
 
     [Fact]
+    public async Task Search_rejects_unrelated_online_candidates_and_uses_the_local_fallback()
+    {
+        var unrelated = new BookCoverCandidate(
+            "online", "1", "Online", "Boekblad", ["Redactie"], [0xFF, 0xD8], 100, 150);
+        var fallback = new StubSource("generated", Candidates("generated", 1));
+        var service = new CompositeBookCoverSearchService([new StubSource("online", [unrelated])], fallback);
+
+        var result = await service.SearchAsync(
+            new BookCoverSearchQuery("Ademloos - Sssst.... Luister", ["Huub Hovens"], null),
+            CancellationToken.None);
+
+        result.Candidates.Should().ContainSingle().Which.SourceKey.Should().Be("generated");
+    }
+
+    [Fact]
     public async Task Search_keeps_successful_source_when_another_source_fails()
     {
         var expected = Candidates("working", 1)[0];

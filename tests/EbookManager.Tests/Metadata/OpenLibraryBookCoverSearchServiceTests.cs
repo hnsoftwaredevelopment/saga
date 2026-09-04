@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using EbookManager.Application.Metadata;
 using EbookManager.Infrastructure.Metadata;
+using EbookManager.Tests.TestSupport;
 using FluentAssertions;
 
 namespace EbookManager.Tests.Metadata;
@@ -17,9 +18,9 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
         {
             requests.Add(request.RequestUri!);
             var query = request.RequestUri!.Query;
-            if (request.RequestUri.Host == "openlibrary.org" && query.Contains("isbn=9789026356600", StringComparison.Ordinal))
+            if (request.RequestUri.Host == "openlibrary.org" && query.Contains("isbn=9789026356605", StringComparison.Ordinal))
             {
-                return JsonResponse("""{"docs":[{"cover_i":20,"title":"Exact","author_name":["Auteur"]},{"cover_i":10,"title":"Dubbel","author_name":["Auteur"]}]}""");
+                return JsonResponse("""{"docs":[{"cover_i":20,"title":"Exact","author_name":["Auteur"],"isbn":["9789026356605"]},{"cover_i":10,"title":"Dubbel","author_name":["Auteur"]}]}""");
             }
 
             if (request.RequestUri.Host == "openlibrary.org")
@@ -30,21 +31,21 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
             var id = long.Parse(request.RequestUri.Segments[^1].Split('-')[0]);
             return JpegResponse(CreateJpeg(width: (int)id * 10, height: (int)id * 20));
         }));
-        var service = new OpenLibraryBookCoverSearchService(client);
+        var service = CreateService(client);
 
         var result = await service.SearchAsync(
-            new BookCoverSearchQuery("De titel", ["De Auteur"], "9789026356600"),
+            new BookCoverSearchQuery("De titel", ["De Auteur"], "9789026356605"),
             CancellationToken.None);
 
         result.Status.Should().Be(BookCoverSearchStatus.Succeeded);
-        result.Candidates.Select(candidate => candidate.CandidateId).Should().Equal("30", "20", "10");
+        result.Candidates.Select(candidate => candidate.CandidateId).Should().Equal("20", "10");
         result.Candidates.Should().OnlyHaveUniqueItems(candidate => candidate.CandidateId);
         result.Candidates.Should().OnlyContain(candidate => candidate.SourceKey == OpenLibraryBookCoverSearchService.Key);
         result.Candidates[0].Source.Should().Be("Open Library");
         result.Candidates[0].PreviewBytes.Should().NotBeEmpty();
         requests.Should().Contain(uri => uri.Query.Contains("title=De%20titel", StringComparison.Ordinal));
         requests.Should().Contain(uri => uri.Query.Contains("author=De%20Auteur", StringComparison.Ordinal));
-        requests.Should().Contain(uri => uri.Query.Contains("isbn=9789026356600", StringComparison.Ordinal));
+        requests.Should().Contain(uri => uri.Query.Contains("isbn=9789026356605", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -60,7 +61,7 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
                         Headers = { ContentType = new MediaTypeHeaderValue("image/jpeg") }
                     }
                 }));
-        var service = new OpenLibraryBookCoverSearchService(client);
+        var service = CreateService(client);
 
         var result = await service.SearchAsync(
             new BookCoverSearchQuery("Titel", ["Auteur"], null),
@@ -79,7 +80,7 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
             response.Content.Headers.ContentLength = 1024 * 1024 + 1;
             return response;
         }));
-        var service = new OpenLibraryBookCoverSearchService(client);
+        var service = CreateService(client);
 
         var result = await service.SearchAsync(
             new BookCoverSearchQuery("Titel", ["Auteur"], null),
@@ -93,7 +94,7 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
     public async Task Download_rejects_an_untrusted_candidate_identifier()
     {
         using var client = new HttpClient(new StubHttpMessageHandler(_ => throw new InvalidOperationException("HTTP should not be called.")));
-        var service = new OpenLibraryBookCoverSearchService(client);
+        var service = CreateService(client);
 
         var result = await service.DownloadAsync("https://localhost/private", CancellationToken.None);
 
@@ -108,7 +109,7 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
             request.RequestUri!.AbsoluteUri.Should().Be("https://covers.openlibrary.org/b/id/123-L.jpg?default=false");
             return JpegResponse(CreateJpeg(600, 900));
         }));
-        var service = new OpenLibraryBookCoverSearchService(client);
+        var service = CreateService(client);
 
         var result = await service.DownloadAsync("123", CancellationToken.None);
 
@@ -123,7 +124,7 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
     {
         using var client = new HttpClient(new StubHttpMessageHandler(_ =>
             JpegResponse(CreateJpeg(65_535, 65_535))));
-        var service = new OpenLibraryBookCoverSearchService(client);
+        var service = CreateService(client);
 
         var result = await service.DownloadAsync("123", CancellationToken.None);
 
@@ -140,7 +141,7 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
             userAgent = request.Headers.UserAgent.ToString();
             return JsonResponse("""{"docs":[]}""");
         }));
-        var service = new OpenLibraryBookCoverSearchService(client);
+        var service = CreateService(client);
 
         await service.SearchAsync(
             new BookCoverSearchQuery("Titel", ["Auteur"], null),
@@ -158,24 +159,44 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
         {
             requestedUris.Add(request.RequestUri!);
             return request.RequestUri!.Host == "openlibrary.org"
-                ? JsonResponse("""{"docs":[{"cover_i":77,"title":"Found by ISBN"}]}""")
+                ? JsonResponse("""{"docs":[{"cover_i":77,"title":"Found by ISBN","isbn":["9789026356605"]}]}""")
                 : JpegResponse(CreateJpeg(300, 450));
         }));
-        var service = new OpenLibraryBookCoverSearchService(client);
+        var service = CreateService(client);
 
         var result = await service.SearchAsync(
-            new BookCoverSearchQuery(string.Empty, [], "9789026356600"),
+            new BookCoverSearchQuery(string.Empty, [], "9789026356605"),
             CancellationToken.None);
 
         result.Status.Should().Be(BookCoverSearchStatus.Succeeded);
         requestedUris.Count(uri => uri.Host == "openlibrary.org").Should().Be(1);
-        requestedUris.Should().Contain(uri => uri.Query.Contains("isbn=9789026356600", StringComparison.Ordinal));
+        requestedUris.Should().Contain(uri => uri.Query.Contains("isbn=9789026356605", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Search_does_not_send_an_invalid_isbn_to_open_library()
+    {
+        var requestedUris = new List<Uri>();
+        using var client = new HttpClient(new StubHttpMessageHandler(request =>
+        {
+            requestedUris.Add(request.RequestUri!);
+            return JsonResponse("""{"docs":[]}""");
+        }));
+        var service = CreateService(client);
+
+        await service.SearchAsync(new("Titel", ["Auteur"], "12345"), CancellationToken.None);
+
+        requestedUris.Should().ContainSingle();
+        requestedUris[0].Query.Should().NotContainEquivalentOf("isbn=");
     }
 
     private static HttpResponseMessage JsonResponse(string json) => new(HttpStatusCode.OK)
     {
         Content = new StringContent(json, Encoding.UTF8, "application/json")
     };
+
+    private static OpenLibraryBookCoverSearchService CreateService(HttpClient client) =>
+        new(client, new TestBookCoverImageValidator());
 
     private static HttpResponseMessage JpegResponse(byte[] bytes) => new(HttpStatusCode.OK)
     {

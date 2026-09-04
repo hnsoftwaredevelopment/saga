@@ -36,6 +36,7 @@ public sealed class MetadataQualityCoverRepairService(
         }
 
         cancellationToken.ThrowIfCancellationRequested();
+        using var operation = await BookCoverOperationLock.AcquireAsync(bookId, cancellationToken);
         var currentBook = await bookRepository.GetAsync(bookId, cancellationToken);
         if (currentBook is null)
         {

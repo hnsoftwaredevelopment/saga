@@ -34,7 +34,7 @@ Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe`. Voor de 
 
 ## Netwerk- en gegevensveiligheid
 
-- [ ] Verbreek tijdelijk de internetverbinding, start een zoekactie en controleer dat binnen redelijke tijd de lokaal gemaakte Saga-omslag beschikbaar komt.
+- [ ] Verbreek tijdelijk de internetverbinding, start een zoekactie en controleer dat binnen 15 seconden de lokaal gemaakte Saga-omslag beschikbaar komt, ook wanneer zoeken, ophalen van een miniatuur of beeldvalidatie mislukt; controleer dat er vóór je eigen bevestiging geen gegevens wijzigen.
 - [ ] Annuleer deze keuze en controleer dat het boek onder `Geen omslag` blijft staan en dat metadata en bestanden niet zijn gewijzigd.
 - [ ] Herstel de verbinding en controleer dat een nieuwe zoekactie normaal kan slagen.
 - [ ] Controleer na een geslaagde keuze dat `books\<boek-id>\cover.jpg` in de actieve bibliotheek bestaat.

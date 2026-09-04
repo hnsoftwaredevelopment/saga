@@ -671,7 +671,7 @@
   <data name="MetadataQualityCoverSearchResults" xml:space="preserve"><value>Copertine disponibili</value></data>
   <data name="MetadataQualityCoverSearchLoading" xml:space="preserve"><value>Ricerca delle copertine…</value></data>
   <data name="MetadataQualityCoverSearchNoResults" xml:space="preserve"><value>Non sono state trovate copertine adatte per questo libro.</value></data>
-  <data name="MetadataQualityCoverSearchFailed" xml:space="preserve"><value>La ricerca delle copertine non è temporaneamente disponibile. Riprova più tardi.</value></data>
+  <data name="MetadataQualityCoverSearchFailed" xml:space="preserve"><value>La ricerca delle copertine è temporaneamente non disponibile. Riprova più tardi.</value></data>
   <data name="MetadataQualityCoverDownloadFailed" xml:space="preserve"><value>Non è stato possibile scaricare la copertina selezionata. Scegline un’altra o riprova più tardi.</value></data>
   <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare la copertina. Controlla il libro e riprova.</value></data>
   <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>La copertina è stata salvata in Saga, ma non è stato possibile aggiornare tutti i relativi file di metadati o ebook.</value></data>

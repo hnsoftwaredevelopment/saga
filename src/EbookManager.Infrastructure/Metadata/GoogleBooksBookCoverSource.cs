@@ -5,7 +5,9 @@ using EbookManager.Application.Metadata;
 
 namespace EbookManager.Infrastructure.Metadata;
 
-public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCoverSource
+public sealed class GoogleBooksBookCoverSource(
+    HttpClient httpClient,
+    IBookCoverImageValidator imageValidator) : IBookCoverSource
 {
     public const string Key = "google-books";
     private const string SourceName = "Google Books";
@@ -19,6 +21,7 @@ public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCov
     private static readonly XNamespace Atom = "http://www.w3.org/2005/Atom";
     private static readonly XNamespace DublinCore = "http://purl.org/dc/terms";
     private readonly HttpClient httpClient = httpClient;
+    private readonly IBookCoverImageValidator imageValidator = imageValidator;
 
     public string SourceKey => Key;
 
@@ -45,7 +48,14 @@ public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCov
                 }
             }
 
-            var uniqueRows = rows.DistinctBy(row => row.Id).Take(24).ToArray();
+            var uniqueRows = rows
+                .Select(row => (Row: row, Score: BookCoverCandidateMatcher.Score(query, ToMetadataCandidate(row))))
+                .Where(value => value.Score > 0)
+                .OrderByDescending(value => value.Score)
+                .Select(value => value.Row)
+                .DistinctBy(row => row.Id)
+                .Take(24)
+                .ToArray();
             if (uniqueRows.Length == 0)
             {
                 return new(failed ? BookCoverSearchStatus.Failed : BookCoverSearchStatus.NoResults, []);
@@ -68,7 +78,8 @@ public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCov
                     row.Authors,
                     preview.Value.Bytes,
                     preview.Value.Width,
-                    preview.Value.Height));
+                    preview.Value.Height,
+                    row.Isbns));
                 if (candidates.Count == MaximumCandidates)
                 {
                     break;
@@ -117,18 +128,20 @@ public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCov
 
     private static IEnumerable<Uri> CreateSearchUris(BookCoverSearchQuery query)
     {
-        if (!string.IsNullOrWhiteSpace(query.Isbn))
+        if (IsbnValidator.TryNormalize(query.Isbn, out var isbn))
         {
-            yield return FeedUri("isbn:" + query.Isbn.Trim());
+            yield return FeedUri("isbn:" + isbn);
         }
 
-        var terms = new[] { query.Title?.Trim() }
-            .Concat(query.Authors.Where(author => !string.IsNullOrWhiteSpace(author)).Select(author => author.Trim()))
-            .Where(value => !string.IsNullOrWhiteSpace(value));
-        var combined = string.Join(' ', terms);
-        if (!string.IsNullOrWhiteSpace(combined))
+        var titleTerms = BookCoverCandidateMatcher.Tokens(query.Title)
+            .Select(term => "intitle:" + term);
+        var authorTerms = BookCoverCandidateMatcher.Tokens(
+                query.Authors.FirstOrDefault(author => !string.IsNullOrWhiteSpace(author)))
+            .Select(term => "inauthor:" + term);
+        var fieldedQuery = string.Join(' ', titleTerms.Concat(authorTerms));
+        if (!string.IsNullOrWhiteSpace(fieldedQuery))
         {
-            yield return FeedUri(combined);
+            yield return FeedUri(fieldedQuery);
         }
     }
 
@@ -178,7 +191,12 @@ public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCov
             .Select(value => value.Value.Trim())
             .Where(value => !string.IsNullOrWhiteSpace(value))
             .ToArray();
-        return new(id!, title, authors);
+        var isbns = entry.Elements(DublinCore + "identifier")
+            .Select(value => value.Value.Trim())
+            .Select(value => value.StartsWith("ISBN:", StringComparison.OrdinalIgnoreCase) ? value[5..].Trim() : value)
+            .Where(value => IsbnValidator.TryNormalize(value, out _))
+            .ToArray();
+        return new(id!, title, authors, isbns);
     }
 
     private async Task<(byte[] Bytes, int Width, int Height)?> TryDownloadImageAsync(
@@ -206,10 +224,9 @@ public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCov
         }
 
         var bytes = await ReadLimitedAsync(response.Content, maximumBytes, cancellationToken);
-        if (!JpegDimensions.TryRead(bytes, out var width, out var height) ||
-            width < MinimumDimension || height < MinimumDimension ||
-            width > MaximumDimension || height > MaximumDimension ||
-            (long)width * height > MaximumPixelCount)
+        if (!HasSafeDimensions(bytes) ||
+            !imageValidator.TryValidateJpeg(bytes, out var width, out var height) ||
+            !DimensionsAreSafe(width, height))
         {
             return null;
         }
@@ -220,6 +237,17 @@ public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCov
     private static bool IsValidBookId(string? id) =>
         !string.IsNullOrWhiteSpace(id) && id.Length <= 64 &&
         id.All(character => char.IsAsciiLetterOrDigit(character) || character is '-' or '_');
+
+    private static bool HasSafeDimensions(byte[] bytes) =>
+        JpegHeader.TryReadDimensions(bytes, out var width, out var height) && DimensionsAreSafe(width, height);
+
+    private static bool DimensionsAreSafe(int width, int height) =>
+        width >= MinimumDimension && height >= MinimumDimension &&
+        width <= MaximumDimension && height <= MaximumDimension &&
+        (long)width * height <= MaximumPixelCount;
+
+    private static BookCoverCandidate ToMetadataCandidate(SearchRow row) =>
+        new(Key, row.Id, SourceName, row.Title, row.Authors, [], 1, 1, row.Isbns);
 
     private static async Task<byte[]> ReadLimitedAsync(HttpContent content, int maximumBytes, CancellationToken cancellationToken)
     {
@@ -255,5 +283,9 @@ public sealed class GoogleBooksBookCoverSource(HttpClient httpClient) : IBookCov
     private static void AddUserAgent(HttpRequestMessage request) =>
         request.Headers.UserAgent.ParseAdd("Saga/0.1 (+https://github.com/hnsoftwaredevelopment/saga)");
 
-    private sealed record SearchRow(string Id, string Title, IReadOnlyList<string> Authors);
+    private sealed record SearchRow(
+        string Id,
+        string Title,
+        IReadOnlyList<string> Authors,
+        IReadOnlyList<string> Isbns);
 }

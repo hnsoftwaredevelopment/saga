@@ -51,6 +51,58 @@ public sealed class MetadataQualityCoverRepairServiceTests
     }
 
     [Fact]
+    public async Task General_update_returns_a_controlled_failure_when_loading_the_book_fails()
+    {
+        var original = CreateBook();
+        var repository = new InMemoryBookRepository(original) { ThrowOnGetCall = 1 };
+        var coverStore = new RecordingCoverStore();
+        var service = CreateUpdateService(repository, coverStore);
+
+        var result = await service.UpdateAsync(original, [1, 2, 3], CancellationToken.None);
+
+        result.SaveResult.Status.Should().Be(BookSaveStatus.Failed);
+        result.SaveResult.Message.Should().Contain("read failed");
+        coverStore.SaveCalls.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task General_update_reports_when_the_previous_cover_cannot_be_restored()
+    {
+        var original = CreateBook() with
+        {
+            Metadata = CopyMetadata(CreateBook().Metadata, [9, 9]),
+            CoverRelativePath = "books/existing/cover.jpg"
+        };
+        var repository = new InMemoryBookRepository(original) { ThrowConflict = true };
+        var coverStore = new RecordingCoverStore { ThrowOnSaveCall = 2 };
+        var service = CreateUpdateService(repository, coverStore);
+
+        var result = await service.UpdateAsync(original, [1, 2, 3], CancellationToken.None);
+
+        result.SaveResult.Status.Should().Be(BookSaveStatus.Conflict);
+        result.SaveResult.Message.Should().Contain("previous cover could not be restored");
+    }
+
+    [Fact]
+    public async Task General_update_keeps_the_new_cover_when_verification_reload_fails()
+    {
+        var original = CreateBook() with
+        {
+            Metadata = CopyMetadata(CreateBook().Metadata, [9, 9]),
+            CoverRelativePath = "books/existing/cover.jpg"
+        };
+        var repository = new InMemoryBookRepository(original) { ThrowOnGetCall = 2 };
+        var coverStore = new RecordingCoverStore();
+        var service = CreateUpdateService(repository, coverStore);
+
+        var result = await service.UpdateAsync(original, [1, 2, 3], CancellationToken.None);
+
+        result.SaveResult.Status.Should().Be(BookSaveStatus.Failed);
+        result.SaveResult.Message.Should().Contain("retained");
+        coverStore.SavedBytes.Should().ContainSingle().Which.Should().Equal(1, 2, 3);
+    }
+
+    [Fact]
     public async Task Repair_saves_cover_and_preserves_other_book_data()
     {
         var original = CreateBook();
@@ -191,10 +243,16 @@ public sealed class MetadataQualityCoverRepairServiceTests
         public int SaveCalls { get; private set; }
         public int DeleteCalls { get; private set; }
         public List<byte[]> SavedBytes { get; } = [];
+        public int? ThrowOnSaveCall { get; init; }
 
         public Task<string> SaveAsync(Guid bookId, byte[] coverBytes, CancellationToken cancellationToken)
         {
             SaveCalls++;
+            if (SaveCalls == ThrowOnSaveCall)
+            {
+                throw new IOException("restore failed");
+            }
+
             SavedBytes.Add([.. coverBytes]);
             return Task.FromResult($"books/{bookId:N}/cover.jpg");
         }
@@ -213,9 +271,19 @@ public sealed class MetadataQualityCoverRepairServiceTests
         public bool ThrowConflict { get; init; }
         public bool CancelWhenUpdating { get; init; }
         public bool ThrowWhenListingFiles { get; init; }
+        public int? ThrowOnGetCall { get; init; }
+        private int getCalls;
 
-        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) =>
-            Task.FromResult<Book?>(id == book.Id ? book : null);
+        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
+        {
+            getCalls++;
+            if (getCalls == ThrowOnGetCall)
+            {
+                throw new IOException("read failed");
+            }
+
+            return Task.FromResult<Book?>(id == book.Id ? book : null);
+        }
 
         public Task UpdateAsync(Book updatedBook, CancellationToken cancellationToken)
         {

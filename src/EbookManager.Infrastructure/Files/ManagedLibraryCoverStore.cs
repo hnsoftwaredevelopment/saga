@@ -21,20 +21,28 @@ public sealed class ManagedLibraryCoverStore(string libraryRootPath) : IBookCove
 
         cancellationToken.ThrowIfCancellationRequested();
         var bookDirectory = EnsureContained(Path.Combine(libraryRoot, "books", bookId.ToString("N")));
+        EnsureNoReparsePoints(bookDirectory);
         Directory.CreateDirectory(bookDirectory);
+        EnsureNoReparsePoints(bookDirectory);
         var coverPath = EnsureContained(Path.Combine(bookDirectory, "cover.jpg"));
+        EnsureNoReparsePoints(coverPath);
         var temporaryPath = EnsureContained(Path.Combine(bookDirectory, $".{Guid.NewGuid():N}.cover.tmp"));
 
         try
         {
+            EnsureNoReparsePoints(temporaryPath);
+            EnsureNoReparsePoints(coverPath);
             await File.WriteAllBytesAsync(temporaryPath, coverBytes, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
+            EnsureNoReparsePoints(temporaryPath);
+            EnsureNoReparsePoints(coverPath);
             File.Move(temporaryPath, coverPath, overwrite: true);
         }
         finally
         {
             if (File.Exists(temporaryPath))
             {
+                EnsureNoReparsePoints(temporaryPath);
                 File.Delete(temporaryPath);
             }
         }
@@ -47,6 +55,7 @@ public sealed class ManagedLibraryCoverStore(string libraryRootPath) : IBookCove
         ArgumentOutOfRangeException.ThrowIfEqual(bookId, Guid.Empty);
         cancellationToken.ThrowIfCancellationRequested();
         var coverPath = EnsureContained(Path.Combine(libraryRoot, "books", bookId.ToString("N"), "cover.jpg"));
+        EnsureNoReparsePoints(coverPath);
         if (File.Exists(coverPath))
         {
             File.Delete(coverPath);
@@ -81,4 +90,21 @@ public sealed class ManagedLibraryCoverStore(string libraryRootPath) : IBookCove
 
     private string ToRelativePath(string absolutePath) =>
         Path.GetRelativePath(libraryRoot, absolutePath).Replace(Path.DirectorySeparatorChar, '/');
+
+    private void EnsureNoReparsePoints(string path)
+    {
+        var relativePath = Path.GetRelativePath(libraryRoot, path);
+        var current = libraryRoot;
+        foreach (var segment in relativePath.Split(
+                     [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar],
+                     StringSplitOptions.RemoveEmptyEntries))
+        {
+            current = Path.Combine(current, segment);
+            if ((Directory.Exists(current) || File.Exists(current)) &&
+                File.GetAttributes(current).HasFlag(FileAttributes.ReparsePoint))
+            {
+                throw new InvalidOperationException("The managed cover path contains a symbolic link or reparse point.");
+            }
+        }
+    }
 }

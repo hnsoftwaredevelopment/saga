@@ -36,3 +36,15 @@
 - [ ] Uitgebreide handmatige checklist door gebruiker laten uitvoeren.
 - [x] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
 - [x] Zelfreview uitvoeren en PR #34 bijwerken.
+
+## Correctie na praktijktest
+
+- [x] Alleen ISBN-10 en ISBN-13 met een geldige controlewaarde voor de exacte zoekroute gebruiken.
+- [x] Google Books met afzonderlijke titel- en auteurtermen bevragen.
+- [x] Niet-passende online resultaten vóór de afbeeldingsdownload afwijzen en bij twijfel de lokale Saga-omslag tonen.
+- [x] Openstaande reviewpunten rond parallel zoeken en herstellen, echte beelddecodering, veilige opslagpaden en gecontroleerde foutuitkomsten oplossen.
+- [x] BoekenBase als kandidaat voor een latere Nederlandse metadatazoekfunctie vastleggen.
+- [x] Alle gerichte en volledige tests uitvoeren.
+- [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken zodra de actieve Saga-testbuild is afgesloten.
+- [ ] De aangescherpte omslagzoekroute handmatig controleren.
+- [ ] Correcties committen, pushen en PR #34 bijwerken.

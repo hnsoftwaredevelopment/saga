@@ -37,7 +37,8 @@ public sealed record BookCoverCandidate(
     IReadOnlyList<string> Authors,
     byte[] PreviewBytes,
     int Width,
-    int Height);
+    int Height,
+    IReadOnlyList<string>? Isbns = null);
 
 public sealed record BookCoverSearchResult(
     BookCoverSearchStatus Status,
@@ -82,6 +83,11 @@ public sealed class CompositeBookCoverSearchService(
         var validLists = results
             .Select((result, index) => result.Candidates
                 .Where(candidate => string.Equals(candidate.SourceKey, sources[index].SourceKey, StringComparison.Ordinal))
+                .Select(candidate => (Candidate: candidate, Score: BookCoverCandidateMatcher.Score(query, candidate)))
+                .Where(value => value.Score > 0)
+                .OrderByDescending(value => value.Score)
+                .ThenByDescending(value => (long)value.Candidate.Width * value.Candidate.Height)
+                .Select(value => value.Candidate)
                 .ToArray())
             .ToArray();
         var candidates = Interleave(validLists, MaximumCandidates);

@@ -12,7 +12,10 @@ public sealed class SagaGeneratedBookCoverSource : IBookCoverSource
     public const string Key = "saga-generated";
     private const int Width = 1200;
     private const int Height = 1600;
-    private readonly Dictionary<string, byte[]> generatedCovers = new(StringComparer.Ordinal);
+    private const int MaximumStoredCovers = 32;
+    private static readonly TimeSpan CandidateLifetime = TimeSpan.FromMinutes(15);
+    private readonly object candidateGate = new();
+    private readonly Dictionary<string, GeneratedCover> generatedCovers = new(StringComparer.Ordinal);
 
     public string SourceKey => Key;
 
@@ -27,8 +30,11 @@ public sealed class SagaGeneratedBookCoverSource : IBookCoverSource
         var authors = query.Authors.Where(value => !string.IsNullOrWhiteSpace(value)).Select(value => value.Trim()).ToArray();
         var bytes = GenerateJpeg(title, authors);
         var id = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
-        generatedCovers.Clear();
-        generatedCovers[id] = bytes;
+        lock (candidateGate)
+        {
+            RemoveExpiredAndExcessCandidates();
+            generatedCovers[id] = new(bytes, DateTimeOffset.UtcNow);
+        }
 
         BookCoverCandidate candidate = new(
             Key,
@@ -47,16 +53,42 @@ public sealed class SagaGeneratedBookCoverSource : IBookCoverSource
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (!generatedCovers.Remove(candidateId, out var bytes))
+        GeneratedCover? cover;
+        lock (candidateGate)
+        {
+            if (!generatedCovers.Remove(candidateId, out cover) ||
+                DateTimeOffset.UtcNow - cover.CreatedUtc > CandidateLifetime)
+            {
+                return Task.FromResult(new BookCoverDownloadResult(BookCoverDownloadStatus.InvalidCandidate));
+            }
+        }
+
+        if (cover is null)
         {
             return Task.FromResult(new BookCoverDownloadResult(BookCoverDownloadStatus.InvalidCandidate));
         }
 
         return Task.FromResult(new BookCoverDownloadResult(
             BookCoverDownloadStatus.Succeeded,
-            bytes,
+            cover.Bytes,
             Width,
             Height));
+    }
+
+    private void RemoveExpiredAndExcessCandidates()
+    {
+        var now = DateTimeOffset.UtcNow;
+        foreach (var item in generatedCovers.Where(item => now - item.Value.CreatedUtc > CandidateLifetime))
+        {
+            generatedCovers.Remove(item.Key);
+        }
+
+        foreach (var item in generatedCovers
+                     .OrderBy(item => item.Value.CreatedUtc)
+                     .Take(Math.Max(0, generatedCovers.Count - MaximumStoredCovers + 1)))
+        {
+            generatedCovers.Remove(item.Key);
+        }
     }
 
     private static byte[] GenerateJpeg(string title, IReadOnlyList<string> authors)
@@ -118,4 +150,6 @@ public sealed class SagaGeneratedBookCoverSource : IBookCoverSource
         };
         drawing.DrawText(formatted, new Point(x, y));
     }
+
+    private sealed record GeneratedCover(byte[] Bytes, DateTimeOffset CreatedUtc);
 }

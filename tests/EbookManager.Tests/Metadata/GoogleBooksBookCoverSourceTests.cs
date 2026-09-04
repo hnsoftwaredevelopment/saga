@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using EbookManager.Application.Metadata;
 using EbookManager.Infrastructure.Metadata;
+using EbookManager.Tests.TestSupport;
 using FluentAssertions;
 
 namespace EbookManager.Tests.Metadata;
@@ -22,10 +23,10 @@ public sealed class GoogleBooksBookCoverSourceTests
                     Entry("missing", "Zonder omslag", "Auteur", withThumbnail: false)))
                 : JpegResponse(CreateJpeg(300, 450));
         }));
-        var source = new GoogleBooksBookCoverSource(client);
+        var source = CreateSource(client);
 
         var result = await source.SearchAsync(
-            new BookCoverSearchQuery("De titel", ["De Auteur"], "9789026356600"),
+            new BookCoverSearchQuery("De titel", ["De Auteur"], "9789026356605"),
             CancellationToken.None);
 
         result.Status.Should().Be(BookCoverSearchStatus.Succeeded);
@@ -34,8 +35,27 @@ public sealed class GoogleBooksBookCoverSourceTests
             candidate.SourceKey == GoogleBooksBookCoverSource.Key &&
             candidate.CandidateId == "valid_1" && candidate.Source == "Google Books");
         requests.Count(uri => uri.AbsolutePath.EndsWith("/feeds/volumes", StringComparison.Ordinal)).Should().Be(2);
-        requests.Should().Contain(uri => Uri.UnescapeDataString(uri.Query).Contains("isbn:9789026356600", StringComparison.Ordinal));
-        requests.Should().Contain(uri => Uri.UnescapeDataString(uri.Query).Contains("De titel De Auteur", StringComparison.Ordinal));
+        requests.Should().Contain(uri => Uri.UnescapeDataString(uri.Query).Contains("isbn:9789026356605", StringComparison.Ordinal));
+        requests.Should().Contain(uri =>
+            Uri.UnescapeDataString(uri.Query).Contains("intitle:titel", StringComparison.Ordinal) &&
+            Uri.UnescapeDataString(uri.Query).Contains("inauthor:auteur", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Search_ignores_an_invalid_isbn_and_only_uses_the_metadata_route()
+    {
+        var requests = new List<Uri>();
+        using var client = new HttpClient(new StubHandler(request =>
+        {
+            requests.Add(request.RequestUri!);
+            return AtomResponse(Feed());
+        }));
+        var source = CreateSource(client);
+
+        await source.SearchAsync(new("Titel", ["Auteur"], "dit is geen ISBN"), CancellationToken.None);
+
+        requests.Should().ContainSingle();
+        Uri.UnescapeDataString(requests[0].Query).Should().NotContain("isbn:");
     }
 
     [Fact]
@@ -51,9 +71,35 @@ public sealed class GoogleBooksBookCoverSourceTests
 
             return AtomResponse(Feed(Entry("..%2Fprivate", "Titel", "Auteur", withThumbnail: true)));
         }));
-        var source = new GoogleBooksBookCoverSource(client);
+        var source = CreateSource(client);
 
         var result = await source.SearchAsync(new("Titel", ["Auteur"], null), CancellationToken.None);
+
+        result.Status.Should().Be(BookCoverSearchStatus.NoResults);
+        imageRequested.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Search_does_not_download_unrelated_books()
+    {
+        var imageRequested = false;
+        using var client = new HttpClient(new StubHandler(request =>
+        {
+            if (!request.RequestUri!.AbsolutePath.EndsWith("/feeds/volumes", StringComparison.Ordinal))
+            {
+                imageRequested = true;
+                return JpegResponse(CreateJpeg(300, 450));
+            }
+
+            return AtomResponse(Feed(
+                Entry("catalogue", "Brinkman's cumulatieve catalogus", "Redactie", withThumbnail: true),
+                Entry("book-magazine", "Boekblad", "Redactie", withThumbnail: true)));
+        }));
+        var source = CreateSource(client);
+
+        var result = await source.SearchAsync(
+            new("Ademloos - Sssst.... Luister", ["Huub Hovens"], null),
+            CancellationToken.None);
 
         result.Status.Should().Be(BookCoverSearchStatus.NoResults);
         imageRequested.Should().BeFalse();
@@ -68,7 +114,7 @@ public sealed class GoogleBooksBookCoverSourceTests
             requested = request.RequestUri;
             return JpegResponse(CreateJpeg(600, 900));
         }));
-        var source = new GoogleBooksBookCoverSource(client);
+        var source = CreateSource(client);
 
         var result = await source.DownloadAsync("AbC_123-x", CancellationToken.None);
 
@@ -86,7 +132,7 @@ public sealed class GoogleBooksBookCoverSourceTests
     public async Task Download_rejects_untrusted_identifiers(string identifier)
     {
         using var client = new HttpClient(new StubHandler(_ => throw new InvalidOperationException()));
-        var result = await new GoogleBooksBookCoverSource(client).DownloadAsync(identifier, CancellationToken.None);
+        var result = await CreateSource(client).DownloadAsync(identifier, CancellationToken.None);
         result.Status.Should().Be(BookCoverDownloadStatus.InvalidCandidate);
     }
 
@@ -96,6 +142,9 @@ public sealed class GoogleBooksBookCoverSourceTests
           {{string.Join(Environment.NewLine, entries)}}
         </feed>
         """;
+
+    private static GoogleBooksBookCoverSource CreateSource(HttpClient client) =>
+        new(client, new TestBookCoverImageValidator());
 
     private static string Entry(string id, string title, string author, bool withThumbnail) => $$"""
         <entry>

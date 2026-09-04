@@ -36,4 +36,33 @@ public sealed class ManagedLibraryCoverStoreTests
         File.Exists(Path.Combine(root.DirectoryPath, "books", bookId.ToString("N"), "cover.jpg")).Should().BeFalse();
         File.Exists(sibling).Should().BeTrue();
     }
+
+    [Fact]
+    public async Task Save_refuses_a_book_directory_that_is_a_symbolic_link()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        using var root = new TemporaryDirectory();
+        using var outside = new TemporaryDirectory();
+        var bookId = Guid.NewGuid();
+        var booksDirectory = Directory.CreateDirectory(Path.Combine(root.DirectoryPath, "books"));
+        var linkedBookDirectory = Path.Combine(booksDirectory.FullName, bookId.ToString("N"));
+        try
+        {
+            Directory.CreateSymbolicLink(linkedBookDirectory, outside.DirectoryPath);
+        }
+        catch (Exception exception) when (exception is UnauthorizedAccessException or IOException)
+        {
+            return;
+        }
+
+        var store = new ManagedLibraryCoverStore(root.DirectoryPath);
+        var action = () => store.SaveAsync(bookId, [1, 2, 3], CancellationToken.None);
+
+        await action.Should().ThrowAsync<InvalidOperationException>();
+        File.Exists(Path.Combine(outside.DirectoryPath, "cover.jpg")).Should().BeFalse();
+    }
 }

@@ -134,6 +134,7 @@ public partial class App : System.Windows.Application
         services.AddTransient<IMetadataQualitySeriesRepairService, MetadataQualitySeriesRepairService>();
         services.AddTransient<IMetadataQualityTitleAuthorRepairService, MetadataQualityTitleAuthorRepairService>();
         services.AddSingleton(_ => CreateBookCoverHttpClient());
+        services.AddSingleton<IBookCoverImageValidator, WpfBookCoverImageValidator>();
         services.AddSingleton<OpenLibraryBookCoverSearchService>();
         services.AddSingleton<GoogleBooksBookCoverSource>();
         services.AddSingleton<SagaGeneratedBookCoverSource>();

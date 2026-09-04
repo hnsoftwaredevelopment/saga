@@ -5,7 +5,9 @@ using EbookManager.Application.Metadata;
 
 namespace EbookManager.Infrastructure.Metadata;
 
-public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : IBookCoverSource
+public sealed class OpenLibraryBookCoverSearchService(
+    HttpClient httpClient,
+    IBookCoverImageValidator imageValidator) : IBookCoverSource
 {
     public const string Key = "open-library";
     private const int MaximumCandidates = 12;
@@ -20,6 +22,7 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
     private static readonly TimeSpan SearchTimeout = TimeSpan.FromSeconds(15);
 
     private readonly HttpClient httpClient = httpClient;
+    private readonly IBookCoverImageValidator imageValidator = imageValidator;
 
     public string SourceKey => Key;
 
@@ -51,6 +54,10 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
 
             var uniqueRows = rows
                 .Where(row => row.CoverId > 0)
+                .Select(row => (Row: row, Score: BookCoverCandidateMatcher.Score(query, ToMetadataCandidate(row))))
+                .Where(value => value.Score > 0)
+                .OrderByDescending(value => value.Score)
+                .Select(value => value.Row)
                 .DistinctBy(row => row.CoverId)
                 .Take(SearchResultLimit)
                 .ToArray();
@@ -83,7 +90,8 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
                     row.Authors,
                     image.Value.Bytes,
                     image.Value.Width,
-                    image.Value.Height));
+                    image.Value.Height,
+                    row.Isbns));
                 if (candidates.Count == MaximumCandidates)
                 {
                     break;
@@ -151,10 +159,10 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
         var author = query.Authors.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value))?.Trim();
         var common = "fields=cover_i,title,author_name,isbn&limit=" + SearchResultLimit.ToString(CultureInfo.InvariantCulture);
 
-        if (!string.IsNullOrWhiteSpace(query.Isbn))
+        if (IsbnValidator.TryNormalize(query.Isbn, out var isbn))
         {
             yield return new Uri(
-                $"https://openlibrary.org/search.json?isbn={Uri.EscapeDataString(query.Isbn.Trim())}&{common}",
+                $"https://openlibrary.org/search.json?isbn={Uri.EscapeDataString(isbn!)}&{common}",
                 UriKind.Absolute);
         }
 
@@ -203,7 +211,8 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
                 ? titleValue.GetString()?.Trim()
                 : null;
             var authors = ReadStringArray(item, "author_name");
-            rows.Add(new SearchRow(coverId, string.IsNullOrWhiteSpace(title) ? string.Empty : title, authors));
+            var isbns = ReadStringArray(item, "isbn");
+            rows.Add(new SearchRow(coverId, string.IsNullOrWhiteSpace(title) ? string.Empty : title, authors, isbns));
         }
 
         return rows;
@@ -232,12 +241,9 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
         }
 
         var bytes = await ReadLimitedAsync(response.Content, maximumBytes, cancellationToken);
-        if (!JpegDimensions.TryRead(bytes, out var width, out var height) ||
-            width < MinimumDimension ||
-            height < MinimumDimension ||
-            width > MaximumDimension ||
-            height > MaximumDimension ||
-            (long)width * height > MaximumPixelCount)
+        if (!HasSafeDimensions(bytes) ||
+            !imageValidator.TryValidateJpeg(bytes, out var width, out var height) ||
+            !DimensionsAreSafe(width, height))
         {
             return null;
         }
@@ -260,6 +266,26 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
             .Select(value => value!)
             .ToArray();
     }
+
+    private static bool HasSafeDimensions(byte[] bytes) =>
+        JpegHeader.TryReadDimensions(bytes, out var width, out var height) && DimensionsAreSafe(width, height);
+
+    private static bool DimensionsAreSafe(int width, int height) =>
+        width >= MinimumDimension && height >= MinimumDimension &&
+        width <= MaximumDimension && height <= MaximumDimension &&
+        (long)width * height <= MaximumPixelCount;
+
+    private static BookCoverCandidate ToMetadataCandidate(SearchRow row) =>
+        new(
+            Key,
+            row.CoverId.ToString(CultureInfo.InvariantCulture),
+            SourceName,
+            row.Title,
+            row.Authors,
+            [],
+            1,
+            1,
+            row.Isbns);
 
     private static async Task<byte[]> ReadLimitedAsync(
         HttpContent content,
@@ -300,66 +326,9 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
     private static void AddUserAgent(HttpRequestMessage request) =>
         request.Headers.UserAgent.ParseAdd("Saga/0.1 (+https://github.com/hnsoftwaredevelopment/saga)");
 
-    private sealed record SearchRow(long CoverId, string Title, IReadOnlyList<string> Authors);
-}
-
-internal static class JpegDimensions
-{
-    public static bool TryRead(ReadOnlySpan<byte> bytes, out int width, out int height)
-    {
-        width = 0;
-        height = 0;
-        if (bytes.Length < 4 || bytes[0] != 0xFF || bytes[1] != 0xD8)
-        {
-            return false;
-        }
-
-        var offset = 2;
-        while (offset + 3 < bytes.Length)
-        {
-            while (offset < bytes.Length && bytes[offset] == 0xFF)
-            {
-                offset++;
-            }
-
-            if (offset >= bytes.Length)
-            {
-                return false;
-            }
-
-            var marker = bytes[offset++];
-            if (marker is 0xD8 or 0xD9)
-            {
-                continue;
-            }
-
-            if (marker == 0xDA || offset + 1 >= bytes.Length)
-            {
-                return false;
-            }
-
-            var segmentLength = (bytes[offset] << 8) | bytes[offset + 1];
-            if (segmentLength < 2 || offset + segmentLength > bytes.Length)
-            {
-                return false;
-            }
-
-            if (IsStartOfFrame(marker) && segmentLength >= 7)
-            {
-                height = (bytes[offset + 3] << 8) | bytes[offset + 4];
-                width = (bytes[offset + 5] << 8) | bytes[offset + 6];
-                return width > 0 && height > 0;
-            }
-
-            offset += segmentLength;
-        }
-
-        return false;
-    }
-
-    private static bool IsStartOfFrame(byte marker) =>
-        marker is 0xC0 or 0xC1 or 0xC2 or 0xC3 or
-            0xC5 or 0xC6 or 0xC7 or
-            0xC9 or 0xCA or 0xCB or
-            0xCD or 0xCE or 0xCF;
+    private sealed record SearchRow(
+        long CoverId,
+        string Title,
+        IReadOnlyList<string> Authors,
+        IReadOnlyList<string> Isbns);
 }

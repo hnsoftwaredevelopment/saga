@@ -30,7 +30,8 @@ public sealed class BookDetailsViewModelTests
                 await search.LoadAsync(cancellationToken);
                 search.SelectedCandidate = search.Candidates.Single();
                 return true;
-            });
+            },
+            coverUpdateService: new StubCoverUpdateService());
         var book = WithCover(CreateBook("Original", ["First Author"]), originalBytes);
         viewModel.Load(book);
         viewModel.Title = "Edited title";

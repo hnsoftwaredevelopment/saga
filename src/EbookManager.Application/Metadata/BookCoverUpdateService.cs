@@ -32,7 +32,22 @@ public sealed class BookCoverUpdateService(
             throw new ArgumentOutOfRangeException(nameof(coverBytes));
         }
 
-        var previous = await bookRepository.GetAsync(editedBook.Id, cancellationToken);
+        using var operation = await BookCoverOperationLock.AcquireAsync(editedBook.Id, cancellationToken);
+
+        Book? previous;
+        try
+        {
+            previous = await bookRepository.GetAsync(editedBook.Id, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            return new(new BookSaveResult(BookSaveStatus.Failed, [], exception.Message));
+        }
+
         if (previous is null)
         {
             return new(new BookSaveResult(BookSaveStatus.Failed, [], "The book no longer exists."));
@@ -66,27 +81,57 @@ public sealed class BookCoverUpdateService(
         }
         catch (OperationCanceledException)
         {
-            await RestorePreviousCoverAsync(previous);
+            var restoreFailure = await RestorePreviousCoverAsync(previous);
+            if (restoreFailure is not null)
+            {
+                throw new InvalidOperationException(
+                    "Saving was cancelled and the previous cover could not be restored. " + restoreFailure);
+            }
+
             throw;
         }
-
-        var reloaded = await bookRepository.GetAsync(editedBook.Id, CancellationToken.None);
-        if (!ContainsCover(reloaded, relativePath, coverBytes))
+        catch (Exception exception)
         {
-            await RestorePreviousCoverAsync(previous);
-            if (saveResult.Status == BookSaveStatus.Succeeded)
-            {
-                saveResult = new BookSaveResult(
+            var restoreFailure = await RestorePreviousCoverAsync(previous);
+            return new(
+                new BookSaveResult(
+                    BookSaveStatus.Failed,
+                    [],
+                    CombineMessages(exception.Message, RestoreFailureMessage(restoreFailure))),
+                previous);
+        }
+
+        Book? reloaded;
+        try
+        {
+            reloaded = await bookRepository.GetAsync(editedBook.Id, CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            return new(
+                new BookSaveResult(
                     BookSaveStatus.Failed,
                     saveResult.FileResults,
-                    "The cover could not be verified after saving.");
-            }
+                    CombineMessages(
+                        exception.Message,
+                        "The new cover was retained because the saved database state could not be verified.")));
+        }
+
+        if (!ContainsCover(reloaded, relativePath, coverBytes))
+        {
+            var restoreFailure = await RestorePreviousCoverAsync(previous);
+            saveResult = new BookSaveResult(
+                saveResult.Status == BookSaveStatus.Succeeded ? BookSaveStatus.Failed : saveResult.Status,
+                saveResult.FileResults,
+                CombineMessages(
+                    saveResult.Message ?? "The cover could not be verified after saving.",
+                    RestoreFailureMessage(restoreFailure)));
         }
 
         return new(saveResult, reloaded);
     }
 
-    private async Task RestorePreviousCoverAsync(Book previous)
+    private async Task<string?> RestorePreviousCoverAsync(Book previous)
     {
         try
         {
@@ -98,12 +143,22 @@ public sealed class BookCoverUpdateService(
             {
                 await coverStore.DeleteAsync(previous.Id, CancellationToken.None);
             }
+
+            return null;
         }
-        catch
+        catch (Exception exception)
         {
-            // Preserve the original save outcome. Retrying remains possible from the editor.
+            return exception.Message;
         }
     }
+
+    private static string? RestoreFailureMessage(string? message) =>
+        string.IsNullOrWhiteSpace(message) ? null : "The previous cover could not be restored: " + message;
+
+    private static string? CombineMessages(string? first, string? second) =>
+        string.Join(" ", new[] { first, second }.Where(value => !string.IsNullOrWhiteSpace(value))) is { Length: > 0 } message
+            ? message
+            : null;
 
     private static BookMetadata CopyMetadataWithCover(BookMetadata metadata, byte[] coverBytes) =>
         new(
