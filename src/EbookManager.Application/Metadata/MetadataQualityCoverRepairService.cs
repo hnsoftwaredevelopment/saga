@@ -67,11 +67,19 @@ public sealed class MetadataQualityCoverRepairService(
             CoverRelativePath = relativePath,
             UpdatedUtc = DateTimeOffset.UtcNow
         };
-        var saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
-        var reloadedBook = await bookRepository.GetAsync(bookId, cancellationToken);
-        var databaseWasUpdated = reloadedBook is not null &&
-            string.Equals(reloadedBook.CoverRelativePath, relativePath, StringComparison.Ordinal) &&
-            reloadedBook.Metadata.CoverBytes?.SequenceEqual(coverBytes) == true;
+        BookSaveResult saveResult;
+        try
+        {
+            saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            await CleanupCancelledSaveAsync(bookId, relativePath, coverBytes);
+            throw;
+        }
+
+        var reloadedBook = await bookRepository.GetAsync(bookId, CancellationToken.None);
+        var databaseWasUpdated = ContainsCover(reloadedBook, relativePath, coverBytes);
 
         string? cleanupMessage = null;
         if (!databaseWasUpdated)
@@ -118,6 +126,31 @@ public sealed class MetadataQualityCoverRepairService(
             metadata.SeriesNumber,
             metadata.Isbn,
             coverBytes);
+
+    private async Task CleanupCancelledSaveAsync(
+        Guid bookId,
+        string relativePath,
+        byte[] coverBytes)
+    {
+        try
+        {
+            var reloadedBook = await bookRepository.GetAsync(bookId, CancellationToken.None);
+            if (!ContainsCover(reloadedBook, relativePath, coverBytes))
+            {
+                await coverStore.DeleteAsync(bookId, CancellationToken.None);
+            }
+        }
+        catch (Exception)
+        {
+            // Preserve the original cancellation. If the persisted state cannot be verified,
+            // retaining the file is safer than deleting a cover that may already be referenced.
+        }
+    }
+
+    private static bool ContainsCover(Book? book, string relativePath, byte[] coverBytes) =>
+        book is not null &&
+        string.Equals(book.CoverRelativePath, relativePath, StringComparison.Ordinal) &&
+        book.Metadata.CoverBytes?.SequenceEqual(coverBytes) == true;
 
     private static string? CombineMessages(string? first, string? second) =>
         string.Join(" ", new[] { first, second }.Where(value => !string.IsNullOrWhiteSpace(value))) is { Length: > 0 } message

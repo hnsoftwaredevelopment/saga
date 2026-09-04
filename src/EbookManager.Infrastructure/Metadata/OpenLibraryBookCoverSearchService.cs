@@ -10,7 +10,10 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
     private const int MaximumCandidates = 12;
     private const int SearchResultLimit = 24;
     private const int MinimumDimension = 50;
+    private const int MaximumDimension = 8_000;
+    private const long MaximumPixelCount = 25_000_000;
     private const int MaximumJsonBytes = 1024 * 1024;
+    private const int MaximumPreviewImageBytes = 2 * 1024 * 1024;
     private const int MaximumImageBytes = 10 * 1024 * 1024;
     private const string SourceName = "Open Library";
 
@@ -21,7 +24,6 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(query);
-        ArgumentException.ThrowIfNullOrWhiteSpace(query.Title);
         cancellationToken.ThrowIfCancellationRequested();
 
         try
@@ -56,7 +58,11 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
             foreach (var row in uniqueRows)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var image = await TryDownloadImageAsync(row.CoverId, "M", cancellationToken);
+                var image = await TryDownloadImageAsync(
+                    row.CoverId,
+                    "M",
+                    MaximumPreviewImageBytes,
+                    cancellationToken);
                 if (image is null)
                 {
                     continue;
@@ -108,7 +114,11 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
 
         try
         {
-            var image = await TryDownloadImageAsync(coverId, "L", cancellationToken);
+            var image = await TryDownloadImageAsync(
+                coverId,
+                "L",
+                MaximumImageBytes,
+                cancellationToken);
             return image is null
                 ? new(BookCoverDownloadStatus.Failed)
                 : new(
@@ -129,7 +139,7 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
 
     private static IEnumerable<Uri> CreateSearchUris(BookCoverSearchQuery query)
     {
-        var title = query.Title.Trim();
+        var title = query.Title?.Trim() ?? string.Empty;
         var author = query.Authors.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value))?.Trim();
         var common = "fields=cover_i,title,author_name,isbn&limit=" + SearchResultLimit.ToString(CultureInfo.InvariantCulture);
 
@@ -140,12 +150,15 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
                 UriKind.Absolute);
         }
 
-        var authorPart = string.IsNullOrWhiteSpace(author)
-            ? string.Empty
-            : $"&author={Uri.EscapeDataString(author)}";
-        yield return new Uri(
-            $"https://openlibrary.org/search.json?title={Uri.EscapeDataString(title)}{authorPart}&{common}",
-            UriKind.Absolute);
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            var authorPart = string.IsNullOrWhiteSpace(author)
+                ? string.Empty
+                : $"&author={Uri.EscapeDataString(author)}";
+            yield return new Uri(
+                $"https://openlibrary.org/search.json?title={Uri.EscapeDataString(title)}{authorPart}&{common}",
+                UriKind.Absolute);
+        }
     }
 
     private async Task<IReadOnlyList<SearchRow>> SearchRowsAsync(
@@ -191,6 +204,7 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
     private async Task<(byte[] Bytes, int Width, int Height)?> TryDownloadImageAsync(
         long coverId,
         string size,
+        int maximumBytes,
         CancellationToken cancellationToken)
     {
         var uri = new Uri(
@@ -209,10 +223,13 @@ public sealed class OpenLibraryBookCoverSearchService(HttpClient httpClient) : I
             return null;
         }
 
-        var bytes = await ReadLimitedAsync(response.Content, MaximumImageBytes, cancellationToken);
+        var bytes = await ReadLimitedAsync(response.Content, maximumBytes, cancellationToken);
         if (!JpegDimensions.TryRead(bytes, out var width, out var height) ||
             width < MinimumDimension ||
-            height < MinimumDimension)
+            height < MinimumDimension ||
+            width > MaximumDimension ||
+            height > MaximumDimension ||
+            (long)width * height > MaximumPixelCount)
         {
             return null;
         }

@@ -79,6 +79,20 @@ public sealed class MetadataQualityCoverRepairServiceTests
         coverStore.DeleteCalls.Should().Be(0);
     }
 
+    [Fact]
+    public async Task Repair_cleans_up_the_file_when_saving_is_cancelled_before_database_update()
+    {
+        var original = CreateBook();
+        var repository = new InMemoryBookRepository(original) { CancelWhenUpdating = true };
+        var coverStore = new RecordingCoverStore();
+        var service = CreateService(repository, coverStore);
+
+        var action = () => service.RepairAsync(original.Id, [1, 2, 3], CancellationToken.None);
+
+        await action.Should().ThrowAsync<OperationCanceledException>();
+        coverStore.DeleteCalls.Should().Be(1);
+    }
+
     private static MetadataQualityCoverRepairService CreateService(
         InMemoryBookRepository repository,
         IBookCoverStore coverStore) =>
@@ -146,6 +160,7 @@ public sealed class MetadataQualityCoverRepairServiceTests
         private Book book = seed;
         public int UpdateCalls { get; private set; }
         public bool ThrowConflict { get; init; }
+        public bool CancelWhenUpdating { get; init; }
         public bool ThrowWhenListingFiles { get; init; }
 
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) =>
@@ -154,6 +169,11 @@ public sealed class MetadataQualityCoverRepairServiceTests
         public Task UpdateAsync(Book updatedBook, CancellationToken cancellationToken)
         {
             UpdateCalls++;
+            if (CancelWhenUpdating)
+            {
+                throw new OperationCanceledException();
+            }
+
             if (ThrowConflict)
             {
                 throw new BookConflictException();

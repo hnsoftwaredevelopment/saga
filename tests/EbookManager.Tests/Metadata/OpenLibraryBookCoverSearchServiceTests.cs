@@ -118,6 +118,19 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
     }
 
     [Fact]
+    public async Task Download_rejects_dimensions_that_could_exhaust_image_memory()
+    {
+        using var client = new HttpClient(new StubHttpMessageHandler(_ =>
+            JpegResponse(CreateJpeg(65_535, 65_535))));
+        var service = new OpenLibraryBookCoverSearchService(client);
+
+        var result = await service.DownloadAsync("123", CancellationToken.None);
+
+        result.Status.Should().Be(BookCoverDownloadStatus.Failed);
+        result.Bytes.Should().BeNull();
+    }
+
+    [Fact]
     public async Task Search_identifies_saga_to_the_external_service()
     {
         string? userAgent = null;
@@ -134,6 +147,28 @@ public sealed class OpenLibraryBookCoverSearchServiceTests
 
         userAgent.Should().Contain("Saga");
         userAgent.Should().Contain("github.com/hnsoftwaredevelopment/saga");
+    }
+
+    [Fact]
+    public async Task Search_can_use_an_isbn_when_the_title_is_missing()
+    {
+        var requestedUris = new List<Uri>();
+        using var client = new HttpClient(new StubHttpMessageHandler(request =>
+        {
+            requestedUris.Add(request.RequestUri!);
+            return request.RequestUri!.Host == "openlibrary.org"
+                ? JsonResponse("""{"docs":[{"cover_i":77,"title":"Found by ISBN"}]}""")
+                : JpegResponse(CreateJpeg(300, 450));
+        }));
+        var service = new OpenLibraryBookCoverSearchService(client);
+
+        var result = await service.SearchAsync(
+            new BookCoverSearchQuery(string.Empty, [], "9789026356600"),
+            CancellationToken.None);
+
+        result.Status.Should().Be(BookCoverSearchStatus.Succeeded);
+        requestedUris.Count(uri => uri.Host == "openlibrary.org").Should().Be(1);
+        requestedUris.Should().Contain(uri => uri.Query.Contains("isbn=9789026356600", StringComparison.Ordinal));
     }
 
     private static HttpResponseMessage JsonResponse(string json) => new(HttpStatusCode.OK)
