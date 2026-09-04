@@ -17,6 +17,9 @@ Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe`. Voor de 
 ## Zoeken zonder ISBN en selectie
 
 - [ ] Herhaal de route met een boek zonder ISBN maar met een herkenbare titel en auteur; controleer dat Saga ook hiervoor resultaten kan tonen.
+- [ ] Vul bij een testboek bewust geen ISBN-waarde maar willekeurige tekst in; controleer dat zoeken normaal op titel en auteur doorgaat en geen los ISBN-resultaat toont.
+- [ ] Gebruik een boek met een geldige ISBN-10 en daarna een geldige ISBN-13; controleer dat een passende omslag kan worden gevonden.
+- [ ] Zoek met `Ademloos - Sssst.... Luister` van Huub Hovens of een vergelijkbaar herkenbaar boek en controleer dat omslagen met een andere titel of auteur niet worden getoond.
 - [ ] Selecteer een omslag met de muis en bevestig met dubbelklik.
 - [ ] Herhaal indien mogelijk met een ander boek en selecteer uitsluitend met `Tab` en de pijltjestoetsen; bevestig met `Enter`.
 - [ ] Maak het venster smaller en groter en controleer dat de galerij omloopt, scrolbaar blijft en de knoppen bereikbaar blijven.

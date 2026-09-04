@@ -87,7 +87,8 @@ Saga should give users a fast overview of metadata problems in the active librar
 ## Milestone 33: Find and repair a missing cover
 
 - Show `Search for cover` only while the missing-cover issue and one affected book are selected.
-- Search Google Books and Open Library only after an explicit user action, combining current title, author and ISBN metadata where available.
+- Search Google Books and Open Library only after an explicit user action, using current title and author and adding an exact ISBN route only for a validated ISBN-10 or ISBN-13.
+- Reject unrelated online candidates by checking exact ISBN or a strong title-and-author match; prefer the local Saga cover when confidence is insufficient.
 - Show at most twelve validated, unique candidates with source and dimensions; require the user to select one explicitly.
 - When neither online source returns a usable candidate, offer one locally generated Saga cover with title and author.
 - Let the user choose with mouse, Enter, or double-click and cancel without changing the book.
@@ -98,6 +99,8 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Follow-up ideas
 
+- Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
+- Improve large-library scrolling and filtering in a separate performance slice with measurable checks on a representative library.
 - Add direct repair for messy tags after the missing-cover slice.
 - Give quality decisions their own `Quality` tab in Settings instead of placing them under `Duplicates`.
 - Let users select multiple missing-author books and apply one chosen author to all selected books.

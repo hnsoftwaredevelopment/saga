@@ -26,7 +26,7 @@ Zoekcontract en Open Library-client
 
 **Acceptatiecriteria:**
 
-- [x] Titel en auteurs vormen een correct geëncodeerde zoekvraag; een beschikbaar ISBN voegt een exacte zoekroute toe en beide resultaatsets worden samengevoegd.
+- [x] Titel en auteurs vormen een correct geëncodeerde zoekvraag; alleen een geldig ISBN-10 of ISBN-13 voegt een exacte zoekroute toe en beide resultaatsets worden samengevoegd.
 - [x] Alleen unieke numerieke Cover ID's worden geaccepteerd en maximaal twaalf kandidaten teruggegeven.
 - [x] Time-outs, annulering, ongeldige JSON, te grote antwoorden en serverfouten leveren een gecontroleerd resultaat.
 
@@ -153,12 +153,12 @@ Zoekcontract en Open Library-client
 | Groot venster of veel beelden belast geheugen | Middel | Resultaatlimiet, begrensde bytes en alleen noodzakelijke afbeeldingsgrootten. |
 | GPL-code komt onbedoeld in Saga terecht | Hoog | Alleen gedrag bestuderen en zelfstandig C# ontwerpen; geen code kopiëren. |
 
-## Niet in deze milestone
+## Niet in de oorspronkelijke eerste oplevering
 
 - Rommelige tags herstellen.
 - Een apart instellingen-tabblad `Kwaliteit`.
-- Google Books, Google Afbeeldingen of andere providers.
-- Lokale bestandskeuze, bestaande omslagen vervangen of bulkherstel.
+- Google Afbeeldingen of andere aanvullende providers.
+- Lokale bestandskeuze of bulkherstel.
 - Native cover-write-back in ebookbestanden.
 
 ## Open vragen
@@ -186,5 +186,18 @@ Geen blokkerende vragen. Functionele richting, aannames en dit uitvoeringsplan z
 - [x] Lever alle nieuwe teksten in zes talen en breid de handmatige checklist uit.
 - [x] Voer gerichte tests, volledige tests, Debug-build en zelfreview uit.
 - [x] Maak uitsluitend `Builds/Debug` opnieuw en werk PR #34 bij.
+
+### Taak 10: Correctie op relevantie en veiligheid na praktijktest
+
+- [ ] Valideer de controlewaarde van ISBN-10 en ISBN-13 en gebruik ongeldige veldinhoud nooit voor een ISBN-zoekroute.
+- [ ] Maak de Google Books-vraag veldgericht en toon alleen kandidaten met een exact ISBN of een sterke titel-en-auteurovereenkomst.
+- [ ] Bied de lokale Saga-omslag aan wanneer geen voldoende betrouwbare online kandidaat resteert.
+- [ ] Los de openstaande reviewpunten rond parallel gebruik, beelddecodering, opslagpaden en gecontroleerde hersteluitkomsten op.
+- [ ] Werk gerichte en volledige tests, uitsluitend `Builds/Debug`, documentatiemirror en PR #34 bij.
+
+### Vervolg na PR #34
+
+- Een afzonderlijke performance-slice verbetert zoeken en scrollen in grote bibliotheken en legt vooraf meetbare doelen vast.
+- Een latere metadatazoekfunctie onderzoekt BoekenBase als Nederlandse bron voor onder meer ISBN, auteurs, omschrijving en uitgever; de gebruiker kiest per veld wat wordt overgenomen.
 
 Deze uitbreiding is functioneel goedgekeurd op 4 september 2026.

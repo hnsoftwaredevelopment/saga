@@ -23,7 +23,7 @@ De ervaring neemt het gedrag van Calibre als referentie: zoeken met bestaande me
 
 1. De gebruiker selecteert `Geen omslag` en precies één boek.
 2. De knop `Omslag zoeken` wordt beschikbaar.
-3. Saga opent een modaal venster en zoekt op titel plus auteur en, wanneer aanwezig, aanvullend op ISBN.
+3. Saga opent een modaal venster en zoekt op titel plus auteur en alleen bij een controleerbaar geldig ISBN-10 of ISBN-13 aanvullend exact op ISBN.
 4. Geldige resultaten verschijnen met miniatuur, bron en resolutie.
 5. De gebruiker selecteert één kandidaat met muis of toetsenbord.
 6. `Omslag gebruiken`, dubbelklik of Enter bevestigt de selectie; `Annuleren` of Escape verandert niets.
@@ -36,15 +36,16 @@ Open Library wordt benaderd via de gedocumenteerde Search API en Covers API:
 
 - `https://openlibrary.org/search.json` zoekt relevante werken en edities.
 - Alleen noodzakelijke velden worden opgevraagd, waaronder titel, auteurs, ISBN en `cover_i`.
-- Een aanwezig ISBN levert een exacte zoekroute; een tweede titel-en-auteurroute vindt ook omslagen van andere edities. De resultaten worden daarna samengevoegd.
+- Alleen een ISBN-10 of ISBN-13 met een geldige controlewaarde levert een exacte zoekroute. Lege, verkeerd gevormde of inhoudelijk ongeldige waarden worden genegeerd; de titel-en-auteurroute blijft beschikbaar.
+- Een tweede titel-en-auteurroute vindt ook omslagen van andere edities. De resultaten worden daarna inhoudelijk gecontroleerd en samengevoegd.
 - Omslagen worden via een numerieke Cover ID van `https://covers.openlibrary.org` opgehaald.
 - Kandidaten worden op Cover ID gededupliceerd en tot maximaal twaalf resultaten beperkt.
 - Saga stuurt een herkenbare User-Agent en respecteert annulering, time-outs en serverfouten.
 - Saga crawlt niet en doet geen zoekopdracht zonder expliciete gebruikersactie.
 
-Google Books wordt aanvullend benaderd via de openbare Atom-feed die Calibre gebruikt. Deze route vereist geen sleutel, maar is minder stabiel en daarom een compatibiliteitsbron: fouten worden geïsoleerd en verhinderen Open Library of de lokale noodomslag niet. Saga accepteert uitsluitend geldige boek-ID's en bouwt afbeeldingsadressen zelf op voor vaste Google Books-hostnamen. Google Afbeeldingen wordt niet gescrapet.
+Google Books wordt aanvullend benaderd via de openbare Atom-feed die Calibre gebruikt. Deze route vereist geen sleutel, maar is minder stabiel en daarom een compatibiliteitsbron: fouten worden geïsoleerd en verhinderen Open Library of de lokale noodomslag niet. De zoekvraag gebruikt afzonderlijke titel- en auteurvelden in plaats van één losse woordenreeks. Saga accepteert uitsluitend geldige boek-ID's en bouwt afbeeldingsadressen zelf op voor vaste Google Books-hostnamen. Google Afbeeldingen wordt niet gescrapet.
 
-De twee bronnen worden gelijktijdig geraadpleegd. Hun geldige resultaten worden afwisselend samengevoegd, gededupliceerd en samen tot twaalf kandidaten begrensd, zodat één bron de andere niet verdringt. Wanneer geen online kandidaat overblijft, genereert Saga lokaal één omslag van 1200 bij 1600 pixels met de actuele titel en auteur. Ook deze kandidaat wordt nooit automatisch gekozen.
+De twee bronnen worden gelijktijdig geraadpleegd. Een online kandidaat blijft alleen over wanneer het ISBN exact overeenkomt of titel en auteur aantoonbaar bij de zoekvraag passen. Een ontbrekende auteursvermelding bij de bron is alleen toegestaan bij een exacte titel; een expliciet afwijkende auteur wordt afgewezen. De relevante resultaten worden op overeenkomst beoordeeld, afwisselend samengevoegd, gededupliceerd en samen tot twaalf kandidaten begrensd, zodat één bron de andere niet verdringt. Wanneer geen voldoende betrouwbare online kandidaat overblijft, genereert Saga lokaal één omslag van 1200 bij 1600 pixels met de actuele titel en auteur. Ook deze kandidaat wordt nooit automatisch gekozen.
 
 Open Library-documentatie:
 
@@ -58,7 +59,7 @@ Open Library-documentatie:
 De applicatielaag definieert een klein, brononafhankelijk contract met:
 
 - een zoekvraag met titel, auteurs en optioneel ISBN;
-- een kandidaat met een ondoorzichtige kandidaat-ID, bron, boekcontext, afbeeldingsbytes en afmetingen;
+- een kandidaat met een ondoorzichtige kandidaat-ID, bron, boekcontext, eventuele ISBN's, afbeeldingsbytes en afmetingen;
 - een asynchrone zoekactie met annulering;
 - een aparte actie die de gekozen grote afbeelding definitief ophaalt.
 
@@ -169,7 +170,8 @@ Resultaatstatussen zijn expliciete records of enums; verwachte netwerk- en opsla
 
 - `Omslag zoeken` is uitsluitend actief voor één geselecteerd boek onder `Geen omslag`.
 - `Omslag wijzigen` is in het detailscherm beschikbaar voor ieder geladen boek, ongeacht of al een omslag bestaat.
-- Een zoekopdracht gebruikt de actuele titel en auteurs en zoekt aanvullend exact op ISBN wanneer dat beschikbaar is.
+- Een zoekopdracht gebruikt de actuele titel en auteurs en zoekt aanvullend exact op ISBN wanneer ISBN-10 of ISBN-13 werkelijk geldig is.
+- Online kandidaten worden niet alleen op aanwezigheid van een afbeelding maar ook streng op ISBN of titel/auteur-overeenkomst gecontroleerd; bij twijfel verschijnt de lokale Saga-omslag.
 - Maximaal twaalf unieke, geldige kandidaten worden met bron en resolutie getoond.
 - Geen resultaten, annuleren, een time-out of een ongeldige download verandert niets.
 - Als beide online bronnen niets vinden, verschijnt één lokaal gegenereerde kandidaat met titel en auteur.
@@ -185,6 +187,8 @@ Resultaatstatussen zijn expliciete records of enums; verwachte netwerk- en opsla
 - `Rommelige tags` wordt de volgende afzonderlijke Quality Page-slice.
 - Een apart tabblad `Kwaliteit` in Instellingen volgt na de resterende herstelacties.
 - Andere bronnen waarvoor een officiële toegang of account nodig is, kunnen later via hetzelfde zoekcontract worden toegevoegd.
+- BoekenBase is een kandidaat voor een latere Nederlandse metadata- en omslagzoekfunctie. Integratie volgt pas na beoordeling van toegang, voorwaarden en stabiliteit en wordt niet in deze correctieslice toegevoegd.
+- Een latere metadatazoekfunctie kan ISBN, auteurs, omschrijving en overige velden als afzonderlijke voorstellen tonen die de gebruiker bewust wel of niet overneemt.
 - Handmatig een lokaal omslagbestand kiezen volgt later; vervangen via de zoek- en generatieroute valt nu binnen scope.
 - Native cover-write-back in ebookbestanden blijft een afzonderlijke, formaatgerichte feature.
 
