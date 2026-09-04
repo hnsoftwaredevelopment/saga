@@ -4,7 +4,8 @@
 
 - Deze milestone behandelt eerst `Geen omslag`; `Rommelige tags` volgt als afzonderlijke slice.
 - Zoeken begint alleen na een expliciete gebruikersactie en gebeurt nooit automatisch op de achtergrond.
-- Open Library is in deze eerste versie de enige online bron.
+- Saga zoekt bij Open Library en via de sleutelvrije Google Books-feed die Calibre als compatibiliteitsbron gebruikt.
+- Wanneer beide online bronnen geen kandidaat opleveren, maakt Saga lokaal één eenvoudige omslag met titel en auteur.
 - Saga toont gevonden kandidaten en kiest nooit zelfstandig een omslag.
 - Het venster toont maximaal twaalf geldige kandidaten, gesorteerd op afbeeldingsoppervlak.
 - De gekozen omslag wordt als beheerd `cover.jpg` opgeslagen; native write-back in ebookbestanden blijft buiten scope.
@@ -14,7 +15,7 @@ Deze aannames zijn functioneel goedgekeurd op 4 september 2026.
 
 ## Doel
 
-Een gebruiker kan op de Quality Page één boek zonder omslag selecteren, online naar passende omslagen zoeken en bewust één resultaat kiezen. Na bevestiging bewaart Saga de gekozen afbeelding veilig in de actieve bibliotheek en verdwijnen de melding en de rij direct wanneer het boek niet langer aan `Geen omslag` voldoet.
+Een gebruiker kan op de Quality Page één boek zonder omslag selecteren, online naar passende omslagen zoeken en bewust één resultaat kiezen. Na bevestiging bewaart Saga de gekozen afbeelding veilig in de actieve bibliotheek en verdwijnen de melding en de rij direct wanneer het boek niet langer aan `Geen omslag` voldoet. Vanuit het detailscherm kan de gebruiker dezelfde keuze altijd openen, ook wanneer het boek al een omslag heeft. Daar wordt de wijziging samen met de overige boekgegevens pas definitief bij `Opslaan`.
 
 De ervaring neemt het gedrag van Calibre als referentie: zoeken met bestaande metadata, kandidaten in een visuele keuzelijst tonen, resultaten valideren, bron en resolutie zichtbaar maken en toetsenbordselectie ondersteunen. Saga kopieert geen Calibre-code.
 
@@ -29,7 +30,7 @@ De ervaring neemt het gedrag van Calibre als referentie: zoeken met bestaande me
 7. Saga downloadt en valideert de gekozen grote afbeelding opnieuw, schrijft `cover.jpg` veilig en slaat het bijgewerkte boek op.
 8. Quality Page, hoofdgrid, boekenplank en detailpaneel worden direct bijgewerkt.
 
-## Zoekbron
+## Zoekbronnen en lokale noodomslag
 
 Open Library wordt benaderd via de gedocumenteerde Search API en Covers API:
 
@@ -40,6 +41,10 @@ Open Library wordt benaderd via de gedocumenteerde Search API en Covers API:
 - Kandidaten worden op Cover ID gededupliceerd en tot maximaal twaalf resultaten beperkt.
 - Saga stuurt een herkenbare User-Agent en respecteert annulering, time-outs en serverfouten.
 - Saga crawlt niet en doet geen zoekopdracht zonder expliciete gebruikersactie.
+
+Google Books wordt aanvullend benaderd via de openbare Atom-feed die Calibre gebruikt. Deze route vereist geen sleutel, maar is minder stabiel en daarom een compatibiliteitsbron: fouten worden geïsoleerd en verhinderen Open Library of de lokale noodomslag niet. Saga accepteert uitsluitend geldige boek-ID's en bouwt afbeeldingsadressen zelf op voor vaste Google Books-hostnamen. Google Afbeeldingen wordt niet gescrapet.
+
+De twee bronnen worden gelijktijdig geraadpleegd. Hun geldige resultaten worden afwisselend samengevoegd, gededupliceerd en samen tot twaalf kandidaten begrensd, zodat één bron de andere niet verdringt. Wanneer geen online kandidaat overblijft, genereert Saga lokaal één omslag van 1200 bij 1600 pixels met de actuele titel en auteur. Ook deze kandidaat wordt nooit automatisch gekozen.
 
 Open Library-documentatie:
 
@@ -57,14 +62,14 @@ De applicatielaag definieert een klein, brononafhankelijk contract met:
 - een asynchrone zoekactie met annulering;
 - een aparte actie die de gekozen grote afbeelding definitief ophaalt.
 
-De Open Library-implementatie staat in de infrastructuurlaag. UI- en applicatielagen bouwen zelf geen externe URL op. Hiermee kan later een tweede bron worden toegevoegd zonder de Quality Page te herschrijven.
+Iedere online bron implementeert hetzelfde broncontract met een vaste bronsleutel. Een samengestelde zoekservice verdeelt downloads uitsluitend naar een geregistreerde bron en voegt de resultaten begrensd samen. Open Library en Google Books staan in de infrastructuurlaag; de lokale WPF-omslaggenerator staat in de app-laag. UI- en applicatielagen bouwen zelf geen externe URL op.
 
 ### Netwerk- en afbeeldingsgrenzen
 
-Alle gegevens van Open Library zijn onbetrouwbare externe invoer. De implementatie:
+Alle gegevens van Open Library en Google Books zijn onbetrouwbare externe invoer. De implementatie:
 
-- gebruikt uitsluitend HTTPS en vaste Open Library-hostnamen;
-- accepteert alleen numerieke Cover ID's uit het zoekantwoord;
+- gebruikt uitsluitend HTTPS en vaste Open Library- en Google Books-hostnamen;
+- accepteert alleen numerieke Open Library Cover ID's en streng begrensde Google Books-ID's uit zoekantwoorden;
 - begrenst antwoordgrootte, aantal resultaten, downloadtijd en iedere afbeelding tot 10 MiB, gelijk aan Saga's bestaande importgrens voor omslagen;
 - accepteert alleen een decodeerbare JPEG met redelijke afmetingen;
 - weigert afbeeldingen kleiner dan 50 bij 50 pixels, lege bestanden en buitensporig grote afbeeldingen;
@@ -79,7 +84,7 @@ Saga heeft al `CoverBytes` en `CoverRelativePath`, maar nog geen afzonderlijke v
 - het relatieve pad teruggeeft;
 - het nieuwe bestand opruimt wanneer de daaropvolgende boekopslag mislukt.
 
-De herstelservice haalt het actuele boek opnieuw op en controleert vlak voor schrijven dat `missing-cover` nog van toepassing is. Daarna worden alleen `CoverBytes`, `CoverRelativePath` en `UpdatedUtc` aangepast. De bestaande `BookService` blijft verantwoordelijk voor SQLite, sidecarverwerking en bekende write-backstatussen.
+De Quality Page-herstelservice haalt het actuele boek opnieuw op en controleert vlak voor schrijven dat `missing-cover` nog van toepassing is. Een algemene omslagwijzigingsservice verzorgt hetzelfde veilige bestandspad voor het detailscherm en staat daar ook vervanging van een bestaande omslag toe. In het detailscherm blijft de keuze eerst een niet-opgeslagen wijziging: `Opslaan` bewaart omslag en overige velden samen, terwijl `Ongedaan maken` de oorspronkelijke omslag herstelt. De bestaande `BookService` blijft verantwoordelijk voor SQLite, sidecarverwerking en bekende write-backstatussen.
 
 ## Technische basis
 
@@ -133,6 +138,7 @@ Resultaatstatussen zijn expliciete records of enums; verwachte netwerk- en opsla
 - Viewmodel- en layouttests controleren knopcontext, laden, selectie, annuleren, Enter, dubbelklik, foutmeldingen en lokalisatie.
 - Volledige bestaande tests en een Debug-build moeten groen blijven.
 - Een handmatige checklist controleert de echte Open Library-route met een representatief boek met en zonder ISBN.
+- Aanvullende tests controleren broncombinatie, Google-feedverwerking, lokale generatie en het vervangen, annuleren en ongedaan maken van een bestaande omslag in het detailscherm.
 
 ## Grenzen
 
@@ -146,10 +152,10 @@ Resultaatstatussen zijn expliciete records of enums; verwachte netwerk- en opsla
 
 ### Eerst overleggen
 
-- Een extra online bron of API-sleutel toevoegen.
+- Een online bron buiten Open Library en de sleutelvrije Google Books-feed toevoegen, of een API-sleutel introduceren.
 - Een nieuwe NuGet-dependency toevoegen.
 - Het databaseschema of sidecarformaat wijzigen.
-- Bestaande omslagen buiten het `missing-cover`-signaal vervangen.
+- Omslagen automatisch vervangen zonder expliciete keuze en normaal opslaan.
 
 ### Nooit in deze milestone
 
@@ -162,21 +168,24 @@ Resultaatstatussen zijn expliciete records of enums; verwachte netwerk- en opsla
 ## Acceptatiecriteria
 
 - `Omslag zoeken` is uitsluitend actief voor één geselecteerd boek onder `Geen omslag`.
+- `Omslag wijzigen` is in het detailscherm beschikbaar voor ieder geladen boek, ongeacht of al een omslag bestaat.
 - Een zoekopdracht gebruikt de actuele titel en auteurs en zoekt aanvullend exact op ISBN wanneer dat beschikbaar is.
 - Maximaal twaalf unieke, geldige kandidaten worden met bron en resolutie getoond.
 - Geen resultaten, annuleren, een time-out of een ongeldige download verandert niets.
+- Als beide online bronnen niets vinden, verschijnt één lokaal gegenereerde kandidaat met titel en auteur.
 - Een gekozen omslag wordt veilig als beheerd `cover.jpg` opgeslagen en in SQLite als bytes en relatief pad vastgelegd.
 - De Quality Page, hoofdgrid, boekenplank en het detailpaneel tonen de wijziging zonder herstart.
 - De gekozen rij verdwijnt uit `Geen omslag` en alle tellingen blijven correct.
 - Muis, Enter, dubbelklik, Escape en schermlezernamen werken.
+- In het detailscherm kan de gebruiker de nieuwe omslag met `Opslaan` bewaren of met `Ongedaan maken` verwerpen.
 - Alle geautomatiseerde tests en de Debug-build slagen zonder waarschuwingen.
 
 ## Buiten scope en vervolg
 
 - `Rommelige tags` wordt de volgende afzonderlijke Quality Page-slice.
 - Een apart tabblad `Kwaliteit` in Instellingen volgt na de resterende herstelacties.
-- Google Books of andere bronnen kunnen later via hetzelfde zoekcontract worden toegevoegd.
-- Handmatig een lokaal omslagbestand kiezen en een bestaande omslag vervangen volgen later.
+- Andere bronnen waarvoor een officiële toegang of account nodig is, kunnen later via hetzelfde zoekcontract worden toegevoegd.
+- Handmatig een lokaal omslagbestand kiezen volgt later; vervangen via de zoek- en generatieroute valt nu binnen scope.
 - Native cover-write-back in ebookbestanden blijft een afzonderlijke, formaatgerichte feature.
 
 ## Open vragen

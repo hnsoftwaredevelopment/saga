@@ -20,3 +20,18 @@
 - [x] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
 - [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
 - [x] Normale, niet-draft PR #34 openen.
+
+## Goedgekeurde uitbreiding na Nederlandse praktijktest
+
+- [x] Calibre-bronnen, Google Books-toegang en beperkingen van Amazon en bol.com onderzocht.
+- [x] Uitbreiding met Google Books, lokale noodomslag en blijvende detailactie goedgekeurd op 4 september 2026.
+- [ ] Zoekcontract geschikt maken voor meerdere vaste bronnen en brongebonden downloads.
+- [ ] Google Books-feed testgedreven toevoegen en resultaten veilig combineren.
+- [ ] Lokale Saga-omslag genereren wanneer beide online bronnen leeg zijn.
+- [ ] Algemene veilige omslagwijziging voor een geladen boek toevoegen.
+- [ ] `Omslag wijzigen` in het detailscherm toevoegen met bestaand Opslaan/Ongedaan maken-gedrag.
+- [ ] Zes vertalingen, documentatie en handmatige checklist bijwerken.
+- [ ] Volledige tests en Debug-build zonder waarschuwingen uitvoeren.
+- [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken.
+- [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
+- [ ] Zelfreview uitvoeren en PR #34 bijwerken.
