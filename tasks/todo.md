@@ -5,10 +5,10 @@
 - [x] Richting voor ID-sharding goedgekeurd op 27 september 2026.
 - [x] Migratie-, herstel- en veiligheidsgrenzen in een specificatie vastgelegd.
 - [x] Implementatievolgorde en checkpoints opgesteld.
-- [ ] Specificatie en taakvolgorde door gebruiker laten goedkeuren.
-- [ ] Taak 1: centrale opslagindeling testgedreven implementeren.
-- [ ] Taak 2: nieuwe imports, omslagen en verwijderen testgedreven omschakelen.
-- [ ] Checkpoint 1: architectuur, padbeveiliging en regressies controleren.
+- [x] Specificatie en taakvolgorde door gebruiker goedgekeurd op 27 september 2026.
+- [x] Taak 1: centrale opslagindeling testgedreven implementeren.
+- [x] Taak 2: nieuwe imports, omslagen en verwijderen testgedreven omschakelen.
+- [x] Checkpoint 1: architectuur, padbeveiliging en regressies controleren.
 - [ ] Taak 3: back-up en hervatbare bestaande-bibliotheekmigratie testgedreven implementeren.
 - [ ] Taak 4: opstartvoortgang, blokkering en gelokaliseerde foutafhandeling implementeren.
 - [ ] Checkpoint 2: volledige migratieketen en foutscenario's controleren.

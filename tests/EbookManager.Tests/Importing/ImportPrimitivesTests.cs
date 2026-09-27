@@ -161,6 +161,7 @@ public sealed class ImportPrimitivesTests : IDisposable
         var sourcePath = WriteBytesFile("source.epub", [1, 2, 3, 4]);
         var store = new ManagedLibraryFileStore(libraryRoot);
         var bookId = Guid.NewGuid();
+        var shard = bookId.ToString("N")[..2];
 
         var (relativeBookPath, relativeCoverPath) = await store.CopyIntoLibraryAsync(
             bookId,
@@ -168,14 +169,14 @@ public sealed class ImportPrimitivesTests : IDisposable
             [5, 6, 7],
             default);
 
-        relativeBookPath.Should().Be($"books/{bookId:N}/source.epub");
-        relativeCoverPath.Should().Be($"books/{bookId:N}/cover.jpg");
+        relativeBookPath.Should().Be($"books/{shard}/{bookId:N}/source.epub");
+        relativeCoverPath.Should().Be($"books/{shard}/{bookId:N}/cover.jpg");
         File.Exists(Path.Combine(libraryRoot, relativeBookPath)).Should().BeTrue();
         File.Exists(Path.Combine(libraryRoot, relativeCoverPath!)).Should().BeTrue();
 
         await store.DeleteBookDirectoryAsync(bookId, default);
 
-        Directory.Exists(Path.Combine(libraryRoot, "books", bookId.ToString("N"))).Should().BeFalse();
+        Directory.Exists(Path.Combine(libraryRoot, "books", shard, bookId.ToString("N"))).Should().BeFalse();
         Directory.Exists(Path.Combine(libraryRoot, "books")).Should().BeTrue();
         Directory.Exists(libraryRoot).Should().BeTrue();
     }
@@ -189,6 +190,7 @@ public sealed class ImportPrimitivesTests : IDisposable
         var sourcePath = WriteBytesFile("source.cbr", sourceBytes);
         var store = new ManagedLibraryFileStore(libraryRoot);
         var bookId = Guid.NewGuid();
+        var shard = bookId.ToString("N")[..2];
 
         var (relativeBookPath, relativeCoverPath, sha256) = await store.CopyIntoLibraryWithHashAsync(
             bookId,
@@ -196,7 +198,7 @@ public sealed class ImportPrimitivesTests : IDisposable
             coverBytes: null,
             default);
 
-        relativeBookPath.Should().Be($"books/{bookId:N}/source.cbr");
+        relativeBookPath.Should().Be($"books/{shard}/{bookId:N}/source.cbr");
         relativeCoverPath.Should().BeNull();
         sha256.Should().Be(Convert.ToHexString(SHA256.HashData(sourceBytes)));
         File.ReadAllBytes(Path.Combine(libraryRoot, relativeBookPath)).Should().Equal(sourceBytes);
@@ -239,6 +241,7 @@ public sealed class ImportPrimitivesTests : IDisposable
         Directory.CreateDirectory(libraryRoot);
         var store = new ManagedLibraryFileStore(libraryRoot);
         var bookId = Guid.NewGuid();
+        var shard = bookId.ToString("N")[..2];
 
         var firstSource = WriteBytesFile("first/The Hobbit.epub", [1, 2, 3]);
         await store.CopyIntoLibraryAsync(bookId, firstSource, [9, 9, 9], default);
@@ -246,8 +249,8 @@ public sealed class ImportPrimitivesTests : IDisposable
         var secondSource = WriteBytesFile("second/The Hobbit.pdf", [4, 5, 6, 7]);
         var result = await store.CopyIntoLibraryAsync(bookId, secondSource, null, default);
 
-        var bookDirectory = Path.Combine(libraryRoot, "books", bookId.ToString("N"));
-        result.RelativeBookPath.Should().Be($"books/{bookId:N}/The Hobbit.pdf");
+        var bookDirectory = Path.Combine(libraryRoot, "books", shard, bookId.ToString("N"));
+        result.RelativeBookPath.Should().Be($"books/{shard}/{bookId:N}/The Hobbit.pdf");
         result.RelativeCoverPath.Should().BeNull();
         Directory.EnumerateFiles(bookDirectory, "*", SearchOption.TopDirectoryOnly)
             .Select(Path.GetFileName)
@@ -260,19 +263,57 @@ public sealed class ImportPrimitivesTests : IDisposable
     }
 
     [Fact]
+    public async Task Managed_store_keeps_an_existing_legacy_book_together_until_migration()
+    {
+        var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "LegacyLibrary");
+        var sourcePath = WriteBytesFile("legacy-source.pdf", [4, 5, 6]);
+        var bookId = Guid.NewGuid();
+        var legacyDirectory = Path.Combine(libraryRoot, "books", bookId.ToString("N"));
+        Directory.CreateDirectory(legacyDirectory);
+        await File.WriteAllBytesAsync(Path.Combine(legacyDirectory, "existing.epub"), [1, 2, 3]);
+        var store = new ManagedLibraryFileStore(libraryRoot);
+
+        var result = await store.CopyIntoLibraryAsync(bookId, sourcePath, null, default);
+
+        result.RelativeBookPath.Should().Be($"books/{bookId:N}/legacy-source.pdf");
+        File.Exists(Path.Combine(legacyDirectory, "existing.epub")).Should().BeTrue();
+        File.Exists(Path.Combine(legacyDirectory, "legacy-source.pdf")).Should().BeTrue();
+        Directory.Exists(Path.Combine(libraryRoot, "books", bookId.ToString("N")[..2], bookId.ToString("N")))
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public async Task Managed_store_deletes_an_existing_legacy_book_directory()
+    {
+        var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "LegacyDeleteLibrary");
+        var bookId = Guid.NewGuid();
+        var legacyDirectory = Path.Combine(libraryRoot, "books", bookId.ToString("N"));
+        Directory.CreateDirectory(legacyDirectory);
+        await File.WriteAllBytesAsync(Path.Combine(legacyDirectory, "book.epub"), [1, 2, 3]);
+        var store = new ManagedLibraryFileStore(libraryRoot);
+
+        await store.DeleteBookDirectoryAsync(bookId, default);
+
+        Directory.Exists(legacyDirectory).Should().BeFalse();
+        Directory.Exists(Path.Combine(libraryRoot, "books")).Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Managed_store_leaves_prior_book_directory_intact_when_a_repeat_copy_is_cancelled()
     {
         var libraryRoot = Path.Combine(temporaryDirectory.DirectoryPath, "Library");
         Directory.CreateDirectory(libraryRoot);
         var store = new ManagedLibraryFileStore(libraryRoot);
         var bookId = Guid.NewGuid();
+        var shard = bookId.ToString("N")[..2];
 
         var firstSource = WriteBytesFile("first/Original.epub", [1, 2, 3]);
         await store.CopyIntoLibraryAsync(bookId, firstSource, [4, 5, 6], default);
 
         var secondSource = WriteBytesFile("second/Replacement.epub", [7, 8, 9]);
         var before = Directory.EnumerateFiles(
-                Path.Combine(libraryRoot, "books", bookId.ToString("N")),
+                Path.Combine(libraryRoot, "books", shard, bookId.ToString("N")),
                 "*",
                 SearchOption.TopDirectoryOnly)
             .Select(Path.GetFileName)
@@ -288,7 +329,7 @@ public sealed class ImportPrimitivesTests : IDisposable
         await act.Should().ThrowAsync<OperationCanceledException>();
 
         var after = Directory.EnumerateFiles(
-                Path.Combine(libraryRoot, "books", bookId.ToString("N")),
+                Path.Combine(libraryRoot, "books", shard, bookId.ToString("N")),
                 "*",
                 SearchOption.TopDirectoryOnly)
             .Select(Path.GetFileName)

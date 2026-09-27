@@ -26,9 +26,9 @@ Centrale opslagindeling
 
 **Acceptatiecriteria:**
 
-- [ ] Een ID wordt als 32 kleine hexadecimale tekens geschreven en de eerste twee vormen de shard.
-- [ ] Alle berekende paden blijven binnen de actieve bibliotheek.
-- [ ] Ongeldige ID's, ontsnappende paden en reparse points worden geweigerd.
+- [x] Een ID wordt als 32 kleine hexadecimale tekens geschreven en de eerste twee vormen de shard.
+- [x] Alle berekende paden blijven binnen de actieve bibliotheek.
+- [x] Ongeldige ID's, ontsnappende paden en reparse points worden geweigerd.
 
 **Verificatie:** Eerst falende tests voor shardgrenzen en padbeveiliging; daarna gerichte tests groen.
 
@@ -38,16 +38,18 @@ Centrale opslagindeling
 
 **Acceptatiecriteria:**
 
-- [ ] Nieuwe ebooks en `cover.jpg` komen samen onder `books/<shard>/<boek-id>`.
-- [ ] Tijdelijke importbestanden staan niet als duizenden directe onderdelen onder `books`.
-- [ ] Openen en exporteren blijven werken via de opgeslagen relatieve paden.
-- [ ] Verwijderen raakt uitsluitend de exacte oude of nieuwe map van het gevraagde boek.
+- [x] Nieuwe ebooks en `cover.jpg` komen samen onder `books/<shard>/<boek-id>`.
+- [x] Tijdelijke importbestanden staan niet als duizenden directe onderdelen onder `books`.
+- [x] Openen en exporteren blijven werken via de opgeslagen relatieve paden.
+- [x] Verwijderen raakt uitsluitend de exacte oude of nieuwe map van het gevraagde boek.
 
 **Verificatie:** Testgedreven opslag- en regressietests.
 
 ## Checkpoint 1
 
 Controleer na taken 1 en 2 de architectuur, padbeveiliging en regressies. Nieuwe imports moeten de nieuwe indeling gebruiken voordat migratiecode wordt toegevoegd.
+
+Afgerond: 678 tests en de volledige Debug-build slagen zonder waarschuwingen.
 
 ## Taak 3: Hervatbare mapmigratie en databaseback-up
 

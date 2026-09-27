@@ -6,16 +6,11 @@ namespace EbookManager.Infrastructure.Files;
 
 public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLibraryFileStore
 {
-    private readonly string libraryRoot = Canonicalize(libraryRootPath);
+    private readonly ManagedLibraryStorageLayout layout = new(libraryRootPath);
 
     public string GetAbsolutePath(string relativePath)
     {
-        if (string.IsNullOrWhiteSpace(relativePath))
-        {
-            throw new ArgumentException("The relative path must not be blank.", nameof(relativePath));
-        }
-
-        return EnsureContained(Path.Combine(libraryRoot, relativePath));
+        return layout.GetAbsolutePath(relativePath);
     }
 
     public async Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
@@ -56,13 +51,13 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var booksDirectory = EnsureContained(Path.Combine(libraryRoot, "books"));
-        Directory.CreateDirectory(booksDirectory);
-
-        var bookDirectory = GetBookDirectory(bookId);
-        var stagingDirectory = EnsureContained(Path.Combine(
-            booksDirectory,
-            $".{bookId:N}.{Guid.NewGuid():N}.staging"));
+        var bookDirectory = layout.ResolveExistingOrNewBookDirectory(bookId);
+        var parentDirectory = Path.GetDirectoryName(bookDirectory)
+            ?? throw new InvalidOperationException("The managed book directory has no parent directory.");
+        layout.EnsureNoReparsePoints(parentDirectory);
+        Directory.CreateDirectory(parentDirectory);
+        layout.EnsureNoReparsePoints(parentDirectory);
+        var stagingDirectory = layout.GetStagingDirectory(bookId, Guid.NewGuid());
         var managedSourceName = Path.GetFileName(sourcePath);
         if (string.IsNullOrWhiteSpace(managedSourceName))
         {
@@ -80,8 +75,9 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
             });
 
         Directory.CreateDirectory(stagingDirectory);
-        var absoluteBookPath = EnsureContained(Path.Combine(bookDirectory, managedSourceName));
-        var stagedBookPath = EnsureContained(Path.Combine(stagingDirectory, managedSourceName));
+        layout.EnsureNoReparsePoints(stagingDirectory);
+        var absoluteBookPath = layout.GetAbsolutePath(Path.Combine(bookDirectory, managedSourceName));
+        var stagedBookPath = layout.GetAbsolutePath(Path.Combine(stagingDirectory, managedSourceName));
         string? hash = null;
 
         try
@@ -111,7 +107,7 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
             if (coverBytes is { Length: > 0 })
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                stagedCoverPath = EnsureContained(Path.Combine(stagingDirectory, "cover.jpg"));
+                stagedCoverPath = layout.GetAbsolutePath(Path.Combine(stagingDirectory, "cover.jpg"));
                 await File.WriteAllBytesAsync(stagedCoverPath, coverBytes, cancellationToken);
             }
 
@@ -129,14 +125,14 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
                 {
                     File.Move(
                         stagedCoverPath,
-                        EnsureContained(Path.Combine(bookDirectory, "cover.jpg")),
+                        layout.GetAbsolutePath(Path.Combine(bookDirectory, "cover.jpg")),
                         overwrite: true);
                 }
             }
 
             return (
-                ToRelativePath(absoluteBookPath),
-                stagedCoverPath is null ? null : ToRelativePath(Path.Combine(bookDirectory, "cover.jpg")),
+                layout.ToRelativePath(absoluteBookPath),
+                stagedCoverPath is null ? null : layout.ToRelativePath(Path.Combine(bookDirectory, "cover.jpg")),
                 hash);
         }
         finally
@@ -145,6 +141,8 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
             {
                 TryDeleteDirectory(stagingDirectory);
             }
+
+            TryDeleteEmptyShardDirectory(bookDirectory);
         }
     }
 
@@ -181,10 +179,12 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var bookDirectory = EnsureContained(GetBookDirectory(bookId));
+        var bookDirectory = layout.ResolveExistingOrNewBookDirectory(bookId);
+        layout.EnsureNoReparsePoints(bookDirectory);
         if (Directory.Exists(bookDirectory))
         {
             Directory.Delete(bookDirectory, recursive: true);
+            TryDeleteEmptyShardDirectory(bookDirectory);
         }
 
         return Task.CompletedTask;
@@ -203,33 +203,6 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
         return Task.CompletedTask;
     }
 
-    private string GetBookDirectory(Guid bookId) => Path.Combine(libraryRoot, "books", bookId.ToString("N"));
-
-    private string EnsureContained(string path)
-    {
-        var fullPath = Canonicalize(path);
-        var pathComparison = OperatingSystem.IsWindows()
-            ? StringComparison.OrdinalIgnoreCase
-            : StringComparison.Ordinal;
-        var rootWithSeparator = libraryRoot.EndsWith(Path.DirectorySeparatorChar)
-            ? libraryRoot
-            : $"{libraryRoot}{Path.DirectorySeparatorChar}";
-
-        if (!fullPath.Equals(libraryRoot, pathComparison) &&
-            !fullPath.StartsWith(rootWithSeparator, pathComparison))
-        {
-            throw new InvalidOperationException($"Path '{path}' escapes the managed library root.");
-        }
-
-        return fullPath;
-    }
-
-    private static string Canonicalize(string path) =>
-        Path.TrimEndingDirectorySeparator(Path.GetFullPath(path));
-
-    private string ToRelativePath(string absolutePath) =>
-        Path.GetRelativePath(libraryRoot, absolutePath).Replace(Path.DirectorySeparatorChar, '/');
-
     private static void TryDeleteDirectory(string path)
     {
         try
@@ -237,6 +210,34 @@ public sealed class ManagedLibraryFileStore(string libraryRootPath) : IHashingLi
             Directory.Delete(path, recursive: true);
         }
         catch
+        {
+        }
+    }
+
+    private void TryDeleteEmptyShardDirectory(string bookDirectory)
+    {
+        var shardDirectory = Path.GetDirectoryName(bookDirectory);
+        if (shardDirectory is null ||
+            Path.GetDirectoryName(shardDirectory) is not { } shardParent ||
+            !string.Equals(
+                Path.GetFullPath(shardParent),
+                Path.GetFullPath(layout.BooksDirectory),
+                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        try
+        {
+            Directory.Delete(shardDirectory, recursive: false);
+        }
+        catch (DirectoryNotFoundException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
         {
         }
     }

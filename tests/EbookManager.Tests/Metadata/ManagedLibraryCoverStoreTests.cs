@@ -12,10 +12,11 @@ public sealed class ManagedLibraryCoverStoreTests
         using var root = new TemporaryDirectory();
         var store = new ManagedLibraryCoverStore(root.DirectoryPath);
         var bookId = Guid.NewGuid();
+        var shard = bookId.ToString("N")[..2];
 
         var relativePath = await store.SaveAsync(bookId, [1, 2, 3], CancellationToken.None);
 
-        relativePath.Should().Be($"books/{bookId:N}/cover.jpg");
+        relativePath.Should().Be($"books/{shard}/{bookId:N}/cover.jpg");
         var absolutePath = Path.Combine(root.DirectoryPath, relativePath.Replace('/', Path.DirectorySeparatorChar));
         File.ReadAllBytes(absolutePath).Should().Equal(1, 2, 3);
         Directory.GetFiles(Path.GetDirectoryName(absolutePath)!, "*.tmp").Should().BeEmpty();
@@ -27,14 +28,37 @@ public sealed class ManagedLibraryCoverStoreTests
         using var root = new TemporaryDirectory();
         var store = new ManagedLibraryCoverStore(root.DirectoryPath);
         var bookId = Guid.NewGuid();
+        var shard = bookId.ToString("N")[..2];
         await store.SaveAsync(bookId, [1, 2, 3], CancellationToken.None);
-        var sibling = Path.Combine(root.DirectoryPath, "books", bookId.ToString("N"), "book.epub");
+        var sibling = Path.Combine(root.DirectoryPath, "books", shard, bookId.ToString("N"), "book.epub");
         await File.WriteAllTextAsync(sibling, "book");
 
         await store.DeleteAsync(bookId, CancellationToken.None);
 
-        File.Exists(Path.Combine(root.DirectoryPath, "books", bookId.ToString("N"), "cover.jpg")).Should().BeFalse();
+        File.Exists(Path.Combine(root.DirectoryPath, "books", shard, bookId.ToString("N"), "cover.jpg")).Should().BeFalse();
         File.Exists(sibling).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Save_uses_an_existing_legacy_book_directory_until_migration()
+    {
+        using var root = new TemporaryDirectory();
+        var bookId = Guid.NewGuid();
+        var legacyDirectory = Path.Combine(root.DirectoryPath, "books", bookId.ToString("N"));
+        Directory.CreateDirectory(legacyDirectory);
+        var store = new ManagedLibraryCoverStore(root.DirectoryPath);
+
+        var relativePath = await store.SaveAsync(bookId, [1, 2, 3], CancellationToken.None);
+
+        relativePath.Should().Be($"books/{bookId:N}/cover.jpg");
+        File.ReadAllBytes(Path.Combine(legacyDirectory, "cover.jpg")).Should().Equal(1, 2, 3);
+        Directory.Exists(Path.Combine(
+                root.DirectoryPath,
+                "books",
+                bookId.ToString("N")[..2],
+                bookId.ToString("N")))
+            .Should()
+            .BeFalse();
     }
 
     [Fact]
@@ -49,7 +73,8 @@ public sealed class ManagedLibraryCoverStoreTests
         using var outside = new TemporaryDirectory();
         var bookId = Guid.NewGuid();
         var booksDirectory = Directory.CreateDirectory(Path.Combine(root.DirectoryPath, "books"));
-        var linkedBookDirectory = Path.Combine(booksDirectory.FullName, bookId.ToString("N"));
+        var shardDirectory = booksDirectory.CreateSubdirectory(bookId.ToString("N")[..2]);
+        var linkedBookDirectory = Path.Combine(shardDirectory.FullName, bookId.ToString("N"));
         try
         {
             Directory.CreateSymbolicLink(linkedBookDirectory, outside.DirectoryPath);
