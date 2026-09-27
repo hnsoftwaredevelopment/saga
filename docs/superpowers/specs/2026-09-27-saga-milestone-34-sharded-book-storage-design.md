@@ -6,8 +6,8 @@ De actieve bibliotheek bevat ongeveer 34.483 boekmappen rechtstreeks onder `book
 
 ## Aannames
 
-- Een boek-ID is de stabiele sleutel voor fysieke opslag; auteur, titel en andere metadata bepalen nooit het pad.
-- De nieuwe indeling gebruikt de eerste twee hexadecimale tekens van het bestaande boek-ID als vaste tussenmap.
+- Een opslag-ID is de stabiele sleutel voor fysieke opslag; normaal is dit het oorspronkelijke boek-ID. Na een duplicaatsamenvoeging kan een bestand bewust zijn oorspronkelijke opslag-ID behouden. Auteur, titel en andere metadata bepalen nooit het pad.
+- De nieuwe indeling gebruikt de eerste twee hexadecimale tekens van de opslag-ID als vaste tussenmap.
 - Nieuwe imports gebruiken de nieuwe indeling onmiddellijk.
 - Bestaande bibliotheken worden bij de eerste opening na de update automatisch en hervatbaar gemigreerd voordat normaal gebruik mogelijk is.
 - De migratie verplaatst bestanden op dezelfde schijf en maakt geen tweede kopie van ieder ebook.
@@ -15,7 +15,7 @@ De actieve bibliotheek bevat ongeveer 34.483 boekmappen rechtstreeks onder `book
 - De wijziging verlaagt het aantal directe onderdelen onder `books`, maar niet het totale aantal door OneDrive gesynchroniseerde bestanden en mappen.
 - De eerder gemelde stroperigheid van het hoofdgrid en titelfilter wordt na deze opslagwijziging afzonderlijk gemeten en geoptimaliseerd; deze milestone schrijft geen onbewezen oorzaak toe aan de mapindeling.
 
-De richting van gespreide opslag op basis van het boek-ID is functioneel goedgekeurd op 27 september 2026. De precieze migratie- en foutafhandeling in dit document vormt het controlepunt vóór implementatie.
+De richting van gespreide opslag op basis van het ID is functioneel goedgekeurd op 27 september 2026. De precieze migratie- en foutafhandeling in dit document vormt het controlepunt vóór implementatie.
 
 ## Doel
 
@@ -23,7 +23,7 @@ Saga bewaart beheerde boekbestanden en omslagen in een stabiele, breed verdeelde
 
 ## Nieuwe opslagindeling
 
-Een boek-ID wordt in kleine letters zonder streepjes geschreven. De eerste twee tekens vormen de shard:
+Een opslag-ID wordt in kleine letters zonder streepjes geschreven. De eerste twee tekens vormen de shard:
 
 ```text
 books/
@@ -42,7 +42,7 @@ books/
 Het relatieve pad van een ebook wordt daarmee:
 
 ```text
-books/<eerste-2-tekens>/<boek-id>/<bestandsnaam>
+books/<eerste-2-tekens>/<opslag-id>/<bestandsnaam>
 ```
 
 Er zijn maximaal 256 tussenmappen (`00` tot en met `ff`). Bij de huidige omvang bevat een shard gemiddeld ongeveer 135 boekmappen. Lege shardmappen hoeven niet vooraf te worden aangemaakt en mogen na verwijdering blijven bestaan; het opruimen daarvan is niet nodig voor correctheid.
@@ -50,9 +50,9 @@ Er zijn maximaal 256 tussenmappen (`00` tot en met `ff`). Bij de huidige omvang 
 ## Gebruikersverloop bij een bestaande bibliotheek
 
 1. Saga opent de bibliotheekdatabase en maakt, als die nog niet bestaat, een veiligheidskopie vóór de opslagmigratie.
-2. Saga herkent rechtstreeks onder `books` alleen mappen waarvan de volledige naam een geldig bestaand boek-ID is.
-3. Wanneer zulke oude boekmappen aanwezig zijn, toont het startscherm `Bibliotheekopslag optimaliseren` met het aantal verwerkte en resterende boeken.
-4. Saga verwerkt steeds één boekmap volledig. Tijdens deze fase kunnen importeren, bewerken en verwijderen niet parallel starten.
+2. Saga herkent rechtstreeks onder `books` alleen mappen waarvan de volledige naam een geldige opslag-ID is die vanuit een boek, ebookpad of omslagpad wordt gerefereerd.
+3. Wanneer zulke oude boekmappen aanwezig zijn, toont het startscherm `Bibliotheekopslag optimaliseren` met het aantal verwerkte en resterende opslagmappen.
+4. Saga verwerkt steeds één opslagmap volledig. Tijdens deze fase kunnen importeren, bewerken en verwijderen niet parallel starten.
 5. Na iedere geslaagde mapverplaatsing worden de relatieve ebook- en omslagpaden van dat boek in één databasetransactie bijgewerkt.
 6. Als Saga of Windows tussentijds stopt, herkent de volgende start zowel de oude als de reeds verplaatste toestand en gaat verder waar dat veilig kan.
 7. Na voltooiing opent de bibliotheek normaal. Latere starts doen alleen een snelle controle en voeren geen migratie meer uit.
@@ -77,7 +77,7 @@ Annulering of afsluiten wordt alleen tussen twee boeken verwerkt, niet midden in
 
 Eén infrastructuurcomponent wordt de enige bron voor:
 
-- het normaliseren van een boek-ID;
+- het normaliseren van een opslag-ID;
 - het bepalen van de shard;
 - oude en nieuwe boekmappen;
 - relatieve ebook- en omslagpaden;
@@ -93,13 +93,13 @@ De bestaande relatieve paden in SQLite blijven leidend voor het openen van besta
 
 ### Databaseback-up
 
-Vóór de eerste verplaatsing maakt Saga via SQLite een consistente back-up in een herkenbare map onder de bibliotheekroot. Een bestaande back-up voor deze migratie wordt behouden en niet telkens overschreven. De back-up is een extra herstelmiddel; de normale hervatting is gebaseerd op de feitelijke oude/nieuwe map en de opgeslagen relatieve paden.
+Vóór de eerste verplaatsing maakt Saga via SQLite een consistente back-up in een herkenbare map onder de bibliotheekroot. Een bestaande back-up voor deze migratie wordt behouden en niet telkens overschreven. Een afgebroken tijdelijke back-up wordt bij een volgende start gecontroleerd vervangen. De back-up is een extra herstelmiddel; de normale hervatting is gebaseerd op de feitelijke oude/nieuwe map en de opgeslagen relatieve paden. Bij de huidige bibliotheek is `library.db` ongeveer 5,98 GB; de eerste onbepaalde voortgangsfase en benodigde vrije ruimte worden daarom expliciet in de checklist genoemd.
 
 ## Veiligheidsgrenzen
 
 - Alleen canonieke paden binnen de actieve bibliotheek worden geaccepteerd.
 - Reparse points, symbolische koppelingen en junctions in een te verplaatsen boekpad worden geweigerd.
-- Alleen een exacte mapnaam die als niet-leeg boek-ID kan worden gelezen, komt voor automatische migratie in aanmerking.
+- Alleen een exacte mapnaam die als niet-lege opslag-ID kan worden gelezen en door de database wordt gerefereerd, komt voor automatische migratie in aanmerking.
 - Een bestaande doelmap wordt nooit blind overschreven of samengevoegd.
 - Bronmappen worden nooit verwijderd als losse opruimstap; de verplaatsing zelf is de enige normale bronwijziging.
 - Databasepaden worden alleen vervangen wanneer ze exact onder de verwachte oude boekmap vallen.
@@ -132,9 +132,20 @@ De handmatige checklist gebruikt eerst een kleine kopiebibliotheek met oude mapp
 
 De echte bibliotheek wordt niet door geautomatiseerde tests aangepast.
 
+## Leesbare preflight op de echte bibliotheek
+
+Op 27 september 2026 is de gesloten bibliotheek uitsluitend leesbaar gecontroleerd:
+
+- 34.447 boeken en 34.643 ebookbestanden in SQLite;
+- 34.460 unieke, door ebook- of omslagpaden gerefereerde opslag-ID's;
+- geen gerefereerde opslagmap en geen gerefereerd bestand ontbreekt;
+- 13 ebookpaden en 2 omslagpaden gebruiken na eerdere duplicaatsamenvoegingen nog een oorspronkelijke opslag-ID; deze worden op opslag-ID gemigreerd;
+- 23 GUID-mappen worden niet door de database gerefereerd en blijven daarom bewust onaangeroerd;
+- geen oude en nieuwe opslaglocatie bestaat tegelijk.
+
 ## Acceptatiecriteria
 
-- Nieuwe boekmappen staan onder `books/<shard>/<boek-id>` en ebook en omslag blijven bijeen.
+- Nieuwe boekmappen staan onder `books/<shard>/<opslag-id>` en ebook en omslag blijven bijeen.
 - Auteur- en titelwijzigingen veranderen het opslagpad niet.
 - Een bestaande bibliotheek migreert met zichtbare voortgang en blokkeert gelijktijdige mutaties.
 - Een onderbreking kan zonder dupliceren, overschrijven of dataverlies worden hervat.

@@ -29,7 +29,13 @@ internal static class LibraryDatabaseBackup
         Directory.CreateDirectory(backupDirectory);
         layout.EnsureNoReparsePoints(backupDirectory);
         var temporaryPath = layout.GetAbsolutePath(
-            Path.Combine(backupDirectory, $".{Guid.NewGuid():N}.db.tmp"));
+            Path.Combine(backupDirectory, $".{backupFileName}.tmp"));
+        if (File.Exists(temporaryPath))
+        {
+            layout.EnsureNoReparsePoints(temporaryPath);
+            File.Delete(temporaryPath);
+        }
+
         try
         {
             var sourceConnectionString = new SqliteConnectionStringBuilder

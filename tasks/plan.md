@@ -57,10 +57,10 @@ Afgerond: 678 tests en de volledige Debug-build slagen zonder waarschuwingen.
 
 **Acceptatiecriteria:**
 
-- [ ] Normale, reeds voltooide en na verplaatsing onderbroken toestanden worden correct afgehandeld.
-- [ ] Bestaande bron én bestemming, ontbrekende opslag en afwijkende databasepaden stoppen zonder wijziging.
-- [ ] Ebook- en omslagpaden worden per boek samen in één databasetransactie bijgewerkt.
-- [ ] Onbekende mappen, bestanden en reparse points blijven onaangeroerd.
+- [x] Normale, reeds voltooide en na verplaatsing onderbroken toestanden worden correct afgehandeld.
+- [x] Bestaande bron én bestemming, ontbrekende opslag en afwijkende databasepaden stoppen zonder wijziging.
+- [x] Ebook- en omslagpaden worden per opslag-ID samen in één databasetransactie bijgewerkt.
+- [x] Onbekende mappen, bestanden en reparse points blijven onaangeroerd.
 
 **Verificatie:** Eerst falende scenariotests voor iedere toestand, inclusief geforceerde onderbreking; daarna integratietests groen.
 
@@ -70,10 +70,10 @@ Afgerond: 678 tests en de volledige Debug-build slagen zonder waarschuwingen.
 
 **Acceptatiecriteria:**
 
-- [ ] De gebruiker ziet `Bibliotheekopslag optimaliseren` en verwerkte/totale aantallen.
-- [ ] Importeren, bewerken en verwijderen kunnen niet gelijktijdig starten.
-- [ ] Afsluiten wordt tussen boeken verwerkt en de volgende start hervat veilig.
-- [ ] Een fout noemt het boek of pad en biedt opnieuw proberen zonder technische stacktrace.
+- [x] De gebruiker ziet `Bibliotheekopslag optimaliseren` en verwerkte/totale aantallen.
+- [x] Importeren, bewerken en verwijderen kunnen niet gelijktijdig starten.
+- [x] Afsluiten wordt tussen opslagmappen verwerkt en de volgende start hervat veilig.
+- [x] Een fout noemt het pad en een volgende start kan opnieuw proberen zonder technische stacktrace.
 
 **Verificatie:** Viewmodeltests plus een kleine tijdelijke testbibliotheek.
 
@@ -81,17 +81,19 @@ Afgerond: 678 tests en de volledige Debug-build slagen zonder waarschuwingen.
 
 Controleer de volledige migratieketen op databehoud, hervatbaarheid, OneDrive-fouten en begrijpelijke gebruikersfeedback.
 
+Afgerond: alle geautomatiseerde scenario's zijn groen en een leesbare preflight op de echte bibliotheek vond geen ontbrekende gerefereerde mappen of bestanden. Samengevoegde boeken met een afwijkende oorspronkelijke opslag-ID worden ondersteund; onverwezen mappen blijven staan.
+
 ## Taak 5: Regressie, documentatie en testbuild
 
 **Beschrijving:** Rond regressietests, zes vertalingen, handmatige checklist, documentatie, zelfreview en de actuele Debug-build af.
 
 **Acceptatiecriteria:**
 
-- [ ] Importeren, openen, exporteren, omslag wijzigen, auteur wijzigen en verwijderen zijn getest.
-- [ ] De checklist bevat eerst een kopiebibliotheek en daarna de echte bibliotheek.
-- [ ] Alle gewijzigde Markdown is exact naar Obsidian gespiegeld.
-- [ ] Alleen de actuele applicatiebuild staat in `Builds/Debug`.
-- [ ] De volledige testsuite en build slagen zonder waarschuwingen.
+- [x] Importeren, openen, exporteren, omslag wijzigen, auteur wijzigen en verwijderen zijn geautomatiseerd getest; praktijktest staat in de checklist.
+- [x] De checklist bevat veilige voorbereiding, de echte bibliotheek en hervatbaarheid die geautomatiseerd met tijdelijke bibliotheken is bewezen.
+- [x] Alle gewijzigde Markdown is exact naar Obsidian gespiegeld.
+- [x] Alleen de actuele applicatiebuild staat in `Builds/Debug`.
+- [x] De volledige testsuite met 697 tests en build slagen zonder waarschuwingen.
 
 **Verificatie:** Volledige geautomatiseerde suite, Debug-build, zelfreview en handmatige checklist.
 

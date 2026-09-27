@@ -229,6 +229,55 @@ public sealed class LibraryStorageMigratorTests
         (await verifyContext.Books.SingleAsync()).Id.Should().Be(bookId);
     }
 
+    [Fact]
+    public async Task Migration_replaces_an_abandoned_temporary_backup_from_an_interrupted_start()
+    {
+        using var library = new TemporaryLibrary();
+        var (factory, bookId) = await CreateLegacyBookAsync(library.DirectoryPath, includeCover: false);
+        var layout = new ManagedLibraryStorageLayout(library.DirectoryPath);
+        await File.WriteAllBytesAsync(Path.Combine(layout.GetLegacyBookDirectory(bookId), "book.epub"), [1, 2, 3]);
+        var backupDirectory = Directory.CreateDirectory(Path.Combine(library.DirectoryPath, "backups"));
+        var temporaryBackupPath = Path.Combine(
+            backupDirectory.FullName,
+            $".{LibraryStorageMigrator.DatabaseBackupFileName}.tmp");
+        await File.WriteAllTextAsync(temporaryBackupPath, "interrupted");
+
+        var result = await new LibraryStorageMigrator(factory).MigrateAsync(
+            new LibraryDescriptor("Test", library.DirectoryPath, DateTimeOffset.UtcNow),
+            progress: null,
+            default);
+
+        result.Status.Should().Be(LibraryStorageMigrationStatus.Completed);
+        File.Exists(temporaryBackupPath).Should().BeFalse();
+        File.Exists(Path.Combine(
+            backupDirectory.FullName,
+            LibraryStorageMigrator.DatabaseBackupFileName)).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Migration_detects_a_missing_already_sharded_storage_directory()
+    {
+        using var library = new TemporaryLibrary();
+        var (factory, bookId) = await CreateLegacyBookAsync(
+            library.DirectoryPath,
+            includeCover: false,
+            createLegacyDirectory: false);
+        await using (var context = factory.Create(library.DirectoryPath))
+        {
+            var id = bookId.ToString("N");
+            (await context.BookFiles.SingleAsync()).RelativePath = $"books/{id[..2]}/{id}/book.epub";
+            await context.SaveChangesAsync();
+        }
+
+        var action = () => new LibraryStorageMigrator(factory).MigrateAsync(
+            new LibraryDescriptor("Test", library.DirectoryPath, DateTimeOffset.UtcNow),
+            progress: null,
+            default);
+
+        (await action.Should().ThrowAsync<LibraryStorageMigrationException>())
+            .Which.StorageId.Should().Be(bookId);
+    }
+
     private static async Task<(LibraryDbContextFactory Factory, Guid BookId)> CreateLegacyBookAsync(
         string libraryPath,
         bool includeCover,

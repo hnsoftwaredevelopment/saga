@@ -278,7 +278,14 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
         }
 
         var legacyPrefix = layout.GetLegacyRelativeBookDirectory(snapshot.StorageId) + "/";
-        return snapshot.RelativePaths.Any(path => StartsWithPath(path, legacyPrefix));
+        if (snapshot.RelativePaths.Any(path => StartsWithPath(path, legacyPrefix)))
+        {
+            return true;
+        }
+
+        var targetPrefix = layout.GetRelativeBookDirectory(snapshot.StorageId) + "/";
+        return snapshot.RelativePaths.Any(path => StartsWithPath(path, targetPrefix)) &&
+            !Directory.Exists(layout.GetBookDirectory(snapshot.StorageId));
     }
 
     private static bool TryGetStorageId(string relativePath, out Guid storageId)

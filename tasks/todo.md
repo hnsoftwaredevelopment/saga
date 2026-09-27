@@ -9,13 +9,13 @@
 - [x] Taak 1: centrale opslagindeling testgedreven implementeren.
 - [x] Taak 2: nieuwe imports, omslagen en verwijderen testgedreven omschakelen.
 - [x] Checkpoint 1: architectuur, padbeveiliging en regressies controleren.
-- [ ] Taak 3: back-up en hervatbare bestaande-bibliotheekmigratie testgedreven implementeren.
-- [ ] Taak 4: opstartvoortgang, blokkering en gelokaliseerde foutafhandeling implementeren.
-- [ ] Checkpoint 2: volledige migratieketen en foutscenario's controleren.
-- [ ] Taak 5: regressietests, zes vertalingen en handmatige checklist afronden.
-- [ ] Volledige Debug-tests en build zonder waarschuwingen uitvoeren.
-- [ ] Actuele Debug-build uitsluitend in `Builds/Debug` maken.
-- [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
-- [ ] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
+- [x] Taak 3: back-up en hervatbare bestaande-bibliotheekmigratie testgedreven implementeren.
+- [x] Taak 4: opstartvoortgang, blokkering en gelokaliseerde foutafhandeling implementeren.
+- [x] Checkpoint 2: volledige migratieketen, samengevoegde opslag-ID's en foutscenario's controleren.
+- [x] Taak 5: regressietests, zes vertalingen en handmatige checklist afronden.
+- [x] Volledige Debug-tests uitvoeren: 697 tests groen.
+- [x] Actuele Debug-build uitsluitend in `Builds/Debug` maken zonder waarschuwingen.
+- [x] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
+- [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
 - [ ] Normale, niet-draft PR openen.
 - [ ] Handmatige checklist door gebruiker laten uitvoeren.
