@@ -17,5 +17,5 @@
 - [x] Actuele Debug-build uitsluitend in `Builds/Debug` maken zonder waarschuwingen.
 - [x] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
 - [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
-- [ ] Normale, niet-draft PR openen.
+- [x] Normale, niet-draft PR #35 openen.
 - [ ] Handmatige checklist door gebruiker laten uitvoeren.
