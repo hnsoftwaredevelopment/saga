@@ -84,17 +84,25 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Save through Saga's existing metadata and sidecar route and immediately refresh dashboard, main library rows, and author filters.
 - Keep the workflow modal, keyboard accessible, usable with longer translated labels, and localized in all six supported languages.
 
-## Proposed milestone 33: Dedicated quality settings
+## Milestone 33: Find and repair a missing cover
 
-- Give quality decisions their own `Quality` tab in Settings, matching the separate Quality Page in Saga.
-- Move management of books and quality signals marked as correct out of the `Duplicates` tab.
-- Preserve all existing ignored-quality decisions, restore actions, active-library isolation, and keyboard behavior.
-- Keep the change organizational: do not change the quality heuristics or stored decision format in this slice.
-- Localize the tab and its contents in all six supported languages.
+- Show `Search for cover` only while the missing-cover issue and one affected book are selected.
+- Search Google Books and Open Library only after an explicit user action, using current title and author and adding an exact ISBN route only for a validated ISBN-10 or ISBN-13.
+- Reject unrelated online candidates by checking exact ISBN or a strong title-and-author match; prefer the local Saga cover when confidence is insufficient.
+- Show at most twelve validated, unique candidates with source and dimensions; require the user to select one explicitly.
+- When neither online source returns a usable candidate, offer one locally generated Saga cover with title and author.
+- Let the user choose with mouse, Enter, or double-click and cancel without changing the book.
+- Store the chosen image safely as the managed `cover.jpg`, update cover bytes and relative path, and refresh every visible library surface immediately.
+- Keep `Change cover` available in book details even when a cover already exists; stage the selected cover until the user chooses the normal `Save`, and restore it with `Undo`.
+- Keep external responses bounded and untrusted, use fixed HTTPS hosts, and report no-results, network, validation, and storage failures without metadata loss.
+- Keep the workflow localized in all six supported languages and do not add a package, API key, or database migration.
 
 ## Follow-up ideas
 
-- Add direct repair actions for tags and missing covers.
+- Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
+- Improve large-library scrolling and filtering in a separate performance slice with measurable checks on a representative library.
+- Add direct repair for messy tags after the missing-cover slice.
+- Give quality decisions their own `Quality` tab in Settings instead of placing them under `Duplicates`.
 - Let users select multiple missing-author books and apply one chosen author to all selected books.
 - Let users select multiple quality rows and mark them as correct in one action.
 - Add export or filtered worklists for large cleanup sessions.
@@ -103,4 +111,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 are implemented and milestone 32 was accepted through manual testing on 4 September 2026. The dashboard detects the initial quality signals, lists affected books in a resizable issue pane, navigates to a selected book while preserving the library layout context, stores reversible quality decisions per active library, and repairs a missing author, missing or unknown language, missing series name, or likely swapped title and author for one selected book. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. A dedicated Quality tab in Settings is proposed as milestone 33. Tag and cover repair, bulk decisions, bulk repair, and heuristic tuning remain follow-up work.
+Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Messy-tag repair, a dedicated Quality settings tab, bulk decisions, bulk repair, and heuristic tuning remain follow-up work.

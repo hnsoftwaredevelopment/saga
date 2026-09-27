@@ -1,4 +1,5 @@
 using EbookManager.Application.Books;
+using EbookManager.Application.Metadata;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.CustomMetadata;
@@ -13,6 +14,76 @@ namespace EbookManager.Tests.App.ViewModels;
 
 public sealed class BookDetailsViewModelTests
 {
+    [Fact]
+    public async Task Change_cover_is_available_for_an_existing_cover_and_can_be_undone()
+    {
+        var originalBytes = new byte[] { 1, 2, 3 };
+        var replacementBytes = new byte[] { 4, 5, 6 };
+        var candidate = new BookCoverCandidate(
+            "source", "candidate", "Source", "New title", ["Author"], replacementBytes, 400, 600);
+        var searchService = new StubCoverSearchService(candidate, replacementBytes);
+        var viewModel = CreateViewModel(
+            out _,
+            coverSearchService: searchService,
+            showCoverSearch: async (search, cancellationToken) =>
+            {
+                await search.LoadAsync(cancellationToken);
+                search.SelectedCandidate = search.Candidates.Single();
+                return true;
+            },
+            coverUpdateService: new StubCoverUpdateService());
+        var book = WithCover(CreateBook("Original", ["First Author"]), originalBytes);
+        viewModel.Load(book);
+        viewModel.Title = "Edited title";
+
+        viewModel.ChangeCoverCommand.CanExecute(null).Should().BeTrue();
+        await viewModel.ChangeCoverCommand.ExecuteAsync(null);
+
+        searchService.Query.Should().BeEquivalentTo(new BookCoverSearchQuery(
+            "Edited title", ["First Author"], "9780000000000"));
+        searchService.DownloadedCandidate.Should().BeSameAs(candidate);
+        viewModel.CoverBytes.Should().Equal(replacementBytes);
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+
+        viewModel.UndoCommand.Execute(null);
+
+        viewModel.CoverBytes.Should().Equal(originalBytes);
+        viewModel.Title.Should().Be("Original");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Saving_a_selected_cover_uses_safe_cover_update_and_notifies_the_saved_book()
+    {
+        var replacementBytes = new byte[] { 4, 5, 6 };
+        var candidate = new BookCoverCandidate(
+            "source", "candidate", "Source", "Title", ["Author"], replacementBytes, 400, 600);
+        var searchService = new StubCoverSearchService(candidate, replacementBytes);
+        var updateService = new StubCoverUpdateService();
+        var viewModel = CreateViewModel(
+            out _,
+            coverSearchService: searchService,
+            showCoverSearch: async (search, cancellationToken) =>
+            {
+                await search.LoadAsync(cancellationToken);
+                search.SelectedCandidate = search.Candidates.Single();
+                return true;
+            },
+            coverUpdateService: updateService);
+        var book = WithCover(CreateBook("Original", ["First Author"]), [1, 2, 3]);
+        Book? notified = null;
+        viewModel.BookSaved += (_, saved) => notified = saved;
+        viewModel.Load(book);
+
+        await viewModel.ChangeCoverCommand.ExecuteAsync(null);
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        updateService.CoverBytes.Should().Equal(replacementBytes);
+        updateService.EditedBook!.Metadata.CoverBytes.Should().Equal(replacementBytes);
+        notified!.CoverRelativePath.Should().Be($"books/{book.Id:N}/cover.jpg");
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
     [Fact]
     public void Loading_a_book_does_not_set_dirty_state()
     {
@@ -611,15 +682,43 @@ public sealed class BookDetailsViewModelTests
         IBookFileInteractionService? fileInteraction = null,
         ILibraryFileStore? fileStore = null,
         BookFileExportService? exportService = null,
-        ICustomMetadataRepository? customMetadataRepository = null)
+        ICustomMetadataRepository? customMetadataRepository = null,
+        IBookCoverSearchService? coverSearchService = null,
+        Func<MetadataQualityCoverSearchViewModel, CancellationToken, Task<bool>>? showCoverSearch = null,
+        IBookCoverUpdateService? coverUpdateService = null)
     {
         repository = new RecordingBookRepository();
         var service = new BookService(
             repository,
             fileStore ?? new NoopLibraryFileStore(),
             new NoopMetadataAdapterResolver());
-        return new BookDetailsViewModel(service, exportService, fileInteraction, customMetadataRepository);
+        return new BookDetailsViewModel(
+            service,
+            exportService,
+            fileInteraction,
+            customMetadataRepository,
+            coverSearchService,
+            showCoverSearch,
+            coverUpdateService,
+            key => $"loc:{key}");
     }
+
+    private static Book WithCover(Book book, byte[] bytes) => book with
+    {
+        Metadata = new BookMetadata(
+            book.Metadata.Title,
+            book.Metadata.Authors,
+            book.Metadata.Description,
+            book.Metadata.Language,
+            book.Metadata.Publisher,
+            book.Metadata.PublicationDate,
+            book.Metadata.Tags,
+            book.Metadata.Series,
+            book.Metadata.SeriesNumber,
+            book.Metadata.Isbn,
+            bytes),
+        CoverRelativePath = $"books/{book.Id:N}/cover.jpg"
+    };
 
     private static Book CreateBook(
         string title,
@@ -661,6 +760,42 @@ public sealed class BookDetailsViewModelTests
             sizeBytes,
             MetadataWriteBackStatus.Unsupported,
             null);
+
+    private sealed class StubCoverSearchService(
+        BookCoverCandidate candidate,
+        byte[] bytes) : IBookCoverSearchService
+    {
+        public BookCoverSearchQuery? Query { get; private set; }
+        public BookCoverCandidate? DownloadedCandidate { get; private set; }
+
+        public Task<BookCoverSearchResult> SearchAsync(BookCoverSearchQuery query, CancellationToken cancellationToken)
+        {
+            Query = query;
+            return Task.FromResult(new BookCoverSearchResult(BookCoverSearchStatus.Succeeded, [candidate]));
+        }
+
+        public Task<BookCoverDownloadResult> DownloadAsync(BookCoverCandidate selected, CancellationToken cancellationToken)
+        {
+            DownloadedCandidate = selected;
+            return Task.FromResult(new BookCoverDownloadResult(BookCoverDownloadStatus.Succeeded, bytes, 400, 600));
+        }
+    }
+
+    private sealed class StubCoverUpdateService : IBookCoverUpdateService
+    {
+        public Book? EditedBook { get; private set; }
+        public byte[]? CoverBytes { get; private set; }
+
+        public Task<BookCoverUpdateResult> UpdateAsync(Book editedBook, byte[] coverBytes, CancellationToken cancellationToken)
+        {
+            EditedBook = editedBook;
+            CoverBytes = coverBytes;
+            var saved = editedBook with { CoverRelativePath = $"books/{editedBook.Id:N}/cover.jpg" };
+            return Task.FromResult(new BookCoverUpdateResult(
+                new BookSaveResult(BookSaveStatus.Succeeded, []),
+                saved));
+        }
+    }
 
     private sealed class RecordingBookRepository : IBookRepository
     {

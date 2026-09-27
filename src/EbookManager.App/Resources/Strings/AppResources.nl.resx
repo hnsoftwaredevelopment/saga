@@ -61,6 +61,7 @@
   <data name="ResetView" xml:space="preserve"><value>Weergave herstellen</value></data>
   <data name="ResetViewTooltip" xml:space="preserve"><value>Weergave herstellen voor: {0}</value></data>
   <data name="Cover" xml:space="preserve"><value>Omslag</value></data>
+  <data name="ChangeCover" xml:space="preserve"><value>Omslag wijzigen</value></data>
   <data name="CreateLibraryTooltip" xml:space="preserve"><value>Maak een nieuwe bibliotheek</value></data>
   <data name="CreateLibrary" xml:space="preserve"><value>Nieuwe bibliotheek</value></data>
   <data name="Culture" xml:space="preserve"><value>Taal</value></data>
@@ -385,5 +386,17 @@
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>De titel en auteur konden niet worden omgewisseld. Controleer het boek en probeer het opnieuw.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>De titel en auteur zijn opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
   <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>De titel en auteur lijken bij dit boek niet meer omgewisseld. Saga heeft de actuele boekgegevens geladen.</value></data>
+  <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Omslag zoeken</value></data>
+  <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Omslag zoeken</value></data>
+  <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga zoekt online met de titel, auteur en het ISBN. Kies de omslag die je wilt gebruiken.</value></data>
+  <data name="MetadataQualityUseCover" xml:space="preserve"><value>Deze omslag gebruiken</value></data>
+  <data name="MetadataQualityCoverSearchResults" xml:space="preserve"><value>Beschikbare omslagen</value></data>
+  <data name="MetadataQualityCoverSearchLoading" xml:space="preserve"><value>Omslagen zoeken…</value></data>
+  <data name="MetadataQualityCoverSearchNoResults" xml:space="preserve"><value>Voor dit boek zijn geen geschikte omslagen gevonden.</value></data>
+  <data name="MetadataQualityCoverSearchFailed" xml:space="preserve"><value>Het zoeken naar omslagen is tijdelijk niet beschikbaar. Probeer het later opnieuw.</value></data>
+  <data name="MetadataQualityCoverDownloadFailed" xml:space="preserve"><value>De gekozen omslag kon niet worden opgehaald. Kies een andere omslag of probeer het later opnieuw.</value></data>
+  <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>De omslag kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
+  <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>De omslag is opgeslagen in Saga, maar niet elk bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
+  <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Dit boek heeft al een omslag. Saga heeft de huidige boekgegevens vernieuwd.</value></data>
 </root>
 

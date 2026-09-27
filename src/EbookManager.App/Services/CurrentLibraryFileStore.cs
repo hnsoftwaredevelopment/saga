@@ -4,7 +4,7 @@ using EbookManager.Libraries;
 
 namespace EbookManager.App.Services;
 
-public sealed class CurrentLibraryFileStore(CurrentLibrary currentLibrary) : IHashingLibraryFileStore
+public sealed class CurrentLibraryFileStore(CurrentLibrary currentLibrary) : IHashingLibraryFileStore, IBookCoverStore
 {
     public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
         Guid bookId,
@@ -28,9 +28,24 @@ public sealed class CurrentLibraryFileStore(CurrentLibrary currentLibrary) : IHa
 
     public string GetAbsolutePath(string relativePath) => CreateStore().GetAbsolutePath(relativePath);
 
+    public Task<string> SaveAsync(
+        Guid bookId,
+        byte[] coverBytes,
+        CancellationToken cancellationToken) =>
+        CreateCoverStore().SaveAsync(bookId, coverBytes, cancellationToken);
+
+    public Task DeleteAsync(Guid bookId, CancellationToken cancellationToken) =>
+        CreateCoverStore().DeleteAsync(bookId, cancellationToken);
+
     private ManagedLibraryFileStore CreateStore()
     {
         var library = currentLibrary.Current ?? throw new InvalidOperationException("No active library is loaded.");
         return new ManagedLibraryFileStore(library.DirectoryPath);
+    }
+
+    private ManagedLibraryCoverStore CreateCoverStore()
+    {
+        var library = currentLibrary.Current ?? throw new InvalidOperationException("No active library is loaded.");
+        return new ManagedLibraryCoverStore(library.DirectoryPath);
     }
 }

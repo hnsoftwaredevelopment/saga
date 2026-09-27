@@ -4429,6 +4429,10 @@ public sealed class LibraryViewModelTests
             return Task.FromResult(MetadataQualityTitleAuthorRepairResult);
         }
 
+        public Task<bool> ShowMetadataQualityCoverSearchAsync(
+            MetadataQualityCoverSearchViewModel search,
+            CancellationToken cancellationToken) => Task.FromResult(false);
+
         public Task<MetadataMultiEditResult?> ShowMetadataMultiEditAsync(
             MetadataMultiEditViewModel edit,
             CancellationToken cancellationToken)
