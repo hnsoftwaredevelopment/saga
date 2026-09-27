@@ -1,203 +1,98 @@
-# Milestone 33 Implementatieplan: Ontbrekende omslag zoeken
+# Milestone 34 Implementatieplan: Gespreide boekenopslag
 
 ## Overzicht
 
-Milestone 33 voegt één volledige herstelroute voor `Geen omslag` toe. Na de Nederlandse praktijktest wordt deze route uitgebreid met de Google Books-compatibiliteitsfeed, een lokaal gegenereerde noodomslag en een blijvende actie in het detailscherm om ook bestaande omslagen te vervangen.
+Milestone 34 verdeelt boekmappen over 256 ID-shards, laat alle opslagroutes één centrale padindeling gebruiken en migreert de bestaande bibliotheek veilig en hervatbaar tijdens de eerste start na de update.
 
 ## Afhankelijkheden
 
 ```text
-Zoekcontract en Open Library-client
+Centrale opslagindeling
         │
-        ├── veilig beheerd coverbestand
-        │           │
-        └── herstelservice
+        ├── nieuwe imports en omslagen
+        │
+        └── inventarisatie en veilige mapverplaatsing
                     │
-                    ├── keuzemodel en WPF-venster
-                    │           │
-                    └── Quality Page en bibliotheekverversing
+                    └── transactionele databasepad-update
                                 │
-                                └── lokalisatie, checklist en Debug-build
+                                └── opstartvoortgang en foutafhandeling
+                                            │
+                                            └── regressie, checklist en Debug-build
 ```
 
-## Taak 1: Open Library-zoekroute
+## Taak 1: Centrale ID-shardindeling
 
-**Beschrijving:** Definieer het brononafhankelijke zoekcontract en implementeer een begrensde Open Library-client met de ingebouwde HTTP- en JSON-functionaliteit.
-
-**Acceptatiecriteria:**
-
-- [x] Titel en auteurs vormen een correct geëncodeerde zoekvraag; alleen een geldig ISBN-10 of ISBN-13 voegt een exacte zoekroute toe en beide resultaatsets worden samengevoegd.
-- [x] Alleen unieke numerieke Cover ID's worden geaccepteerd en maximaal twaalf kandidaten teruggegeven.
-- [x] Time-outs, annulering, ongeldige JSON, te grote antwoorden en serverfouten leveren een gecontroleerd resultaat.
-
-**Verificatie:** Eerst falende tests met een gecontroleerde HTTP-handler; daarna alle zoekclienttests groen.
-
-**Afhankelijkheden:** Geen.
-
-**Waarschijnlijk geraakte bestanden:** Zoekcontract en modellen, Open Library-client, registratie en gerichte tests.
-
-**Omvang:** Middelgroot, opgesplitst in kleine productie- en testbestanden.
-
-## Taak 2: Veilige download en beeldvalidatie
-
-**Beschrijving:** Download miniaturen en de definitieve grote JPEG via een vaste Open Library-host en controleer type, grootte en afmetingen voordat bytes de applicatielaag bereiken.
+**Beschrijving:** Introduceer één veilige component die oude en nieuwe boekmappen en relatieve paden uit een boek-ID afleidt.
 
 **Acceptatiecriteria:**
 
-- [x] Alleen providergegenereerde Cover ID's kunnen een download starten; willekeurige URL's zijn onmogelijk.
-- [x] Lege, niet-JPEG, te kleine, buitenproportionele of grotere dan 10 MiB afbeeldingen worden geweigerd.
-- [x] Kandidaten bevatten betrouwbare breedte en hoogte en kunnen op oppervlak worden gesorteerd.
+- [ ] Een ID wordt als 32 kleine hexadecimale tekens geschreven en de eerste twee vormen de shard.
+- [ ] Alle berekende paden blijven binnen de actieve bibliotheek.
+- [ ] Ongeldige ID's, ontsnappende paden en reparse points worden geweigerd.
 
-**Verificatie:** Gerichte tests voor geldige JPEG, afgekapt bestand, foutief type, grenswaarden en annulering.
+**Verificatie:** Eerst falende tests voor shardgrenzen en padbeveiliging; daarna gerichte tests groen.
 
-**Afhankelijkheden:** Taak 1.
+## Taak 2: Nieuwe opslagroutes omschakelen
 
-**Waarschijnlijk geraakte bestanden:** Open Library-client, kleine JPEG-inspecteur en tests.
+**Beschrijving:** Laat ebookimport, omslagopslag en verwijderen dezelfde centrale indeling gebruiken.
 
-**Omvang:** Klein tot middelgroot, maximaal 4 bestanden.
+**Acceptatiecriteria:**
+
+- [ ] Nieuwe ebooks en `cover.jpg` komen samen onder `books/<shard>/<boek-id>`.
+- [ ] Tijdelijke importbestanden staan niet als duizenden directe onderdelen onder `books`.
+- [ ] Openen en exporteren blijven werken via de opgeslagen relatieve paden.
+- [ ] Verwijderen raakt uitsluitend de exacte oude of nieuwe map van het gevraagde boek.
+
+**Verificatie:** Testgedreven opslag- en regressietests.
 
 ## Checkpoint 1
 
-- [x] Alle externe invoer is begrensd en getest zonder werkelijk internetverkeer.
-- [x] De applicatielaag kent Open Library niet bij naam.
-- [x] De solution bouwt zonder waarschuwingen.
+Controleer na taken 1 en 2 de architectuur, padbeveiliging en regressies. Nieuwe imports moeten de nieuwe indeling gebruiken voordat migratiecode wordt toegevoegd.
 
-## Taak 3: Beheerde omslag veilig opslaan
+## Taak 3: Hervatbare mapmigratie en databaseback-up
 
-**Beschrijving:** Voeg een apart opslagcontract en een herstelservice toe die het actuele boek opnieuw valideert, `cover.jpg` atomair schrijft en na boekopslag de werkelijke database-uitkomst controleert.
+**Beschrijving:** Inventariseer oude GUID-mappen, maak eenmaal een consistente SQLite-back-up en verplaats elk boek afzonderlijk met herstel van een onderbroken tussenstand.
 
 **Acceptatiecriteria:**
 
-- [x] Alleen `books/<boek-id>/cover.jpg` binnen de actieve bibliotheek kan worden geschreven.
-- [x] Alleen coverbytes, relatief coverpad en wijzigingstijd veranderen; alle overige boekgegevens blijven gelijk.
-- [x] Niet gevonden, niet meer van toepassing, opslagfout en write-backwaarschuwing zijn expliciete uitkomsten; het bestand wordt alleen opgeruimd wanneer herladen bewijst dat de database niet is bijgewerkt.
+- [ ] Normale, reeds voltooide en na verplaatsing onderbroken toestanden worden correct afgehandeld.
+- [ ] Bestaande bron én bestemming, ontbrekende opslag en afwijkende databasepaden stoppen zonder wijziging.
+- [ ] Ebook- en omslagpaden worden per boek samen in één databasetransactie bijgewerkt.
+- [ ] Onbekende mappen, bestanden en reparse points blijven onaangeroerd.
 
-**Verificatie:** Eerst falende pad-, bestands- en servicetests; daarna gerichte groene tests.
+**Verificatie:** Eerst falende scenariotests voor iedere toestand, inclusief geforceerde onderbreking; daarna integratietests groen.
 
-**Afhankelijkheden:** Taak 2.
+## Taak 4: Opstartintegratie en voortgang
 
-**Waarschijnlijk geraakte bestanden:** Omslagopslagcontract, beheerde implementatie, huidige-bibliotheekadapter, herstelservice en tests.
-
-**Omvang:** Middelgroot; productiecode en tests worden in afzonderlijke bestanden gehouden.
-
-## Taak 4: Keuzevenster
-
-**Beschrijving:** Bouw een modaal WPF-venster dat tijdens het zoeken voortgang toont en daarna kandidaten met miniatuur, bron en resolutie laat kiezen.
+**Beschrijving:** Voer de migratie vóór normaal bibliotheekgebruik uit en toon gelokaliseerde voortgang en herstelbare fouten op het bestaande startscherm.
 
 **Acceptatiecriteria:**
 
-- [x] De gebruiker ziet een duidelijke laad-, leeg-, fout- en resultaatstatus.
-- [x] `Deze omslag gebruiken` is alleen actief bij een geldige selectie; Enter, dubbelklik, Escape en annuleren werken.
-- [x] Sluiten annuleert actief netwerkwerk en alle teksten komen uit resources.
+- [ ] De gebruiker ziet `Bibliotheekopslag optimaliseren` en verwerkte/totale aantallen.
+- [ ] Importeren, bewerken en verwijderen kunnen niet gelijktijdig starten.
+- [ ] Afsluiten wordt tussen boeken verwerkt en de volgende start hervat veilig.
+- [ ] Een fout noemt het boek of pad en biedt opnieuw proberen zonder technische stacktrace.
 
-**Verificatie:** Viewmodeltests, layouttests en een WPF-build.
-
-**Afhankelijkheden:** Taken 1 en 2.
-
-**Waarschijnlijk geraakte bestanden:** Keuzeviewmodel, kandidaatviewmodel, venster, interactiecontract en tests.
-
-**Omvang:** Middelgroot, per laag opgesplitst.
+**Verificatie:** Viewmodeltests plus een kleine tijdelijke testbibliotheek.
 
 ## Checkpoint 2
 
-- [x] Zoeken, selecteren en annuleren werken end-to-end met testdubbels.
-- [x] Een mislukte zoekactie kan nooit een boek of bestand wijzigen.
-- [x] Toetsenbord- en toegankelijkheidstests zijn groen.
+Controleer de volledige migratieketen op databehoud, hervatbaarheid, OneDrive-fouten en begrijpelijke gebruikersfeedback.
 
-## Taak 5: Quality Page en bibliotheek koppelen
+## Taak 5: Regressie, documentatie en testbuild
 
-**Beschrijving:** Voeg de contextgebonden actie toe, voer na keuze de herstelservice uit en ververs dashboard, hoofdgrid, boekenplank en detailpaneel via de bestaande reparatiecallback.
+**Beschrijving:** Rond regressietests, zes vertalingen, handmatige checklist, documentatie, zelfreview en de actuele Debug-build af.
 
 **Acceptatiecriteria:**
 
-- [x] De actie is uitsluitend beschikbaar voor één geselecteerde rij onder `Geen omslag`.
-- [x] Succes herevalueert alle signalen, werkt tellingen bij en verwijdert de herstelde rij.
-- [x] Annuleren, geen resultaten en alle foutstatussen laten rij en metadata intact.
+- [ ] Importeren, openen, exporteren, omslag wijzigen, auteur wijzigen en verwijderen zijn getest.
+- [ ] De checklist bevat eerst een kopiebibliotheek en daarna de echte bibliotheek.
+- [ ] Alle gewijzigde Markdown is exact naar Obsidian gespiegeld.
+- [ ] Alleen de actuele applicatiebuild staat in `Builds/Debug`.
+- [ ] De volledige testsuite en build slagen zonder waarschuwingen.
 
-**Verificatie:** Eerst falende dashboard- en LibraryViewModel-tests; daarna gerichte regressietests.
+**Verificatie:** Volledige geautomatiseerde suite, Debug-build, zelfreview en handmatige checklist.
 
-**Afhankelijkheden:** Taken 3 en 4.
+## Daarna
 
-**Waarschijnlijk geraakte bestanden:** Dashboardviewmodel, LibraryViewModel-koppeling, interactieservice, dashboard-XAML en tests.
-
-**Omvang:** Middelgroot, maximaal 5 kernbestanden plus gerichte tests.
-
-## Taak 6: Lokalisatie en afronding
-
-**Beschrijving:** Voeg zes vertalingen, featurestatus, handmatige checklist en de definitieve Debug-build toe.
-
-**Acceptatiecriteria:**
-
-- [x] Basis/Engels, Nederlands, Duits, Frans, Spaans en Italiaans bevatten alle nieuwe zichtbare en toegankelijke teksten.
-- [x] De checklist dekt zoeken met en zonder ISBN, keuze, annuleren, lege resultaten, echte netwerkfout en directe verversing.
-- [x] Alle Markdown is exact naar Obsidian gespiegeld.
-- [x] Volledige tests, Debug-build en zelfreview zijn geslaagd; handmatige acceptatie staat nog open.
-
-**Verificatie:** Volledige Definition of Done en daarna handmatige gebruikerscontrole.
-
-**Afhankelijkheden:** Taak 5.
-
-**Waarschijnlijk geraakte bestanden:** Resources, resource- en layouttests, README, featuredocument en checklist.
-
-**Omvang:** Middelgroot door zes resourcebestanden en documentatie.
-
-## Risico's en maatregelen
-
-| Risico | Impact | Maatregel |
-|---|---|---|
-| Externe bron is traag of niet beschikbaar | Middel | Annuleerbare korte time-outs, duidelijke foutstatus en geen metadatawijziging. |
-| Kwaadaardig of zeer groot antwoord | Hoog | Vaste hosts, numerieke ID's, streaminglimieten en strikte JPEG-validatie. |
-| Verkeerde editie wordt gekozen | Hoog | Nooit automatisch kiezen; titel/auteur/context, bron en resolutie tonen. |
-| Coverbestand en database raken uit sync | Hoog | Tijdelijk bestand, atomair vervangen, database opnieuw lezen en alleen opruimen wanneer de cover niet is opgeslagen. |
-| Open Library beperkt verzoeken | Middel | Alleen expliciet zoeken, dedupliceren, maximaal twaalf kandidaten en geen crawling. |
-| Groot venster of veel beelden belast geheugen | Middel | Resultaatlimiet, begrensde bytes en alleen noodzakelijke afbeeldingsgrootten. |
-| GPL-code komt onbedoeld in Saga terecht | Hoog | Alleen gedrag bestuderen en zelfstandig C# ontwerpen; geen code kopiëren. |
-
-## Niet in de oorspronkelijke eerste oplevering
-
-- Rommelige tags herstellen.
-- Een apart instellingen-tabblad `Kwaliteit`.
-- Google Afbeeldingen of andere aanvullende providers.
-- Lokale bestandskeuze of bulkherstel.
-- Native cover-write-back in ebookbestanden.
-
-## Open vragen
-
-Geen blokkerende vragen. Functionele richting, aannames en dit uitvoeringsplan zijn goedgekeurd op 4 september 2026.
-
-## Uitbreiding na Nederlandse praktijktest
-
-### Taak 7: Meerdere omslagbronnen
-
-- [x] Maak kandidaat-ID's brongebonden en ondoorzichtig en routeer downloads alleen naar geregistreerde bronnen.
-- [x] Voeg de sleutelvrije Google Books-feed als begrensde, fouttolerante compatibiliteitsbron toe.
-- [x] Voeg Open Library- en Google-resultaten eerlijk samen tot maximaal twaalf kandidaten.
-- [x] Toon alleen wanneer beide online bronnen leeg zijn één lokaal door Saga gegenereerde omslag met titel en auteur.
-
-### Taak 8: Omslag wijzigen in details
-
-- [x] Toon voor ieder geladen boek een duidelijke actie `Omslag wijzigen`, ook als al een omslag bestaat.
-- [x] Zoek met de actuele waarden uit het detailscherm en neem de gekozen omslag zichtbaar maar nog niet definitief over.
-- [x] Laat het bestaande `Opslaan` omslag en metadata veilig samen bewaren; `Ongedaan maken` herstelt de oorspronkelijke omslag.
-- [x] Houd de bestaande directe herstelroute op de Quality Page ongewijzigd.
-
-### Taak 9: Afronding uitbreiding
-
-- [x] Lever alle nieuwe teksten in zes talen en breid de handmatige checklist uit.
-- [x] Voer gerichte tests, volledige tests, Debug-build en zelfreview uit.
-- [x] Maak uitsluitend `Builds/Debug` opnieuw en werk PR #34 bij.
-
-### Taak 10: Correctie op relevantie en veiligheid na praktijktest
-
-- [x] Valideer de controlewaarde van ISBN-10 en ISBN-13 en gebruik ongeldige veldinhoud nooit voor een ISBN-zoekroute.
-- [x] Maak de Google Books-vraag veldgericht en toon alleen kandidaten met een exact ISBN of een sterke titel-en-auteurovereenkomst.
-- [x] Bied de lokale Saga-omslag aan wanneer geen voldoende betrouwbare online kandidaat resteert.
-- [x] Los de openstaande reviewpunten rond parallel gebruik, beelddecodering, opslagpaden en gecontroleerde hersteluitkomsten op.
-- [x] Werk gerichte en volledige tests, uitsluitend `Builds/Debug`, documentatiemirror en PR #34 bij.
-
-### Vervolg na PR #34
-
-- Een afzonderlijke performance-slice verbetert zoeken en scrollen in grote bibliotheken en legt vooraf meetbare doelen vast.
-- Een latere metadatazoekfunctie onderzoekt BoekenBase als Nederlandse bron voor onder meer ISBN, auteurs, omschrijving en uitgever; de gebruiker kiest per veld wat wordt overgenomen.
-
-Deze uitbreiding is functioneel goedgekeurd op 4 september 2026.
+Na deze milestone meten we afzonderlijk het scrollen, Page Up/Page Down en filteren op titel. Daarna kan de Quality Page-slice `Rommelige tags` worden hervat.
