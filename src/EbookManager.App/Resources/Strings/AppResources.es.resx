@@ -676,5 +676,11 @@
   <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>No se pudo guardar la portada. Compruebe el libro e inténtelo de nuevo.</value></data>
   <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>La portada se guardó en Saga, pero no se pudieron actualizar todos los archivos de metadatos o ebooks relacionados.</value></data>
   <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Este libro ya tiene una portada. Saga actualizó los datos actuales del libro.</value></data>
+  <data name="StorageMigrationStatus" xml:space="preserve"><value>Optimizando el almacenamiento de la biblioteca</value></data>
+  <data name="StorageMigrationFailedTitle" xml:space="preserve"><value>No se pudo optimizar el almacenamiento de la biblioteca</value></data>
+  <data name="StorageMigrationFailedMessage" xml:space="preserve"><value>Saga no pudo optimizar el almacenamiento de la biblioteca para:
+{0}
+
+No se sobrescribieron datos en conflicto. Resuelva el problema indicado del archivo o de OneDrive y vuelva a iniciar Saga.</value></data>
 </root>
 

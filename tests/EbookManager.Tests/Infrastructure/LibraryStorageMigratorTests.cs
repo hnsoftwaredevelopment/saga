@@ -34,7 +34,10 @@ public sealed class LibraryStorageMigratorTests
         result.MigratedCount.Should().Be(1);
         Directory.Exists(legacyDirectory).Should().BeFalse();
         Directory.Exists(layout.GetBookDirectory(bookId)).Should().BeTrue();
-        progress.Should().ContainSingle().Which.ProcessedCount.Should().Be(1);
+        progress.Should().HaveCount(3);
+        progress[0].Should().Be(new LibraryStorageMigrationProgress(0, 0, null));
+        progress[1].Should().Be(new LibraryStorageMigrationProgress(1, 0, null));
+        progress[2].Should().Be(new LibraryStorageMigrationProgress(1, 1, bookId));
 
         await using var context = factory.Create(library.DirectoryPath);
         var id = bookId.ToString("N");
@@ -88,7 +91,7 @@ public sealed class LibraryStorageMigratorTests
             default);
 
         (await action.Should().ThrowAsync<LibraryStorageMigrationException>())
-            .Which.BookId.Should().Be(bookId);
+            .Which.StorageId.Should().Be(bookId);
         Directory.Exists(layout.GetLegacyBookDirectory(bookId)).Should().BeTrue();
         Directory.Exists(layout.GetBookDirectory(bookId)).Should().BeTrue();
     }
@@ -109,7 +112,7 @@ public sealed class LibraryStorageMigratorTests
             default);
 
         (await action.Should().ThrowAsync<LibraryStorageMigrationException>())
-            .Which.BookId.Should().Be(bookId);
+            .Which.StorageId.Should().Be(bookId);
     }
 
     [Fact]
@@ -162,6 +165,68 @@ public sealed class LibraryStorageMigratorTests
         result.Status.Should().Be(LibraryStorageMigrationStatus.NotRequired);
         result.MigratedCount.Should().Be(0);
         Directory.Exists(Path.Combine(library.DirectoryPath, "backups")).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Migration_refuses_an_invalid_existing_database_backup_before_moving_books()
+    {
+        using var library = new TemporaryLibrary();
+        var (factory, bookId) = await CreateLegacyBookAsync(library.DirectoryPath, includeCover: false);
+        var layout = new ManagedLibraryStorageLayout(library.DirectoryPath);
+        await File.WriteAllBytesAsync(Path.Combine(layout.GetLegacyBookDirectory(bookId), "book.epub"), [1, 2, 3]);
+        var backupDirectory = Directory.CreateDirectory(Path.Combine(library.DirectoryPath, "backups"));
+        await File.WriteAllTextAsync(
+            Path.Combine(backupDirectory.FullName, LibraryStorageMigrator.DatabaseBackupFileName),
+            "not a database");
+
+        var action = () => new LibraryStorageMigrator(factory).MigrateAsync(
+            new LibraryDescriptor("Test", library.DirectoryPath, DateTimeOffset.UtcNow),
+            progress: null,
+            default);
+
+        var exception = await action.Should().ThrowAsync<LibraryStorageMigrationException>();
+        exception.Which.StorageId.Should().BeNull();
+        Directory.Exists(layout.GetLegacyBookDirectory(bookId)).Should().BeTrue();
+        Directory.Exists(layout.GetBookDirectory(bookId)).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Migration_preserves_a_referenced_storage_directory_from_a_merged_book()
+    {
+        using var library = new TemporaryLibrary();
+        var (factory, bookId) = await CreateLegacyBookAsync(
+            library.DirectoryPath,
+            includeCover: true,
+            createLegacyDirectory: false);
+        var storageId = Guid.NewGuid();
+        var layout = new ManagedLibraryStorageLayout(library.DirectoryPath);
+        var legacyStorageDirectory = layout.GetLegacyBookDirectory(storageId);
+        Directory.CreateDirectory(legacyStorageDirectory);
+        await File.WriteAllBytesAsync(Path.Combine(legacyStorageDirectory, "book.epub"), [1, 2, 3]);
+        await File.WriteAllBytesAsync(Path.Combine(legacyStorageDirectory, "cover.jpg"), [4, 5, 6]);
+        await using (var context = factory.Create(library.DirectoryPath))
+        {
+            var id = storageId.ToString("N");
+            (await context.BookFiles.SingleAsync()).RelativePath = $"books/{id}/book.epub";
+            (await context.Books.SingleAsync()).CoverRelativePath = $"books/{id}/cover.jpg";
+            await context.SaveChangesAsync();
+        }
+
+        var result = await new LibraryStorageMigrator(factory).MigrateAsync(
+            new LibraryDescriptor("Test", library.DirectoryPath, DateTimeOffset.UtcNow),
+            progress: null,
+            default);
+
+        result.MigratedCount.Should().Be(1);
+        Directory.Exists(legacyStorageDirectory).Should().BeFalse();
+        Directory.Exists(layout.GetBookDirectory(storageId)).Should().BeTrue();
+        await using var verifyContext = factory.Create(library.DirectoryPath);
+        var shardedId = storageId.ToString("N");
+        (await verifyContext.BookFiles.SingleAsync()).RelativePath
+            .Should().Be($"books/{shardedId[..2]}/{shardedId}/book.epub");
+        (await verifyContext.Books.SingleAsync()).CoverRelativePath
+            .Should().Be($"books/{shardedId[..2]}/{shardedId}/cover.jpg");
+        (await verifyContext.Books.SingleAsync()).Id.Should().Be(bookId);
     }
 
     private static async Task<(LibraryDbContextFactory Factory, Guid BookId)> CreateLegacyBookAsync(

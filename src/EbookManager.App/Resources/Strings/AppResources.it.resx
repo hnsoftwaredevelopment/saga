@@ -676,5 +676,11 @@
   <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare la copertina. Controlla il libro e riprova.</value></data>
   <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>La copertina è stata salvata in Saga, ma non è stato possibile aggiornare tutti i relativi file di metadati o ebook.</value></data>
   <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Questo libro ha già una copertina. Saga ha aggiornato i dati correnti del libro.</value></data>
+  <data name="StorageMigrationStatus" xml:space="preserve"><value>Ottimizzazione dell’archiviazione della biblioteca</value></data>
+  <data name="StorageMigrationFailedTitle" xml:space="preserve"><value>Impossibile ottimizzare l’archiviazione della biblioteca</value></data>
+  <data name="StorageMigrationFailedMessage" xml:space="preserve"><value>Saga non ha potuto ottimizzare l’archiviazione della biblioteca per:
+{0}
+
+Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato relativo al file o a OneDrive e riavvia Saga.</value></data>
 </root>
 

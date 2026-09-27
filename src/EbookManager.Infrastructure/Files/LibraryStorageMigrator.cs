@@ -1,3 +1,4 @@
+using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Libraries;
 using EbookManager.Infrastructure.Persistence;
 using Microsoft.Data.Sqlite;
@@ -5,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EbookManager.Infrastructure.Files;
 
-public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactory)
+public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactory) : ILibraryStorageMigrator
 {
     public const string DatabaseBackupFileName = "library-before-sharded-storage-v2.db";
 
@@ -21,71 +22,112 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
         Directory.CreateDirectory(layout.BooksDirectory);
         layout.EnsureNoReparsePoints(layout.BooksDirectory);
 
-        var snapshots = await LoadSnapshotsAsync(library.DirectoryPath, cancellationToken);
+        var snapshots = await LoadSnapshotsAsync(library.DirectoryPath, layout, cancellationToken);
         var candidates = snapshots
             .Where(snapshot => RequiresMigration(snapshot, layout))
-            .OrderBy(snapshot => snapshot.BookId)
+            .OrderBy(snapshot => snapshot.StorageId)
             .ToArray();
         if (candidates.Length == 0)
         {
             return new(LibraryStorageMigrationStatus.NotRequired, 0, 0);
         }
 
-        await EnsureDatabaseBackupAsync(library.DirectoryPath, layout, cancellationToken);
+        progress?.Report(new(0, 0, null));
+        try
+        {
+            await LibraryDatabaseBackup.EnsureAsync(
+                library.DirectoryPath,
+                layout,
+                DatabaseBackupFileName,
+                cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (LibraryStorageMigrationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (IsExpectedStorageException(exception))
+        {
+            throw CreateException(
+                storageId: null,
+                layout.GetAbsolutePath(Path.Combine("backups", DatabaseBackupFileName)),
+                "The database backup could not be created or verified.",
+                exception);
+        }
 
+        progress?.Report(new(candidates.Length, 0, null));
         var migratedCount = 0;
         foreach (var snapshot in candidates)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await MigrateBookAsync(library.DirectoryPath, snapshot, layout, cancellationToken);
+            try
+            {
+                await MigrateDirectoryAsync(library.DirectoryPath, snapshot, layout, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (LibraryStorageMigrationException)
+            {
+                throw;
+            }
+            catch (Exception exception) when (IsExpectedStorageException(exception))
+            {
+                throw CreateException(
+                    snapshot.StorageId,
+                    layout.GetBookDirectory(snapshot.StorageId),
+                    "The book storage could not be migrated.",
+                    exception);
+            }
+
             migratedCount++;
-            progress?.Report(new(candidates.Length, migratedCount, snapshot.BookId));
+            progress?.Report(new(candidates.Length, migratedCount, snapshot.StorageId));
         }
 
         return new(LibraryStorageMigrationStatus.Completed, candidates.Length, migratedCount);
     }
 
-    private async Task MigrateBookAsync(
+    private async Task MigrateDirectoryAsync(
         string libraryPath,
-        BookStorageSnapshot snapshot,
+        StorageDirectorySnapshot snapshot,
         ManagedLibraryStorageLayout layout,
         CancellationToken cancellationToken)
     {
-        var legacyDirectory = layout.GetLegacyBookDirectory(snapshot.BookId);
-        var targetDirectory = layout.GetBookDirectory(snapshot.BookId);
+        var legacyDirectory = layout.GetLegacyBookDirectory(snapshot.StorageId);
+        var targetDirectory = layout.GetBookDirectory(snapshot.StorageId);
         var legacyExists = Directory.Exists(legacyDirectory);
         var targetExists = Directory.Exists(targetDirectory);
-        var paths = snapshot.FileRelativePaths
-            .Prepend(snapshot.CoverRelativePath)
-            .Where(path => !string.IsNullOrWhiteSpace(path))
-            .Cast<string>()
-            .ToArray();
-        var legacyPrefix = layout.GetLegacyRelativeBookDirectory(snapshot.BookId) + "/";
-        var targetPrefix = layout.GetRelativeBookDirectory(snapshot.BookId) + "/";
+        var paths = snapshot.RelativePaths;
+        var legacyPrefix = layout.GetLegacyRelativeBookDirectory(snapshot.StorageId) + "/";
+        var targetPrefix = layout.GetRelativeBookDirectory(snapshot.StorageId) + "/";
         var legacyPathCount = paths.Count(path => StartsWithPath(path, legacyPrefix));
         var targetPathCount = paths.Count(path => StartsWithPath(path, targetPrefix));
-        var unknownPathCount = paths.Length - legacyPathCount - targetPathCount;
+        var unknownPathCount = paths.Count - legacyPathCount - targetPathCount;
 
         if (legacyExists && targetExists)
         {
-            throw CreateException(snapshot.BookId, targetDirectory, "Both storage locations exist.");
+            throw CreateException(snapshot.StorageId, targetDirectory, "Both storage locations exist.");
         }
 
         if (unknownPathCount > 0 || (legacyPathCount > 0 && targetPathCount > 0))
         {
-            throw CreateException(snapshot.BookId, legacyDirectory, "The stored paths do not have one consistent layout.");
+            throw CreateException(snapshot.StorageId, legacyDirectory, "The stored paths do not have one consistent layout.");
         }
 
         if (legacyExists)
         {
             if (targetPathCount > 0)
             {
-                throw CreateException(snapshot.BookId, legacyDirectory, "The database already points at a missing target location.");
+                throw CreateException(snapshot.StorageId, legacyDirectory, "The database already points at a missing target location.");
             }
 
             layout.EnsureNoReparsePoints(legacyDirectory);
             var targetParent = Path.GetDirectoryName(targetDirectory)
-                ?? throw CreateException(snapshot.BookId, targetDirectory, "The target has no parent directory.");
+                ?? throw CreateException(snapshot.StorageId, targetDirectory, "The target has no parent directory.");
             layout.EnsureNoReparsePoints(targetParent);
             Directory.CreateDirectory(targetParent);
             layout.EnsureNoReparsePoints(targetParent);
@@ -96,7 +138,7 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
             {
-                throw CreateException(snapshot.BookId, legacyDirectory, "The book directory could not be moved.", exception);
+                throw CreateException(snapshot.StorageId, legacyDirectory, "The book directory could not be moved.", exception);
             }
 
             targetExists = true;
@@ -104,12 +146,12 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
 
         if (!targetExists)
         {
-            throw CreateException(snapshot.BookId, legacyDirectory, "The stored book directory is missing.");
+            throw CreateException(snapshot.StorageId, legacyDirectory, "The stored book directory is missing.");
         }
 
         layout.EnsureNoReparsePoints(targetDirectory);
         EnsureExpectedFilesExist(
-            snapshot.BookId,
+            snapshot.StorageId,
             paths,
             legacyPrefix,
             targetPrefix,
@@ -118,7 +160,7 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
         {
             await UpdateRelativePathsAsync(
                 libraryPath,
-                snapshot.BookId,
+                snapshot.StorageId,
                 legacyPrefix,
                 targetPrefix,
                 cancellationToken);
@@ -127,28 +169,33 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
 
     private async Task UpdateRelativePathsAsync(
         string libraryPath,
-        Guid bookId,
+        Guid storageId,
         string legacyPrefix,
         string targetPrefix,
         CancellationToken cancellationToken)
     {
         await using var context = contextFactory.Create(libraryPath);
         await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
-        var book = await context.Books
-            .SingleOrDefaultAsync(entity => entity.Id == bookId, cancellationToken)
-            ?? throw CreateException(bookId, legacyPrefix, "The book no longer exists in the database.");
+        var books = await context.Books
+            .Where(entity => entity.CoverRelativePath != null &&
+                entity.CoverRelativePath.StartsWith(legacyPrefix))
+            .ToListAsync(cancellationToken);
         var files = await context.BookFiles
-            .Where(entity => entity.BookId == bookId)
+            .Where(entity => entity.RelativePath.StartsWith(legacyPrefix))
             .ToListAsync(cancellationToken);
 
-        if (!string.IsNullOrWhiteSpace(book.CoverRelativePath))
+        foreach (var book in books)
         {
-            book.CoverRelativePath = RewritePath(book.CoverRelativePath, legacyPrefix, targetPrefix, bookId);
+            book.CoverRelativePath = RewritePath(
+                book.CoverRelativePath!,
+                legacyPrefix,
+                targetPrefix,
+                storageId);
         }
 
         foreach (var file in files)
         {
-            file.RelativePath = RewritePath(file.RelativePath, legacyPrefix, targetPrefix, bookId);
+            file.RelativePath = RewritePath(file.RelativePath, legacyPrefix, targetPrefix, storageId);
         }
 
         await context.SaveChangesAsync(cancellationToken);
@@ -159,18 +206,19 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
         string relativePath,
         string legacyPrefix,
         string targetPrefix,
-        Guid bookId)
+        Guid storageId)
     {
         if (!StartsWithPath(relativePath, legacyPrefix))
         {
-            throw CreateException(bookId, relativePath, "A database path changed during migration.");
+            throw CreateException(storageId, relativePath, "A database path changed during migration.");
         }
 
         return targetPrefix + relativePath[legacyPrefix.Length..];
     }
 
-    private async Task<IReadOnlyList<BookStorageSnapshot>> LoadSnapshotsAsync(
+    private async Task<IReadOnlyList<StorageDirectorySnapshot>> LoadSnapshotsAsync(
         string libraryPath,
+        ManagedLibraryStorageLayout layout,
         CancellationToken cancellationToken)
     {
         await using var context = contextFactory.Create(libraryPath);
@@ -180,101 +228,85 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
             .ToListAsync(cancellationToken);
         var files = await context.BookFiles
             .AsNoTracking()
-            .Select(entity => new { entity.BookId, entity.RelativePath })
+            .Select(entity => entity.RelativePath)
             .ToListAsync(cancellationToken);
-        var filesByBookId = files
-            .GroupBy(file => file.BookId)
-            .ToDictionary(
-                group => group.Key,
-                group => (IReadOnlyList<string>)group.Select(file => file.RelativePath).ToArray());
+        var pathsByStorageId = new Dictionary<Guid, List<string>>();
+        foreach (var relativePath in files.Concat(
+                     books.Select(book => book.CoverRelativePath)
+                         .Where(path => !string.IsNullOrWhiteSpace(path))
+                         .Cast<string>()))
+        {
+            if (!TryGetStorageId(relativePath, out var storageId))
+            {
+                throw CreateException(
+                    storageId: null,
+                    relativePath,
+                    "A managed database path has an unsupported storage layout.");
+            }
 
-        return books
-            .Select(book => new BookStorageSnapshot(
-                book.Id,
-                book.CoverRelativePath,
-                filesByBookId.GetValueOrDefault(book.Id) ?? []))
+            if (!pathsByStorageId.TryGetValue(storageId, out var paths))
+            {
+                paths = [];
+                pathsByStorageId.Add(storageId, paths);
+            }
+
+            paths.Add(relativePath);
+        }
+
+        foreach (var book in books)
+        {
+            if ((Directory.Exists(layout.GetLegacyBookDirectory(book.Id)) ||
+                 Directory.Exists(layout.GetBookDirectory(book.Id))) &&
+                !pathsByStorageId.ContainsKey(book.Id))
+            {
+                pathsByStorageId.Add(book.Id, []);
+            }
+        }
+
+        return pathsByStorageId
+            .Select(pair => new StorageDirectorySnapshot(pair.Key, pair.Value.AsReadOnly()))
             .ToArray();
     }
 
     private static bool RequiresMigration(
-        BookStorageSnapshot snapshot,
+        StorageDirectorySnapshot snapshot,
         ManagedLibraryStorageLayout layout)
     {
-        if (Directory.Exists(layout.GetLegacyBookDirectory(snapshot.BookId)))
+        if (Directory.Exists(layout.GetLegacyBookDirectory(snapshot.StorageId)))
         {
             return true;
         }
 
-        var legacyPrefix = layout.GetLegacyRelativeBookDirectory(snapshot.BookId) + "/";
-        return (!string.IsNullOrWhiteSpace(snapshot.CoverRelativePath) &&
-                StartsWithPath(snapshot.CoverRelativePath, legacyPrefix)) ||
-            snapshot.FileRelativePaths.Any(path => StartsWithPath(path, legacyPrefix));
+        var legacyPrefix = layout.GetLegacyRelativeBookDirectory(snapshot.StorageId) + "/";
+        return snapshot.RelativePaths.Any(path => StartsWithPath(path, legacyPrefix));
     }
 
-    private static async Task EnsureDatabaseBackupAsync(
-        string libraryPath,
-        ManagedLibraryStorageLayout layout,
-        CancellationToken cancellationToken)
+    private static bool TryGetStorageId(string relativePath, out Guid storageId)
     {
-        var backupDirectory = layout.GetAbsolutePath("backups");
-        layout.EnsureNoReparsePoints(backupDirectory);
-        var backupPath = layout.GetAbsolutePath(Path.Combine(backupDirectory, DatabaseBackupFileName));
-        if (File.Exists(backupPath))
+        storageId = Guid.Empty;
+        var segments = relativePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 3 &&
+            string.Equals(segments[0], "books", StringComparison.OrdinalIgnoreCase))
         {
-            layout.EnsureNoReparsePoints(backupPath);
-            if (!await HasSqliteHeaderAsync(backupPath, cancellationToken))
-            {
-                throw new InvalidOperationException("The existing storage migration backup is not a valid SQLite database.");
-            }
-
-            return;
+            return Guid.TryParseExact(segments[1], "N", out storageId) && storageId != Guid.Empty;
         }
 
-        cancellationToken.ThrowIfCancellationRequested();
-        Directory.CreateDirectory(backupDirectory);
-        layout.EnsureNoReparsePoints(backupDirectory);
-        var temporaryPath = layout.GetAbsolutePath(Path.Combine(backupDirectory, $".{Guid.NewGuid():N}.db.tmp"));
-        try
+        if (segments.Length == 4 &&
+            string.Equals(segments[0], "books", StringComparison.OrdinalIgnoreCase) &&
+            Guid.TryParseExact(segments[2], "N", out storageId) &&
+            storageId != Guid.Empty)
         {
-            var sourceConnectionString = new SqliteConnectionStringBuilder
-            {
-                DataSource = Path.Combine(libraryPath, "library.db"),
-                Mode = SqliteOpenMode.ReadOnly,
-                Pooling = false
-            }.ToString();
-            var destinationConnectionString = new SqliteConnectionStringBuilder
-            {
-                DataSource = temporaryPath,
-                Mode = SqliteOpenMode.ReadWriteCreate,
-                Pooling = false
-            }.ToString();
-            await using var source = new SqliteConnection(sourceConnectionString);
-            await using var destination = new SqliteConnection(destinationConnectionString);
-            await source.OpenAsync(cancellationToken);
-            await destination.OpenAsync(cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
-            source.BackupDatabase(destination);
-            await destination.CloseAsync();
-            await source.CloseAsync();
-            cancellationToken.ThrowIfCancellationRequested();
-            if (!await HasSqliteHeaderAsync(temporaryPath, cancellationToken))
-            {
-                throw new InvalidOperationException("The storage migration backup could not be verified.");
-            }
+            return string.Equals(
+                segments[1],
+                storageId.ToString("N")[..2],
+                StringComparison.OrdinalIgnoreCase);
+        }
 
-            File.Move(temporaryPath, backupPath);
-        }
-        finally
-        {
-            if (File.Exists(temporaryPath))
-            {
-                File.Delete(temporaryPath);
-            }
-        }
+        return false;
     }
 
     private static void EnsureExpectedFilesExist(
-        Guid bookId,
+        Guid storageId,
         IReadOnlyList<string> paths,
         string legacyPrefix,
         string targetPrefix,
@@ -288,28 +320,9 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
             var expectedPath = layout.GetAbsolutePath(targetPrefix + suffix);
             if (!File.Exists(expectedPath))
             {
-                throw CreateException(bookId, expectedPath, "An expected managed book file is missing.");
+                throw CreateException(storageId, expectedPath, "An expected managed book file is missing.");
             }
         }
-    }
-
-    private static async Task<bool> HasSqliteHeaderAsync(
-        string path,
-        CancellationToken cancellationToken)
-    {
-        var expectedHeader = "SQLite format 3\0"u8.ToArray();
-        var actualHeader = new byte[expectedHeader.Length];
-        await using var stream = new FileStream(
-            path,
-            new FileStreamOptions
-            {
-                Access = FileAccess.Read,
-                Mode = FileMode.Open,
-                Share = FileShare.Read,
-                Options = FileOptions.Asynchronous | FileOptions.SequentialScan
-            });
-        var bytesRead = await stream.ReadAsync(actualHeader, cancellationToken);
-        return bytesRead == expectedHeader.Length && actualHeader.AsSpan().SequenceEqual(expectedHeader);
     }
 
     private static bool StartsWithPath(string path, string prefix) =>
@@ -317,41 +330,21 @@ public sealed class LibraryStorageMigrator(LibraryDbContextFactory contextFactor
             prefix,
             OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
 
+    private static bool IsExpectedStorageException(Exception exception) =>
+        exception is IOException or
+            UnauthorizedAccessException or
+            InvalidOperationException or
+            SqliteException or
+            DbUpdateException;
+
     private static LibraryStorageMigrationException CreateException(
-        Guid bookId,
+        Guid? storageId,
         string path,
         string message,
         Exception? innerException = null) =>
-        new(bookId, path, message, innerException);
+        new(storageId, path, message, innerException);
 
-    private sealed record BookStorageSnapshot(
-        Guid BookId,
-        string? CoverRelativePath,
-        IReadOnlyList<string> FileRelativePaths);
-}
-
-public enum LibraryStorageMigrationStatus
-{
-    NotRequired,
-    Completed
-}
-
-public sealed record LibraryStorageMigrationResult(
-    LibraryStorageMigrationStatus Status,
-    int TotalCount,
-    int MigratedCount);
-
-public sealed record LibraryStorageMigrationProgress(
-    int TotalCount,
-    int ProcessedCount,
-    Guid BookId);
-
-public sealed class LibraryStorageMigrationException(
-    Guid bookId,
-    string path,
-    string message,
-    Exception? innerException = null) : IOException(message, innerException)
-{
-    public Guid BookId { get; } = bookId;
-    public string Path { get; } = path;
+    private sealed record StorageDirectorySnapshot(
+        Guid StorageId,
+        IReadOnlyList<string> RelativePaths);
 }

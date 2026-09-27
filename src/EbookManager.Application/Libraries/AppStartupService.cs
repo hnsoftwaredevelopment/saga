@@ -9,7 +9,12 @@ public sealed class AppStartupService(
     CurrentLibrary currentLibrary,
     ILibraryDatabaseInitializer databaseInitializer)
 {
-    public async Task InitializeAsync(CancellationToken cancellationToken)
+    public Task InitializeAsync(CancellationToken cancellationToken) =>
+        InitializeAsync(progress: null, cancellationToken);
+
+    public async Task InitializeAsync(
+        IProgress<LibraryStorageMigrationProgress>? progress,
+        CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -29,7 +34,7 @@ public sealed class AppStartupService(
         }
 
         currentLibrary.Set(reopenedLibrary);
-        await databaseInitializer.InitializeAsync(reopenedLibrary, cancellationToken);
+        await databaseInitializer.InitializeAsync(reopenedLibrary, progress, cancellationToken);
     }
 
     private async Task<LibraryDescriptor?> TryReopenLibraryAsync(

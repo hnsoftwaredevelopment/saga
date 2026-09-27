@@ -62,6 +62,26 @@ public sealed class AppStartupServiceTests
     }
 
     [Fact]
+    public async Task InitializeAsync_forwards_storage_migration_progress_to_the_database_initializer()
+    {
+        using var temporaryDirectory = new TemporaryDirectory();
+        var libraryPath = temporaryDirectory.CreateSubdirectory("Library").FullName;
+        var settingsStore = new InMemoryAppSettingsStore();
+        await settingsStore.SaveAsync(new AppSettings(libraryPath, "en-US", "Light", "Detailed", true, true), default);
+        var initializer = new RecordingLibraryDatabaseInitializer();
+        var service = new AppStartupService(
+            settingsStore,
+            new LibraryService(settingsStore),
+            new CurrentLibrary(),
+            initializer);
+        var progress = new Progress<LibraryStorageMigrationProgress>();
+
+        await service.InitializeAsync(progress, default);
+
+        initializer.Progress.Should().BeSameAs(progress);
+    }
+
+    [Fact]
     public void CurrentLibrary_raises_changed_when_set_and_cleared()
     {
         var currentLibrary = new CurrentLibrary();
@@ -80,12 +100,23 @@ public sealed class AppStartupServiceTests
 
         public int CallCount { get; private set; }
 
+        public IProgress<LibraryStorageMigrationProgress>? Progress { get; private set; }
+
         public Task InitializeAsync(LibraryDescriptor library, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             CallCount++;
             InitializedLibrary = library;
             return Task.CompletedTask;
+        }
+
+        public Task InitializeAsync(
+            LibraryDescriptor library,
+            IProgress<LibraryStorageMigrationProgress>? progress,
+            CancellationToken cancellationToken)
+        {
+            Progress = progress;
+            return InitializeAsync(library, cancellationToken);
         }
     }
 }

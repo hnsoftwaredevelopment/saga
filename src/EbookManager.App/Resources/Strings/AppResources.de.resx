@@ -676,5 +676,11 @@
   <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>Das Cover konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
   <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>Das Cover wurde in Saga gespeichert, aber nicht alle zugehörigen Metadaten- oder E-Book-Dateien konnten aktualisiert werden.</value></data>
   <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Dieses Buch hat bereits ein Cover. Saga hat die aktuellen Buchdaten aktualisiert.</value></data>
+  <data name="StorageMigrationStatus" xml:space="preserve"><value>Bibliotheksspeicher wird optimiert</value></data>
+  <data name="StorageMigrationFailedTitle" xml:space="preserve"><value>Bibliotheksspeicher konnte nicht optimiert werden</value></data>
+  <data name="StorageMigrationFailedMessage" xml:space="preserve"><value>Saga konnte den Bibliotheksspeicher für folgenden Pfad nicht optimieren:
+{0}
+
+Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das gemeldete Datei- oder OneDrive-Problem und starten Sie Saga erneut.</value></data>
 </root>
 

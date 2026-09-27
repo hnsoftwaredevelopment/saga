@@ -398,5 +398,11 @@
   <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>The cover could not be saved. Check the book and try again.</value></data>
   <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>The cover was saved in Saga, but not every related metadata or ebook file could be updated.</value></data>
   <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>This book already has a cover. Saga refreshed the current book data.</value></data>
+  <data name="StorageMigrationStatus" xml:space="preserve"><value>Optimizing library storage</value></data>
+  <data name="StorageMigrationFailedTitle" xml:space="preserve"><value>Library storage could not be optimized</value></data>
+  <data name="StorageMigrationFailedMessage" xml:space="preserve"><value>Saga could not optimize the library storage for:
+{0}
+
+No conflicting data was overwritten. Resolve the reported file or OneDrive problem and start Saga again.</value></data>
 </root>
 
