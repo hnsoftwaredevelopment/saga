@@ -36,18 +36,18 @@ Reproduceerbare metingen
 
 **Acceptatiecriteria:**
 
-- [ ] Snel opeenvolgende zoekteksten passen alleen de laatste zoekwaarde toe.
-- [ ] Facet-, sorteer- en expliciete verversingsacties blijven direct.
-- [ ] Een geselecteerd boek dat zichtbaar blijft veroorzaakt geen nieuwe detailquery.
+- [x] Snel opeenvolgende zoekteksten passen alleen de laatste zoekwaarde toe.
+- [x] Facet-, sorteer- en expliciete verversingsacties blijven direct.
+- [x] Een geselecteerd boek dat zichtbaar blijft veroorzaakt geen nieuwe detailquery.
 
 **Verificatie:** Eerst falende `LibraryViewModelTests`; daarna gerichte viewmodeltests en Checkpoint 1.
 
 ## Checkpoint 1
 
-- [ ] Gerichte zoek- en viewmodeltests zijn groen.
-- [ ] De gemeten filterfase voldoet aan de afgesproken grens.
-- [ ] De volledige oplossing bouwt zonder waarschuwingen.
-- [ ] Tussentijdse diff is beoordeeld op correctheid, eenvoud en threadveiligheid.
+- [x] Gerichte zoek- en viewmodeltests zijn groen.
+- [x] De gemeten filterfase voldoet aan de afgesproken grens.
+- [x] De volledige oplossing bouwt zonder waarschuwingen.
+- [x] Tussentijdse diff is beoordeeld op correctheid, eenvoud en threadveiligheid.
 
 ## Taak 3: Asynchrone, begrensde omslaglader
 

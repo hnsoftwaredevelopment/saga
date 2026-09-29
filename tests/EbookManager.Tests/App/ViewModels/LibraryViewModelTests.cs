@@ -35,6 +35,43 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Search_applies_only_the_latest_value_after_the_input_delay()
+    {
+        var reporter = new CapturingLibraryPerformanceReporter();
+        var delay = new ControlledSearchFilterDelay();
+        var viewModel = CreateViewModel(
+            [CreateBook("Dune", ["Frank Herbert"]), CreateBook("The Hobbit", ["J.R.R. Tolkien"])],
+            performanceReporter: reporter,
+            searchFilterDelay: delay.WaitAsync);
+        await viewModel.RefreshAsync();
+        reporter.Snapshots.Clear();
+
+        viewModel.SearchText = "d";
+        viewModel.SearchText = "hobbit";
+        delay.ReleaseLatest();
+        await WaitUntilAsync(() => viewModel.VisibleBooks.Count == 1);
+
+        viewModel.VisibleBooks.Should().ContainSingle().Which.Title.Should().Be("The Hobbit");
+        reporter.Snapshots.Should().ContainSingle(snapshot => snapshot.Operation == "ApplyFilter");
+    }
+
+    [Fact]
+    public async Task Search_preserves_the_selected_book_without_reloading_details()
+    {
+        var book = CreateBook("The Hobbit", ["J.R.R. Tolkien"]);
+        var repository = new StaticBookRepository([book]);
+        var viewModel = CreateViewModel([book], repository: repository);
+        await viewModel.RefreshAsync();
+        await WaitUntilAsync(() => repository.GetCalls == 1);
+
+        viewModel.SearchText = "hobbit";
+
+        viewModel.SelectedBook.Should().NotBeNull();
+        viewModel.SelectedBook!.Id.Should().Be(book.Id);
+        repository.GetCalls.Should().Be(1);
+    }
+
+    [Fact]
     public async Task Refresh_sets_loading_state_while_library_is_loading()
     {
         var repository = new BlockingBookRepository();
@@ -3515,7 +3552,8 @@ public sealed class LibraryViewModelTests
         IMetadataQualityTitleAuthorRepairService? metadataQualityTitleAuthorRepairService = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
-        Func<string, string>? localize = null)
+        Func<string, string>? localize = null,
+        Func<CancellationToken, Task>? searchFilterDelay = null)
     {
         repository ??= new StaticBookRepository(books);
         var bookService = new BookService(
@@ -3548,7 +3586,8 @@ public sealed class LibraryViewModelTests
             metadataQualitySeriesRepairService: metadataQualitySeriesRepairService,
             metadataQualityTitleAuthorRepairService: metadataQualityTitleAuthorRepairService,
             performanceReporter: performanceReporter,
-            localize: localize);
+            localize: localize,
+            searchFilterDelay: searchFilterDelay ?? (_ => Task.CompletedTask));
     }
 
     private static Book CreateBook(
@@ -3836,6 +3875,34 @@ public sealed class LibraryViewModelTests
         public List<LibraryPerformanceSnapshot> Snapshots { get; } = [];
 
         public void Report(LibraryPerformanceSnapshot snapshot) => Snapshots.Add(snapshot);
+    }
+
+    private sealed class ControlledSearchFilterDelay
+    {
+        private readonly List<TaskCompletionSource> requests = [];
+
+        public Task WaitAsync(CancellationToken cancellationToken)
+        {
+            var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            cancellationToken.Register(() => completion.TrySetCanceled(cancellationToken));
+            lock (requests)
+            {
+                requests.Add(completion);
+            }
+
+            return completion.Task;
+        }
+
+        public void ReleaseLatest()
+        {
+            TaskCompletionSource completion;
+            lock (requests)
+            {
+                completion = requests[^1];
+            }
+
+            completion.TrySetResult();
+        }
     }
 
     private static MetadataQualityExclusion CreateQualityExclusion(string title, string signalKey) =>

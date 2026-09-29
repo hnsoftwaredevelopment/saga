@@ -6,8 +6,8 @@
 - [x] Specificatie, acceptatiecriteria en implementatievolgorde opgesteld.
 - [x] Specificatie en plan door gebruiker goedgekeurd op 29 september 2026.
 - [x] Taak 1: zoekwerk gemeten en herbruikbare index geïmplementeerd; 30.000 boeken onder 250 ms.
-- [ ] Taak 2: zoekinvoer uitstellen en selectie/detail-load behouden.
-- [ ] Checkpoint 1 uitvoeren en committen.
+- [x] Taak 2: zoekinvoer uitgesteld en selectie/detail-load behouden.
+- [x] Checkpoint 1: 702 tests groen en Debug-build zonder waarschuwingen.
 - [ ] Taak 3: asynchrone begrensde omslaglader implementeren.
 - [ ] Taak 4: bibliotheekweergaven omschakelen.
 - [ ] Checkpoint 2 uitvoeren en committen.

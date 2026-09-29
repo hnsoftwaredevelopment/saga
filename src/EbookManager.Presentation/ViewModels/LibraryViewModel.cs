@@ -25,6 +25,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private const int FilterSearchMinimumItemCount = 8;
 
     private const int LibraryLoadPageSize = 500;
+    private static readonly TimeSpan SearchInputDelay = TimeSpan.FromMilliseconds(250);
     private const string MissingActiveLibraryMessage =
         "The active library folder no longer exists. Create or open a library to continue.";
 
@@ -53,9 +54,12 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IAppSettingsStore? settingsStore;
     private readonly ILibraryPerformanceReporter? performanceReporter;
     private readonly Func<string, string> localize;
+    private readonly Func<CancellationToken, Task> searchFilterDelay;
     private readonly SemaphoreSlim settingsSaveLock = new(1, 1);
     private IReadOnlyList<Book> books = [];
     private BookSearchIndex? bookSearchIndex;
+    private readonly Dictionary<Guid, BookRowViewModel> bookRowsById = [];
+    private CancellationTokenSource? searchFilterCancellation;
     private Task pendingGroupingSettingsSave = Task.CompletedTask;
     private Task pendingSortSettingsSave = Task.CompletedTask;
     private long groupingSettingsSaveVersion;
@@ -115,7 +119,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null,
         IBookCoverSearchService? bookCoverSearchService = null,
-        IMetadataQualityCoverRepairService? metadataQualityCoverRepairService = null)
+        IMetadataQualityCoverRepairService? metadataQualityCoverRepairService = null,
+        Func<CancellationToken, Task>? searchFilterDelay = null)
     {
         this.bookRepository = bookRepository;
         this.searchService = searchService;
@@ -143,6 +148,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.settingsStore = settingsStore;
         this.performanceReporter = performanceReporter;
         this.localize = localize ?? DefaultGroupText;
+        this.searchFilterDelay = searchFilterDelay ??
+            (cancellationToken => Task.Delay(SearchInputDelay, cancellationToken));
         currentLibraryName = currentLibrary?.Current?.Name;
         currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
 
@@ -519,7 +526,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         OnPropertyChanged(nameof(LoadingLibraryProgressText));
     }
 
-    partial void OnSearchTextChanged(string value) => ApplyFilterUnlessSuppressed();
+    partial void OnSearchTextChanged(string value) => QueueSearchFilterUnlessSuppressed();
 
     partial void OnSelectedViewChanged(LibraryView value)
     {
@@ -760,7 +767,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         IReadOnlyList<Book> sourceBooks,
         CancellationToken cancellationToken)
     {
-        bookSearchIndex = null;
+        InvalidateBookViewCaches();
         if (customMetadataRepository is null || sourceBooks.Count == 0)
         {
             customMetadataValuesByBookId = [];
@@ -787,7 +794,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         Guid bookId,
         CancellationToken cancellationToken)
     {
-        bookSearchIndex = null;
+        InvalidateBookViewCaches();
         if (customMetadataRepository is null)
         {
             customMetadataValuesByBookId.Remove(bookId);
@@ -815,7 +822,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         IReadOnlyCollection<Guid> bookIds,
         CancellationToken cancellationToken)
     {
-        bookSearchIndex = null;
+        InvalidateBookViewCaches();
         if (customMetadataRepository is null || bookIds.Count == 0)
         {
             return;
@@ -975,8 +982,15 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    private void ApplyFilter()
+    private void ApplyFilter(bool cancelPendingSearch = true)
     {
+        if (cancelPendingSearch)
+        {
+            var pendingSearch = searchFilterCancellation;
+            searchFilterCancellation = null;
+            pendingSearch?.Cancel();
+        }
+
         var performance = new LibraryViewPerformanceTracker("ApplyFilter");
         var selectedId = SelectedBook?.Id;
         var selectedIds = SelectedBooks.Select(row => row.Id).ToHashSet();
@@ -986,12 +1000,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         var rows = performance.Measure(
             "materialize-sort",
             () => ApplySort(
-                    filteredBooks.Select(book => new BookRowViewModel(
-                        book,
-                        SearchText,
-                        CurrentLibraryPath,
-                        authorSortStrategy,
-                        GetCustomMetadataValues(book.Id))),
+                    filteredBooks.Select(GetOrCreateBookRow),
                     SelectedSortOption,
                     authorSortStrategy)
                 .ToList());
@@ -1021,6 +1030,68 @@ public sealed partial class LibraryViewModel : ObservableObject
         bookSearchIndex ??= searchService.CreateIndex(
             books,
             book => GetCustomMetadataValues(book.Id).Values);
+
+    private BookRowViewModel GetOrCreateBookRow(Book book)
+    {
+        if (!bookRowsById.TryGetValue(book.Id, out var row) || !ReferenceEquals(row.Book, book))
+        {
+            row = new BookRowViewModel(
+                book,
+                SearchText,
+                CurrentLibraryPath,
+                authorSortStrategy,
+                GetCustomMetadataValues(book.Id));
+            bookRowsById[book.Id] = row;
+        }
+        else
+        {
+            row.SearchText = SearchText;
+        }
+
+        return row;
+    }
+
+    private void InvalidateBookViewCaches()
+    {
+        bookSearchIndex = null;
+        bookRowsById.Clear();
+    }
+
+    private void QueueSearchFilterUnlessSuppressed()
+    {
+        if (isSuppressingFilterRefresh)
+        {
+            return;
+        }
+
+        var cancellation = new CancellationTokenSource();
+        var previousCancellation = searchFilterCancellation;
+        searchFilterCancellation = cancellation;
+        previousCancellation?.Cancel();
+        _ = ApplySearchFilterAfterDelayAsync(cancellation);
+    }
+
+    private async Task ApplySearchFilterAfterDelayAsync(CancellationTokenSource cancellation)
+    {
+        try
+        {
+            await searchFilterDelay(cancellation.Token);
+            cancellation.Token.ThrowIfCancellationRequested();
+            ApplyFilter(cancelPendingSearch: false);
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
+        }
+        finally
+        {
+            if (ReferenceEquals(searchFilterCancellation, cancellation))
+            {
+                searchFilterCancellation = null;
+            }
+
+            cancellation.Dispose();
+        }
+    }
 
     private void ApplyFilterUnlessSuppressed()
     {
@@ -3486,7 +3557,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         books = books
             .Select(book => persistedById.GetValueOrDefault(book.Id) ?? book)
             .ToList();
-        bookSearchIndex = null;
+        InvalidateBookViewCaches();
         if (SelectedBook is { } selected &&
             persistedById.GetValueOrDefault(selected.Id) is { } selectedChangedBook)
         {
@@ -3872,7 +3943,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
         currentLibrary?.Clear();
         books = [];
-        bookSearchIndex = null;
+        InvalidateBookViewCaches();
         VisibleBooks.ReplaceAll([]);
         GroupedLibraryNodes.ReplaceAll([]);
         AuthorFilters.Clear();
@@ -3920,7 +3991,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         books = mutableBooks;
-        bookSearchIndex = null;
+        InvalidateBookViewCaches();
         await RefreshCustomMetadataValuesForBookAsync(savedBook.Id, CancellationToken.None);
         RefreshFacetFilters();
         ApplyFilter();
@@ -3929,7 +4000,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private void OnDetailsBookDeleted(object? sender, Guid bookId)
     {
         books = books.Where(book => book.Id != bookId).ToList();
-        bookSearchIndex = null;
+        InvalidateBookViewCaches();
         RefreshFacetFilters();
         ApplyFilter();
     }
