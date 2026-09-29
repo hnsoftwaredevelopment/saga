@@ -11,7 +11,7 @@
 - [x] Taak 3: asynchrone begrensde omslaglader implementeren.
 - [x] Taak 4: bibliotheekweergaven omschakelen; interacties wachten nog op de praktijktest.
 - [x] Checkpoint 2: 709 tests groen, zelfreview afgerond en actuele Debug-build zonder waarschuwingen.
-- [ ] Taak 5: checklist, Debug-build, Definition of Done en documentatie afronden.
-- [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
+- [x] Taak 5 voorbereiden: checklist, actuele Debug-build, Definition of Done en documentatie gereed voor praktijkacceptatie.
+- [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld en met SHA-256 gecontroleerd.
 - [ ] Normale, niet-draft PR openen.
 - [ ] Handmatige checklist door gebruiker laten uitvoeren.

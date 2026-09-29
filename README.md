@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 34 builds on version `0.1` with sharded managed-book storage and a safe, resumable migration for existing libraries with many book directories. The real-library migration and manual checklist were accepted on 29 September 2026, reducing 34,483 direct book directories to 256 storage shards while restoring normal OneDrive synchronization.
+Milestone 35 is ready for real-library acceptance testing. It keeps reusable search values for unchanged books, waits briefly for rapid title input before applying only the latest filter, preserves the current book selection without reloading its details, and loads bounded cached cover thumbnails away from the UI thread. Milestone 34 was accepted on 29 September 2026 after reducing 34,483 direct book directories to 256 storage shards and restoring normal OneDrive synchronization.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -31,6 +31,8 @@ Milestone 34 builds on version `0.1` with sharded managed-book storage and a saf
 - retry action for failed import items whose original source files are still available
 - portable `metadata.json` sidecar metadata
 - searchable library viewmodels
+- responsive large-library search with reusable search values and delayed filtering of rapid input
+- asynchronous, bounded cover-thumbnail loading in bookshelf, detailed, and list views
 - editable metadata details with save, undo, and delete services
 - structured settings foundation for metadata preferences
 - settings-driven author sorting without per-book author-sort metadata
