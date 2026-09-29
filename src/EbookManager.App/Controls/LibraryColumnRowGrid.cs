@@ -4,7 +4,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using EbookManager.App.Converters;
 using EbookManager.App.Localization;
 using EbookManager.Presentation.ViewModels;
 
@@ -14,8 +13,6 @@ public sealed class LibraryColumnRowGrid : Grid
 {
     private const double GripWidth = 8;
     private const double MinimumColumnWidth = 40;
-    private static readonly FilePathToImageSourceConverter CoverConverter = new();
-
     public static readonly DependencyProperty LayoutSnapshotProperty =
         DependencyProperty.Register(
             nameof(LayoutSnapshot),
@@ -159,18 +156,17 @@ public sealed class LibraryColumnRowGrid : Grid
                 VerticalAlignment = VerticalAlignment.Center
             };
             border.Background = new SolidColorBrush(Color.FromRgb(0xE2, 0xE8, 0xF0));
-            var image = new Image
+            var image = new AsyncCoverImage
             {
+                DecodePixelWidth = 48,
                 Stretch = Stretch.UniformToFill
             };
             BindingOperations.SetBinding(
                 image,
-                Image.SourceProperty,
+                AsyncCoverImage.SourcePathProperty,
                 new Binding(nameof(BookRowViewModel.CoverPath))
                 {
-                    Source = BookRow,
-                    Converter = CoverConverter,
-                    ConverterParameter = "48"
+                    Source = BookRow
                 });
             border.Child = image;
             return border;

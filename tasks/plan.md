@@ -55,12 +55,12 @@ Reproduceerbare metingen
 
 **Acceptatiecriteria:**
 
-- [ ] Schijf- en OneDrive-I/O vindt niet op de UI-thread plaats.
-- [ ] Een gerecyclede regel kan nooit de omslag van een eerder boek tonen.
-- [ ] Ontbrekende of ongeldige afbeeldingen blijven een stille placeholder.
-- [ ] De cache heeft een vaste bovengrens.
+- [x] Schijf- en OneDrive-I/O vindt niet op de UI-thread plaats.
+- [x] Een gerecyclede regel kan nooit de omslag van een eerder boek tonen.
+- [x] Ontbrekende of ongeldige afbeeldingen blijven een stille placeholder.
+- [x] De cache heeft een vaste bovengrens.
 
-**Verificatie:** Eerst falende lader- en cachetests; daarna gerichte tests groen.
+**Verificatie:** Eerst falende cache- en layouttests; daarna 7 gerichte tests groen en de WPF-app zonder waarschuwingen gebouwd.
 
 ## Taak 4: Boekenweergaven omschakelen
 
@@ -68,17 +68,17 @@ Reproduceerbare metingen
 
 **Acceptatiecriteria:**
 
-- [ ] Alle drie bibliotheekweergaven tonen titels direct en laden omslagen daarna.
-- [ ] Scrollen, Page Up/Page Down, selectie en weergavewissels blijven correct.
-- [ ] Thema's, placeholders en kolomzichtbaarheid blijven intact.
+- [x] Alle drie bibliotheekweergaven tonen titels direct en laden omslagen daarna.
+- [ ] Scrollen, Page Up/Page Down, selectie en weergavewissels blijven correct (praktijktest).
+- [x] Thema's, placeholders en kolomzichtbaarheid blijven intact.
 
 **Verificatie:** XAML/layouttests, gerichte UI-logica-tests en Checkpoint 2.
 
 ## Checkpoint 2
 
-- [ ] Volledige testsuite slaagt.
-- [ ] Debug-build bevat 0 waarschuwingen en 0 fouten.
-- [ ] Zelfreview op correctheid, architectuur, beveiliging en prestaties is afgerond.
+- [x] Volledige testsuite slaagt: 709 tests groen.
+- [x] Debug-build bevat 0 waarschuwingen en 0 fouten.
+- [x] Zelfreview op correctheid, architectuur, beveiliging en prestaties is afgerond.
 
 ## Taak 5: Praktijkacceptatie en oplevering
 

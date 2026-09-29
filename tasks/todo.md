@@ -8,9 +8,9 @@
 - [x] Taak 1: zoekwerk gemeten en herbruikbare index geïmplementeerd; 30.000 boeken onder 250 ms.
 - [x] Taak 2: zoekinvoer uitgesteld en selectie/detail-load behouden.
 - [x] Checkpoint 1: 702 tests groen en Debug-build zonder waarschuwingen.
-- [ ] Taak 3: asynchrone begrensde omslaglader implementeren.
-- [ ] Taak 4: bibliotheekweergaven omschakelen.
-- [ ] Checkpoint 2 uitvoeren en committen.
+- [x] Taak 3: asynchrone begrensde omslaglader implementeren.
+- [x] Taak 4: bibliotheekweergaven omschakelen; interacties wachten nog op de praktijktest.
+- [x] Checkpoint 2: 709 tests groen, zelfreview afgerond en actuele Debug-build zonder waarschuwingen.
 - [ ] Taak 5: checklist, Debug-build, Definition of Done en documentatie afronden.
 - [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
 - [ ] Normale, niet-draft PR openen.
