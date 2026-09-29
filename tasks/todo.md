@@ -4,8 +4,8 @@
 - [x] Praktijkmeting geanalyseerd: 553 ms filterwerk en 1684 ms selectie/detailwerk bij 34.447 boeken.
 - [x] Synchrone OneDrive-omslagdecode tijdens scrollen als tweede oorzaak gelokaliseerd.
 - [x] Specificatie, acceptatiecriteria en implementatievolgorde opgesteld.
-- [ ] Specificatie en plan door gebruiker laten goedkeuren.
-- [ ] Taak 1: zoekwerk meten en indexeren.
+- [x] Specificatie en plan door gebruiker goedgekeurd op 29 september 2026.
+- [x] Taak 1: zoekwerk gemeten en herbruikbare index geïmplementeerd; 30.000 boeken onder 250 ms.
 - [ ] Taak 2: zoekinvoer uitstellen en selectie/detail-load behouden.
 - [ ] Checkpoint 1 uitvoeren en committen.
 - [ ] Taak 3: asynchrone begrensde omslaglader implementeren.

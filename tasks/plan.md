@@ -24,11 +24,11 @@ Reproduceerbare metingen
 
 **Acceptatiecriteria:**
 
-- [ ] Dezelfde velden en cultuurafhankelijke weergavewaarden blijven doorzoekbaar.
-- [ ] Een herhaalde zoekactie bouwt de zoekwaarden niet opnieuw op.
-- [ ] De filterfase over minstens 30.000 representatieve boeken blijft onder 250 ms op de ontwikkellaptop.
+- [x] Dezelfde velden en cultuurafhankelijke weergavewaarden blijven doorzoekbaar.
+- [x] Een herhaalde zoekactie bouwt de zoekwaarden niet opnieuw op.
+- [x] De filterfase over minstens 30.000 representatieve boeken blijft onder 250 ms op de ontwikkellaptop.
 
-**Verificatie:** Eerst falende tests in `BookSearchServiceTests`; daarna de gerichte zoektests en gemeten test groen.
+**Verificatie:** Eerst falende tests in `BookSearchServiceTests`; daarna 22 gerichte zoektests groen. De gemeten filteractie over 30.000 boeken blijft onder 250 ms.
 
 ## Taak 2: Typen en selectie ontkoppelen van duur werk
 

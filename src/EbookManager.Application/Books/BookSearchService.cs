@@ -18,35 +18,66 @@ public sealed class BookSearchService
     {
         ArgumentNullException.ThrowIfNull(books);
 
+        return Filter(CreateIndex(books, extraValuesSelector), searchText);
+    }
+
+    public BookSearchIndex CreateIndex(
+        IReadOnlyList<Book> books,
+        Func<Book, IEnumerable<string?>>? extraValuesSelector = null)
+    {
+        ArgumentNullException.ThrowIfNull(books);
+
+        return new BookSearchIndex(books.Select(book => CreateEntry(book, extraValuesSelector)).ToArray());
+    }
+
+    public IReadOnlyList<Book> Filter(BookSearchIndex index, string? searchText)
+    {
+        ArgumentNullException.ThrowIfNull(index);
+
         if (string.IsNullOrWhiteSpace(searchText))
         {
-            return books;
+            return index.Books;
         }
 
         var normalizedSearchText = searchText.Trim();
-        return books.Where(book => Matches(book, normalizedSearchText, extraValuesSelector)).ToList();
+        return index.Entries
+            .Where(entry => Matches(entry, normalizedSearchText))
+            .Select(entry => entry.Book)
+            .ToList();
     }
 
-    private static bool Matches(
+    private static BookSearchEntry CreateEntry(
         Book book,
-        string searchText,
-        Func<Book, IEnumerable<string?>>? extraValuesSelector) =>
-        Contains(book.Metadata.Title, searchText) ||
-        book.Metadata.Authors.Any(author => Contains(author, searchText)) ||
-        Contains(book.Metadata.Description, searchText) ||
-        Contains(book.Metadata.Language, searchText) ||
-        Contains(LanguageDisplayName(book.Metadata.Language), searchText) ||
-        Contains(book.Metadata.Publisher, searchText) ||
-        MatchesDate(book.Metadata.PublicationDate, searchText) ||
-        (book.Metadata.Tags?.Any(tag => Contains(tag, searchText)) ?? false) ||
-        Contains(book.Metadata.Series, searchText) ||
-        MatchesNumber(book.Metadata.SeriesNumber, searchText) ||
-        Contains(book.Metadata.Isbn, searchText) ||
-        book.Formats.Any(format => Contains(format.ToString(), searchText)) ||
-        MatchesDateTime(book.CreatedUtc, searchText) ||
-        MatchesDateTime(book.UpdatedUtc, searchText) ||
-        MatchesReadingStatus(book.ReadingStatus, searchText) ||
-        (extraValuesSelector?.Invoke(book)?.Any(value => Contains(value, searchText)) ?? false);
+        Func<Book, IEnumerable<string?>>? extraValuesSelector)
+    {
+        var values = new List<string?>
+        {
+            book.Metadata.Title,
+            book.Metadata.Description,
+            book.Metadata.Language,
+            LanguageDisplayName(book.Metadata.Language),
+            book.Metadata.Publisher,
+            book.Metadata.Series,
+            book.Metadata.Isbn
+        };
+        values.AddRange(book.Metadata.Authors);
+        values.AddRange(book.Metadata.Tags ?? []);
+        values.AddRange(book.Formats.Select(format => format.ToString()));
+        AddDateValues(values, book.Metadata.PublicationDate);
+        AddNumberValues(values, book.Metadata.SeriesNumber);
+        AddDateTimeValues(values, book.CreatedUtc);
+        AddDateTimeValues(values, book.UpdatedUtc);
+        values.AddRange(extraValuesSelector?.Invoke(book) ?? []);
+
+        return new BookSearchEntry(
+            book,
+            values.Where(value => !string.IsNullOrWhiteSpace(value)).Cast<string>().ToArray(),
+            book.ReadingStatus.ToString());
+    }
+
+    private static bool Matches(BookSearchEntry entry, string searchText) =>
+        entry.Values.Any(value => Contains(value, searchText)) ||
+        entry.ReadingStatus.Equals(searchText, StringComparison.OrdinalIgnoreCase);
 
     private static bool Contains(string? value, string searchText) =>
         !string.IsNullOrWhiteSpace(value) &&
@@ -57,23 +88,49 @@ public sealed class BookSearchService
             ? null
             : LanguageDisplayService.DisplayName(language);
 
-    private static bool MatchesDate(DateOnly? value, string searchText) =>
-        value is not null &&
-        (Contains(value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), searchText) ||
-         Contains(value.Value.ToString("d", CultureInfo.CurrentCulture), searchText));
-
-    private static bool MatchesDateTime(DateTimeOffset value, string searchText)
+    private static void AddDateValues(ICollection<string?> values, DateOnly? value)
     {
-        var local = value.ToLocalTime();
-        return Contains(local.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), searchText) ||
-            Contains(local.ToString("g", CultureInfo.CurrentCulture), searchText);
+        if (value is null)
+        {
+            return;
+        }
+
+        values.Add(value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        values.Add(value.Value.ToString("d", CultureInfo.CurrentCulture));
     }
 
-    private static bool MatchesNumber(decimal? value, string searchText) =>
-        value is not null &&
-        (Contains(value.Value.ToString(CultureInfo.InvariantCulture), searchText) ||
-         Contains(value.Value.ToString(CultureInfo.CurrentCulture), searchText));
+    private static void AddDateTimeValues(ICollection<string?> values, DateTimeOffset value)
+    {
+        var local = value.ToLocalTime();
+        values.Add(local.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        values.Add(local.ToString("g", CultureInfo.CurrentCulture));
+    }
 
-    private static bool MatchesReadingStatus(ReadingStatus status, string searchText) =>
-        status.ToString().Equals(searchText, StringComparison.OrdinalIgnoreCase);
+    private static void AddNumberValues(ICollection<string?> values, decimal? value)
+    {
+        if (value is null)
+        {
+            return;
+        }
+
+        values.Add(value.Value.ToString(CultureInfo.InvariantCulture));
+        values.Add(value.Value.ToString(CultureInfo.CurrentCulture));
+    }
 }
+
+public sealed class BookSearchIndex
+{
+    internal BookSearchIndex(IReadOnlyList<BookSearchEntry> entries)
+    {
+        Entries = entries;
+        Books = entries.Select(entry => entry.Book).ToArray();
+    }
+
+    internal IReadOnlyList<BookSearchEntry> Entries { get; }
+    public IReadOnlyList<Book> Books { get; }
+}
+
+internal sealed record BookSearchEntry(
+    Book Book,
+    IReadOnlyList<string> Values,
+    string ReadingStatus);
