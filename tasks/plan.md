@@ -69,7 +69,7 @@ Reproduceerbare metingen
 **Acceptatiecriteria:**
 
 - [x] Alle drie bibliotheekweergaven tonen titels direct en laden omslagen daarna.
-- [ ] Scrollen, Page Up/Page Down, selectie en weergavewissels blijven correct (praktijktest).
+- [x] Scrollen, Page Up/Page Down, selectie en weergavewissels blijven correct in de echte bibliotheek.
 - [x] Thema's, placeholders en kolomzichtbaarheid blijven intact.
 
 **Verificatie:** XAML/layouttests, gerichte UI-logica-tests en Checkpoint 2.

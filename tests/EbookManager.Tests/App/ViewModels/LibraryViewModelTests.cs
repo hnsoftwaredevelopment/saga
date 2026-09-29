@@ -72,6 +72,31 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Search_without_matches_reports_search_results_instead_of_an_empty_library()
+    {
+        var viewModel = CreateViewModel(
+            [CreateBook("The Hobbit", ["J.R.R. Tolkien"])],
+            currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+
+        viewModel.SearchText = "no matching title";
+
+        viewModel.VisibleBooks.Should().BeEmpty();
+        viewModel.EmptyStateMessage.Should().Be("No books match the current search or filters.");
+    }
+
+    [Fact]
+    public async Task Refresh_of_an_active_library_without_books_reports_that_the_library_is_empty()
+    {
+        var viewModel = CreateViewModel([], currentLibrary: CreateActiveLibrary());
+
+        await viewModel.RefreshAsync();
+
+        viewModel.VisibleBooks.Should().BeEmpty();
+        viewModel.EmptyStateMessage.Should().Be("This library is empty. Add books or scan a folder to begin.");
+    }
+
+    [Fact]
     public async Task Refresh_sets_loading_state_while_library_is_loading()
     {
         var repository = new BlockingBookRepository();

@@ -26,6 +26,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private const int LibraryLoadPageSize = 500;
     private static readonly TimeSpan SearchInputDelay = TimeSpan.FromMilliseconds(250);
+    private const string EmptyLibraryMessage = "This library is empty. Add books or scan a folder to begin.";
+    private const string NoMatchingBooksMessage = "No books match the current search or filters.";
     private const string MissingActiveLibraryMessage =
         "The active library folder no longer exists. Create or open a library to continue.";
 
@@ -1020,9 +1022,13 @@ public sealed partial class LibraryViewModel : ObservableObject
         performance.Measure(
             "multi-selection",
             () => SetSelectedBooks(VisibleBooks.Where(row => selectedIds.Contains(row.Id))));
-        EmptyStateMessage = HasActiveLibrary
-            ? "This library is empty. Add books or scan a folder to begin."
-            : "Create or open a library to get started.";
+        EmptyStateMessage = HasActiveLibrary switch
+        {
+            false => "Create or open a library to get started.",
+            true when books.Count == 0 => EmptyLibraryMessage,
+            true when rows.Count == 0 => NoMatchingBooksMessage,
+            _ => string.Empty
+        };
         ReportPerformance(performance, rows.Count);
     }
 

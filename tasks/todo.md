@@ -14,4 +14,4 @@
 - [x] Taak 5 voorbereiden: checklist, actuele Debug-build, Definition of Done en documentatie gereed voor praktijkacceptatie.
 - [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld en met SHA-256 gecontroleerd.
 - [x] Normale, niet-draft PR #36 geopend.
-- [ ] Handmatige checklist door gebruiker laten uitvoeren.
+- [ ] Handmatige checklist grotendeels geslaagd; verbeterde melding voor nul zoekresultaten wacht op een korte hertest.

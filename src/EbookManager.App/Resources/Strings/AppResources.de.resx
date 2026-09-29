@@ -228,6 +228,9 @@
   <data name="EmptyStateLibraryEmpty" xml:space="preserve">
     <value>Diese Bibliothek ist leer. Fuegen Sie Buecher hinzu oder scannen Sie einen Ordner.</value>
   </data>
+  <data name="EmptyStateNoMatchingBooks" xml:space="preserve">
+    <value>Keine Buecher entsprechen der aktuellen Suche oder den Filtern.</value>
+  </data>
   <data name="EmptyStateLibraryFolderMissing" xml:space="preserve">
     <value>Der aktive Bibliotheksordner existiert nicht mehr. Erstellen oder oeffnen Sie eine Bibliothek, um fortzufahren.</value>
   </data>

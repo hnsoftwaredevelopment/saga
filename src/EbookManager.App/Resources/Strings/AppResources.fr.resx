@@ -228,6 +228,9 @@
   <data name="EmptyStateLibraryEmpty" xml:space="preserve">
     <value>Cette bibliotheque est vide. Ajoutez des livres ou analysez un dossier pour commencer.</value>
   </data>
+  <data name="EmptyStateNoMatchingBooks" xml:space="preserve">
+    <value>Aucun livre ne correspond a la recherche ou aux filtres actuels.</value>
+  </data>
   <data name="EmptyStateLibraryFolderMissing" xml:space="preserve">
     <value>Le dossier de la bibliotheque active n'existe plus. Creez ou ouvrez une bibliotheque pour continuer.</value>
   </data>

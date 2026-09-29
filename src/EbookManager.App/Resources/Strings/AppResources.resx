@@ -178,6 +178,7 @@
   <data name="EmptyStateCreateOrOpenBeforeAdding" xml:space="preserve"><value>Create or open a library before adding books.</value></data>
   <data name="EmptyStateCreateOrOpenBeforeScanning" xml:space="preserve"><value>Create or open a library before scanning folders.</value></data>
   <data name="EmptyStateLibraryEmpty" xml:space="preserve"><value>This library is empty. Add books or scan a folder to begin.</value></data>
+  <data name="EmptyStateNoMatchingBooks" xml:space="preserve"><value>No books match the current search or filters.</value></data>
   <data name="EmptyStateLibraryFolderMissing" xml:space="preserve"><value>The active library folder no longer exists. Create or open a library to continue.</value></data>
   <data name="LoadingLibrary" xml:space="preserve"><value>Loading library</value></data>
   <data name="Message" xml:space="preserve"><value>Message</value></data>
