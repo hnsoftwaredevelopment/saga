@@ -1,21 +1,17 @@
-# Milestone 34 Todo
+# Milestone 35 Todo
 
-- [x] Werkelijke omvang van `books` vastgesteld: 34.483 directe boekmappen en 67.309 bestanden.
-- [x] Auteursmappen vergeleken met stabiele ID-sharding.
-- [x] Richting voor ID-sharding goedgekeurd op 27 september 2026.
-- [x] Migratie-, herstel- en veiligheidsgrenzen in een specificatie vastgelegd.
-- [x] Implementatievolgorde en checkpoints opgesteld.
-- [x] Specificatie en taakvolgorde door gebruiker goedgekeurd op 27 september 2026.
-- [x] Taak 1: centrale opslagindeling testgedreven implementeren.
-- [x] Taak 2: nieuwe imports, omslagen en verwijderen testgedreven omschakelen.
-- [x] Checkpoint 1: architectuur, padbeveiliging en regressies controleren.
-- [x] Taak 3: back-up en hervatbare bestaande-bibliotheekmigratie testgedreven implementeren.
-- [x] Taak 4: opstartvoortgang, blokkering en gelokaliseerde foutafhandeling implementeren.
-- [x] Checkpoint 2: volledige migratieketen, samengevoegde opslag-ID's en foutscenario's controleren.
-- [x] Taak 5: regressietests, zes vertalingen en handmatige checklist afronden.
-- [x] Volledige Debug-tests uitvoeren: 697 tests groen.
-- [x] Actuele Debug-build uitsluitend in `Builds/Debug` maken zonder waarschuwingen.
-- [x] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
-- [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
-- [x] Normale, niet-draft PR #35 openen.
-- [x] Handmatige checklist door gebruiker afgerond zonder gevonden afwijkingen op 29 september 2026.
+- [x] Gemergede PR #35 opgehaald en nieuwe branch `codex/milestone-35-library-performance` gemaakt.
+- [x] Praktijkmeting geanalyseerd: 553 ms filterwerk en 1684 ms selectie/detailwerk bij 34.447 boeken.
+- [x] Synchrone OneDrive-omslagdecode tijdens scrollen als tweede oorzaak gelokaliseerd.
+- [x] Specificatie, acceptatiecriteria en implementatievolgorde opgesteld.
+- [ ] Specificatie en plan door gebruiker laten goedkeuren.
+- [ ] Taak 1: zoekwerk meten en indexeren.
+- [ ] Taak 2: zoekinvoer uitstellen en selectie/detail-load behouden.
+- [ ] Checkpoint 1 uitvoeren en committen.
+- [ ] Taak 3: asynchrone begrensde omslaglader implementeren.
+- [ ] Taak 4: bibliotheekweergaven omschakelen.
+- [ ] Checkpoint 2 uitvoeren en committen.
+- [ ] Taak 5: checklist, Debug-build, Definition of Done en documentatie afronden.
+- [ ] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
+- [ ] Normale, niet-draft PR openen.
+- [ ] Handmatige checklist door gebruiker laten uitvoeren.
