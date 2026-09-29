@@ -3106,6 +3106,37 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task OpenLibraryCommand_restores_loading_state_when_initialization_fails_unexpectedly()
+    {
+        using var temporaryDirectory = new TemporaryDirectory();
+        var currentPath = temporaryDirectory.CreateSubdirectory("CurrentLibrary").FullName;
+        var failingPath = temporaryDirectory.CreateSubdirectory("FailingLibrary").FullName;
+        var settingsStore = new InMemoryAppSettingsStore();
+        var currentLibrary = new CurrentLibrary();
+        currentLibrary.Set(new LibraryDescriptor("CurrentLibrary", currentPath, DateTimeOffset.UtcNow));
+        var initializer = new RecordingLibraryDatabaseInitializer
+        {
+            ExceptionToThrow = new InvalidOperationException("Initialization failed.")
+        };
+        var interaction = new ScriptedUserInteractionService { LibraryDirectory = failingPath };
+        var viewModel = CreateViewModel(
+            [],
+            interaction,
+            new LibraryService(settingsStore),
+            currentLibrary,
+            initializer);
+
+        var action = () => viewModel.OpenLibraryCommand.ExecuteAsync(null);
+
+        await action.Should().ThrowAsync<InvalidOperationException>();
+        viewModel.IsLoadingLibrary.Should().BeFalse();
+        viewModel.LoadingLibraryTotalCount.Should().Be(0);
+        viewModel.LoadedLibraryCount.Should().Be(0);
+        viewModel.EmptyStateMessage.Should().BeEmpty();
+        currentLibrary.Current!.DirectoryPath.Should().Be(currentPath);
+    }
+
+    [Fact]
     public async Task Refresh_clears_active_library_when_library_folder_was_deleted_outside_the_app()
     {
         using var temporaryDirectory = new TemporaryDirectory();
@@ -4615,7 +4646,7 @@ public sealed class LibraryViewModelTests
     private sealed class RecordingLibraryDatabaseInitializer : ILibraryDatabaseInitializer
     {
         public List<LibraryDescriptor> InitializedLibraries { get; } = [];
-        public LibraryStorageMigrationException? ExceptionToThrow { get; init; }
+        public Exception? ExceptionToThrow { get; init; }
 
         public Task InitializeAsync(LibraryDescriptor library, CancellationToken cancellationToken)
         {

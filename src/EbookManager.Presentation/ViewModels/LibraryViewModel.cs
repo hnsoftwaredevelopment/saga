@@ -940,9 +940,11 @@ public sealed partial class LibraryViewModel : ObservableObject
             EmptyStateMessage = localize("StorageMigrationStatus");
         });
 
+        var initialized = false;
         try
         {
             await databaseInitializer.InitializeAsync(library, progress, cancellationToken);
+            initialized = true;
             return true;
         }
         catch (LibraryStorageMigrationException exception)
@@ -954,12 +956,18 @@ public sealed partial class LibraryViewModel : ObservableObject
                     localize("StorageMigrationFailedMessage"),
                     exception.Path),
                 cancellationToken);
-            IsLoadingLibrary = false;
-            ResetLoadingLibraryProgress();
-            EmptyStateMessage = HasActiveLibrary
-                ? string.Empty
-                : "Create or open a library to get started.";
             return false;
+        }
+        finally
+        {
+            if (!initialized)
+            {
+                IsLoadingLibrary = false;
+                ResetLoadingLibraryProgress();
+                EmptyStateMessage = HasActiveLibrary
+                    ? string.Empty
+                    : "Create or open a library to get started.";
+            }
         }
     }
 
