@@ -13,5 +13,5 @@
 - [x] Checkpoint 2: 709 tests groen, zelfreview afgerond en actuele Debug-build zonder waarschuwingen.
 - [x] Taak 5 voorbereiden: checklist, actuele Debug-build, Definition of Done en documentatie gereed voor praktijkacceptatie.
 - [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld en met SHA-256 gecontroleerd.
-- [ ] Normale, niet-draft PR openen.
+- [x] Normale, niet-draft PR #36 geopend.
 - [ ] Handmatige checklist door gebruiker laten uitvoeren.
