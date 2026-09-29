@@ -676,5 +676,11 @@
   <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>La couverture n’a pas pu être enregistrée. Vérifiez le livre et réessayez.</value></data>
   <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>La couverture a été enregistrée dans Saga, mais certains fichiers de métadonnées ou ebooks associés n’ont pas pu être mis à jour.</value></data>
   <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Ce livre possède déjà une couverture. Saga a actualisé les données du livre.</value></data>
+  <data name="StorageMigrationStatus" xml:space="preserve"><value>Optimisation du stockage de la bibliothèque</value></data>
+  <data name="StorageMigrationFailedTitle" xml:space="preserve"><value>Impossible d’optimiser le stockage de la bibliothèque</value></data>
+  <data name="StorageMigrationFailedMessage" xml:space="preserve"><value>Saga n’a pas pu optimiser le stockage de la bibliothèque pour :
+{0}
+
+Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichier ou OneDrive signalé, puis redémarrez Saga.</value></data>
 </root>
 

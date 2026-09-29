@@ -54,9 +54,10 @@ public sealed class ImportServiceTests
 
         await using var context = fixture.ContextFactory.Create(fixture.LibraryPath);
         var file = await context.BookFiles.SingleAsync();
-        file.RelativePath.Should().Be($"books/{item.BookId:N}/The Hobbit - J.R.R. Tolkien.pdf");
+        var id = item.BookId.Value.ToString("N");
+        file.RelativePath.Should().Be($"books/{id[..2]}/{id}/The Hobbit - J.R.R. Tolkien.pdf");
         file.Sha256.Should().Be(Convert.ToHexString(SHA256.HashData(sourceBytes)));
-        Directory.Exists(Path.Combine(fixture.LibraryPath, "books", item.BookId.Value.ToString("N")))
+        Directory.Exists(Path.Combine(fixture.LibraryPath, "books", id[..2], id))
             .Should()
             .BeTrue();
         File.Exists(Path.Combine(fixture.LibraryPath, file.RelativePath)).Should().BeTrue();
@@ -306,7 +307,8 @@ public sealed class ImportServiceTests
 
         var book = await fixture.BookRepository.GetAsync(result.Items.Single().BookId!.Value, default);
         book.Should().NotBeNull();
-        book!.CoverRelativePath.Should().Be($"books/{book.Id:N}/cover.jpg");
+        var id = book!.Id.ToString("N");
+        book.CoverRelativePath.Should().Be($"books/{id[..2]}/{id}/cover.jpg");
         File.ReadAllBytes(Path.Combine(fixture.LibraryPath, book.CoverRelativePath!)).Should().Equal(coverBytes);
     }
 
@@ -628,10 +630,12 @@ public sealed class ImportServiceTests
         result.Items[1].Outcome.Should().Be(ImportOutcome.Added);
         result.Items[1].BookId.Should().NotBeNull();
         Directory.Exists(Path.Combine(fixture.LibraryPath, "books")).Should().BeTrue();
-        Directory.EnumerateDirectories(Path.Combine(fixture.LibraryPath, "books"))
+        var successfulId = result.Items[1].BookId!.Value.ToString("N");
+        Directory.EnumerateDirectories(
+                Path.Combine(fixture.LibraryPath, "books", successfulId[..2]))
             .Select(Path.GetFileName)
             .Should()
-            .Equal(result.Items[1].BookId!.Value.ToString("N"));
+            .Equal(successfulId);
 
         var loaded = await fixture.LoadImportRunAsync(result.RunId);
         loaded.Should().NotBeNull();

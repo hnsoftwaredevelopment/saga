@@ -5,7 +5,7 @@ namespace EbookManager.Infrastructure.Files;
 public sealed class ManagedLibraryCoverStore(string libraryRootPath) : IBookCoverStore
 {
     private const int MaximumCoverBytes = 10 * 1024 * 1024;
-    private readonly string libraryRoot = Canonicalize(libraryRootPath);
+    private readonly ManagedLibraryStorageLayout layout = new(libraryRootPath);
 
     public async Task<string> SaveAsync(
         Guid bookId,
@@ -20,42 +20,43 @@ public sealed class ManagedLibraryCoverStore(string libraryRootPath) : IBookCove
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        var bookDirectory = EnsureContained(Path.Combine(libraryRoot, "books", bookId.ToString("N")));
-        EnsureNoReparsePoints(bookDirectory);
+        var bookDirectory = layout.ResolveExistingOrNewBookDirectory(bookId);
+        layout.EnsureNoReparsePoints(bookDirectory);
         Directory.CreateDirectory(bookDirectory);
-        EnsureNoReparsePoints(bookDirectory);
-        var coverPath = EnsureContained(Path.Combine(bookDirectory, "cover.jpg"));
-        EnsureNoReparsePoints(coverPath);
-        var temporaryPath = EnsureContained(Path.Combine(bookDirectory, $".{Guid.NewGuid():N}.cover.tmp"));
+        layout.EnsureNoReparsePoints(bookDirectory);
+        var coverPath = layout.GetAbsolutePath(Path.Combine(bookDirectory, "cover.jpg"));
+        layout.EnsureNoReparsePoints(coverPath);
+        var temporaryPath = layout.GetAbsolutePath(Path.Combine(bookDirectory, $".{Guid.NewGuid():N}.cover.tmp"));
 
         try
         {
-            EnsureNoReparsePoints(temporaryPath);
-            EnsureNoReparsePoints(coverPath);
+            layout.EnsureNoReparsePoints(temporaryPath);
+            layout.EnsureNoReparsePoints(coverPath);
             await File.WriteAllBytesAsync(temporaryPath, coverBytes, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            EnsureNoReparsePoints(temporaryPath);
-            EnsureNoReparsePoints(coverPath);
+            layout.EnsureNoReparsePoints(temporaryPath);
+            layout.EnsureNoReparsePoints(coverPath);
             File.Move(temporaryPath, coverPath, overwrite: true);
         }
         finally
         {
             if (File.Exists(temporaryPath))
             {
-                EnsureNoReparsePoints(temporaryPath);
+                layout.EnsureNoReparsePoints(temporaryPath);
                 File.Delete(temporaryPath);
             }
         }
 
-        return ToRelativePath(coverPath);
+        return layout.ToRelativePath(coverPath);
     }
 
     public Task DeleteAsync(Guid bookId, CancellationToken cancellationToken)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(bookId, Guid.Empty);
         cancellationToken.ThrowIfCancellationRequested();
-        var coverPath = EnsureContained(Path.Combine(libraryRoot, "books", bookId.ToString("N"), "cover.jpg"));
-        EnsureNoReparsePoints(coverPath);
+        var bookDirectory = layout.ResolveExistingOrNewBookDirectory(bookId);
+        var coverPath = layout.GetAbsolutePath(Path.Combine(bookDirectory, "cover.jpg"));
+        layout.EnsureNoReparsePoints(coverPath);
         if (File.Exists(coverPath))
         {
             File.Delete(coverPath);
@@ -64,47 +65,4 @@ public sealed class ManagedLibraryCoverStore(string libraryRootPath) : IBookCove
         return Task.CompletedTask;
     }
 
-    private static string Canonicalize(string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentException("The library root path must not be blank.", nameof(path));
-        }
-
-        return Path.TrimEndingDirectorySeparator(Path.GetFullPath(path));
-    }
-
-    private string EnsureContained(string path)
-    {
-        var canonicalPath = Path.GetFullPath(path);
-        var rootWithSeparator = libraryRoot + Path.DirectorySeparatorChar;
-        if (!canonicalPath.StartsWith(
-                rootWithSeparator,
-                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
-        {
-            throw new InvalidOperationException("The cover path escapes the active library.");
-        }
-
-        return canonicalPath;
-    }
-
-    private string ToRelativePath(string absolutePath) =>
-        Path.GetRelativePath(libraryRoot, absolutePath).Replace(Path.DirectorySeparatorChar, '/');
-
-    private void EnsureNoReparsePoints(string path)
-    {
-        var relativePath = Path.GetRelativePath(libraryRoot, path);
-        var current = libraryRoot;
-        foreach (var segment in relativePath.Split(
-                     [Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar],
-                     StringSplitOptions.RemoveEmptyEntries))
-        {
-            current = Path.Combine(current, segment);
-            if ((Directory.Exists(current) || File.Exists(current)) &&
-                File.GetAttributes(current).HasFlag(FileAttributes.ReparsePoint))
-            {
-                throw new InvalidOperationException("The managed cover path contains a symbolic link or reparse point.");
-            }
-        }
-    }
 }

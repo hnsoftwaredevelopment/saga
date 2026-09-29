@@ -3067,6 +3067,76 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task OpenLibraryCommand_keeps_the_current_library_when_storage_migration_is_blocked()
+    {
+        using var temporaryDirectory = new TemporaryDirectory();
+        var currentPath = temporaryDirectory.CreateSubdirectory("CurrentLibrary").FullName;
+        var blockedPath = temporaryDirectory.CreateSubdirectory("BlockedLibrary").FullName;
+        var settingsStore = new InMemoryAppSettingsStore();
+        var currentLibrary = new CurrentLibrary();
+        currentLibrary.Set(new LibraryDescriptor("CurrentLibrary", currentPath, DateTimeOffset.UtcNow));
+        var blockedBookId = Guid.NewGuid();
+        var problemPath = Path.Combine(blockedPath, "books", blockedBookId.ToString("N"));
+        var initializer = new RecordingLibraryDatabaseInitializer
+        {
+            ExceptionToThrow = new LibraryStorageMigrationException(
+                blockedBookId,
+                problemPath,
+                "conflict")
+        };
+        var interaction = new ScriptedUserInteractionService { LibraryDirectory = blockedPath };
+        var viewModel = CreateViewModel(
+            [],
+            interaction,
+            new LibraryService(settingsStore),
+            currentLibrary,
+            initializer,
+            localize: key => key switch
+            {
+                "StorageMigrationFailedTitle" => "Storage blocked",
+                "StorageMigrationFailedMessage" => "Problem at {0}",
+                _ => key
+            });
+
+        await viewModel.OpenLibraryCommand.ExecuteAsync(null);
+
+        currentLibrary.Current!.DirectoryPath.Should().Be(currentPath);
+        interaction.LastMessageTitle.Should().Be("Storage blocked");
+        interaction.LastMessageText.Should().Be($"Problem at {problemPath}");
+    }
+
+    [Fact]
+    public async Task OpenLibraryCommand_restores_loading_state_when_initialization_fails_unexpectedly()
+    {
+        using var temporaryDirectory = new TemporaryDirectory();
+        var currentPath = temporaryDirectory.CreateSubdirectory("CurrentLibrary").FullName;
+        var failingPath = temporaryDirectory.CreateSubdirectory("FailingLibrary").FullName;
+        var settingsStore = new InMemoryAppSettingsStore();
+        var currentLibrary = new CurrentLibrary();
+        currentLibrary.Set(new LibraryDescriptor("CurrentLibrary", currentPath, DateTimeOffset.UtcNow));
+        var initializer = new RecordingLibraryDatabaseInitializer
+        {
+            ExceptionToThrow = new InvalidOperationException("Initialization failed.")
+        };
+        var interaction = new ScriptedUserInteractionService { LibraryDirectory = failingPath };
+        var viewModel = CreateViewModel(
+            [],
+            interaction,
+            new LibraryService(settingsStore),
+            currentLibrary,
+            initializer);
+
+        var action = () => viewModel.OpenLibraryCommand.ExecuteAsync(null);
+
+        await action.Should().ThrowAsync<InvalidOperationException>();
+        viewModel.IsLoadingLibrary.Should().BeFalse();
+        viewModel.LoadingLibraryTotalCount.Should().Be(0);
+        viewModel.LoadedLibraryCount.Should().Be(0);
+        viewModel.EmptyStateMessage.Should().BeEmpty();
+        currentLibrary.Current!.DirectoryPath.Should().Be(currentPath);
+    }
+
+    [Fact]
     public async Task Refresh_clears_active_library_when_library_folder_was_deleted_outside_the_app()
     {
         using var temporaryDirectory = new TemporaryDirectory();
@@ -4576,11 +4646,26 @@ public sealed class LibraryViewModelTests
     private sealed class RecordingLibraryDatabaseInitializer : ILibraryDatabaseInitializer
     {
         public List<LibraryDescriptor> InitializedLibraries { get; } = [];
+        public Exception? ExceptionToThrow { get; init; }
 
         public Task InitializeAsync(LibraryDescriptor library, CancellationToken cancellationToken)
         {
             InitializedLibraries.Add(library);
             return Task.CompletedTask;
+        }
+
+        public Task InitializeAsync(
+            LibraryDescriptor library,
+            IProgress<LibraryStorageMigrationProgress>? progress,
+            CancellationToken cancellationToken)
+        {
+            if (ExceptionToThrow is not null)
+            {
+                throw ExceptionToThrow;
+            }
+
+            progress?.Report(new LibraryStorageMigrationProgress(1, 1, null));
+            return InitializeAsync(library, cancellationToken);
         }
     }
 

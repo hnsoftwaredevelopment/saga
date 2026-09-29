@@ -4,6 +4,7 @@ using EbookManager.Application.Metadata;
 using EbookManager.App.Services;
 using EbookManager.App.Views;
 using EbookManager.Domain.Abstractions;
+using EbookManager.Domain.Libraries;
 using EbookManager.Infrastructure.Files;
 using EbookManager.Infrastructure.Metadata;
 using EbookManager.Infrastructure.Persistence;
@@ -56,7 +57,12 @@ public partial class App : System.Windows.Application
             await System.Windows.Threading.Dispatcher.Yield();
 
             var startupService = serviceProvider.GetRequiredService<AppStartupService>();
-            await startupService.InitializeAsync(CancellationToken.None);
+            var storageMigrationProgress = new Progress<LibraryStorageMigrationProgress>(snapshot =>
+                splash.ShowStorageMigrationProgress(
+                    localizationService.GetString("StorageMigrationStatus"),
+                    snapshot.ProcessedCount,
+                    snapshot.TotalCount));
+            await startupService.InitializeAsync(storageMigrationProgress, CancellationToken.None);
 
             var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
             splash.BindLibraryProgress(
@@ -71,10 +77,17 @@ public partial class App : System.Windows.Application
         catch (Exception exception)
         {
             splash?.CloseSplash();
+            var localizationService = serviceProvider?.GetService<LocalizationService>();
+            var message = exception is LibraryStorageMigrationException migrationException &&
+                localizationService is not null
+                ? string.Format(
+                    CultureInfo.CurrentCulture,
+                    localizationService.GetString("StorageMigrationFailedMessage"),
+                    migrationException.Path)
+                : exception.Message;
             System.Windows.MessageBox.Show(
-                exception.Message,
-                serviceProvider?.GetService<LocalizationService>()?.GetString("StartupFailedTitle")
-                    ?? "Ebook Manager startup failed",
+                message,
+                localizationService?.GetString("StartupFailedTitle") ?? "Ebook Manager startup failed",
                 System.Windows.MessageBoxButton.OK,
                 System.Windows.MessageBoxImage.Error);
             Shutdown(-1);
@@ -95,6 +108,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IAppSettingsStore, JsonAppSettingsStore>();
         services.AddSingleton<CurrentLibrary>();
         services.AddSingleton<LibraryDbContextFactory>();
+        services.AddSingleton<ILibraryStorageMigrator, LibraryStorageMigrator>();
         services.AddSingleton<ILibraryDatabaseInitializer, LibraryDatabaseInitializer>();
         services.AddSingleton<LibraryService>();
         services.AddSingleton<AppStartupService>();

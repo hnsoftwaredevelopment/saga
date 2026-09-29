@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 33 builds on version `0.1` with an explicit multi-source cover search, a locally generated fallback cover, and cover replacement from both the Quality Page and book details.
+Milestone 34 builds on version `0.1` with sharded managed-book storage and a safe, resumable migration for existing libraries with many book directories. The real-library migration and manual checklist were accepted on 29 September 2026, reducing 34,483 direct book directories to 256 storage shards while restoring normal OneDrive synchronization.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -60,6 +60,7 @@ Milestone 33 builds on version `0.1` with an explicit multi-source cover search,
 - direct missing-series repair with live suggestions while preserving the existing series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
 - explicit cover search with up to twelve validated Google Books and Open Library choices, a locally generated fallback, safe managed storage, and replacement from book details
+- managed ebooks and covers distributed over 256 ID-based storage shards, with automatic database backup, visible first-start migration progress, and safe resume after interruption
 - delete actions continue removing library records when managed file cleanup reports a warning
 - filter context-menu cleanup for authors, series, tags, and languages
 - WPF workspace with bookshelf, detailed grid, and list views
@@ -180,6 +181,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-31-checklist.md](docs/manual-tests/milestone-31-checklist.md)
 - [docs/manual-tests/milestone-32-checklist.md](docs/manual-tests/milestone-32-checklist.md)
 - [docs/manual-tests/milestone-33-checklist.md](docs/manual-tests/milestone-33-checklist.md)
+- [docs/manual-tests/milestone-34-checklist.md](docs/manual-tests/milestone-34-checklist.md)
 
 ## Later-Version Candidates
 

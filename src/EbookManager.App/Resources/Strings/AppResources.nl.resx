@@ -398,5 +398,11 @@
   <data name="MetadataQualityCoverRepairFailed" xml:space="preserve"><value>De omslag kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
   <data name="MetadataQualityCoverRepairWriteBackWarning" xml:space="preserve"><value>De omslag is opgeslagen in Saga, maar niet elk bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
   <data name="MetadataQualityCoverRepairNotNeeded" xml:space="preserve"><value>Dit boek heeft al een omslag. Saga heeft de huidige boekgegevens vernieuwd.</value></data>
+  <data name="StorageMigrationStatus" xml:space="preserve"><value>Bibliotheekopslag optimaliseren</value></data>
+  <data name="StorageMigrationFailedTitle" xml:space="preserve"><value>Bibliotheekopslag kon niet worden geoptimaliseerd</value></data>
+  <data name="StorageMigrationFailedMessage" xml:space="preserve"><value>Saga kon de bibliotheekopslag niet optimaliseren voor:
+{0}
+
+Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of OneDrive-probleem op en start Saga opnieuw.</value></data>
 </root>
 

@@ -12,6 +12,7 @@ using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Importing;
+using EbookManager.Domain.Libraries;
 using EbookManager.Domain.Metadata;
 using EbookManager.Domain.Settings;
 using EbookManager.Libraries;
@@ -886,9 +887,13 @@ public sealed partial class LibraryViewModel : ObservableObject
             ? directoryPath
             : Path.Combine(directoryPath, "ELibrary");
         var library = await libraryService.CreateAsync("ELibrary", libraryRoot, cancellationToken);
+        if (!await InitializeLibraryStorageAsync(library, cancellationToken))
+        {
+            return;
+        }
+
         currentLibrary.Set(library);
         RefreshLibraryDisplay();
-        await databaseInitializer.InitializeAsync(library, cancellationToken);
         await RefreshAsync(cancellationToken);
     }
 
@@ -906,10 +911,64 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         var library = await libraryService.OpenAsync(directoryPath, cancellationToken);
+        if (!await InitializeLibraryStorageAsync(library, cancellationToken))
+        {
+            return;
+        }
+
         currentLibrary.Set(library);
         RefreshLibraryDisplay();
-        await databaseInitializer.InitializeAsync(library, cancellationToken);
         await RefreshAsync(cancellationToken);
+    }
+
+    private async Task<bool> InitializeLibraryStorageAsync(
+        LibraryDescriptor library,
+        CancellationToken cancellationToken)
+    {
+        if (databaseInitializer is null)
+        {
+            return false;
+        }
+
+        IsLoadingLibrary = true;
+        ResetLoadingLibraryProgress();
+        EmptyStateMessage = localize("StorageMigrationStatus");
+        var progress = new Progress<LibraryStorageMigrationProgress>(snapshot =>
+        {
+            LoadingLibraryTotalCount = snapshot.TotalCount;
+            LoadedLibraryCount = snapshot.ProcessedCount;
+            EmptyStateMessage = localize("StorageMigrationStatus");
+        });
+
+        var initialized = false;
+        try
+        {
+            await databaseInitializer.InitializeAsync(library, progress, cancellationToken);
+            initialized = true;
+            return true;
+        }
+        catch (LibraryStorageMigrationException exception)
+        {
+            await userInteraction.ShowMessageAsync(
+                localize("StorageMigrationFailedTitle"),
+                string.Format(
+                    CultureInfo.CurrentCulture,
+                    localize("StorageMigrationFailedMessage"),
+                    exception.Path),
+                cancellationToken);
+            return false;
+        }
+        finally
+        {
+            if (!initialized)
+            {
+                IsLoadingLibrary = false;
+                ResetLoadingLibraryProgress();
+                EmptyStateMessage = HasActiveLibrary
+                    ? string.Empty
+                    : "Create or open a library to get started.";
+            }
+        }
     }
 
     private void ApplyFilter()

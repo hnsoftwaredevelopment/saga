@@ -72,7 +72,8 @@ public sealed class VerticalSliceTests
             .ContainSingle()
             .Which.WriteBackStatus.Should().Be(MetadataWriteBackStatus.Unsupported);
 
-        var managedBookDirectory = Path.Combine(fixture.LibraryPath, "books", importedBookId.ToString("N"));
+        var id = importedBookId.ToString("N");
+        var managedBookDirectory = Path.Combine(fixture.LibraryPath, "books", id[..2], id);
         Directory.Exists(managedBookDirectory).Should().BeTrue();
 
         var deleteResult = await bookService.DeleteAsync(importedBookId, default);
