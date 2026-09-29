@@ -4,10 +4,10 @@ Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe`. De eerst
 
 ## Voorbereiding
 
-- [X] Sluit Saga en andere programma's die `C:\Users\hnijk\OneDrive\ELibrary` gebruiken.
+- [X] Sluit Saga en andere programma's die `<bibliotheekmap>` gebruiken.
 - [X] Controleer dat OneDrive voor de bibliotheek `Bijgewerkt` meldt.
 - [X] Controleer dat station C minimaal 7 GB vrije ruimte heeft; de huidige `library.db` is ongeveer 5,98 GB en de veiligheidskopie is ongeveer even groot.
-- [X] Controleer dat `C:\Users\hnijk\OneDrive\ELibrary\books` nog de oude directe boekmappen bevat.
+- [X] Controleer dat `<bibliotheekmap>\books` nog de oude directe boekmappen bevat.
 - [X] Start daarna alleen `Builds\Debug\Saga.exe` en laat het proces volledig afronden.
 
 ## Eerste start en migratie
@@ -16,12 +16,12 @@ Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe`. De eerst
 - [X] Controleer dat daarna een teller verschijnt en oploopt tot alle gerefereerde opslagmappen zijn verwerkt. Bij de gecontroleerde uitgangssituatie zijn dit ongeveer 34.460 mappen.
 - [X] Laat Saga en Windows tijdens deze eerste praktijktest actief; de geautomatiseerde tests dekken het hervatten na een onderbreking.
 - [X] Controleer dat Saga na voltooiing de normale bibliotheek opent en geen foutmelding toont.
-- [X] Controleer dat `C:\Users\hnijk\OneDrive\ELibrary\backups\library-before-sharded-storage-v2.db` bestaat en niet leeg is.
+- [X] Controleer dat `<bibliotheekmap>\backups\library-before-sharded-storage-v2.db` bestaat en niet leeg is.
 - [X] Sluit Saga en start dezelfde build opnieuw; controleer dat geen tweede lange migratie of tweede back-up wordt uitgevoerd.
 
 ## Nieuwe mappenstructuur
 
-- [X] Open `C:\Users\hnijk\OneDrive\ELibrary\books` en controleer dat de meeste directe mappen korte namen zoals `00`, `7f` en `ff` hebben.
+- [X] Open `<bibliotheekmap>\books` en controleer dat de meeste directe mappen korte namen zoals `00`, `7f` en `ff` hebben.
 - [X] Open enkele shardmappen en controleer dat daar de volledige opslag-ID's met ebookbestanden en eventuele `cover.jpg` staan.
 - [X] Controleer dat niet duizenden boekmappen meer rechtstreeks onder `books` staan. De 23 vooraf gevonden, onverwezen GUID-mappen mogen bewust blijven staan en zijn niet automatisch verwijderd.
 - [X] Controleer dat geen `.staging`- of `.tmp`-bestand van een voltooide migratie is achtergebleven.
