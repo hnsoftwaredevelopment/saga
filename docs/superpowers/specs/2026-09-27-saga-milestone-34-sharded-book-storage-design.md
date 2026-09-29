@@ -169,3 +169,7 @@ Op 27 september 2026 is de gesloten bibliotheek uitsluitend leesbaar gecontrolee
 ## Open vragen
 
 Geen blokkerende vragen. De voorgestelde automatische migratie bij de eerste start, met zichtbare voortgang en hervatting na een onderbreking, wordt samen met deze specificatie ter goedkeuring voorgelegd.
+
+## Praktijkacceptatie
+
+De echte bibliotheek is op 29 september 2026 succesvol gemigreerd van 34.483 directe boekmappen naar precies 256 shardmappen. De eenmalige conversie duurde enkele uren en alle handmatige checklistcontroles slaagden zonder functionele afwijkingen. De 23 vooraf bekende, onverwezen lege mappen zijn daarna handmatig verwijderd. OneDrive synchroniseert de bibliotheek weer normaal. Omdat database- en bestandspaden nu de nieuwe indeling gebruiken, voeren volgende starts alleen de snelle controle uit en niet opnieuw de lange migratie.

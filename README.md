@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 34 builds on version `0.1` with sharded managed-book storage and a safe, resumable migration for existing libraries with many book directories.
+Milestone 34 builds on version `0.1` with sharded managed-book storage and a safe, resumable migration for existing libraries with many book directories. The real-library migration and manual checklist were accepted on 29 September 2026, reducing 34,483 direct book directories to 256 storage shards while restoring normal OneDrive synchronization.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection

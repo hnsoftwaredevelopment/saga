@@ -18,4 +18,4 @@
 - [x] Alle gewijzigde Markdown exact naar Obsidian spiegelen.
 - [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging en prestaties uitvoeren.
 - [x] Normale, niet-draft PR #35 openen.
-- [ ] Handmatige checklist door gebruiker laten uitvoeren.
+- [x] Handmatige checklist door gebruiker afgerond zonder gevonden afwijkingen op 29 september 2026.

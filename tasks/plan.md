@@ -97,6 +97,8 @@ Afgerond: alle geautomatiseerde scenario's zijn groen en een leesbare preflight 
 
 **Verificatie:** Volledige geautomatiseerde suite, Debug-build, zelfreview en handmatige checklist.
 
+Praktijkacceptatie: op 29 september 2026 is de echte bibliotheek succesvol gemigreerd van 34.483 directe boekmappen naar 256 shardmappen. De eenmalige migratie duurde enkele uren, maar alle checklistcontroles slaagden. De 23 onverwezen lege mappen zijn handmatig verwijderd en OneDrive synchroniseert weer normaal.
+
 ## Daarna
 
 Na deze milestone meten we afzonderlijk het scrollen, Page Up/Page Down en filteren op titel. Daarna kan de Quality Page-slice `Rommelige tags` worden hervat.
