@@ -15,7 +15,8 @@
 - [x] Schone Debug-build maken en controleren (`Saga.exe` 2026.10.1.54).
 - [x] Diffreview op correctheid, eenvoud, architectuur, beveiliging en prestaties afgerond zonder bevindingen.
 - [ ] Resterende Definition of Done-punten afronden met handmatige acceptatie en GitHub-controles.
-- [ ] Gewone PR openen en GitHub-controles beoordelen.
+- [x] Gewone, niet-draft PR #39 geopend.
+- [ ] GitHub-controles en eventuele reviewopmerkingen beoordelen.
 
 ## Buiten scope
 
