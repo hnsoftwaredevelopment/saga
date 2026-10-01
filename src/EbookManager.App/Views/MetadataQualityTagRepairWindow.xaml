@@ -63,7 +63,7 @@
                  FontWeight="SemiBold" />
       <TextBox x:Name="CurrentTagsOutput"
                Grid.Row="2"
-               Text="{Binding CurrentTagsText}"
+               Text="{Binding CurrentTagsText, Mode=OneWay}"
                MinHeight="80"
                Padding="8"
                IsReadOnly="True"

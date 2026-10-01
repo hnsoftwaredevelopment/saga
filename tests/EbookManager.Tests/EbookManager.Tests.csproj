@@ -78,6 +78,9 @@
     <None Include="..\..\src\EbookManager.App\Views\SettingsWindow.xaml"
           Link="TestAssets\SettingsWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Converters\FilePathToImageSourceConverter.cs"
+          Link="TestAssets\FilePathToImageSourceConverter.cs"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Resources\Strings\AppResources*.resx"
           Link="TestAssets\Strings\%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />

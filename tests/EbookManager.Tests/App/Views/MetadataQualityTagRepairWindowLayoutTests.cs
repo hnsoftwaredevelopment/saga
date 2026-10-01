@@ -17,7 +17,7 @@ public sealed class MetadataQualityTagRepairWindowLayoutTests
         RequiredAttribute(window, "ResizeMode").Should().Be("CanResizeWithGrip");
 
         var current = TextBox(document, presentation, xaml, "CurrentTagsOutput");
-        RequiredAttribute(current, "Text").Should().Contain("CurrentTagsText");
+        RequiredAttribute(current, "Text").Should().Be("{Binding CurrentTagsText, Mode=OneWay}");
         RequiredAttribute(current, "IsReadOnly").Should().Be("True");
         RequiredAttribute(current, "AcceptsReturn").Should().Be("True");
         AssertAccessible(current);
