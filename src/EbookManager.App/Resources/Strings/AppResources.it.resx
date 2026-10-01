@@ -228,6 +228,9 @@
   <data name="EmptyStateLibraryEmpty" xml:space="preserve">
     <value>Questa biblioteca e vuota. Aggiungi libri o scansiona una cartella per iniziare.</value>
   </data>
+  <data name="EmptyStateNoMatchingBooks" xml:space="preserve">
+    <value>Nessun libro corrisponde alla ricerca o ai filtri attuali.</value>
+  </data>
   <data name="EmptyStateLibraryFolderMissing" xml:space="preserve">
     <value>La cartella della biblioteca attiva non esiste piu. Crea o apri una biblioteca per continuare.</value>
   </data>

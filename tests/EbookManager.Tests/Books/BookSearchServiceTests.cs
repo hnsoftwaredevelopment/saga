@@ -1,6 +1,7 @@
 using EbookManager.Application.Books;
 using EbookManager.Domain.Books;
 using FluentAssertions;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace EbookManager.Tests.Books;
@@ -123,6 +124,72 @@ public sealed class BookSearchServiceTests
         var result = service.Filter([book], "reading club", _ => null!);
 
         result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Indexed_filter_reuses_precomputed_search_values()
+    {
+        var service = new BookSearchService();
+        var books = CreateBooks();
+        var extraValueRequests = 0;
+        var index = service.CreateIndex(
+            books,
+            _ =>
+            {
+                extraValueRequests++;
+                return ["Reading club"];
+            });
+
+        service.Filter(index, "reading club").Should().HaveCount(books.Count);
+        service.Filter(index, "tolkien").Should().ContainSingle();
+
+        extraValueRequests.Should().Be(books.Count);
+    }
+
+    [Fact]
+    public void Indexed_filter_handles_a_large_library_without_rebuilding_search_values()
+    {
+        const int bookCount = 30_000;
+        var now = new DateTimeOffset(2026, 9, 29, 12, 0, 0, TimeSpan.Zero);
+        var books = Enumerable.Range(0, bookCount)
+            .Select(index => new Book(
+                Guid.NewGuid(),
+                new BookMetadata(
+                    $"Book {index:00000}",
+                    [$"Author {index % 500:000}"],
+                    Description: "A representative description",
+                    Language: "nl",
+                    Publisher: "Publisher",
+                    PublicationDate: new DateOnly(2020, 1, 2),
+                    Tags: ["Fiction", "Test"],
+                    Series: $"Series {index % 100:00}",
+                    SeriesNumber: index % 20,
+                    Isbn: $"978{index:0000000000}"),
+                ReadingStatus.Unread,
+                null,
+                now,
+                now)
+            {
+                Formats = [EbookFormat.Epub]
+            })
+            .ToArray();
+        var extraValueRequests = 0;
+        var service = new BookSearchService();
+        var searchIndex = service.CreateIndex(
+            books,
+            _ =>
+            {
+                extraValueRequests++;
+                return ["Custom value"];
+            });
+
+        var stopwatch = Stopwatch.StartNew();
+        var result = service.Filter(searchIndex, "Book 29999");
+        stopwatch.Stop();
+
+        result.Should().ContainSingle().Which.Metadata.Title.Should().Be("Book 29999");
+        extraValueRequests.Should().Be(bookCount);
+        stopwatch.Elapsed.Should().BeLessThan(TimeSpan.FromMilliseconds(250));
     }
 
     private static IReadOnlyList<Book> CreateBooks()

@@ -7,8 +7,6 @@
              xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
              AllowDrop="True">
   <UserControl.Resources>
-    <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
-    <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
     <converters:LibraryGroupHeaderTextConverter x:Key="LibraryGroupHeaderTextConverter" />
     <converters:LibraryColumnGridLengthConverter x:Key="LibraryColumnGridLengthConverter" />
     <controls:BindingProxy x:Key="LibraryViewModelProxy" Data="{Binding}" />
@@ -137,8 +135,9 @@
                     CornerRadius="4"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
-              <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=48}"
-                     Stretch="UniformToFill" />
+              <controls:AsyncCoverImage SourcePath="{Binding CoverPath}"
+                                        DecodePixelWidth="48"
+                                        Stretch="UniformToFill" />
             </Border>
           </DataTemplate>
         </syncfusion:GridTemplateColumn.CellTemplate>

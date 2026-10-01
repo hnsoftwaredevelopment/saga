@@ -6,8 +6,6 @@
              xmlns:loc="clr-namespace:EbookManager.App.Localization"
              AllowDrop="True">
   <UserControl.Resources>
-    <converters:ByteArrayToImageSourceConverter x:Key="ByteArrayToImageSourceConverter" />
-    <converters:FilePathToImageSourceConverter x:Key="FilePathToImageSourceConverter" />
     <converters:LibraryGroupHeaderTextConverter x:Key="LibraryGroupHeaderTextConverter" />
     <DataTemplate x:Key="BookTileTemplate">
       <Border Width="150"
@@ -26,8 +24,9 @@
                          HorizontalAlignment="Center"
                          VerticalAlignment="Center"
                          Foreground="{DynamicResource TextSecondaryBrush}" />
-              <Image Source="{Binding CoverPath, Converter={StaticResource FilePathToImageSourceConverter}, ConverterParameter=220}"
-                     Stretch="UniformToFill" />
+              <controls:AsyncCoverImage SourcePath="{Binding CoverPath}"
+                                        DecodePixelWidth="220"
+                                        Stretch="UniformToFill" />
             </Grid>
           </Border>
           <controls:HighlightedTextBlock HighlightedText="{Binding Title}"

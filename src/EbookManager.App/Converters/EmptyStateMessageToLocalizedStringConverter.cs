@@ -14,6 +14,7 @@ public sealed class EmptyStateMessageToLocalizedStringConverter : IMultiValueCon
             ["Create or open a library before adding books."] = "EmptyStateCreateOrOpenBeforeAdding",
             ["Create or open a library before scanning folders."] = "EmptyStateCreateOrOpenBeforeScanning",
             ["This library is empty. Add books or scan a folder to begin."] = "EmptyStateLibraryEmpty",
+            ["No books match the current search or filters."] = "EmptyStateNoMatchingBooks",
             ["The active library folder no longer exists. Create or open a library to continue."] = "EmptyStateLibraryFolderMissing"
         };
 

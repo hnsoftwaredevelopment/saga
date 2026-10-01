@@ -1,104 +1,107 @@
-# Milestone 34 Implementatieplan: Gespreide boekenopslag
+# Milestone 35 Implementatieplan: Responsieve boekenlijst
 
 ## Overzicht
 
-Milestone 34 verdeelt boekmappen over 256 ID-shards, laat alle opslagroutes één centrale padindeling gebruiken en migreert de bestaande bibliotheek veilig en hervatbaar tijdens de eerste start na de update.
+Milestone 35 pakt de twee gemeten oorzaken van stroperigheid afzonderlijk aan: herhaald volledig zoeken en detailherladen bij iedere toetsaanslag, en synchroon lezen en decoderen van OneDrive-omslagen tijdens scrollen.
 
 ## Afhankelijkheden
 
 ```text
-Centrale opslagindeling
+Reproduceerbare metingen
         │
-        ├── nieuwe imports en omslagen
+        ├── herbruikbare zoekindex
+        │       │
+        │       └── uitgesteld filteren en stabiele selectie
         │
-        └── inventarisatie en veilige mapverplaatsing
-                    │
-                    └── transactionele databasepad-update
-                                │
-                                └── opstartvoortgang en foutafhandeling
-                                            │
-                                            └── regressie, checklist en Debug-build
+        └── asynchrone, begrensd gecachte omslagen
+                        │
+                        └── praktijktest op echte bibliotheek
 ```
 
-## Taak 1: Centrale ID-shardindeling
+## Taak 1: Zoekwerk meten en indexeren
 
-**Beschrijving:** Introduceer één veilige component die oude en nieuwe boekmappen en relatieve paden uit een boek-ID afleidt.
-
-**Acceptatiecriteria:**
-
-- [x] Een ID wordt als 32 kleine hexadecimale tekens geschreven en de eerste twee vormen de shard.
-- [x] Alle berekende paden blijven binnen de actieve bibliotheek.
-- [x] Ongeldige ID's, ontsnappende paden en reparse points worden geweigerd.
-
-**Verificatie:** Eerst falende tests voor shardgrenzen en padbeveiliging; daarna gerichte tests groen.
-
-## Taak 2: Nieuwe opslagroutes omschakelen
-
-**Beschrijving:** Laat ebookimport, omslagopslag en verwijderen dezelfde centrale indeling gebruiken.
+**Beschrijving:** Leg het huidige zoekwerk vast met een grote deterministische gegevensset en hergebruik daarna de kostbare zoekwaarden per ongewijzigd boek.
 
 **Acceptatiecriteria:**
 
-- [x] Nieuwe ebooks en `cover.jpg` komen samen onder `books/<shard>/<boek-id>`.
-- [x] Tijdelijke importbestanden staan niet als duizenden directe onderdelen onder `books`.
-- [x] Openen en exporteren blijven werken via de opgeslagen relatieve paden.
-- [x] Verwijderen raakt uitsluitend de exacte oude of nieuwe map van het gevraagde boek.
+- [x] Dezelfde velden en cultuurafhankelijke weergavewaarden blijven doorzoekbaar.
+- [x] Een herhaalde zoekactie bouwt de zoekwaarden niet opnieuw op.
+- [x] De filterfase over minstens 30.000 representatieve boeken blijft onder 250 ms op de ontwikkellaptop.
 
-**Verificatie:** Testgedreven opslag- en regressietests.
+**Verificatie:** Eerst falende tests in `BookSearchServiceTests`; daarna 22 gerichte zoektests groen. De gemeten filteractie over 30.000 boeken blijft onder 250 ms.
+
+## Taak 2: Typen en selectie ontkoppelen van duur werk
+
+**Beschrijving:** Voeg een korte annuleerbare zoekvertraging toe en hergebruik boekregels zodat alleen de laatste invoer filtert en dezelfde selectie geen details herlaadt.
+
+**Acceptatiecriteria:**
+
+- [x] Snel opeenvolgende zoekteksten passen alleen de laatste zoekwaarde toe.
+- [x] Facet-, sorteer- en expliciete verversingsacties blijven direct.
+- [x] Een geselecteerd boek dat zichtbaar blijft veroorzaakt geen nieuwe detailquery.
+
+**Verificatie:** Eerst falende `LibraryViewModelTests`; daarna gerichte viewmodeltests en Checkpoint 1.
 
 ## Checkpoint 1
 
-Controleer na taken 1 en 2 de architectuur, padbeveiliging en regressies. Nieuwe imports moeten de nieuwe indeling gebruiken voordat migratiecode wordt toegevoegd.
+- [x] Gerichte zoek- en viewmodeltests zijn groen.
+- [x] De gemeten filterfase voldoet aan de afgesproken grens.
+- [x] De volledige oplossing bouwt zonder waarschuwingen.
+- [x] Tussentijdse diff is beoordeeld op correctheid, eenvoud en threadveiligheid.
 
-Afgerond: 678 tests en de volledige Debug-build slagen zonder waarschuwingen.
+## Taak 3: Asynchrone, begrensde omslaglader
 
-## Taak 3: Hervatbare mapmigratie en databaseback-up
-
-**Beschrijving:** Inventariseer oude GUID-mappen, maak eenmaal een consistente SQLite-back-up en verplaats elk boek afzonderlijk met herstel van een onderbroken tussenstand.
-
-**Acceptatiecriteria:**
-
-- [x] Normale, reeds voltooide en na verplaatsing onderbroken toestanden worden correct afgehandeld.
-- [x] Bestaande bron én bestemming, ontbrekende opslag en afwijkende databasepaden stoppen zonder wijziging.
-- [x] Ebook- en omslagpaden worden per opslag-ID samen in één databasetransactie bijgewerkt.
-- [x] Onbekende mappen, bestanden en reparse points blijven onaangeroerd.
-
-**Verificatie:** Eerst falende scenariotests voor iedere toestand, inclusief geforceerde onderbreking; daarna integratietests groen.
-
-## Taak 4: Opstartintegratie en voortgang
-
-**Beschrijving:** Voer de migratie vóór normaal bibliotheekgebruik uit en toon gelokaliseerde voortgang en herstelbare fouten op het bestaande startscherm.
+**Beschrijving:** Bouw een kleine WPF-specifieke lader die direct een placeholder toont, bestanden buiten de UI-thread decodeert, verouderde resultaten negeert en recente afbeeldingen begrensd hergebruikt.
 
 **Acceptatiecriteria:**
 
-- [x] De gebruiker ziet `Bibliotheekopslag optimaliseren` en verwerkte/totale aantallen.
-- [x] Importeren, bewerken en verwijderen kunnen niet gelijktijdig starten.
-- [x] Afsluiten wordt tussen opslagmappen verwerkt en de volgende start hervat veilig.
-- [x] Een fout noemt het pad en een volgende start kan opnieuw proberen zonder technische stacktrace.
+- [x] Schijf- en OneDrive-I/O vindt niet op de UI-thread plaats.
+- [x] Een gerecyclede regel kan nooit de omslag van een eerder boek tonen.
+- [x] Ontbrekende of ongeldige afbeeldingen blijven een stille placeholder.
+- [x] De cache heeft een vaste bovengrens.
 
-**Verificatie:** Viewmodeltests plus een kleine tijdelijke testbibliotheek.
+**Verificatie:** Eerst falende cache- en layouttests; daarna 7 gerichte tests groen en de WPF-app zonder waarschuwingen gebouwd.
+
+## Taak 4: Boekenweergaven omschakelen
+
+**Beschrijving:** Gebruik de nieuwe omslaglader in de boekenplank, detailgrid en configureerbare lijstweergave zonder de detailpaneel-editor te wijzigen.
+
+**Acceptatiecriteria:**
+
+- [x] Alle drie bibliotheekweergaven tonen titels direct en laden omslagen daarna.
+- [x] Scrollen, Page Up/Page Down, selectie en weergavewissels blijven correct in de echte bibliotheek.
+- [x] Thema's, placeholders en kolomzichtbaarheid blijven intact.
+
+**Verificatie:** XAML/layouttests, gerichte UI-logica-tests en Checkpoint 2.
 
 ## Checkpoint 2
 
-Controleer de volledige migratieketen op databehoud, hervatbaarheid, OneDrive-fouten en begrijpelijke gebruikersfeedback.
+- [x] Volledige testsuite slaagt: 720 tests groen.
+- [x] Debug-build bevat 0 waarschuwingen en 0 fouten.
+- [x] Zelfreview op correctheid, architectuur, beveiliging en prestaties is afgerond.
 
-Afgerond: alle geautomatiseerde scenario's zijn groen en een leesbare preflight op de echte bibliotheek vond geen ontbrekende gerefereerde mappen of bestanden. Samengevoegde boeken met een afwijkende oorspronkelijke opslag-ID worden ondersteund; onverwezen mappen blijven staan.
+## Taak 5: Praktijkacceptatie en oplevering
 
-## Taak 5: Regressie, documentatie en testbuild
-
-**Beschrijving:** Rond regressietests, zes vertalingen, handmatige checklist, documentatie, zelfreview en de actuele Debug-build af.
+**Beschrijving:** Maak een handmatige checklist en actuele Debug-build voor de echte bibliotheek, spiegel documentatie naar Obsidian en open een normale PR.
 
 **Acceptatiecriteria:**
 
-- [x] Importeren, openen, exporteren, omslag wijzigen, auteur wijzigen en verwijderen zijn geautomatiseerd getest; praktijktest staat in de checklist.
-- [x] De checklist bevat veilige voorbereiding, de echte bibliotheek en hervatbaarheid die geautomatiseerd met tijdelijke bibliotheken is bewezen.
-- [x] Alle gewijzigde Markdown is exact naar Obsidian gespiegeld.
-- [x] Alleen de actuele applicatiebuild staat in `Builds/Debug`.
-- [x] De volledige testsuite met 697 tests en build slagen zonder waarschuwingen.
+- [x] Typen, wissen, geen resultaten, selectie en detailweergave zijn gecontroleerd.
+- [x] Scrollbar, muiswiel, Page Up/Page Down en snel wisselen van richting zijn gecontroleerd.
+- [x] OneDrive-omslagen verschijnen zonder zichtbare blokkade en ontbrekende omslagen blijven veilig.
+- [x] Definition of Done, documentatiespiegel en PR-controles zijn afgerond.
 
-**Verificatie:** Volledige geautomatiseerde suite, Debug-build, zelfreview en handmatige checklist.
+**Verificatie:** Handmatige checklist op circa 34.447 boeken geslaagd; zoeken en scrollen zijn merkbaar vloeiender en de afsluitende melding bij nul zoekresultaten is duidelijk bevonden.
 
-Praktijkacceptatie: op 29 september 2026 is de echte bibliotheek succesvol gemigreerd van 34.483 directe boekmappen naar 256 shardmappen. De eenmalige migratie duurde enkele uren, maar alle checklistcontroles slaagden. De 23 onverwezen lege mappen zijn handmatig verwijderd en OneDrive synchroniseert weer normaal.
+## Risico's en beheersing
 
-## Daarna
+| Risico | Impact | Beheersing |
+|---|---|---|
+| Een achtergrondresultaat komt bij een gerecyclede rij terecht | Verkeerde omslag bij boek | Pad- en versienummer opnieuw controleren vóór UI-toewijzing |
+| Cache gebruikt te veel geheugen | Langdurig groeiend geheugengebruik | Vaste bovengrens en alleen gedecodeerde miniaturen bewaren |
+| Debounce vertraagt andere filters | Interface voelt minder direct | Alleen algemene tekstinvoer vertragen; overige acties direct laten |
+| Zoekindex raakt verouderd na metadatawijziging | Onjuiste zoekresultaten | Index koppelen aan de actuele onveranderlijke boekinstantie en vervangen bij update |
 
-Na deze milestone meten we afzonderlijk het scrollen, Page Up/Page Down en filteren op titel. Daarna kan de Quality Page-slice `Rommelige tags` worden hervat.
+## Open vragen
+
+Geen blokkerende vragen; implementatie start pas na goedkeuring van specificatie en plan.

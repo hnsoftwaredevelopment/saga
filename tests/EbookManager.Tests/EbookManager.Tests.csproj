@@ -63,6 +63,15 @@
     <None Include="..\..\src\EbookManager.App\Views\BookDetailsView.xaml"
           Link="TestAssets\BookDetailsView.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\BookshelfView.xaml"
+          Link="TestAssets\BookshelfView.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\DetailedGridView.xaml"
+          Link="TestAssets\DetailedGridView.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\LibraryListView.xaml"
+          Link="TestAssets\LibraryListView.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\SettingsWindow.xaml"
           Link="TestAssets\SettingsWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />

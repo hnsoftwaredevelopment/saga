@@ -1,16 +1,17 @@
 using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
 using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.Settings;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed class BookRowViewModel(
+public sealed partial class BookRowViewModel(
     Book book,
     string searchText = "",
     string? libraryPath = null,
     AuthorSortStrategy authorSortStrategy = AuthorSortStrategy.DisplayName,
-    IReadOnlyDictionary<Guid, string>? customMetadataValues = null)
+    IReadOnlyDictionary<Guid, string>? customMetadataValues = null) : ObservableObject
 {
     public Book Book { get; } = book;
     public Guid Id => Book.Id;
@@ -41,7 +42,8 @@ public sealed class BookRowViewModel(
     public string? CoverPath => libraryPath is null || string.IsNullOrWhiteSpace(Book.CoverRelativePath)
         ? null
         : Path.Combine(libraryPath, Book.CoverRelativePath);
-    public string SearchText { get; } = searchText;
+    [ObservableProperty]
+    private string searchText = searchText;
     public IReadOnlyDictionary<string, string> CustomMetadataValues { get; } =
         customMetadataValues?.ToDictionary(item => item.Key.ToString("D"), item => item.Value, StringComparer.OrdinalIgnoreCase)
         ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
