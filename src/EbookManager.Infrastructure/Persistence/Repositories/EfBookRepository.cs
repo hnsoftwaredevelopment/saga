@@ -289,6 +289,7 @@ public sealed class EfBookRepository(
 
         var distinctKeys = keys.Distinct().ToList();
         await using var context = contextFactory.Create(libraryPath);
+        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
         var createdAt = DateTimeOffset.UtcNow;
         foreach (var key in distinctKeys)
         {
@@ -299,6 +300,8 @@ public sealed class EfBookRepository(
                 """,
                 cancellationToken);
         }
+
+        await transaction.CommitAsync(cancellationToken);
     }
 
     public async Task RemoveMetadataQualityExclusionsAsync(
