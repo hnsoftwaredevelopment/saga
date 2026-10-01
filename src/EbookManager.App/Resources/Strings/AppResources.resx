@@ -346,6 +346,8 @@
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>This is correct</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>This quality decision could not be saved. Try again.</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationTitle" xml:space="preserve"><value>Mark quality issues as correct?</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationMessage" xml:space="preserve"><value>Mark the {0} selected quality issues as correct? They will be hidden until you restore them from Settings.</value></data>
   <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Ignored quality issues</value></data>
   <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>These quality issues were marked as correct. Restore them to have Saga evaluate them again.</value></data>
   <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> ignored quality issues</value></data>

@@ -626,6 +626,8 @@
   <data name="Yes" xml:space="preserve"><value>Sì</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Questo è corretto</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Non è stato possibile salvare questa decisione sulla qualità. Riprova.</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationTitle" xml:space="preserve"><value>Contrassegnare le segnalazioni come corrette?</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationMessage" xml:space="preserve"><value>Contrassegnare le {0} segnalazioni di qualità selezionate come corrette? Verranno nascoste finché non le ripristini dalle Impostazioni.</value></data>
   <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Segnalazioni di qualità ignorate</value></data>
   <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>Queste segnalazioni di qualità sono state contrassegnate come corrette. Ripristinale affinché Saga le valuti di nuovo.</value></data>
   <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> segnalazioni di qualità ignorate</value></data>

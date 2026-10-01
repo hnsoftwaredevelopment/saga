@@ -15,6 +15,17 @@ public partial class MetadataQualityDashboardWindow : System.Windows.Window
     private void OpenSelectedBookClicked(object sender, System.Windows.RoutedEventArgs e) =>
         ConfirmSelectedBook();
 
+    private void AffectedBooksSelectionChanged(
+        object sender,
+        System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (DataContext is MetadataQualityDashboardViewModel viewModel)
+        {
+            viewModel.SetSelectedBooks(
+                AffectedBooksGrid.SelectedItems.OfType<MetadataQualityBookRowViewModel>());
+        }
+    }
+
     private void BookRowMouseDoubleClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
     {
         if (FindAncestor<System.Windows.Controls.DataGridRow>(e.OriginalSource as System.Windows.DependencyObject) is not null)

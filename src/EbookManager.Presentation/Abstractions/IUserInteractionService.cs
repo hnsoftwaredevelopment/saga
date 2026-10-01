@@ -22,6 +22,9 @@ public interface IUserInteractionService
     Task<bool> ConfirmLanguageNormalizationAsync(
         int affectedBookCount,
         CancellationToken cancellationToken);
+    Task<bool> ConfirmQualityIssuesCorrectAsync(
+        int affectedCount,
+        CancellationToken cancellationToken);
     Task ShowMessageAsync(
         string title,
         string message,
