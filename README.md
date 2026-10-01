@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 38 was accepted on 1 October 2026 and lets users select multiple books within one quality category and mark those exact issues as correct in one confirmed, atomic action. Milestone 37 gives ignored-quality management its own `Quality` tab in Settings. Milestone 36 added the accepted messy-tag repair, while Milestone 35 improved large-library searching and scrolling and Milestone 34 reduced 34,483 direct book directories to 256 storage shards.
+Milestone 39 is ready for acceptance testing and lets users apply one existing or new author to multiple selected books under `Missing author`, with safe per-book results and one combined library refresh. Milestone 38 was accepted on 1 October 2026 and added confirmed bulk quality decisions. Milestone 37 gives ignored-quality management its own `Quality` tab in Settings, while Milestone 36 added the accepted messy-tag repair.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -58,6 +58,7 @@ Milestone 38 was accepted on 1 October 2026 and lets users select multiple books
 - metadata quality dashboard with issue counts, affected-book lists, direct navigation, and reversible `This is correct` decisions for one or multiple selected books within one signal
 - management of ignored quality issues from a dedicated Quality tab in Settings, without changing the book metadata itself
 - direct missing-author repair from the quality dashboard with known-author suggestions and free entry for a new author
+- bulk missing-author repair that applies one chosen author to multiple selected books while preserving per-book failures and file warnings
 - direct missing- or unknown-language repair from the quality dashboard with a searchable list of valid languages
 - direct missing-series repair with live suggestions while preserving the existing series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
@@ -75,7 +76,7 @@ Milestone 38 was accepted on 1 October 2026 and lets users select multiple books
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 38 checklist](docs/manual-tests/milestone-38-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 39 checklist](docs/manual-tests/milestone-39-checklist.md).
 
 ## Prerequisites
 

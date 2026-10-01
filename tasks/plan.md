@@ -18,9 +18,9 @@ Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerd
 **Beschrijving:** Voeg eerst falende tests toe voor enkelvoudige en meervoudige context in het auteurvenster en breid het viewmodel minimaal uit.
 
 **Acceptatiecriteria:**
-- [ ] Eén boek toont de bestaande titelcontext.
-- [ ] Meerdere boeken tonen het juiste aantal.
-- [ ] Suggesties, vrije invoer en validatie blijven gelijk.
+- [x] Eén boek toont de bestaande titelcontext.
+- [x] Meerdere boeken tonen het juiste aantal.
+- [x] Suggesties, vrije invoer en validatie blijven gelijk.
 
 **Verificatie:** Gerichte `MetadataQualityAuthorRepairViewModelTests` gaan rood en daarna groen.
 
@@ -31,9 +31,9 @@ Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerd
 **Beschrijving:** Schrijf falende dashboardtests en laat de bestaande herstelopdracht alle actuele geselecteerde ontbrekende-auteurrijen verwerken.
 
 **Acceptatiecriteria:**
-- [ ] De opdracht accepteert één of meerdere rijen uitsluitend onder `Ontbrekende auteur`.
-- [ ] Annuleren schrijft niets; succes verwerkt alle geselecteerde id’s.
-- [ ] Gemengde resultaten verversen opgeslagen boeken en behouden mislukte rijen en selectie.
+- [x] De opdracht accepteert één of meerdere rijen uitsluitend onder `Ontbrekende auteur`.
+- [x] Annuleren schrijft niets; succes verwerkt alle geselecteerde id’s.
+- [x] Gemengde resultaten verversen opgeslagen boeken en behouden mislukte rijen en selectie.
 
 **Verificatie:** Gerichte dashboardtests bewijzen succes, annuleren, waarschuwing, stale, not-found, fout en onverwachte uitzondering.
 
@@ -44,9 +44,9 @@ Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerd
 **Beschrijving:** Maak bulkcontext en resultaatmeldingen begrijpelijk en toegankelijk in alle zes talen.
 
 **Acceptatiecriteria:**
-- [ ] Het venster toont het juiste aantal geselecteerde boeken en een duidelijke bevestigingsactie.
-- [ ] Resultaatmeldingen onderscheiden volledig succes, write-backwaarschuwingen en mislukkingen.
-- [ ] Toetsenbordgedrag, focus en auteursuggesties regresseren niet.
+- [x] Het venster toont het juiste aantal geselecteerde boeken en een duidelijke bevestigingsactie.
+- [x] Resultaatmeldingen onderscheiden volledig succes, write-backwaarschuwingen en mislukkingen.
+- [x] Toetsenbordgedrag, focus en auteursuggesties regresseren niet.
 
 **Verificatie:** Layout-, lokalisatie- en compositietests groen.
 
@@ -57,9 +57,9 @@ Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerd
 **Beschrijving:** Bewaak de doorwerking naar hoofdbibliotheek en auteursfilters, werk documentatie bij en lever een actuele Debug-build en gewone PR.
 
 **Acceptatiecriteria:**
-- [ ] Alle gerepareerde boeken en auteursfilters zijn zonder herstart actueel.
-- [ ] Volledige tests en Debug-build zijn groen.
-- [ ] Handmatige checklist en Obsidian-spiegel zijn gereed.
+- [x] Alle gerepareerde boeken en auteursfilters zijn zonder herstart actueel.
+- [x] Volledige tests en Debug-build zijn groen (761 tests; Saga 2026.10.1.67).
+- [x] Handmatige checklist en Obsidian-spiegel zijn gereed.
 - [ ] De branchdiff bevat de lokale gebruikerswijzigingen niet.
 
 **Verificatie:** LibraryViewModel-tests, volledige Definition of Done, diffreview en GitHub-controles.
@@ -79,9 +79,9 @@ Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerd
 ## Checkpoint
 
 - [x] Specificatie en plan goedgekeurd.
-- [ ] Gerichte tests per increment groen.
-- [ ] Volledige tests en Debug-build groen.
-- [ ] Handmatige checklist gereed.
+- [x] Gerichte tests per increment groen.
+- [x] Volledige tests en Debug-build groen (761 tests; Saga 2026.10.1.67).
+- [x] Handmatige checklist gereed.
 - [ ] Gewone, mergeable PR geopend.
 
 ## Gepauzeerd onderhoud
