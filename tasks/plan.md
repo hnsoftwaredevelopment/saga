@@ -1,107 +1,146 @@
-# Milestone 35 Implementatieplan: Responsieve boekenlijst
+# Milestone 36 Implementatieplan: Rommelige tags herstellen
 
 ## Overzicht
 
-Milestone 35 pakt de twee gemeten oorzaken van stroperigheid afzonderlijk aan: herhaald volledig zoeken en detailherladen bij iedere toetsaanslag, en synchroon lezen en decoderen van OneDrive-omslagen tijdens scrollen.
+Milestone 36 voltooit de laatste directe herstelactie op de Quality Page. De gebruiker krijgt een controleerbaar voorstel voor één boek, kan de tags aanpassen en laat Saga daarna via de bestaande veilige opslagroute uitsluitend de tags wijzigen.
+
+## Architectuurbeslissingen
+
+- Eén canonieke normalisatiefunctie wordt gedeeld door voorstel, validatie en opslag.
+- Het herstel blijft een afzonderlijke verticale route naast auteur-, taal-, serie- en titel/auteurherstel.
+- Er komt geen databasewijziging en geen nieuwe dependency.
+- Komma’s blijven onderdeel van de bestaande kwaliteitsdefinitie; legitieme uitzonderingen lopen via `Dit is correct`.
 
 ## Afhankelijkheden
 
 ```text
-Reproduceerbare metingen
-        │
-        ├── herbruikbare zoekindex
-        │       │
-        │       └── uitgesteld filteren en stabiele selectie
-        │
-        └── asynchrone, begrensd gecachte omslagen
-                        │
-                        └── praktijktest op echte bibliotheek
+Tag-normalisatie
+      │
+      ├── veilige herstelservice
+      │
+      └── bewerkbaar herstelviewmodel
+              │
+              └── dashboardopdracht en WPF-venster
+                          │
+                          └── lokalisatie, praktijktest en PR
 ```
 
-## Taak 1: Zoekwerk meten en indexeren
+## Taak 1: Canonieke normalisatie en veilige opslag
 
-**Beschrijving:** Leg het huidige zoekwerk vast met een grote deterministische gegevensset en hergebruik daarna de kostbare zoekwaarden per ongewijzigd boek.
-
-**Acceptatiecriteria:**
-
-- [x] Dezelfde velden en cultuurafhankelijke weergavewaarden blijven doorzoekbaar.
-- [x] Een herhaalde zoekactie bouwt de zoekwaarden niet opnieuw op.
-- [x] De filterfase over minstens 30.000 representatieve boeken blijft onder 250 ms op de ontwikkellaptop.
-
-**Verificatie:** Eerst falende tests in `BookSearchServiceTests`; daarna 22 gerichte zoektests groen. De gemeten filteractie over 30.000 boeken blijft onder 250 ms.
-
-## Taak 2: Typen en selectie ontkoppelen van duur werk
-
-**Beschrijving:** Voeg een korte annuleerbare zoekvertraging toe en hergebruik boekregels zodat alleen de laatste invoer filtert en dezelfde selectie geen details herlaadt.
+**Beschrijving:** Voeg de pure tag-normalisatie en een herstelservice toe die het actuele boek opnieuw controleert en uitsluitend tags plus wijzigingsdatum bewaart.
 
 **Acceptatiecriteria:**
 
-- [x] Snel opeenvolgende zoekteksten passen alleen de laatste zoekwaarde toe.
-- [x] Facet-, sorteer- en expliciete verversingsacties blijven direct.
-- [x] Een geselecteerd boek dat zichtbaar blijft veroorzaakt geen nieuwe detailquery.
+- [ ] Komma’s, regeleinden, lege waarden, witruimte en dubbelen worden deterministisch genormaliseerd.
+- [ ] De service weigert een ontbrekend, ongeldig of niet meer toepasselijk boek veilig.
+- [ ] Opslagresultaten onderscheiden succes, write-backwaarschuwing en mislukking.
 
-**Verificatie:** Eerst falende `LibraryViewModelTests`; daarna gerichte viewmodeltests en Checkpoint 1.
+**Verificatie:** Eerst falende servicetests; daarna alle `MetadataQualityTagRepair`-servicetests groen.
+
+**Afhankelijkheden:** Geen.
+
+**Waarschijnlijke bestanden:** applicatieservice, servicetests en eventueel een klein normalisatietype.
+
+## Taak 2: Bewerkbaar herstelvoorstel
+
+**Beschrijving:** Bouw het viewmodel dat huidige tags toont, het opgeschoonde voorstel als regels aanbiedt en alleen een betekenisvolle wijziging laat bevestigen.
+
+**Acceptatiecriteria:**
+
+- [ ] Het initiële voorstel gebruikt exact dezelfde normalisatie als de service.
+- [ ] Handmatige regels worden opnieuw veilig genormaliseerd.
+- [ ] Een lege taglijst is geldig, terwijl een ongewijzigde uitkomst niet kan worden opgeslagen.
+
+**Verificatie:** Eerst falende viewmodeltests; daarna alle gerichte viewmodeltests groen.
+
+**Afhankelijkheden:** Taak 1.
+
+**Waarschijnlijke bestanden:** herstelviewmodel en viewmodeltests.
 
 ## Checkpoint 1
 
-- [x] Gerichte zoek- en viewmodeltests zijn groen.
-- [x] De gemeten filterfase voldoet aan de afgesproken grens.
-- [x] De volledige oplossing bouwt zonder waarschuwingen.
-- [x] Tussentijdse diff is beoordeeld op correctheid, eenvoud en threadveiligheid.
+- [ ] Normalisatie, service en viewmodeltests zijn groen.
+- [ ] Alleen tags en `UpdatedUtc` kunnen door de nieuwe route wijzigen.
+- [ ] Tussentijdse diff is beoordeeld op eenvoud, foutpaden en toekomstige bulkcompatibiliteit.
 
-## Taak 3: Asynchrone, begrensde omslaglader
+## Taak 3: Quality Page-coördinatie
 
-**Beschrijving:** Bouw een kleine WPF-specifieke lader die direct een placeholder toont, bestanden buiten de UI-thread decodeert, verouderde resultaten negeert en recente afbeeldingen begrensd hergebruikt.
-
-**Acceptatiecriteria:**
-
-- [x] Schijf- en OneDrive-I/O vindt niet op de UI-thread plaats.
-- [x] Een gerecyclede regel kan nooit de omslag van een eerder boek tonen.
-- [x] Ontbrekende of ongeldige afbeeldingen blijven een stille placeholder.
-- [x] De cache heeft een vaste bovengrens.
-
-**Verificatie:** Eerst falende cache- en layouttests; daarna 7 gerichte tests groen en de WPF-app zonder waarschuwingen gebouwd.
-
-## Taak 4: Boekenweergaven omschakelen
-
-**Beschrijving:** Gebruik de nieuwe omslaglader in de boekenplank, detailgrid en configureerbare lijstweergave zonder de detailpaneel-editor te wijzigen.
+**Beschrijving:** Voeg de specifieke dashboardopdracht toe, open het herstelvoorstel voor de geselecteerde rommelige-tagregel en herbeoordeel het boek na opslag.
 
 **Acceptatiecriteria:**
 
-- [x] Alle drie bibliotheekweergaven tonen titels direct en laden omslagen daarna.
-- [x] Scrollen, Page Up/Page Down, selectie en weergavewissels blijven correct in de echte bibliotheek.
-- [x] Thema's, placeholders en kolomzichtbaarheid blijven intact.
+- [ ] De opdracht is alleen actief bij `messy-tags` en een geldige geselecteerde rij.
+- [ ] Annuleren roept de service niet aan.
+- [ ] Succes, gedeeltelijke write-back, niet toepasselijk, verdwenen boek en fout worden correct verwerkt.
 
-**Verificatie:** XAML/layouttests, gerichte UI-logica-tests en Checkpoint 2.
+**Verificatie:** Eerst falende dashboardtests; daarna alle tagherstel-dashboardtests groen.
+
+**Afhankelijkheden:** Taken 1 en 2.
+
+**Waarschijnlijke bestanden:** dashboardviewmodel en afzonderlijke dashboardtests.
+
+## Taak 4: Toegankelijk WPF-herstelvenster
+
+**Beschrijving:** Voeg een resizable modaal venster toe met huidige tags, bewerkbare nieuwe tags, duidelijke hulptekst en precieze actieknoppen.
+
+**Acceptatiecriteria:**
+
+- [ ] Het veld `Nieuwe tags` krijgt focus en ondersteunt toetsenbordbewerking met één tag per regel.
+- [ ] `Tags wijzigen` volgt `CanSave`; annuleren blijft veilig.
+- [ ] Labels, automation names, contrast en bestaande themaresources worden gebruikt.
+
+**Verificatie:** XAML-layouttest en bouw van de WPF-app.
+
+**Afhankelijkheden:** Taak 2.
+
+**Waarschijnlijke bestanden:** venster-XAML, code-behind en layouttest.
+
+## Taak 5: Compositie en lokalisatie
+
+**Beschrijving:** Verbind service, interactie, dashboard en applicatiecompositie en voeg alle zichtbare teksten aan de bestaande talen toe.
+
+**Acceptatiecriteria:**
+
+- [ ] De echte applicatie opent het nieuwe venster vanuit de Quality Page.
+- [ ] De herstelde boekgegevens verschijnen direct in Quality Page en bibliotheek.
+- [ ] Alle ondersteunde resx-bestanden bevatten dezelfde nieuwe sleutels.
+
+**Verificatie:** Compositie- en resourcecontroles, gerichte tests en schone Debug-build.
+
+**Afhankelijkheden:** Taken 3 en 4.
+
+**Waarschijnlijke bestanden:** interactie-interface en -service, app-compositie, bibliotheekviewmodel en resourcebestanden.
 
 ## Checkpoint 2
 
-- [x] Volledige testsuite slaagt: 720 tests groen.
-- [x] Debug-build bevat 0 waarschuwingen en 0 fouten.
-- [x] Zelfreview op correctheid, architectuur, beveiliging en prestaties is afgerond.
+- [ ] Gerichte tests, volledige testsuite en opmaakcontrole zijn groen.
+- [ ] Debug-build bevat nul waarschuwingen en nul fouten.
+- [ ] Zelfreview op correctheid, eenvoud, architectuur, beveiliging, toegankelijkheid en prestaties is afgerond.
 
-## Taak 5: Praktijkacceptatie en oplevering
+## Taak 6: Praktijkacceptatie en oplevering
 
-**Beschrijving:** Maak een handmatige checklist en actuele Debug-build voor de echte bibliotheek, spiegel documentatie naar Obsidian en open een normale PR.
+**Beschrijving:** Lever een korte handmatige checklist en actuele Debug-build, spiegel documentatie naar Obsidian en open een normale PR.
 
 **Acceptatiecriteria:**
 
-- [x] Typen, wissen, geen resultaten, selectie en detailweergave zijn gecontroleerd.
-- [x] Scrollbar, muiswiel, Page Up/Page Down en snel wisselen van richting zijn gecontroleerd.
-- [x] OneDrive-omslagen verschijnen zonder zichtbare blokkade en ontbrekende omslagen blijven veilig.
-- [x] Definition of Done, documentatiespiegel en PR-controles zijn afgerond.
+- [ ] Voorstel, handmatige bewerking, lege uitkomst, annuleren en opslaan zijn gecontroleerd.
+- [ ] De Quality Page en bibliotheek verversen zonder herstart.
+- [ ] Definition of Done, documentatiespiegel en PR-controles zijn afgerond.
 
-**Verificatie:** Handmatige checklist op circa 34.447 boeken geslaagd; zoeken en scrollen zijn merkbaar vloeiender en de afsluitende melding bij nul zoekresultaten is duidelijk bevonden.
+**Verificatie:** Handmatige checklist met herkenbare rommelige tags in een echte bibliotheek.
 
-## Risico's en beheersing
+**Afhankelijkheden:** Checkpoint 2.
+
+## Risico’s en beheersing
 
 | Risico | Impact | Beheersing |
 |---|---|---|
-| Een achtergrondresultaat komt bij een gerecyclede rij terecht | Verkeerde omslag bij boek | Pad- en versienummer opnieuw controleren vóór UI-toewijzing |
-| Cache gebruikt te veel geheugen | Langdurig groeiend geheugengebruik | Vaste bovengrens en alleen gedecodeerde miniaturen bewaren |
-| Debounce vertraagt andere filters | Interface voelt minder direct | Alleen algemene tekstinvoer vertragen; overige acties direct laten |
-| Zoekindex raakt verouderd na metadatawijziging | Onjuiste zoekresultaten | Index koppelen aan de actuele onveranderlijke boekinstantie en vervangen bij update |
+| Een komma hoort echt bij één tag | Onbedoelde splitsing | Toon voorvertoning en behoud `Dit is correct` als expliciete uitzondering |
+| Voorstel en opslag normaliseren anders | Verrassende opgeslagen waarden | Gebruik één canonieke normalisatiefunctie |
+| Opslag wijzigt andere metadata | Gegevensverlies | Kopieer alle overige velden ongewijzigd en test dit expliciet |
+| Rij verdwijnt ondanks gedeeltelijke mislukking | Misleidende status | Lees database opnieuw en baseer dashboard op de opgeslagen werkelijkheid |
+| Lege invoer wordt onbedoeld geblokkeerd | Gebruiker kan lege rommel niet verwijderen | Sta een lege eindlijst toe wanneer die verschilt van de huidige tags |
 
 ## Open vragen
 
-Geen blokkerende vragen; implementatie start pas na goedkeuring van specificatie en plan.
+Geen blokkerende vragen; implementatie start na bevestiging van deze specificatie en volgorde.
