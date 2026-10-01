@@ -82,7 +82,7 @@ Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerd
 - [x] Gerichte tests per increment groen.
 - [x] Volledige tests en Debug-build groen (761 tests; Saga 2026.10.1.67).
 - [x] Handmatige checklist gereed.
-- [ ] Gewone, mergeable PR geopend.
+- [x] Gewone PR #40 geopend; mergebaarheid en controles worden op GitHub gevolgd.
 
 ## Gepauzeerd onderhoud
 

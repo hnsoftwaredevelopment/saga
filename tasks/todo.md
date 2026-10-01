@@ -18,7 +18,8 @@
 - [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.1.67; 0 waarschuwingen en 0 fouten).
 - [x] Branchdiff beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; geen bevindingen.
 - [ ] Resterende Definition of Done-punten afronden met handmatige acceptatie en GitHub-controles.
-- [ ] Gewone PR openen en GitHub-controles beoordelen.
+- [x] Gewone, niet-draft PR #40 geopend.
+- [ ] GitHub-controles en eventuele reviewopmerkingen beoordelen.
 
 ## Buiten scope
 
