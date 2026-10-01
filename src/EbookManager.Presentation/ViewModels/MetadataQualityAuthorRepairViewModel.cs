@@ -39,6 +39,7 @@ public sealed partial class MetadataQualityAuthorRepairViewModel : ObservableObj
 
         AffectedBookCount = bookTitles.Count;
         BookTitle = AffectedBookCount == 1 ? bookTitles.Single() : null;
+        ContextLabel = localize(AffectedBookCount == 1 ? "Title" : "MetadataMultiEditSelectedBooks");
         ContextText = BookTitle ?? string.Format(
             CultureInfo.CurrentCulture,
             localize("MetadataQualityAuthorRepairBulkBookContext"),
@@ -60,6 +61,7 @@ public sealed partial class MetadataQualityAuthorRepairViewModel : ObservableObj
 
     public int AffectedBookCount { get; }
     public string? BookTitle { get; }
+    public string ContextLabel { get; }
     public string ContextText { get; }
     public string SaveButtonText { get; }
     public string? NormalizedAuthor => MetadataQualityAuthorRules.IsUsable(AuthorText) ? AuthorText.Trim() : null;

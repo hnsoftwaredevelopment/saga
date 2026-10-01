@@ -15,6 +15,7 @@ public sealed class MetadataQualityAuthorRepairViewModelTests
 
         viewModel.AffectedBookCount.Should().Be(1);
         viewModel.BookTitle.Should().Be("Boektitel");
+        viewModel.ContextLabel.Should().Be("Title");
         viewModel.ContextText.Should().Be("Boektitel");
         viewModel.SaveButtonText.Should().Be("Auteur wijzigen");
     }
@@ -29,11 +30,13 @@ public sealed class MetadataQualityAuthorRepairViewModelTests
             {
                 "MetadataQualityAuthorRepairBulkBookContext" => "{0} geselecteerde boeken",
                 "MetadataQualityAuthorRepairBulkSave" => "Auteur wijzigen voor {0} boeken",
+                "MetadataMultiEditSelectedBooks" => "Geselecteerde boeken",
                 _ => key
             });
 
         viewModel.AffectedBookCount.Should().Be(3);
         viewModel.BookTitle.Should().BeNull();
+        viewModel.ContextLabel.Should().Be("Geselecteerde boeken");
         viewModel.ContextText.Should().Be("3 geselecteerde boeken");
         viewModel.SaveButtonText.Should().Be("Auteur wijzigen voor 3 boeken");
     }
