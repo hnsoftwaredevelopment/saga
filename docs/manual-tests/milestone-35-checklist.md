@@ -15,9 +15,9 @@ Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe`. Deze con
 - [X] Tik vlot meerdere letters in het algemene zoekveld. Controleer dat typen direct blijft reageren en dat na de korte typepauze alleen het laatste zoekwoord wordt toegepast.
 - [X] Controleer dat een geselecteerd boek dat in de resultaten blijft staan geselecteerd blijft en dat het detailpaneel niet zichtbaar leegloopt of opnieuw knippert.
 - [X] Wis het zoekveld snel met Backspace of `Ctrl+A` en Delete; controleer dat de volledige lijst na de korte typepauze terugkomt.
-- [ ] Zoek op een tekst die niets oplevert en ga daarna terug naar een bestaand zoekwoord; controleer dat beide toestanden correct en zonder vastlopen verschijnen.
+- [X] Zoek op een tekst die niets oplevert en ga daarna terug naar een bestaand zoekwoord; controleer dat beide toestanden correct en zonder vastlopen verschijnen.
 
-> Bij de eerste praktijktest werkte de zoekactie goed, maar meldde Saga ten onrechte dat de bibliotheek leeg was. Dit is aangepast naar `Geen boeken gevonden die overeenkomen met de huidige zoekopdracht of filters.` en wacht nog op een korte hertest met de nieuwe build.
+> Bij de eerste praktijktest werkte de zoekactie goed, maar meldde Saga ten onrechte dat de bibliotheek leeg was. Dit is aangepast naar `Geen boeken gevonden die overeenkomen met de huidige zoekopdracht of filters.` De hertest bevestigde dat deze tekst duidelijk is en de zoekactie correct blijft werken.
 - [X] Gebruik daarna een auteurs-, taal- of formaatfilter en wijzig de sortering; deze acties horen direct te reageren.
 
 ## Scrollen en omslagen
@@ -48,4 +48,4 @@ Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe`. Deze con
 
 De foutpaden voor geannuleerde achtergrondtaken, ontbrekende bestanden en beschadigde afbeeldingen worden geautomatiseerd afgevangen. Wanneer deze situaties in de echte bibliotheek niet voorkomen, hoeven ze niet kunstmatig te worden gemaakt.
 
-De praktijktest op 29 september 2026 bevestigde dat zoeken en scrollen merkbaar vloeiender zijn. Alle functionele controlepunten slaagden; alleen de tekst bij nul zoekresultaten is daarna verbeterd en moet nog één keer in de actuele build worden bekeken.
+De praktijktest op 29 september 2026 bevestigde dat zoeken en scrollen merkbaar vloeiender zijn. De afsluitende hertest op 1 oktober 2026 bevestigde ook de verbeterde tekst bij nul zoekresultaten. Daarmee zijn alle functionele controlepunten geslaagd.

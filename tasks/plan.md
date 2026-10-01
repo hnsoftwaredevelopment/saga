@@ -76,7 +76,7 @@ Reproduceerbare metingen
 
 ## Checkpoint 2
 
-- [x] Volledige testsuite slaagt: 709 tests groen.
+- [x] Volledige testsuite slaagt: 720 tests groen.
 - [x] Debug-build bevat 0 waarschuwingen en 0 fouten.
 - [x] Zelfreview op correctheid, architectuur, beveiliging en prestaties is afgerond.
 
@@ -86,12 +86,12 @@ Reproduceerbare metingen
 
 **Acceptatiecriteria:**
 
-- [ ] Typen, wissen, geen resultaten, selectie en detailweergave zijn gecontroleerd.
-- [ ] Scrollbar, muiswiel, Page Up/Page Down en snel wisselen van richting zijn gecontroleerd.
-- [ ] OneDrive-omslagen verschijnen zonder zichtbare blokkade en ontbrekende omslagen blijven veilig.
-- [ ] Definition of Done, documentatiespiegel en PR-controles zijn afgerond.
+- [x] Typen, wissen, geen resultaten, selectie en detailweergave zijn gecontroleerd.
+- [x] Scrollbar, muiswiel, Page Up/Page Down en snel wisselen van richting zijn gecontroleerd.
+- [x] OneDrive-omslagen verschijnen zonder zichtbare blokkade en ontbrekende omslagen blijven veilig.
+- [x] Definition of Done, documentatiespiegel en PR-controles zijn afgerond.
 
-**Verificatie:** Handmatige checklist op circa 34.447 boeken en vergelijking van `performance.log` vóór en na.
+**Verificatie:** Handmatige checklist op circa 34.447 boeken geslaagd; zoeken en scrollen zijn merkbaar vloeiender en de afsluitende melding bij nul zoekresultaten is duidelijk bevonden.
 
 ## Risico's en beheersing
 

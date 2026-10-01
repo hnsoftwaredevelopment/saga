@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 35 is ready for real-library acceptance testing. It keeps reusable search values for unchanged books, waits briefly for rapid title input before applying only the latest filter, preserves the current book selection without reloading its details, and loads bounded cached cover thumbnails away from the UI thread. Milestone 34 was accepted on 29 September 2026 after reducing 34,483 direct book directories to 256 storage shards and restoring normal OneDrive synchronization.
+Milestone 35 was accepted on 1 October 2026 after real-library testing with about 34,447 books confirmed noticeably smoother searching and scrolling. It keeps reusable search values for unchanged books, waits briefly for rapid title input before applying only the latest filter, preserves the current book selection without reloading its details, and loads bounded cached cover thumbnails away from the UI thread. Milestone 34 was accepted on 29 September 2026 after reducing 34,483 direct book directories to 256 storage shards and restoring normal OneDrive synchronization.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection

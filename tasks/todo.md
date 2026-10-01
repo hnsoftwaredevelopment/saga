@@ -9,9 +9,10 @@
 - [x] Taak 2: zoekinvoer uitgesteld en selectie/detail-load behouden.
 - [x] Checkpoint 1: 702 tests groen en Debug-build zonder waarschuwingen.
 - [x] Taak 3: asynchrone begrensde omslaglader implementeren.
-- [x] Taak 4: bibliotheekweergaven omschakelen; interacties wachten nog op de praktijktest.
-- [x] Checkpoint 2: 709 tests groen, zelfreview afgerond en actuele Debug-build zonder waarschuwingen.
+- [x] Taak 4: bibliotheekweergaven omschakelen; alle interacties zijn in de echte bibliotheek gecontroleerd.
+- [x] Checkpoint 2: 720 tests groen, zelfreview afgerond en actuele Debug-build zonder waarschuwingen.
 - [x] Taak 5 voorbereiden: checklist, actuele Debug-build, Definition of Done en documentatie gereed voor praktijkacceptatie.
 - [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld en met SHA-256 gecontroleerd.
 - [x] Normale, niet-draft PR #36 geopend.
-- [ ] Handmatige checklist grotendeels geslaagd; verbeterde melding voor nul zoekresultaten wacht op een korte hertest.
+- [x] Handmatige checklist volledig geslaagd; de verbeterde melding voor nul zoekresultaten is duidelijk bevonden.
+- [x] De vijf relevante CodeRabbit-opmerkingen zijn verwerkt en met regressietests afgedekt.
