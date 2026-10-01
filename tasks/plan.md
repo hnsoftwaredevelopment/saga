@@ -60,7 +60,7 @@ Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerd
 - [x] Alle gerepareerde boeken en auteursfilters zijn zonder herstart actueel.
 - [x] Volledige tests en Debug-build zijn groen (761 tests; Saga 2026.10.1.67).
 - [x] Handmatige checklist en Obsidian-spiegel zijn gereed.
-- [ ] De branchdiff bevat de lokale gebruikerswijzigingen niet.
+- [x] De branchdiff bevat de lokale gebruikerswijzigingen niet.
 
 **Verificatie:** LibraryViewModel-tests, volledige Definition of Done, diffreview en GitHub-controles.
 
