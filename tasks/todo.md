@@ -1,23 +1,24 @@
-# Milestone 37 Todo
+# Milestone 38 Todo
 
-- [x] PR #37 gemerged en nieuwe branch vanaf actuele `main` gemaakt.
+- [x] PR #38 gemerged en nieuwe branch vanaf actuele `main` gemaakt.
 - [x] Lokale gebruikerswijzigingen veilig behouden en buiten scope geplaatst.
-- [x] Bestaande Instellingen-layout, beheeropdracht, tests en lokalisatie onderzocht.
+- [x] Bestaande selectie, kwaliteitsopdracht, batchrepository en WPF-patronen onderzocht.
 - [x] Specificatie en implementatieplan opgesteld.
-- [x] Eerst falende layout- en lokalisatietests toevoegen.
-- [x] `SettingsQualitySection` in alle zes talen toevoegen.
-- [x] Kwaliteitsbeheer van `Duplicaten` naar een eigen tabblad verplaatsen.
-- [x] Gerichte tests uitvoeren: 7 van 7 groen.
-- [x] Featurestatus, README en handmatige checklist bijwerken en spiegelen naar Obsidian.
-- [x] Volledige Debug-testset uitvoeren: 746 van 746 groen.
-- [x] Schone Debug-build uitvoeren: 0 waarschuwingen, 0 fouten, één `Saga.exe` versie `2026.10.1.45`.
-- [x] Diffreview en Definition of Done afgerond; geen blokkerende bevindingen.
-- [x] Gewone PR #38 geopend; GitHub-controles zijn gestart.
+- [ ] Eerst falende dashboardtests voor bulkselectie en bevestiging toevoegen.
+- [ ] Viewmodelselectie en bulkbeslissing implementeren.
+- [ ] Repositorybatch transactioneel maken en gericht testen.
+- [ ] DataGrid-multiselectie en selectiebrug toevoegen.
+- [ ] Gelokaliseerde bevestiging in alle zes talen toevoegen.
+- [ ] Gerichte tests uitvoeren en iedere increment committen.
+- [ ] Featurestatus, README en handmatige checklist bijwerken en naar Obsidian spiegelen.
+- [ ] Volledige Debug-testset en schone Debug-build uitvoeren.
+- [ ] Diffreview en Definition of Done afronden.
+- [ ] Gewone PR openen en GitHub-controles beoordelen.
 
 ## Buiten scope
 
-- Bulkselectie en bulk `Dit is correct`.
 - Bulkherstel van auteur of andere metadata.
+- Selectie over meerdere kwaliteitscategorieën.
 - Icoonknop voor `Dit is correct`.
-- Wijzigingen aan kwaliteitsregels of databaseopslag.
+- Nieuwe kwaliteitsregels of een databasewijziging.
 - Hervatten van omslaghydratatie voordat OneDrive volledig is gesynchroniseerd.
