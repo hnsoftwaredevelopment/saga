@@ -4,14 +4,15 @@
 - [x] Lokale gebruikerswijzigingen veilig behouden en buiten scope geplaatst.
 - [x] Bestaande selectie, kwaliteitsopdracht, batchrepository en WPF-patronen onderzocht.
 - [x] Specificatie en implementatieplan opgesteld.
-- [ ] Eerst falende dashboardtests voor bulkselectie en bevestiging toevoegen.
-- [ ] Viewmodelselectie en bulkbeslissing implementeren.
-- [ ] Repositorybatch transactioneel maken en gericht testen.
-- [ ] DataGrid-multiselectie en selectiebrug toevoegen.
-- [ ] Gelokaliseerde bevestiging in alle zes talen toevoegen.
-- [ ] Gerichte tests uitvoeren en iedere increment committen.
-- [ ] Featurestatus, README en handmatige checklist bijwerken en naar Obsidian spiegelen.
-- [ ] Volledige Debug-testset en schone Debug-build uitvoeren.
+- [x] Eerst falende dashboardtests voor bulkselectie en bevestiging toevoegen.
+- [x] Viewmodelselectie en bulkbeslissing implementeren.
+- [x] Repositorybatch transactioneel maken en gericht testen.
+- [x] DataGrid-multiselectie en selectiebrug toevoegen.
+- [x] Gelokaliseerde bevestiging in alle zes talen toevoegen.
+- [x] Gerichte tests uitvoeren en iedere increment committen.
+- [x] Featurestatus, README en handmatige checklist bijwerken en naar Obsidian spiegelen.
+- [x] Volledige Debug-testset uitvoeren (754 geslaagd).
+- [x] Schone Debug-build maken en controleren (`Saga.exe` 2026.10.1.54).
 - [ ] Diffreview en Definition of Done afronden.
 - [ ] Gewone PR openen en GitHub-controles beoordelen.
 

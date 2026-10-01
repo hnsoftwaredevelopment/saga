@@ -17,9 +17,9 @@ Milestone 38 maakt meervoudige selectie op de Quality Page mogelijk en past `Dit
 **Beschrijving:** Voeg eerst falende viewmodeltests toe voor multiselectie, bevestigen, annuleren, opslagfout en enkelvoudige acties.
 
 **Acceptatiecriteria:**
-- [ ] Meerdere geldige rijen activeren `Dit is correct`.
-- [ ] Open- en herstelacties zijn bij meerdere rijen uitgeschakeld.
-- [ ] Annuleren en fouten behouden alle rijen.
+- [x] Meerdere geldige rijen activeren `Dit is correct`.
+- [x] Open- en herstelacties zijn bij meerdere rijen uitgeschakeld.
+- [x] Annuleren en fouten behouden alle rijen.
 
 **Verificatie:** Gerichte dashboardtests falen vóór en slagen na implementatie.
 
@@ -30,9 +30,9 @@ Milestone 38 maakt meervoudige selectie op de Quality Page mogelijk en past `Dit
 **Beschrijving:** Bescherm de bestaande batchtoevoeging van uitsluitingen met één SQLite-transactie.
 
 **Acceptatiecriteria:**
-- [ ] Alle unieke sleutels worden samen opgeslagen.
-- [ ] Een fout kan geen gedeeltelijk zichtbare batch achterlaten.
-- [ ] Bestaande enkelvoudige en dubbele toevoegingen blijven idempotent.
+- [x] Alle unieke sleutels worden samen opgeslagen.
+- [x] Een fout kan geen gedeeltelijk zichtbare batch achterlaten.
+- [x] Bestaande enkelvoudige en dubbele toevoegingen blijven idempotent.
 
 **Verificatie:** Gerichte repository-integratietests groen.
 
@@ -43,9 +43,9 @@ Milestone 38 maakt meervoudige selectie op de Quality Page mogelijk en past `Dit
 **Beschrijving:** Maak de grid meervoudig selecteerbaar, verbind de selectie met het viewmodel en voeg een gelokaliseerde bevestiging toe.
 
 **Acceptatiecriteria:**
-- [ ] DataGrid gebruikt uitgebreide volledige-rijselectie.
-- [ ] Selectiewijzigingen bereiken het viewmodel.
-- [ ] Twee of meer rijen tonen een bevestiging met het juiste aantal.
+- [x] DataGrid gebruikt uitgebreide volledige-rijselectie.
+- [x] Selectiewijzigingen bereiken het viewmodel.
+- [x] Twee of meer rijen tonen een bevestiging met het juiste aantal.
 
 **Verificatie:** Layout-, lokalisatie- en compositietests groen.
 
@@ -56,9 +56,9 @@ Milestone 38 maakt meervoudige selectie op de Quality Page mogelijk en past `Dit
 **Beschrijving:** Werk featurestatus, README en handmatige checklist bij, spiegel Markdown, bouw één actuele Debug-build en open een gewone PR.
 
 **Acceptatiecriteria:**
-- [ ] Volledige testset en Debug-build zijn groen.
-- [ ] `Builds\Debug` bevat precies één actuele `Saga.exe`.
-- [ ] Alle Markdown is identiek naar Obsidian gespiegeld.
+- [x] Volledige testset en Debug-build zijn groen.
+- [x] `Builds\Debug` bevat precies één actuele `Saga.exe`.
+- [x] Alle Markdown is identiek naar Obsidian gespiegeld.
 - [ ] Branchdiff bevat de lokale gebruikerswijzigingen niet.
 
 **Verificatie:** Definition of Done, diffreview en GitHub-controles.
@@ -75,9 +75,9 @@ Milestone 38 maakt meervoudige selectie op de Quality Page mogelijk en past `Dit
 
 ## Checkpoint
 
-- [ ] Gerichte tests groen.
-- [ ] Volledige tests en build groen.
-- [ ] Handmatige checklist klaar.
+- [x] Gerichte tests groen.
+- [x] Volledige tests en Debug-build groen (754 tests; Saga 2026.10.1.54).
+- [x] Handmatige checklist klaar.
 - [ ] Gewone, mergeable PR geopend.
 
 ## Gepauzeerd onderhoud
