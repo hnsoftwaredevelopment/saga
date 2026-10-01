@@ -1,21 +1,22 @@
-# Milestone 36 Todo
+# Milestone 37 Todo
 
-- [x] PR #36 opgehaald, lokale `main` bijgewerkt en gemergede branch verwijderd.
-- [x] Nieuwe branch `codex/milestone-36-messy-tag-repair` gemaakt.
-- [x] Bestaande Quality Page-herstelpatronen en `messy-tags`-detectie onderzocht.
-- [x] Aannames, afbakening en normalisatieregels vastgelegd.
+- [x] PR #37 gemerged en nieuwe branch vanaf actuele `main` gemaakt.
+- [x] Lokale gebruikerswijzigingen veilig behouden en buiten scope geplaatst.
+- [x] Bestaande Instellingen-layout, beheeropdracht, tests en lokalisatie onderzocht.
 - [x] Specificatie en implementatieplan opgesteld.
-- [x] Specificatie en plan door gebruiker goedgekeurd op 1 oktober 2026.
-- [x] Taak 1: canonieke normalisatie en veilige opslagservice; 8 gerichte tests groen.
-- [x] Taak 2: bewerkbaar herstelviewmodel; 4 gerichte tests groen.
-- [x] Checkpoint 1: 12 gerichte logica- en viewmodeltests groen en tussentijdse review afgerond.
-- [x] Taak 3: Quality Page-opdracht en directe herbeoordeling; 7 nieuwe en 62 totale dashboardtests groen.
-- [x] Taak 4: toegankelijk WPF-herstelvenster; 2 layouttests groen.
-- [x] Taak 5: compositie en lokalisatie; alle 6 talen compleet en applicatiebouw groen.
-- [x] Checkpoint 2: 741 tests, opmaakcontrole, zelfreview en Debug-build groen zonder waarschuwingen.
-- [x] Taak 6-voorbereiding: handmatige checklist, gecontroleerde Obsidian-spiegel en normale PR #37.
-- [ ] Taak 6-acceptatie: praktijktest door gebruiker en verwerking van eventuele bevindingen.
-- [x] OneDrive-diagnose: 32.344 van 32.644 omslagen zijn na de migratie `Pinned + Offline`.
-- [x] Gebruikersakkoord ontvangen voor ongeveer 5,56 GB eenmalige omslaghydratatie.
-- [x] Herstelactie met scanmodus, logging, foutisolatie en hervatten getest; 3 Pester-tests groen en echte scan bevestigt 32.344 wachtende omslagen.
-- [ ] Echte omslaghydratatie uitvoeren en resultaat controleren.
+- [ ] Eerst falende layout- en lokalisatietests toevoegen.
+- [ ] `SettingsQualitySection` in alle zes talen toevoegen.
+- [ ] Kwaliteitsbeheer van `Duplicaten` naar een eigen tabblad verplaatsen.
+- [ ] Gerichte tests uitvoeren.
+- [ ] Featurestatus, README en handmatige checklist bijwerken en spiegelen naar Obsidian.
+- [ ] Volledige Debug-testset en schone Debug-build uitvoeren.
+- [ ] Diffreview en Definition of Done afronden.
+- [ ] Gewone PR openen en GitHub-controles beoordelen.
+
+## Buiten scope
+
+- Bulkselectie en bulk `Dit is correct`.
+- Bulkherstel van auteur of andere metadata.
+- Icoonknop voor `Dit is correct`.
+- Wijzigingen aan kwaliteitsregels of databaseopslag.
+- Hervatten van omslaghydratatie voordat OneDrive volledig is gesynchroniseerd.
