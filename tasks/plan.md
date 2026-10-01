@@ -47,11 +47,11 @@ Tag-normalisatie
 
 **Acceptatiecriteria:**
 
-- [ ] Het initiële voorstel gebruikt exact dezelfde normalisatie als de service.
-- [ ] Handmatige regels worden opnieuw veilig genormaliseerd.
-- [ ] Een lege taglijst is geldig, terwijl een ongewijzigde uitkomst niet kan worden opgeslagen.
+- [x] Het initiële voorstel gebruikt exact dezelfde normalisatie als de service.
+- [x] Handmatige regels worden opnieuw veilig genormaliseerd.
+- [x] Een lege taglijst is geldig, terwijl een ongewijzigde uitkomst niet kan worden opgeslagen.
 
-**Verificatie:** Eerst falende viewmodeltests; daarna alle gerichte viewmodeltests groen.
+**Verificatie:** De nieuwe tests faalden eerst op het ontbrekende viewmodel; daarna zijn 4 viewmodeltests en alle 8 servicetests groen.
 
 **Afhankelijkheden:** Taak 1.
 
@@ -59,9 +59,9 @@ Tag-normalisatie
 
 ## Checkpoint 1
 
-- [ ] Normalisatie, service en viewmodeltests zijn groen.
-- [ ] Alleen tags en `UpdatedUtc` kunnen door de nieuwe route wijzigen.
-- [ ] Tussentijdse diff is beoordeeld op eenvoud, foutpaden en toekomstige bulkcompatibiliteit.
+- [x] Normalisatie, service en viewmodeltests zijn groen.
+- [x] Alleen tags en `UpdatedUtc` kunnen door de nieuwe route wijzigen.
+- [x] Tussentijdse diff is beoordeeld op eenvoud, foutpaden en toekomstige bulkcompatibiliteit.
 
 ## Taak 3: Quality Page-coördinatie
 

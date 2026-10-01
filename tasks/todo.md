@@ -7,8 +7,8 @@
 - [x] Specificatie en implementatieplan opgesteld.
 - [x] Specificatie en plan door gebruiker goedgekeurd op 1 oktober 2026.
 - [x] Taak 1: canonieke normalisatie en veilige opslagservice; 8 gerichte tests groen.
-- [ ] Taak 2: bewerkbaar herstelviewmodel.
-- [ ] Checkpoint 1: gerichte logica- en viewmodeltests groen en tussentijdse review afgerond.
+- [x] Taak 2: bewerkbaar herstelviewmodel; 4 gerichte tests groen.
+- [x] Checkpoint 1: 12 gerichte logica- en viewmodeltests groen en tussentijdse review afgerond.
 - [ ] Taak 3: Quality Page-opdracht en directe herbeoordeling.
 - [ ] Taak 4: toegankelijk WPF-herstelvenster.
 - [ ] Taak 5: compositie en lokalisatie.
