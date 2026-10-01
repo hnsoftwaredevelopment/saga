@@ -13,4 +13,5 @@
 - [x] Taak 4: toegankelijk WPF-herstelvenster; 2 layouttests groen.
 - [x] Taak 5: compositie en lokalisatie; alle 6 talen compleet en applicatiebouw groen.
 - [x] Checkpoint 2: 741 tests, opmaakcontrole, zelfreview en Debug-build groen zonder waarschuwingen.
-- [ ] Taak 6: handmatige checklist, Obsidian-spiegel en normale PR.
+- [x] Taak 6-voorbereiding: handmatige checklist, gecontroleerde Obsidian-spiegel en normale PR #37.
+- [ ] Taak 6-acceptatie: praktijktest door gebruiker en verwerking van eventuele bevindingen.
