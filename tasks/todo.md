@@ -5,8 +5,8 @@
 - [x] Bestaande Quality Page-herstelpatronen en `messy-tags`-detectie onderzocht.
 - [x] Aannames, afbakening en normalisatieregels vastgelegd.
 - [x] Specificatie en implementatieplan opgesteld.
-- [ ] Specificatie en plan door gebruiker goedgekeurd.
-- [ ] Taak 1: canonieke normalisatie en veilige opslagservice.
+- [x] Specificatie en plan door gebruiker goedgekeurd op 1 oktober 2026.
+- [x] Taak 1: canonieke normalisatie en veilige opslagservice; 8 gerichte tests groen.
 - [ ] Taak 2: bewerkbaar herstelviewmodel.
 - [ ] Checkpoint 1: gerichte logica- en viewmodeltests groen en tussentijdse review afgerond.
 - [ ] Taak 3: Quality Page-opdracht en directe herbeoordeling.

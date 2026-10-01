@@ -31,11 +31,11 @@ Tag-normalisatie
 
 **Acceptatiecriteria:**
 
-- [ ] Komma’s, regeleinden, lege waarden, witruimte en dubbelen worden deterministisch genormaliseerd.
-- [ ] De service weigert een ontbrekend, ongeldig of niet meer toepasselijk boek veilig.
-- [ ] Opslagresultaten onderscheiden succes, write-backwaarschuwing en mislukking.
+- [x] Komma’s, regeleinden, lege waarden, witruimte en dubbelen worden deterministisch genormaliseerd.
+- [x] De service weigert een ontbrekend, ongeldig of niet meer toepasselijk boek veilig.
+- [x] Opslagresultaten onderscheiden succes, write-backwaarschuwing en mislukking.
 
-**Verificatie:** Eerst falende servicetests; daarna alle `MetadataQualityTagRepair`-servicetests groen.
+**Verificatie:** De nieuwe tests faalden eerst op de ontbrekende normalisatie en service; daarna zijn 8 gerichte servicetests groen.
 
 **Afhankelijkheden:** Geen.
 
