@@ -231,7 +231,7 @@ public sealed class MetadataQualityDashboardViewModelTests
     }
 
     [Fact]
-    public void Multiple_selection_disables_single_book_actions()
+    public void Multiple_selection_keeps_only_bulk_capable_actions_enabled()
     {
         var books = new[]
         {
@@ -250,7 +250,9 @@ public sealed class MetadataQualityDashboardViewModelTests
         dashboard.SelectedBookCount.Should().Be(2);
         dashboard.MarkSelectedIssueCorrectCommand.CanExecute(null).Should().BeTrue();
         dashboard.CanOpenSelectedBook.Should().BeFalse();
-        dashboard.RepairMissingAuthorCommand.CanExecute(null).Should().BeFalse();
+        dashboard.RepairMissingAuthorCommand.CanExecute(null).Should().BeTrue();
+        dashboard.RepairUnknownLanguageCommand.CanExecute(null).Should().BeFalse();
+        dashboard.RepairMissingSeriesCommand.CanExecute(null).Should().BeFalse();
     }
 
     [Fact]
@@ -307,6 +309,97 @@ public sealed class MetadataQualityDashboardViewModelTests
         dashboard.SelectedBook.Should().BeNull();
         dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MissingCover)
             .Rows.Single(row => row.Id == missingAuthor.Id).Authors.Should().Be("Karin Slaughter");
+    }
+
+    [Fact]
+    public async Task Repair_missing_author_applies_one_author_to_every_selected_book()
+    {
+        var alpha = CreateBook("Alpha", ["Unknown"], coverBytes: [1]);
+        var beta = CreateBook("Beta", ["Unknown"], coverBytes: [1]);
+        var repairedAlpha = alpha with
+        {
+            Metadata = new BookMetadata("Alpha", ["Nieuwe Auteur"], Language: "nl", CoverBytes: [1])
+        };
+        var repairedBeta = beta with
+        {
+            Metadata = new BookMetadata("Beta", ["Nieuwe Auteur"], Language: "nl", CoverBytes: [1])
+        };
+        var repairService = new ScriptedBatchAuthorRepairService(
+            new MetadataQualityAuthorRepairBatchResult(
+            [
+                new(alpha.Id, MetadataQualityAuthorRepairStatus.Succeeded, repairedAlpha),
+                new(beta.Id, MetadataQualityAuthorRepairStatus.Succeeded, repairedBeta)
+            ]));
+        var refreshedBooks = new List<Book>();
+        MetadataQualityAuthorRepairViewModel? shownRepair = null;
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [alpha, beta],
+            key => key == "MetadataQualityAuthorRepairBulkResult"
+                ? "bulk:{0}:{1}:{2}:{3}:{4}"
+                : key,
+            authorRepairService: repairService,
+            showAuthorRepair: (repair, _) =>
+            {
+                shownRepair = repair;
+                repair.AuthorText = "Nieuwe Auteur";
+                return Task.FromResult(true);
+            },
+            bookRepaired: refreshedBooks.Add);
+        var issue = dashboard.SelectedIssue!;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+
+        shownRepair.Should().NotBeNull();
+        shownRepair!.AffectedBookCount.Should().Be(2);
+        repairService.BookIds.Should().Equal(alpha.Id, beta.Id);
+        repairService.Author.Should().Be("Nieuwe Auteur");
+        issue.Rows.Should().BeEmpty();
+        refreshedBooks.Select(book => book.Id).Should().BeEquivalentTo([alpha.Id, beta.Id]);
+        dashboard.StatusMessage.Should().Be("bulk:2:0:0:0:0");
+    }
+
+    [Fact]
+    public async Task Repair_missing_author_keeps_failed_bulk_rows_selected_and_reports_mixed_result()
+    {
+        var alpha = CreateBook("Alpha", ["Unknown"], coverBytes: [1]);
+        var beta = CreateBook("Beta", ["Unknown"], coverBytes: [1]);
+        var gamma = CreateBook("Gamma", ["Unknown"], coverBytes: [1]);
+        var repairedAlpha = alpha with
+        {
+            Metadata = new BookMetadata("Alpha", ["Auteur"], Language: "nl", CoverBytes: [1])
+        };
+        var repairedGamma = gamma with
+        {
+            Metadata = new BookMetadata("Gamma", ["Auteur"], Language: "nl", CoverBytes: [1])
+        };
+        var repairService = new ScriptedBatchAuthorRepairService(
+            new MetadataQualityAuthorRepairBatchResult(
+            [
+                new(alpha.Id, MetadataQualityAuthorRepairStatus.Succeeded, repairedAlpha),
+                new(beta.Id, MetadataQualityAuthorRepairStatus.Failed, beta),
+                new(gamma.Id, MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors, repairedGamma)
+            ]));
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [alpha, beta, gamma],
+            key => key == "MetadataQualityAuthorRepairBulkResult"
+                ? "bulk:{0}:{1}:{2}:{3}:{4}"
+                : key,
+            authorRepairService: repairService,
+            showAuthorRepair: (repair, _) =>
+            {
+                repair.AuthorText = "Auteur";
+                return Task.FromResult(true);
+            });
+        var issue = dashboard.SelectedIssue!;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+
+        issue.Rows.Should().ContainSingle().Which.Id.Should().Be(beta.Id);
+        dashboard.SelectedBookCount.Should().Be(1);
+        dashboard.SelectedBook!.Id.Should().Be(beta.Id);
+        dashboard.StatusMessage.Should().Be("bulk:1:1:0:0:1");
     }
 
     [Fact]
@@ -518,6 +611,23 @@ public sealed class MetadataQualityDashboardViewModelTests
                     status,
                     repairedBook)
             ]));
+        }
+    }
+
+    private sealed class ScriptedBatchAuthorRepairService(MetadataQualityAuthorRepairBatchResult result)
+        : IMetadataQualityAuthorRepairService
+    {
+        public IReadOnlyList<Guid> BookIds { get; private set; } = [];
+        public string? Author { get; private set; }
+
+        public Task<MetadataQualityAuthorRepairBatchResult> RepairAsync(
+            IReadOnlyCollection<Guid> bookIds,
+            string author,
+            CancellationToken cancellationToken)
+        {
+            BookIds = bookIds.ToArray();
+            Author = author;
+            return Task.FromResult(result);
         }
     }
 }
