@@ -9,7 +9,7 @@
 - [x] Taak 1: canonieke normalisatie en veilige opslagservice; 8 gerichte tests groen.
 - [x] Taak 2: bewerkbaar herstelviewmodel; 4 gerichte tests groen.
 - [x] Checkpoint 1: 12 gerichte logica- en viewmodeltests groen en tussentijdse review afgerond.
-- [ ] Taak 3: Quality Page-opdracht en directe herbeoordeling.
+- [x] Taak 3: Quality Page-opdracht en directe herbeoordeling; 7 nieuwe en 62 totale dashboardtests groen.
 - [ ] Taak 4: toegankelijk WPF-herstelvenster.
 - [ ] Taak 5: compositie en lokalisatie.
 - [ ] Checkpoint 2: volledige tests, opmaakcontrole, zelfreview en Debug-build groen.

@@ -69,11 +69,11 @@ Tag-normalisatie
 
 **Acceptatiecriteria:**
 
-- [ ] De opdracht is alleen actief bij `messy-tags` en een geldige geselecteerde rij.
-- [ ] Annuleren roept de service niet aan.
-- [ ] Succes, gedeeltelijke write-back, niet toepasselijk, verdwenen boek en fout worden correct verwerkt.
+- [x] De opdracht is alleen actief bij `messy-tags` en een geldige geselecteerde rij.
+- [x] Annuleren roept de service niet aan.
+- [x] Succes, gedeeltelijke write-back, niet toepasselijk, verdwenen boek en fout worden correct verwerkt.
 
-**Verificatie:** Eerst falende dashboardtests; daarna alle tagherstel-dashboardtests groen.
+**Verificatie:** De nieuwe tests faalden eerst op de ontbrekende dashboardopdracht; daarna zijn 7 taghersteltests en alle 62 dashboardtests groen.
 
 **Afhankelijkheden:** Taken 1 en 2.
 
