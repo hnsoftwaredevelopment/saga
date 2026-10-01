@@ -5,7 +5,7 @@
 - [x] Nieuwe branch `codex/milestone-39-bulk-author-repair` vanaf actuele `main` gemaakt.
 - [x] Bestaande batchservice, auteurinvoer, dashboardroute en tests onderzocht.
 - [x] Aannames, veiligheidsgrenzen, specificatie en implementatieplan opgesteld.
-- [ ] Specificatie en plan door gebruiker laten bevestigen.
+- [x] Specificatie en plan door gebruiker bevestigd.
 - [ ] Eerst falende tests voor bulkcontext van het auteursvenster toevoegen.
 - [ ] Auteurherstelviewmodel uitbreiden zonder regressie van suggesties en vrije invoer.
 - [ ] Eerst falende dashboardtests voor selectie, annuleren en gemengde resultaten toevoegen.

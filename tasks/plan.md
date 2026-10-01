@@ -78,7 +78,7 @@ Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerd
 
 ## Checkpoint
 
-- [ ] Specificatie en plan goedgekeurd.
+- [x] Specificatie en plan goedgekeurd.
 - [ ] Gerichte tests per increment groen.
 - [ ] Volledige tests en Debug-build groen.
 - [ ] Handmatige checklist gereed.
