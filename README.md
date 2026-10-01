@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 35 was accepted on 1 October 2026 after real-library testing with about 34,447 books confirmed noticeably smoother searching and scrolling. It keeps reusable search values for unchanged books, waits briefly for rapid title input before applying only the latest filter, preserves the current book selection without reloading its details, and loads bounded cached cover thumbnails away from the UI thread. Milestone 34 was accepted on 29 September 2026 after reducing 34,483 direct book directories to 256 storage shards and restoring normal OneDrive synchronization.
+Milestone 36 is ready for acceptance testing and adds a controlled repair flow for messy tags directly from the metadata quality dashboard. Milestone 35 was accepted on 1 October 2026 after real-library testing with about 34,447 books confirmed noticeably smoother searching and scrolling. It keeps reusable search values for unchanged books, waits briefly for rapid title input before applying only the latest filter, preserves the current book selection without reloading its details, and loads bounded cached cover thumbnails away from the UI thread. Milestone 34 was accepted on 29 September 2026 after reducing 34,483 direct book directories to 256 storage shards and restoring normal OneDrive synchronization.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -61,6 +61,7 @@ Milestone 35 was accepted on 1 October 2026 after real-library testing with abou
 - direct missing- or unknown-language repair from the quality dashboard with a searchable list of valid languages
 - direct missing-series repair with live suggestions while preserving the existing series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
+- editable messy-tag repair with a one-tag-per-line proposal, deduplication, whitespace cleanup, and support for an empty final tag list
 - explicit cover search with up to twelve validated Google Books and Open Library choices, a locally generated fallback, safe managed storage, and replacement from book details
 - managed ebooks and covers distributed over 256 ID-based storage shards, with automatic database backup, visible first-start migration progress, and safe resume after interruption
 - delete actions continue removing library records when managed file cleanup reports a warning
@@ -184,6 +185,8 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-32-checklist.md](docs/manual-tests/milestone-32-checklist.md)
 - [docs/manual-tests/milestone-33-checklist.md](docs/manual-tests/milestone-33-checklist.md)
 - [docs/manual-tests/milestone-34-checklist.md](docs/manual-tests/milestone-34-checklist.md)
+- [docs/manual-tests/milestone-35-checklist.md](docs/manual-tests/milestone-35-checklist.md)
+- [docs/manual-tests/milestone-36-checklist.md](docs/manual-tests/milestone-36-checklist.md)
 
 ## Later-Version Candidates
 
@@ -193,7 +196,6 @@ The following remain later-version candidates:
 - native metadata write-back into ebook files
 - details-pane cover picker for CBR files that can extract the first image from the archive and use it as cover
 - optional cloud-file hydration for OneDrive files that are not available locally
-- direct repair for messy tags from the metadata quality dashboard
 - ebook conversion
 - full-text search inside book contents
 - in-app bug reports and feature requests that can prepare or create GitHub issues after user review
