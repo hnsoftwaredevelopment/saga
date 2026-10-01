@@ -22,6 +22,7 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityExclusionsSettingsTitle",
         "MetadataQualityExclusionsSettingsDescription",
         "ManageMetadataQualityExclusions",
+        "SettingsQualitySection",
         "MetadataQualityAuthorRepairTitle",
         "MetadataQualityAuthorRepairDescription",
         "MetadataQualityAuthorRepairAuthorInput",
