@@ -332,6 +332,16 @@
   <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Books where the title looks like a person name and the author does not.</value></data>
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Messy tags</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Tags with extra spaces or comma-separated values.</value></data>
+  <data name="MetadataQualityCleanTags" xml:space="preserve"><value>Clean up tags</value></data>
+  <data name="MetadataQualityTagRepairTitle" xml:space="preserve"><value>Clean up tags</value></data>
+  <data name="MetadataQualityTagRepairDescription" xml:space="preserve"><value>Review the proposal and adjust the tags if needed before saving.</value></data>
+  <data name="MetadataQualityCurrentTags" xml:space="preserve"><value>Current tags</value></data>
+  <data name="MetadataQualityNewTags" xml:space="preserve"><value>New tags</value></data>
+  <data name="MetadataQualityTagRepairHelp" xml:space="preserve"><value>Use one tag per line. Commas are split; empty values, extra spacing, and duplicate tags are removed.</value></data>
+  <data name="MetadataQualityChangeTags" xml:space="preserve"><value>Change tags</value></data>
+  <data name="MetadataQualityTagRepairFailed" xml:space="preserve"><value>The tags could not be changed. Try again.</value></data>
+  <data name="MetadataQualityTagRepairWriteBackWarning" xml:space="preserve"><value>The tags were saved, but could not be written to every related book file.</value></data>
+  <data name="MetadataQualityTagRepairNotNeeded" xml:space="preserve"><value>These tags no longer need to be cleaned up.</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>This is correct</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>This quality decision could not be saved. Try again.</value></data>

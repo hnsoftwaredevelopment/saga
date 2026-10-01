@@ -1,18 +1,21 @@
-# Milestone 35 Todo
+# Milestone 36 Todo
 
-- [x] Gemergede PR #35 opgehaald en nieuwe branch `codex/milestone-35-library-performance` gemaakt.
-- [x] Praktijkmeting geanalyseerd: 553 ms filterwerk en 1684 ms selectie/detailwerk bij 34.447 boeken.
-- [x] Synchrone OneDrive-omslagdecode tijdens scrollen als tweede oorzaak gelokaliseerd.
-- [x] Specificatie, acceptatiecriteria en implementatievolgorde opgesteld.
-- [x] Specificatie en plan door gebruiker goedgekeurd op 29 september 2026.
-- [x] Taak 1: zoekwerk gemeten en herbruikbare index geïmplementeerd; 30.000 boeken onder 250 ms.
-- [x] Taak 2: zoekinvoer uitgesteld en selectie/detail-load behouden.
-- [x] Checkpoint 1: 702 tests groen en Debug-build zonder waarschuwingen.
-- [x] Taak 3: asynchrone begrensde omslaglader implementeren.
-- [x] Taak 4: bibliotheekweergaven omschakelen; alle interacties zijn in de echte bibliotheek gecontroleerd.
-- [x] Checkpoint 2: 720 tests groen, zelfreview afgerond en actuele Debug-build zonder waarschuwingen.
-- [x] Taak 5 voorbereiden: checklist, actuele Debug-build, Definition of Done en documentatie gereed voor praktijkacceptatie.
-- [x] Alle gewijzigde Markdown exact naar Obsidian gespiegeld en met SHA-256 gecontroleerd.
-- [x] Normale, niet-draft PR #36 geopend.
-- [x] Handmatige checklist volledig geslaagd; de verbeterde melding voor nul zoekresultaten is duidelijk bevonden.
-- [x] De vijf relevante CodeRabbit-opmerkingen zijn verwerkt en met regressietests afgedekt.
+- [x] PR #36 opgehaald, lokale `main` bijgewerkt en gemergede branch verwijderd.
+- [x] Nieuwe branch `codex/milestone-36-messy-tag-repair` gemaakt.
+- [x] Bestaande Quality Page-herstelpatronen en `messy-tags`-detectie onderzocht.
+- [x] Aannames, afbakening en normalisatieregels vastgelegd.
+- [x] Specificatie en implementatieplan opgesteld.
+- [x] Specificatie en plan door gebruiker goedgekeurd op 1 oktober 2026.
+- [x] Taak 1: canonieke normalisatie en veilige opslagservice; 8 gerichte tests groen.
+- [x] Taak 2: bewerkbaar herstelviewmodel; 4 gerichte tests groen.
+- [x] Checkpoint 1: 12 gerichte logica- en viewmodeltests groen en tussentijdse review afgerond.
+- [x] Taak 3: Quality Page-opdracht en directe herbeoordeling; 7 nieuwe en 62 totale dashboardtests groen.
+- [x] Taak 4: toegankelijk WPF-herstelvenster; 2 layouttests groen.
+- [x] Taak 5: compositie en lokalisatie; alle 6 talen compleet en applicatiebouw groen.
+- [x] Checkpoint 2: 741 tests, opmaakcontrole, zelfreview en Debug-build groen zonder waarschuwingen.
+- [x] Taak 6-voorbereiding: handmatige checklist, gecontroleerde Obsidian-spiegel en normale PR #37.
+- [ ] Taak 6-acceptatie: praktijktest door gebruiker en verwerking van eventuele bevindingen.
+- [x] OneDrive-diagnose: 32.344 van 32.644 omslagen zijn na de migratie `Pinned + Offline`.
+- [x] Gebruikersakkoord ontvangen voor ongeveer 5,56 GB eenmalige omslaghydratatie.
+- [x] Herstelactie met scanmodus, logging, foutisolatie en hervatten getest; 3 Pester-tests groen en echte scan bevestigt 32.344 wachtende omslagen.
+- [ ] Echte omslaghydratatie uitvoeren en resultaat controleren.

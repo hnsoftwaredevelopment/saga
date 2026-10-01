@@ -47,6 +47,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly IMetadataQualityLanguageRepairService? metadataQualityLanguageRepairService;
     private readonly IMetadataQualitySeriesRepairService? metadataQualitySeriesRepairService;
     private readonly IMetadataQualityTitleAuthorRepairService? metadataQualityTitleAuthorRepairService;
+    private readonly IMetadataQualityTagRepairService? metadataQualityTagRepairService;
     private readonly IBookCoverSearchService? bookCoverSearchService;
     private readonly IMetadataQualityCoverRepairService? metadataQualityCoverRepairService;
     private readonly LibraryService? libraryService;
@@ -124,7 +125,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         IBookCoverSearchService? bookCoverSearchService = null,
         IMetadataQualityCoverRepairService? metadataQualityCoverRepairService = null,
         Func<CancellationToken, Task>? searchFilterDelay = null,
-        Action<Exception>? searchFilterErrorReporter = null)
+        Action<Exception>? searchFilterErrorReporter = null,
+        IMetadataQualityTagRepairService? metadataQualityTagRepairService = null)
     {
         this.bookRepository = bookRepository;
         this.searchService = searchService;
@@ -143,6 +145,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.metadataQualityLanguageRepairService = metadataQualityLanguageRepairService;
         this.metadataQualitySeriesRepairService = metadataQualitySeriesRepairService;
         this.metadataQualityTitleAuthorRepairService = metadataQualityTitleAuthorRepairService;
+        this.metadataQualityTagRepairService = metadataQualityTagRepairService;
         this.bookCoverSearchService = bookCoverSearchService;
         this.metadataQualityCoverRepairService = metadataQualityCoverRepairService;
         this.libraryService = libraryService;
@@ -4239,7 +4242,9 @@ public sealed partial class LibraryViewModel : ObservableObject
                 userInteraction.ShowMetadataQualityTitleAuthorRepairAsync,
                 bookCoverSearchService,
                 userInteraction.ShowMetadataQualityCoverSearchAsync,
-                metadataQualityCoverRepairService),
+                metadataQualityCoverRepairService,
+                metadataQualityTagRepairService,
+                userInteraction.ShowMetadataQualityTagRepairAsync),
             cancellationToken);
         if (selectedBookId is { } bookId)
         {

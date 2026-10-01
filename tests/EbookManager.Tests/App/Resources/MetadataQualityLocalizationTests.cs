@@ -74,7 +74,17 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityCoverRepairFailed",
         "MetadataQualityCoverRepairWriteBackWarning",
         "MetadataQualityCoverRepairNotNeeded",
-        "ChangeCover"
+        "ChangeCover",
+        "MetadataQualityCleanTags",
+        "MetadataQualityTagRepairTitle",
+        "MetadataQualityTagRepairDescription",
+        "MetadataQualityCurrentTags",
+        "MetadataQualityNewTags",
+        "MetadataQualityTagRepairHelp",
+        "MetadataQualityChangeTags",
+        "MetadataQualityTagRepairFailed",
+        "MetadataQualityTagRepairWriteBackWarning",
+        "MetadataQualityTagRepairNotNeeded"
     ];
 
     [Theory]

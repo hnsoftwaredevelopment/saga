@@ -51,6 +51,9 @@
     <None Include="..\..\src\EbookManager.App\Views\MetadataQualitySeriesRepairWindow.xaml"
           Link="TestAssets\MetadataQualitySeriesRepairWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\MetadataQualityTagRepairWindow.xaml"
+          Link="TestAssets\MetadataQualityTagRepairWindow.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\MetadataQualityTitleAuthorRepairWindow.xaml"
           Link="TestAssets\MetadataQualityTitleAuthorRepairWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />
@@ -74,6 +77,9 @@
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\SettingsWindow.xaml"
           Link="TestAssets\SettingsWindow.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Converters\FilePathToImageSourceConverter.cs"
+          Link="TestAssets\FilePathToImageSourceConverter.cs"
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Resources\Strings\AppResources*.resx"
           Link="TestAssets\Strings\%(Filename)%(Extension)"

@@ -3622,6 +3622,7 @@ public sealed class LibraryViewModelTests
         IMetadataQualityLanguageRepairService? metadataQualityLanguageRepairService = null,
         IMetadataQualitySeriesRepairService? metadataQualitySeriesRepairService = null,
         IMetadataQualityTitleAuthorRepairService? metadataQualityTitleAuthorRepairService = null,
+        IMetadataQualityTagRepairService? metadataQualityTagRepairService = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null,
@@ -3637,6 +3638,7 @@ public sealed class LibraryViewModelTests
         metadataQualityLanguageRepairService ??= new MetadataQualityLanguageRepairService(repository, bookService);
         metadataQualitySeriesRepairService ??= new MetadataQualitySeriesRepairService(repository, bookService);
         metadataQualityTitleAuthorRepairService ??= new MetadataQualityTitleAuthorRepairService(repository, bookService);
+        metadataQualityTagRepairService ??= new MetadataQualityTagRepairService(repository, bookService);
         details ??= new BookDetailsViewModel(bookService);
         return new LibraryViewModel(
             repository,
@@ -3658,6 +3660,7 @@ public sealed class LibraryViewModelTests
             metadataQualityLanguageRepairService: metadataQualityLanguageRepairService,
             metadataQualitySeriesRepairService: metadataQualitySeriesRepairService,
             metadataQualityTitleAuthorRepairService: metadataQualityTitleAuthorRepairService,
+            metadataQualityTagRepairService: metadataQualityTagRepairService,
             performanceReporter: performanceReporter,
             localize: localize,
             searchFilterDelay: searchFilterDelay ?? (_ => Task.CompletedTask),
@@ -4509,6 +4512,7 @@ public sealed class LibraryViewModelTests
         public bool MetadataQualitySeriesRepairResult { get; init; }
         public string? MetadataQualitySeriesRepairSeries { get; init; }
         public bool MetadataQualityTitleAuthorRepairResult { get; init; }
+        public bool MetadataQualityTagRepairResult { get; init; }
         public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
         public string? LastMessageTitle { get; private set; }
         public string? LastMessageText { get; private set; }
@@ -4526,6 +4530,7 @@ public sealed class LibraryViewModelTests
         public MetadataQualityLanguageRepairViewModel? MetadataQualityLanguageRepair { get; private set; }
         public MetadataQualitySeriesRepairViewModel? MetadataQualitySeriesRepair { get; private set; }
         public MetadataQualityTitleAuthorRepairViewModel? MetadataQualityTitleAuthorRepair { get; private set; }
+        public MetadataQualityTagRepairViewModel? MetadataQualityTagRepair { get; private set; }
 
         public Task<IReadOnlyList<string>> PickBookFilesAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<string>>(RecordPickBookFiles());
@@ -4661,6 +4666,14 @@ public sealed class LibraryViewModelTests
         {
             MetadataQualityTitleAuthorRepair = repair;
             return Task.FromResult(MetadataQualityTitleAuthorRepairResult);
+        }
+
+        public Task<bool> ShowMetadataQualityTagRepairAsync(
+            MetadataQualityTagRepairViewModel repair,
+            CancellationToken cancellationToken)
+        {
+            MetadataQualityTagRepair = repair;
+            return Task.FromResult(MetadataQualityTagRepairResult);
         }
 
         public Task<bool> ShowMetadataQualityCoverSearchAsync(

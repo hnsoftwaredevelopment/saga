@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
@@ -32,7 +33,11 @@ public sealed class FilePathToImageSourceConverter : IValueConverter
             return image;
         }
         catch (Exception exception) when (
-            exception is IOException or UnauthorizedAccessException or NotSupportedException or InvalidOperationException)
+            exception is IOException or
+                UnauthorizedAccessException or
+                NotSupportedException or
+                InvalidOperationException or
+                COMException)
         {
             return null;
         }

@@ -612,6 +612,16 @@
   <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Libri in cui il titolo sembra il nome di una persona, ma l’autore no.</value></data>
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Etichette disordinate</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Etichette con spazi aggiuntivi o valori separati da virgole.</value></data>
+  <data name="MetadataQualityCleanTags" xml:space="preserve"><value>Pulisci tag</value></data>
+  <data name="MetadataQualityTagRepairTitle" xml:space="preserve"><value>Pulisci tag</value></data>
+  <data name="MetadataQualityTagRepairDescription" xml:space="preserve"><value>Controlla la proposta e modifica i tag se necessario prima di salvarli.</value></data>
+  <data name="MetadataQualityCurrentTags" xml:space="preserve"><value>Tag attuali</value></data>
+  <data name="MetadataQualityNewTags" xml:space="preserve"><value>Nuovi tag</value></data>
+  <data name="MetadataQualityTagRepairHelp" xml:space="preserve"><value>Usa un tag per riga. Le virgole vengono separate; i valori vuoti, gli spazi aggiuntivi e i tag duplicati vengono rimossi.</value></data>
+  <data name="MetadataQualityChangeTags" xml:space="preserve"><value>Modifica tag</value></data>
+  <data name="MetadataQualityTagRepairFailed" xml:space="preserve"><value>Impossibile modificare i tag. Riprova.</value></data>
+  <data name="MetadataQualityTagRepairWriteBackWarning" xml:space="preserve"><value>I tag sono stati salvati, ma non è stato possibile scriverli in tutti i file del libro associati.</value></data>
+  <data name="MetadataQualityTagRepairNotNeeded" xml:space="preserve"><value>Questi tag non devono più essere puliti.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sì</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Questo è corretto</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Non è stato possibile salvare questa decisione sulla qualità. Riprova.</value></data>

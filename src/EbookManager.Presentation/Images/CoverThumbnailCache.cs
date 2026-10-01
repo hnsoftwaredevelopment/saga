@@ -3,19 +3,24 @@ namespace EbookManager.Presentation.Images;
 public sealed class CoverThumbnailCache<TThumbnail>
     where TThumbnail : class
 {
+    private const string MissingSourceVersion = "missing";
     private readonly int capacity;
     private readonly Func<string, int, CancellationToken, Task<TThumbnail?>> loader;
     private readonly Dictionary<string, CacheEntry> entries = new(StringComparer.OrdinalIgnoreCase);
     private readonly LinkedList<string> recency = [];
+    private readonly SemaphoreSlim loadGate;
     private readonly Lock sync = new();
 
     public CoverThumbnailCache(
         int capacity,
-        Func<string, int, CancellationToken, Task<TThumbnail?>> loader)
+        Func<string, int, CancellationToken, Task<TThumbnail?>> loader,
+        int maxConcurrentLoads = 4)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxConcurrentLoads);
         this.loader = loader ?? throw new ArgumentNullException(nameof(loader));
         this.capacity = capacity;
+        loadGate = new SemaphoreSlim(maxConcurrentLoads, maxConcurrentLoads);
     }
 
     public int Count
@@ -49,8 +54,13 @@ public sealed class CoverThumbnailCache<TThumbnail>
             }
         }
 
-        var thumbnail = await loader(path, decodePixelWidth, cancellationToken).ConfigureAwait(false);
+        var thumbnail = await LoadAsync(path, decodePixelWidth, cancellationToken).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
+        if (thumbnail is null && sourceVersion != MissingSourceVersion)
+        {
+            return null;
+        }
+
         lock (sync)
         {
             if (entries.TryGetValue(key, out var cached))
@@ -71,6 +81,22 @@ public sealed class CoverThumbnailCache<TThumbnail>
         return thumbnail;
     }
 
+    private async Task<TThumbnail?> LoadAsync(
+        string path,
+        int decodePixelWidth,
+        CancellationToken cancellationToken)
+    {
+        await loadGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            return await loader(path, decodePixelWidth, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            loadGate.Release();
+        }
+    }
+
     private static string CreateKey(string path, int decodePixelWidth, string sourceVersion) =>
         $"{decodePixelWidth}\0{sourceVersion}\0{path}";
 
@@ -85,7 +111,7 @@ public sealed class CoverThumbnailCache<TThumbnail>
                 var file = new FileInfo(path);
                 return file.Exists
                     ? $"{file.LastWriteTimeUtc.Ticks}:{file.Length}"
-                    : "missing";
+                    : MissingSourceVersion;
             }
             catch (Exception exception) when (
                 exception is IOException or UnauthorizedAccessException or ArgumentException or

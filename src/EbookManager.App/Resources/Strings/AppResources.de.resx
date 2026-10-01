@@ -612,6 +612,16 @@
   <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Bücher, bei denen der Titel wie ein Personenname aussieht, der Autor jedoch nicht.</value></data>
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Unsaubere Schlagwörter</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Schlagwörter mit zusätzlichen Leerzeichen oder kommagetrennten Werten.</value></data>
+  <data name="MetadataQualityCleanTags" xml:space="preserve"><value>Schlagwörter bereinigen</value></data>
+  <data name="MetadataQualityTagRepairTitle" xml:space="preserve"><value>Schlagwörter bereinigen</value></data>
+  <data name="MetadataQualityTagRepairDescription" xml:space="preserve"><value>Prüfen Sie den Vorschlag und passen Sie die Schlagwörter bei Bedarf vor dem Speichern an.</value></data>
+  <data name="MetadataQualityCurrentTags" xml:space="preserve"><value>Aktuelle Schlagwörter</value></data>
+  <data name="MetadataQualityNewTags" xml:space="preserve"><value>Neue Schlagwörter</value></data>
+  <data name="MetadataQualityTagRepairHelp" xml:space="preserve"><value>Verwenden Sie ein Schlagwort pro Zeile. Kommas werden getrennt; leere Werte, zusätzliche Leerzeichen und Duplikate werden entfernt.</value></data>
+  <data name="MetadataQualityChangeTags" xml:space="preserve"><value>Schlagwörter ändern</value></data>
+  <data name="MetadataQualityTagRepairFailed" xml:space="preserve"><value>Die Schlagwörter konnten nicht geändert werden. Versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualityTagRepairWriteBackWarning" xml:space="preserve"><value>Die Schlagwörter wurden gespeichert, konnten aber nicht in alle zugehörigen Buchdateien geschrieben werden.</value></data>
+  <data name="MetadataQualityTagRepairNotNeeded" xml:space="preserve"><value>Diese Schlagwörter müssen nicht mehr bereinigt werden.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Das ist korrekt</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Diese Qualitätsentscheidung konnte nicht gespeichert werden. Versuchen Sie es erneut.</value></data>

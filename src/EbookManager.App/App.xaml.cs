@@ -147,6 +147,7 @@ public partial class App : System.Windows.Application
         services.AddTransient<IMetadataQualityLanguageRepairService, MetadataQualityLanguageRepairService>();
         services.AddTransient<IMetadataQualitySeriesRepairService, MetadataQualitySeriesRepairService>();
         services.AddTransient<IMetadataQualityTitleAuthorRepairService, MetadataQualityTitleAuthorRepairService>();
+        services.AddTransient<IMetadataQualityTagRepairService, MetadataQualityTagRepairService>();
         services.AddSingleton(_ => CreateBookCoverHttpClient());
         services.AddSingleton<IBookCoverImageValidator, WpfBookCoverImageValidator>();
         services.AddSingleton<OpenLibraryBookCoverSearchService>();
@@ -199,7 +200,8 @@ public partial class App : System.Windows.Application
             provider.GetRequiredService<ILibraryPerformanceReporter>(),
             provider.GetRequiredService<LocalizationService>().GetString,
             provider.GetRequiredService<IBookCoverSearchService>(),
-            provider.GetRequiredService<IMetadataQualityCoverRepairService>()));
+            provider.GetRequiredService<IMetadataQualityCoverRepairService>(),
+            metadataQualityTagRepairService: provider.GetRequiredService<IMetadataQualityTagRepairService>()));
         services.AddTransient<SettingsViewModel>();
         services.AddSingleton<MainWindow>();
 

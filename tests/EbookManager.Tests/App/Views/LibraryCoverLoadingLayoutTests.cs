@@ -10,6 +10,7 @@ public sealed class LibraryCoverLoadingLayoutTests
     [Theory]
     [InlineData("BookshelfView.xaml", "220")]
     [InlineData("DetailedGridView.xaml", "48")]
+    [InlineData("BookDetailsView.xaml", "320")]
     public void Library_view_loads_cover_paths_through_async_images(string fileName, string expectedWidth)
     {
         var document = Load(fileName);

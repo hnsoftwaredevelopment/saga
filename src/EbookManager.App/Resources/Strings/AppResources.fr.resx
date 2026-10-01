@@ -612,6 +612,16 @@
   <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Livres dont le titre ressemble à un nom de personne, contrairement à l’auteur.</value></data>
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Étiquettes incohérentes</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Étiquettes contenant des espaces superflus ou des valeurs séparées par des virgules.</value></data>
+  <data name="MetadataQualityCleanTags" xml:space="preserve"><value>Nettoyer les étiquettes</value></data>
+  <data name="MetadataQualityTagRepairTitle" xml:space="preserve"><value>Nettoyer les étiquettes</value></data>
+  <data name="MetadataQualityTagRepairDescription" xml:space="preserve"><value>Vérifiez la proposition et ajustez les étiquettes si nécessaire avant de les enregistrer.</value></data>
+  <data name="MetadataQualityCurrentTags" xml:space="preserve"><value>Étiquettes actuelles</value></data>
+  <data name="MetadataQualityNewTags" xml:space="preserve"><value>Nouvelles étiquettes</value></data>
+  <data name="MetadataQualityTagRepairHelp" xml:space="preserve"><value>Utilisez une étiquette par ligne. Les virgules sont séparées ; les valeurs vides, les espaces superflus et les doublons sont supprimés.</value></data>
+  <data name="MetadataQualityChangeTags" xml:space="preserve"><value>Modifier les étiquettes</value></data>
+  <data name="MetadataQualityTagRepairFailed" xml:space="preserve"><value>Les étiquettes n'ont pas pu être modifiées. Réessayez.</value></data>
+  <data name="MetadataQualityTagRepairWriteBackWarning" xml:space="preserve"><value>Les étiquettes ont été enregistrées, mais n'ont pas pu être écrites dans tous les fichiers de livre associés.</value></data>
+  <data name="MetadataQualityTagRepairNotNeeded" xml:space="preserve"><value>Ces étiquettes n'ont plus besoin d'être nettoyées.</value></data>
   <data name="Yes" xml:space="preserve"><value>Oui</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>C'est correct</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Cette décision de qualité n'a pas pu être enregistrée. Réessayez.</value></data>

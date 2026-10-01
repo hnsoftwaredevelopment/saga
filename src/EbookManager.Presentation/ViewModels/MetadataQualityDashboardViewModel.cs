@@ -23,6 +23,8 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private readonly IBookCoverSearchService? coverSearchService;
     private readonly Func<MetadataQualityCoverSearchViewModel, CancellationToken, Task<bool>>? showCoverSearch;
     private readonly IMetadataQualityCoverRepairService? coverRepairService;
+    private readonly IMetadataQualityTagRepairService? tagRepairService;
+    private readonly Func<MetadataQualityTagRepairViewModel, CancellationToken, Task<bool>>? showTagRepair;
     private readonly Action<Book>? bookRepaired;
     private readonly Dictionary<Guid, Book> books;
     private readonly HashSet<MetadataQualityExclusionKey> exclusions;
@@ -32,6 +34,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private readonly AsyncRelayCommand repairMissingSeriesCommand;
     private readonly AsyncRelayCommand repairTitleAuthorCommand;
     private readonly AsyncRelayCommand searchCoverCommand;
+    private readonly AsyncRelayCommand repairMessyTagsCommand;
 
     [ObservableProperty]
     private MetadataQualityIssueViewModel? selectedIssue;
@@ -60,7 +63,9 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         Func<MetadataQualityTitleAuthorRepairViewModel, CancellationToken, Task<bool>>? showTitleAuthorRepair = null,
         IBookCoverSearchService? coverSearchService = null,
         Func<MetadataQualityCoverSearchViewModel, CancellationToken, Task<bool>>? showCoverSearch = null,
-        IMetadataQualityCoverRepairService? coverRepairService = null)
+        IMetadataQualityCoverRepairService? coverRepairService = null,
+        IMetadataQualityTagRepairService? tagRepairService = null,
+        Func<MetadataQualityTagRepairViewModel, CancellationToken, Task<bool>>? showTagRepair = null)
     {
         this.localize = localize;
         this.repository = repository;
@@ -75,6 +80,8 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         this.coverSearchService = coverSearchService;
         this.showCoverSearch = showCoverSearch;
         this.coverRepairService = coverRepairService;
+        this.tagRepairService = tagRepairService;
+        this.showTagRepair = showTagRepair;
         this.bookRepaired = bookRepaired;
         this.books = books.ToDictionary(book => book.Id);
         this.exclusions = exclusions is null ? [] : [.. exclusions];
@@ -96,6 +103,9 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         searchCoverCommand = new AsyncRelayCommand(
             SearchCoverAsync,
             CanSearchCover);
+        repairMessyTagsCommand = new AsyncRelayCommand(
+            RepairMessyTagsAsync,
+            CanRepairMessyTags);
         TotalBookCount = books.Count;
         Issues = new ObservableCollection<MetadataQualityIssueViewModel>(
             BuildIssues(
@@ -117,6 +127,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     public IAsyncRelayCommand RepairMissingSeriesCommand => repairMissingSeriesCommand;
     public IAsyncRelayCommand RepairTitleAuthorCommand => repairTitleAuthorCommand;
     public IAsyncRelayCommand SearchCoverCommand => searchCoverCommand;
+    public IAsyncRelayCommand RepairMessyTagsCommand => repairMessyTagsCommand;
 
     partial void OnSelectedIssueChanged(MetadataQualityIssueViewModel? value)
     {
@@ -127,6 +138,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         repairMissingSeriesCommand.NotifyCanExecuteChanged();
         repairTitleAuthorCommand.NotifyCanExecuteChanged();
         searchCoverCommand.NotifyCanExecuteChanged();
+        repairMessyTagsCommand.NotifyCanExecuteChanged();
     }
 
     partial void OnSelectedBookChanged(MetadataQualityBookRowViewModel? value)
@@ -137,6 +149,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         repairMissingSeriesCommand.NotifyCanExecuteChanged();
         repairTitleAuthorCommand.NotifyCanExecuteChanged();
         searchCoverCommand.NotifyCanExecuteChanged();
+        repairMessyTagsCommand.NotifyCanExecuteChanged();
     }
 
     private static IReadOnlyList<MetadataQualityIssueViewModel> BuildIssues(
@@ -606,6 +619,72 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         };
     }
 
+    private bool CanRepairMessyTags() =>
+        tagRepairService is not null &&
+        showTagRepair is not null &&
+        SelectedIssue?.SignalKey == MetadataQualitySignalKeys.MessyTags &&
+        SelectedBook is not null &&
+        SelectedIssue.Rows.Contains(SelectedBook) &&
+        books.ContainsKey(SelectedBook.Id);
+
+    private async Task RepairMessyTagsAsync(CancellationToken cancellationToken)
+    {
+        var selectedBook = SelectedBook;
+        if (!CanRepairMessyTags() || selectedBook is null ||
+            tagRepairService is null || showTagRepair is null ||
+            !books.TryGetValue(selectedBook.Id, out var book))
+        {
+            return;
+        }
+
+        var repair = new MetadataQualityTagRepairViewModel(
+            book.Metadata.Title,
+            book.Metadata.Tags);
+        if (!await showTagRepair(repair, cancellationToken) || !repair.CanSave)
+        {
+            return;
+        }
+
+        MetadataQualityTagRepairResult result;
+        try
+        {
+            result = await tagRepairService.RepairAsync(
+                selectedBook.Id,
+                repair.NormalizedTags,
+                cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            StatusMessage = localize("MetadataQualityTagRepairFailed");
+            return;
+        }
+
+        if (result.Book is { } repairedBook)
+        {
+            ReconcileBook(repairedBook);
+        }
+        else if (result.Status == MetadataQualityTagRepairStatus.NotFound)
+        {
+            RemoveBook(selectedBook.Id);
+        }
+
+        StatusMessage = result.Status switch
+        {
+            MetadataQualityTagRepairStatus.Succeeded => null,
+            MetadataQualityTagRepairStatus.SavedWithWriteBackErrors =>
+                localize("MetadataQualityTagRepairWriteBackWarning"),
+            MetadataQualityTagRepairStatus.NotApplicable =>
+                localize("MetadataQualityTagRepairNotNeeded"),
+            MetadataQualityTagRepairStatus.NotFound =>
+                localize("MetadataQualityBookUnavailableMessage"),
+            _ => localize("MetadataQualityTagRepairFailed")
+        };
+    }
+
     private void ReconcileBook(Book book)
     {
         books[book.Id] = book;
@@ -701,6 +780,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         repairUnknownLanguageCommand.NotifyCanExecuteChanged();
         repairMissingSeriesCommand.NotifyCanExecuteChanged();
         repairTitleAuthorCommand.NotifyCanExecuteChanged();
+        repairMessyTagsCommand.NotifyCanExecuteChanged();
     }
 
 }

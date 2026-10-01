@@ -332,6 +332,16 @@
   <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Boeken waarbij de titel op een persoonsnaam lijkt en de auteur niet.</value></data>
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Rommelige tags</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Tags met extra spaties of komma-gescheiden waarden.</value></data>
+  <data name="MetadataQualityCleanTags" xml:space="preserve"><value>Tags opschonen</value></data>
+  <data name="MetadataQualityTagRepairTitle" xml:space="preserve"><value>Tags opschonen</value></data>
+  <data name="MetadataQualityTagRepairDescription" xml:space="preserve"><value>Controleer het voorstel en pas de tags zo nodig aan voordat je ze opslaat.</value></data>
+  <data name="MetadataQualityCurrentTags" xml:space="preserve"><value>Huidige tags</value></data>
+  <data name="MetadataQualityNewTags" xml:space="preserve"><value>Nieuwe tags</value></data>
+  <data name="MetadataQualityTagRepairHelp" xml:space="preserve"><value>Gebruik één tag per regel. Komma's worden gesplitst; lege waarden, overtollige spaties en dubbele tags worden verwijderd.</value></data>
+  <data name="MetadataQualityChangeTags" xml:space="preserve"><value>Tags wijzigen</value></data>
+  <data name="MetadataQualityTagRepairFailed" xml:space="preserve"><value>De tags konden niet worden gewijzigd. Probeer het opnieuw.</value></data>
+  <data name="MetadataQualityTagRepairWriteBackWarning" xml:space="preserve"><value>De tags zijn opgeslagen, maar konden niet naar alle bijbehorende boekbestanden worden geschreven.</value></data>
+  <data name="MetadataQualityTagRepairNotNeeded" xml:space="preserve"><value>Deze tags hoeven niet meer te worden opgeschoond.</value></data>
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Dit is correct</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Deze kwaliteitsbeslissing kon niet worden opgeslagen. Probeer het opnieuw.</value></data>
