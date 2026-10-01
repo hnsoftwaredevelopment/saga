@@ -14,9 +14,9 @@
 - [x] Volledige Debug-testset uitvoeren (754 geslaagd).
 - [x] Schone Debug-build maken en controleren (`Saga.exe` 2026.10.1.54).
 - [x] Diffreview op correctheid, eenvoud, architectuur, beveiliging en prestaties afgerond zonder bevindingen.
-- [ ] Resterende Definition of Done-punten afronden met handmatige acceptatie en GitHub-controles.
+- [x] Definition of Done afgerond: handmatige acceptatie geslaagd en beschikbare GitHub-controles groen.
 - [x] Gewone, niet-draft PR #39 geopend.
-- [ ] GitHub-controles en eventuele reviewopmerkingen beoordelen.
+- [x] GitHub-controles beoordeeld: CodeQL, CodeRabbit en GitGuardian groen; geen reviewopmerkingen.
 
 ## Buiten scope
 

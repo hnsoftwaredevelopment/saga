@@ -77,8 +77,8 @@ Milestone 38 maakt meervoudige selectie op de Quality Page mogelijk en past `Dit
 
 - [x] Gerichte tests groen.
 - [x] Volledige tests en Debug-build groen (754 tests; Saga 2026.10.1.54).
-- [x] Handmatige checklist klaar.
-- [x] Gewone PR #39 geopend; mergebaarheid en controles worden op GitHub gevolgd.
+- [x] Handmatige checklist volledig geslaagd op 1 oktober 2026.
+- [x] PR #39 is mergeable; CodeQL, CodeRabbit en GitGuardian zijn groen.
 
 ## Gepauzeerd onderhoud
 

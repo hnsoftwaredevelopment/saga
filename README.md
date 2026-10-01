@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 38 is ready for acceptance testing and lets users select multiple books within one quality category and mark those exact issues as correct in one confirmed, atomic action. Milestone 37 was accepted on 1 October 2026 and gives ignored-quality management its own `Quality` tab in Settings. Milestone 36 added the accepted messy-tag repair, while Milestone 35 improved large-library searching and scrolling and Milestone 34 reduced 34,483 direct book directories to 256 storage shards.
+Milestone 38 was accepted on 1 October 2026 and lets users select multiple books within one quality category and mark those exact issues as correct in one confirmed, atomic action. Milestone 37 gives ignored-quality management its own `Quality` tab in Settings. Milestone 36 added the accepted messy-tag repair, while Milestone 35 improved large-library searching and scrolling and Milestone 34 reduced 34,483 direct book directories to 256 storage shards.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
