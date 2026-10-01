@@ -41,7 +41,7 @@ public sealed class MetadataQualityDashboardTagRepairTests
                 repair.TagsText = "Thriller\r\nDetective";
                 return Task.FromResult(true);
             },
-            bookRepaired: repaired => notifiedBook = repaired);
+            booksRepaired: repaired => notifiedBook = repaired.Single());
         dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
             issue.SignalKey == MetadataQualitySignalKeys.MessyTags);
 

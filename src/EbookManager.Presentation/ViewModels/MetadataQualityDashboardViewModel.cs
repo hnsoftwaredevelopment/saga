@@ -27,7 +27,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private readonly IMetadataQualityTagRepairService? tagRepairService;
     private readonly Func<MetadataQualityTagRepairViewModel, CancellationToken, Task<bool>>? showTagRepair;
     private readonly Func<int, CancellationToken, Task<bool>>? confirmMarkCorrect;
-    private readonly Action<Book>? bookRepaired;
+    private readonly Action<IReadOnlyList<Book>>? booksRepaired;
     private readonly Dictionary<Guid, Book> books;
     private readonly HashSet<MetadataQualityExclusionKey> exclusions;
     private readonly AsyncRelayCommand markSelectedIssueCorrectCommand;
@@ -61,7 +61,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         Func<MetadataQualityLanguageRepairViewModel, CancellationToken, Task<bool>>? showLanguageRepair = null,
         IMetadataQualitySeriesRepairService? seriesRepairService = null,
         Func<MetadataQualitySeriesRepairViewModel, CancellationToken, Task<bool>>? showSeriesRepair = null,
-        Action<Book>? bookRepaired = null,
+        Action<IReadOnlyList<Book>>? booksRepaired = null,
         IMetadataQualityTitleAuthorRepairService? titleAuthorRepairService = null,
         Func<MetadataQualityTitleAuthorRepairViewModel, CancellationToken, Task<bool>>? showTitleAuthorRepair = null,
         IBookCoverSearchService? coverSearchService = null,
@@ -87,7 +87,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         this.tagRepairService = tagRepairService;
         this.showTagRepair = showTagRepair;
         this.confirmMarkCorrect = confirmMarkCorrect;
-        this.bookRepaired = bookRepaired;
+        this.booksRepaired = booksRepaired;
         this.books = books.ToDictionary(book => book.Id);
         this.exclusions = exclusions is null ? [] : [.. exclusions];
         markSelectedIssueCorrectCommand = new AsyncRelayCommand(
@@ -379,6 +379,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         var writeBackWarnings = 0;
         var notApplicable = 0;
         var notFound = 0;
+        var reconciledBooks = new List<Book>();
 
         foreach (var row in selectedRows)
         {
@@ -392,15 +393,18 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             {
                 case MetadataQualityAuthorRepairStatus.Succeeded when result.Book is not null:
                     succeeded++;
-                    ReconcileBook(result.Book);
+                    ReconcileBook(result.Book, notifyLibrary: false);
+                    reconciledBooks.Add(result.Book);
                     break;
                 case MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors when result.Book is not null:
                     writeBackWarnings++;
-                    ReconcileBook(result.Book);
+                    ReconcileBook(result.Book, notifyLibrary: false);
+                    reconciledBooks.Add(result.Book);
                     break;
                 case MetadataQualityAuthorRepairStatus.NotApplicable when result.Book is not null:
                     notApplicable++;
-                    ReconcileBook(result.Book);
+                    ReconcileBook(result.Book, notifyLibrary: false);
+                    reconciledBooks.Add(result.Book);
                     break;
                 case MetadataQualityAuthorRepairStatus.NotFound:
                     notFound++;
@@ -410,6 +414,11 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
                     failedBookIds.Add(row.Id);
                     break;
             }
+        }
+
+        if (reconciledBooks.Count > 0)
+        {
+            booksRepaired?.Invoke(reconciledBooks);
         }
 
         var failedRows = issue.Rows.Where(row => failedBookIds.Contains(row.Id)).ToArray();
@@ -806,10 +815,13 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         };
     }
 
-    private void ReconcileBook(Book book)
+    private void ReconcileBook(Book book, bool notifyLibrary = true)
     {
         books[book.Id] = book;
-        bookRepaired?.Invoke(book);
+        if (notifyLibrary)
+        {
+            booksRepaired?.Invoke([book]);
+        }
         var selectedIssue = SelectedIssue;
         var selectedIndex = selectedIssue?.Rows.IndexOf(SelectedBook!) ?? -1;
         var applicableSignals = MetadataQualitySignalEvaluator.Evaluate(book);

@@ -331,6 +331,7 @@ public sealed class MetadataQualityDashboardViewModelTests
                 new(beta.Id, MetadataQualityAuthorRepairStatus.Succeeded, repairedBeta)
             ]));
         var refreshedBooks = new List<Book>();
+        var refreshBatches = 0;
         MetadataQualityAuthorRepairViewModel? shownRepair = null;
         var dashboard = new MetadataQualityDashboardViewModel(
             [alpha, beta],
@@ -344,7 +345,11 @@ public sealed class MetadataQualityDashboardViewModelTests
                 repair.AuthorText = "Nieuwe Auteur";
                 return Task.FromResult(true);
             },
-            bookRepaired: refreshedBooks.Add);
+            booksRepaired: repairedBooks =>
+            {
+                refreshBatches++;
+                refreshedBooks.AddRange(repairedBooks);
+            });
         var issue = dashboard.SelectedIssue!;
         dashboard.SetSelectedBooks(issue.Rows);
 
@@ -355,6 +360,7 @@ public sealed class MetadataQualityDashboardViewModelTests
         repairService.BookIds.Should().Equal(alpha.Id, beta.Id);
         repairService.Author.Should().Be("Nieuwe Auteur");
         issue.Rows.Should().BeEmpty();
+        refreshBatches.Should().Be(1);
         refreshedBooks.Select(book => book.Id).Should().BeEquivalentTo([alpha.Id, beta.Id]);
         dashboard.StatusMessage.Should().Be("bulk:2:0:0:0:0");
     }
@@ -400,6 +406,63 @@ public sealed class MetadataQualityDashboardViewModelTests
         dashboard.SelectedBookCount.Should().Be(1);
         dashboard.SelectedBook!.Id.Should().Be(beta.Id);
         dashboard.StatusMessage.Should().Be("bulk:1:1:0:0:1");
+    }
+
+    [Fact]
+    public async Task Repair_missing_author_bulk_cancel_keeps_every_selected_row()
+    {
+        var alpha = CreateBook("Alpha", ["Unknown"], coverBytes: [1]);
+        var beta = CreateBook("Beta", ["Unknown"], coverBytes: [1]);
+        var repairService = new RecordingAuthorRepairService(alpha);
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [alpha, beta],
+            key => key,
+            authorRepairService: repairService,
+            showAuthorRepair: (_, _) => Task.FromResult(false));
+        var issue = dashboard.SelectedIssue!;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+
+        repairService.BookIds.Should().BeEmpty();
+        issue.Rows.Should().HaveCount(2);
+        dashboard.SelectedBookCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Repair_missing_author_bulk_reconciles_stale_and_removed_books()
+    {
+        var stale = CreateBook("Stale", ["Unknown"], coverBytes: [1]);
+        var removed = CreateBook("Removed", ["Unknown"], coverBytes: [1]);
+        var currentStale = stale with
+        {
+            Metadata = new BookMetadata("Stale", ["Bestaande Auteur"], Language: "nl", CoverBytes: [1])
+        };
+        var repairService = new ScriptedBatchAuthorRepairService(
+            new MetadataQualityAuthorRepairBatchResult(
+            [
+                new(stale.Id, MetadataQualityAuthorRepairStatus.NotApplicable, currentStale),
+                new(removed.Id, MetadataQualityAuthorRepairStatus.NotFound)
+            ]));
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [stale, removed],
+            key => key == "MetadataQualityAuthorRepairBulkResult"
+                ? "bulk:{0}:{1}:{2}:{3}:{4}"
+                : key,
+            authorRepairService: repairService,
+            showAuthorRepair: (repair, _) =>
+            {
+                repair.AuthorText = "Nieuwe Auteur";
+                return Task.FromResult(true);
+            });
+        var issue = dashboard.SelectedIssue!;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+
+        issue.Rows.Should().BeEmpty();
+        dashboard.SelectedBookCount.Should().Be(0);
+        dashboard.StatusMessage.Should().Be("bulk:0:0:1:1:0");
     }
 
     [Fact]
