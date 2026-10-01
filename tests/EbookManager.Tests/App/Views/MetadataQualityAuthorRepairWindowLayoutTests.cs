@@ -26,7 +26,15 @@ public sealed class MetadataQualityAuthorRepairWindowLayoutTests
         RequiredAttribute(authorInput, "Loaded").Should().Be("AuthorInputLoaded");
         RequiredAttribute(authorInput, "PreviewKeyDown").Should().Be("AuthorInputPreviewKeyDown");
 
+        var contextLabel = document.Descendants(presentation + "TextBlock")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "BookContextLabel");
+        RequiredAttribute(contextLabel, "Text").Should().Be("{Binding ContextLabel}");
+        var contextText = document.Descendants(presentation + "TextBlock")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "BookContextText");
+        RequiredAttribute(contextText, "Text").Should().Be("{Binding ContextText}");
+
         var save = Button(document, xaml, "SaveAuthorRepairButton");
+        RequiredAttribute(save, "Content").Should().Be("{Binding SaveButtonText}");
         RequiredAttribute(save, "IsDefault").Should().Be("True");
         RequiredAttribute(save, "IsEnabled").Should().Be("{Binding CanSave}");
         RequiredAttribute(save, "Click").Should().Be("SaveClicked");

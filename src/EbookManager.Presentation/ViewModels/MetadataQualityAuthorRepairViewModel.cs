@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using EbookManager.Application.Metadata;
+using System.Globalization;
 
 namespace EbookManager.Presentation.ViewModels;
 
@@ -18,10 +19,37 @@ public sealed partial class MetadataQualityAuthorRepairViewModel : ObservableObj
     public MetadataQualityAuthorRepairViewModel(
         string bookTitle,
         IEnumerable<string> knownAuthors)
+        : this([bookTitle], knownAuthors, key => key)
     {
-        ArgumentNullException.ThrowIfNull(knownAuthors);
+    }
 
-        BookTitle = bookTitle;
+    public MetadataQualityAuthorRepairViewModel(
+        IReadOnlyCollection<string> bookTitles,
+        IEnumerable<string> knownAuthors,
+        Func<string, string> localize)
+    {
+        ArgumentNullException.ThrowIfNull(bookTitles);
+        ArgumentNullException.ThrowIfNull(knownAuthors);
+        ArgumentNullException.ThrowIfNull(localize);
+
+        if (bookTitles.Count == 0)
+        {
+            throw new ArgumentException("At least one book title is required.", nameof(bookTitles));
+        }
+
+        AffectedBookCount = bookTitles.Count;
+        BookTitle = AffectedBookCount == 1 ? bookTitles.Single() : null;
+        ContextLabel = localize(AffectedBookCount == 1 ? "Title" : "MetadataMultiEditSelectedBooks");
+        ContextText = BookTitle ?? string.Format(
+            CultureInfo.CurrentCulture,
+            localize("MetadataQualityAuthorRepairBulkBookContext"),
+            AffectedBookCount);
+        SaveButtonText = AffectedBookCount == 1
+            ? localize("MetadataQualityAuthorRepairSave")
+            : string.Format(
+                CultureInfo.CurrentCulture,
+                localize("MetadataQualityAuthorRepairBulkSave"),
+                AffectedBookCount);
         this.knownAuthors = knownAuthors
             .Where(MetadataQualityAuthorRules.IsUsable)
             .Select(author => author.Trim())
@@ -31,7 +59,11 @@ public sealed partial class MetadataQualityAuthorRepairViewModel : ObservableObj
         suggestions = this.knownAuthors;
     }
 
-    public string BookTitle { get; }
+    public int AffectedBookCount { get; }
+    public string? BookTitle { get; }
+    public string ContextLabel { get; }
+    public string ContextText { get; }
+    public string SaveButtonText { get; }
     public string? NormalizedAuthor => MetadataQualityAuthorRules.IsUsable(AuthorText) ? AuthorText.Trim() : null;
     public bool CanSave => NormalizedAuthor is not null;
 

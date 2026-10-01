@@ -51,7 +51,7 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
                 shownRepair = repair;
                 return Task.FromResult(true);
             },
-            bookRepaired: repaired => notifiedBook = repaired);
+            booksRepaired: repaired => notifiedBook = repaired.Single());
         dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
             issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
 

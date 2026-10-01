@@ -631,6 +631,36 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_bulk_author_repair_refreshes_all_books_and_author_filters_together()
+    {
+        var alpha = CreateBook("Alpha", ["Unknown"], language: "nl", coverBytes: [1]);
+        var beta = CreateBook("Beta", ["Unknown"], language: "nl", coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityAuthorRepairResult = true,
+            MetadataQualityAuthorRepairAuthor = "Nieuwe Auteur"
+        };
+        var viewModel = CreateViewModel(
+            [alpha, beta],
+            interaction,
+            currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.MissingAuthor);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityAuthorRepair.Should().NotBeNull();
+        interaction.MetadataQualityAuthorRepair!.AffectedBookCount.Should().Be(2);
+        viewModel.VisibleBooks.Should().OnlyContain(row => row.Authors == "Nieuwe Auteur");
+        viewModel.AuthorFilters.Single(filter => filter.Name == "Nieuwe Auteur").Count.Should().Be(2);
+        viewModel.AuthorFilters.Should().NotContain(filter => filter.Name == "Unknown");
+    }
+
+    [Fact]
     public async Task Metadata_quality_language_repair_updates_the_active_library_and_language_filters()
     {
         var missing = CreateBook("Zonder taal", ["Auteur"], language: null, coverBytes: [1]);

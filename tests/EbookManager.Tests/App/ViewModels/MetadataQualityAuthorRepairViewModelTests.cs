@@ -6,6 +6,42 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class MetadataQualityAuthorRepairViewModelTests
 {
     [Fact]
+    public void Single_book_keeps_title_context_and_single_repair_action()
+    {
+        var viewModel = new MetadataQualityAuthorRepairViewModel(
+            ["Boektitel"],
+            [],
+            key => key == "MetadataQualityAuthorRepairSave" ? "Auteur wijzigen" : key);
+
+        viewModel.AffectedBookCount.Should().Be(1);
+        viewModel.BookTitle.Should().Be("Boektitel");
+        viewModel.ContextLabel.Should().Be("Title");
+        viewModel.ContextText.Should().Be("Boektitel");
+        viewModel.SaveButtonText.Should().Be("Auteur wijzigen");
+    }
+
+    [Fact]
+    public void Multiple_books_show_count_in_context_and_repair_action()
+    {
+        var viewModel = new MetadataQualityAuthorRepairViewModel(
+            ["Alpha", "Beta", "Gamma"],
+            [],
+            key => key switch
+            {
+                "MetadataQualityAuthorRepairBulkBookContext" => "{0} geselecteerde boeken",
+                "MetadataQualityAuthorRepairBulkSave" => "Auteur wijzigen voor {0} boeken",
+                "MetadataMultiEditSelectedBooks" => "Geselecteerde boeken",
+                _ => key
+            });
+
+        viewModel.AffectedBookCount.Should().Be(3);
+        viewModel.BookTitle.Should().BeNull();
+        viewModel.ContextLabel.Should().Be("Geselecteerde boeken");
+        viewModel.ContextText.Should().Be("3 geselecteerde boeken");
+        viewModel.SaveButtonText.Should().Be("Auteur wijzigen voor 3 boeken");
+    }
+
+    [Fact]
     public void Constructor_normalizes_known_authors_and_excludes_unusable_values()
     {
         var viewModel = new MetadataQualityAuthorRepairViewModel(

@@ -32,20 +32,22 @@
               Focusable="True"
               AutomationProperties.Name="{loc:Loc Cancel}" />
       <Button x:Name="SaveAuthorRepairButton"
-              Content="{loc:Loc Save}"
+              Content="{Binding SaveButtonText}"
               MinWidth="90"
               Margin="8,0,0,0"
               IsDefault="True"
               IsEnabled="{Binding CanSave}"
               Focusable="True"
               Click="SaveClicked"
-              AutomationProperties.Name="{loc:Loc MetadataQualityAuthorRepairSave}" />
+              AutomationProperties.Name="{Binding SaveButtonText}" />
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Text="{loc:Loc Title}"
+      <TextBlock x:Name="BookContextLabel"
+                 Text="{Binding ContextLabel}"
                  FontWeight="SemiBold" />
-      <TextBlock Text="{Binding BookTitle}"
+      <TextBlock x:Name="BookContextText"
+                 Text="{Binding ContextText}"
                  Margin="0,4,0,14"
                  TextWrapping="Wrap"
                  Foreground="{DynamicResource TextSecondaryBrush}" />
