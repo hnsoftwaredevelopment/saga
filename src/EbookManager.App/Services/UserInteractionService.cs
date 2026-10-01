@@ -118,6 +118,23 @@ public sealed class UserInteractionService(
         return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
     }
 
+    public Task<bool> ConfirmQualityIssuesCorrectAsync(
+        int affectedCount,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var message = string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            EbookManager.App.Localization.LocalizedStrings.Current["MetadataQualityMarkCorrectBulkConfirmationMessage"],
+            affectedCount);
+        var result = System.Windows.MessageBox.Show(
+            message,
+            EbookManager.App.Localization.LocalizedStrings.Current["MetadataQualityMarkCorrectBulkConfirmationTitle"],
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Question);
+        return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
+    }
+
     public Task ShowMessageAsync(
         string title,
         string message,

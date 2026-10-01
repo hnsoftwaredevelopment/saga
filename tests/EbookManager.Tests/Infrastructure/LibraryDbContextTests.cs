@@ -771,6 +771,30 @@ public sealed class LibraryDbContextTests
     }
 
     [Fact]
+    public async Task Metadata_quality_exclusion_batch_rolls_back_every_key_when_one_insert_fails()
+    {
+        using var library = new TemporaryLibrary();
+        var libraryPath = library.DirectoryPath;
+        var factory = await CreateMigratedFactoryAsync(libraryPath);
+        var repository = new EfBookRepository(factory, libraryPath);
+        var book = CreateBook("Valid book", ["Author"]);
+        await repository.AddAsync(book, CreateFile(book.Id, sha256: Hash('A')), default);
+        var validKey = new MetadataQualityExclusionKey(
+            book.Id,
+            MetadataQualitySignalKeys.MissingCover);
+        var missingBookKey = new MetadataQualityExclusionKey(
+            Guid.NewGuid(),
+            MetadataQualitySignalKeys.MissingCover);
+
+        var act = () => repository.AddMetadataQualityExclusionsAsync(
+            [validKey, missingBookKey],
+            default);
+
+        await act.Should().ThrowAsync<Exception>();
+        (await repository.ListMetadataQualityExclusionsAsync(default)).Should().BeEmpty();
+    }
+
+    [Fact]
     public void Metadata_quality_exclusion_model_uses_composite_key_and_cascade_delete()
     {
         var options = new DbContextOptionsBuilder<LibraryDbContext>()

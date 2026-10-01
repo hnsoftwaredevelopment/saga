@@ -1,23 +1,27 @@
-# Milestone 37 Todo
+# Milestone 38 Todo
 
-- [x] PR #37 gemerged en nieuwe branch vanaf actuele `main` gemaakt.
+- [x] PR #38 gemerged en nieuwe branch vanaf actuele `main` gemaakt.
 - [x] Lokale gebruikerswijzigingen veilig behouden en buiten scope geplaatst.
-- [x] Bestaande Instellingen-layout, beheeropdracht, tests en lokalisatie onderzocht.
+- [x] Bestaande selectie, kwaliteitsopdracht, batchrepository en WPF-patronen onderzocht.
 - [x] Specificatie en implementatieplan opgesteld.
-- [x] Eerst falende layout- en lokalisatietests toevoegen.
-- [x] `SettingsQualitySection` in alle zes talen toevoegen.
-- [x] Kwaliteitsbeheer van `Duplicaten` naar een eigen tabblad verplaatsen.
-- [x] Gerichte tests uitvoeren: 7 van 7 groen.
-- [x] Featurestatus, README en handmatige checklist bijwerken en spiegelen naar Obsidian.
-- [x] Volledige Debug-testset uitvoeren: 746 van 746 groen.
-- [x] Schone Debug-build uitvoeren: 0 waarschuwingen, 0 fouten, één `Saga.exe` versie `2026.10.1.45`.
-- [x] Diffreview en Definition of Done afgerond; geen blokkerende bevindingen.
-- [x] Gewone PR #38 geopend; GitHub-controles zijn gestart.
+- [x] Eerst falende dashboardtests voor bulkselectie en bevestiging toevoegen.
+- [x] Viewmodelselectie en bulkbeslissing implementeren.
+- [x] Repositorybatch transactioneel maken en gericht testen.
+- [x] DataGrid-multiselectie en selectiebrug toevoegen.
+- [x] Gelokaliseerde bevestiging in alle zes talen toevoegen.
+- [x] Gerichte tests uitvoeren en iedere increment committen.
+- [x] Featurestatus, README en handmatige checklist bijwerken en naar Obsidian spiegelen.
+- [x] Volledige Debug-testset uitvoeren (754 geslaagd).
+- [x] Schone Debug-build maken en controleren (`Saga.exe` 2026.10.1.54).
+- [x] Diffreview op correctheid, eenvoud, architectuur, beveiliging en prestaties afgerond zonder bevindingen.
+- [x] Definition of Done afgerond: handmatige acceptatie geslaagd en beschikbare GitHub-controles groen.
+- [x] Gewone, niet-draft PR #39 geopend.
+- [x] GitHub-controles beoordeeld: CodeQL, CodeRabbit en GitGuardian groen; geen reviewopmerkingen.
 
 ## Buiten scope
 
-- Bulkselectie en bulk `Dit is correct`.
 - Bulkherstel van auteur of andere metadata.
+- Selectie over meerdere kwaliteitscategorieën.
 - Icoonknop voor `Dit is correct`.
-- Wijzigingen aan kwaliteitsregels of databaseopslag.
+- Nieuwe kwaliteitsregels of een databasewijziging.
 - Hervatten van omslaghydratatie voordat OneDrive volledig is gesynchroniseerd.

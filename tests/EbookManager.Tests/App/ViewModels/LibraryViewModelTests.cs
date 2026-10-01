@@ -572,6 +572,35 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Show_metadata_quality_dashboard_connects_bulk_decision_confirmation()
+    {
+        var books = new[]
+        {
+            CreateBook("Alpha", ["Unknown"], language: "nl", coverBytes: [1]),
+            CreateBook("Beta", ["Unknown"], language: "nl", coverBytes: [1])
+        };
+        var qualityRepository = new RecordingMetadataQualityExclusionRepository([]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            ConfirmQualityIssuesCorrectResult = true
+        };
+        var viewModel = CreateViewModel(
+            books,
+            interaction,
+            currentLibrary: CreateActiveLibrary(),
+            metadataQualityExclusionRepository: qualityRepository);
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue!.Rows);
+        await dashboard.MarkSelectedIssueCorrectCommand.ExecuteAsync(null);
+
+        interaction.ConfirmQualityIssuesCorrectAffectedCount.Should().Be(2);
+        qualityRepository.AddedKeys.Should().HaveCount(2);
+    }
+
+    [Fact]
     public async Task Metadata_quality_author_repair_updates_the_active_library_and_author_filters()
     {
         var missing = CreateBook("Zonder auteur", ["Unknown"], language: "nl", coverBytes: [1]);
@@ -4502,6 +4531,8 @@ public sealed class LibraryViewModelTests
         public bool ConfirmMetadataValueRemovalResult { get; init; }
         public bool ConfirmLanguageNormalizationResult { get; init; }
         public int? ConfirmLanguageNormalizationAffectedCount { get; private set; }
+        public bool ConfirmQualityIssuesCorrectResult { get; init; }
+        public int? ConfirmQualityIssuesCorrectAffectedCount { get; private set; }
         public Guid? SelectedImportRunId { get; init; }
         public MetadataMultiEditResult? MetadataMultiEditResult { get; init; }
         public Guid? MetadataQualityDashboardResult { get; init; }
@@ -4565,6 +4596,14 @@ public sealed class LibraryViewModelTests
         {
             ConfirmLanguageNormalizationAffectedCount = affectedBookCount;
             return Task.FromResult(ConfirmLanguageNormalizationResult);
+        }
+
+        public Task<bool> ConfirmQualityIssuesCorrectAsync(
+            int affectedCount,
+            CancellationToken cancellationToken)
+        {
+            ConfirmQualityIssuesCorrectAffectedCount = affectedCount;
+            return Task.FromResult(ConfirmQualityIssuesCorrectResult);
         }
 
         public Task ShowMessageAsync(

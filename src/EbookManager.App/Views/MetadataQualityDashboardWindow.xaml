@@ -243,13 +243,16 @@
           </TextBlock.Style>
         </TextBlock>
 
-        <DataGrid ItemsSource="{Binding SelectedIssue.Rows}"
+        <DataGrid x:Name="AffectedBooksGrid"
+                  ItemsSource="{Binding SelectedIssue.Rows}"
                   SelectedItem="{Binding SelectedBook, Mode=TwoWay}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   GridLinesVisibility="Horizontal"
                   HeadersVisibility="Column"
-                  SelectionMode="Single"
+                  SelectionMode="Extended"
+                  SelectionUnit="FullRow"
+                  SelectionChanged="AffectedBooksSelectionChanged"
                   MouseDoubleClick="BookRowMouseDoubleClicked">
           <DataGrid.Columns>
             <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="220" />

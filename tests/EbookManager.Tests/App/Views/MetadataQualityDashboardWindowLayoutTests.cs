@@ -49,6 +49,22 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
     }
 
     [Fact]
+    public void AffectedBooksGrid_supports_extended_full_row_selection()
+    {
+        var document = XDocument.Load(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataQualityDashboardWindow.xaml"));
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+        var grid = document.Descendants(presentation + "DataGrid")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "AffectedBooksGrid");
+
+        RequiredAttribute(grid, "SelectionMode").Should().Be("Extended");
+        RequiredAttribute(grid, "SelectionUnit").Should().Be("FullRow");
+        RequiredAttribute(grid, "SelectionChanged").Should().Be("AffectedBooksSelectionChanged");
+    }
+
+    [Fact]
     public void RepairAuthorAction_IsCommandBoundAndKeyboardAccessible()
     {
         var document = XDocument.Load(

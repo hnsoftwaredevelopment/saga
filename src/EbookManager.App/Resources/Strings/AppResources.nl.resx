@@ -346,6 +346,8 @@
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Dit is correct</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Deze kwaliteitsbeslissing kon niet worden opgeslagen. Probeer het opnieuw.</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationTitle" xml:space="preserve"><value>Kwaliteitsmeldingen als correct markeren?</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationMessage" xml:space="preserve"><value>De {0} geselecteerde kwaliteitsmeldingen als correct markeren? Ze worden verborgen totdat je ze via Instellingen herstelt.</value></data>
   <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Genegeerde kwaliteitsmeldingen</value></data>
   <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>Deze kwaliteitsmeldingen zijn als correct gemarkeerd. Herstel ze om Saga ze opnieuw te laten beoordelen.</value></data>
   <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> genegeerde kwaliteitsmeldingen</value></data>

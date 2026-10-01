@@ -10,6 +10,8 @@ public sealed class MetadataQualityLocalizationTests
     [
         "MetadataQualityMarkCorrect",
         "MetadataQualityMarkCorrectFailed",
+        "MetadataQualityMarkCorrectBulkConfirmationTitle",
+        "MetadataQualityMarkCorrectBulkConfirmationMessage",
         "MetadataQualityExclusionsTitle",
         "MetadataQualityExclusionsDescription",
         "MetadataQualityExclusionsCountSuffix",

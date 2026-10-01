@@ -626,6 +626,8 @@
   <data name="Yes" xml:space="preserve"><value>Sí</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Esto es correcto</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>No se pudo guardar esta decisión de calidad. Inténtelo de nuevo.</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationTitle" xml:space="preserve"><value>¿Marcar los problemas de calidad como correctos?</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationMessage" xml:space="preserve"><value>¿Marcar los {0} problemas de calidad seleccionados como correctos? Se ocultarán hasta que los restaure desde Configuración.</value></data>
   <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Problemas de calidad ignorados</value></data>
   <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>Estos problemas de calidad se marcaron como correctos. Restáurelos para que Saga vuelva a evaluarlos.</value></data>
   <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> problemas de calidad ignorados</value></data>

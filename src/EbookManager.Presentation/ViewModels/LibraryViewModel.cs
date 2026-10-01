@@ -4244,7 +4244,8 @@ public sealed partial class LibraryViewModel : ObservableObject
                 userInteraction.ShowMetadataQualityCoverSearchAsync,
                 metadataQualityCoverRepairService,
                 metadataQualityTagRepairService,
-                userInteraction.ShowMetadataQualityTagRepairAsync),
+                userInteraction.ShowMetadataQualityTagRepairAsync,
+                userInteraction.ConfirmQualityIssuesCorrectAsync),
             cancellationToken);
         if (selectedBookId is { } bookId)
         {

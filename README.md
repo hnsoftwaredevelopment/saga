@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 37 is ready for acceptance testing and gives quality management its own `Quality` tab in Settings. Milestone 36 was accepted on 1 October 2026 after real-library testing confirmed that messy tags can be reviewed, adjusted, cleared, and saved safely from the metadata quality dashboard. Milestone 35 improved large-library searching and scrolling, while Milestone 34 reduced 34,483 direct book directories to 256 storage shards.
+Milestone 38 was accepted on 1 October 2026 and lets users select multiple books within one quality category and mark those exact issues as correct in one confirmed, atomic action. Milestone 37 gives ignored-quality management its own `Quality` tab in Settings. Milestone 36 added the accepted messy-tag repair, while Milestone 35 improved large-library searching and scrolling and Milestone 34 reduced 34,483 direct book directories to 256 storage shards.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -55,7 +55,7 @@ Milestone 37 is ready for acceptance testing and gives quality management its ow
 - custom metadata fields with Calibre custom-column import
 - customizable column visibility, saved grid layouts, and user-defined views
 - multi-book metadata editing and cleanup actions for facets such as authors and tags
-- metadata quality dashboard with issue counts, affected-book lists, direct navigation, and a reversible `This is correct` decision per book and signal
+- metadata quality dashboard with issue counts, affected-book lists, direct navigation, and reversible `This is correct` decisions for one or multiple selected books within one signal
 - management of ignored quality issues from a dedicated Quality tab in Settings, without changing the book metadata itself
 - direct missing-author repair from the quality dashboard with known-author suggestions and free entry for a new author
 - direct missing- or unknown-language repair from the quality dashboard with a searchable list of valid languages
@@ -74,6 +74,8 @@ Milestone 37 is ready for acceptance testing and gives quality management its ow
 - Detailed view exposes the standard details-pane metadata fields as grid columns
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
+
+The manual acceptance steps for the current slice are in [Milestone 38 checklist](docs/manual-tests/milestone-38-checklist.md).
 
 ## Prerequisites
 

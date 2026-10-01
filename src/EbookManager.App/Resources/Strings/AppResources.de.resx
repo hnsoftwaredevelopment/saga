@@ -626,6 +626,8 @@
   <data name="Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Das ist korrekt</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>Diese Qualitätsentscheidung konnte nicht gespeichert werden. Versuchen Sie es erneut.</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationTitle" xml:space="preserve"><value>Qualitätsmeldungen als korrekt markieren?</value></data>
+  <data name="MetadataQualityMarkCorrectBulkConfirmationMessage" xml:space="preserve"><value>Die {0} ausgewählten Qualitätsmeldungen als korrekt markieren? Sie werden ausgeblendet, bis Sie sie in den Einstellungen wiederherstellen.</value></data>
   <data name="MetadataQualityExclusionsTitle" xml:space="preserve"><value>Ignorierte Qualitätsmeldungen</value></data>
   <data name="MetadataQualityExclusionsDescription" xml:space="preserve"><value>Diese Qualitätsmeldungen wurden als korrekt markiert. Stellen Sie sie wieder her, damit Saga sie erneut prüft.</value></data>
   <data name="MetadataQualityExclusionsCountSuffix" xml:space="preserve"><value> ignorierte Qualitätsmeldungen</value></data>
