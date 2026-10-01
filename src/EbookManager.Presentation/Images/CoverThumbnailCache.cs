@@ -8,15 +8,19 @@ public sealed class CoverThumbnailCache<TThumbnail>
     private readonly Func<string, int, CancellationToken, Task<TThumbnail?>> loader;
     private readonly Dictionary<string, CacheEntry> entries = new(StringComparer.OrdinalIgnoreCase);
     private readonly LinkedList<string> recency = [];
+    private readonly SemaphoreSlim loadGate;
     private readonly Lock sync = new();
 
     public CoverThumbnailCache(
         int capacity,
-        Func<string, int, CancellationToken, Task<TThumbnail?>> loader)
+        Func<string, int, CancellationToken, Task<TThumbnail?>> loader,
+        int maxConcurrentLoads = 4)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxConcurrentLoads);
         this.loader = loader ?? throw new ArgumentNullException(nameof(loader));
         this.capacity = capacity;
+        loadGate = new SemaphoreSlim(maxConcurrentLoads, maxConcurrentLoads);
     }
 
     public int Count
@@ -50,7 +54,7 @@ public sealed class CoverThumbnailCache<TThumbnail>
             }
         }
 
-        var thumbnail = await loader(path, decodePixelWidth, cancellationToken).ConfigureAwait(false);
+        var thumbnail = await LoadAsync(path, decodePixelWidth, cancellationToken).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
         if (thumbnail is null && sourceVersion != MissingSourceVersion)
         {
@@ -75,6 +79,22 @@ public sealed class CoverThumbnailCache<TThumbnail>
         }
 
         return thumbnail;
+    }
+
+    private async Task<TThumbnail?> LoadAsync(
+        string path,
+        int decodePixelWidth,
+        CancellationToken cancellationToken)
+    {
+        await loadGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            return await loader(path, decodePixelWidth, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            loadGate.Release();
+        }
     }
 
     private static string CreateKey(string path, int decodePixelWidth, string sourceVersion) =>
