@@ -15,3 +15,7 @@
 - [x] Checkpoint 2: 741 tests, opmaakcontrole, zelfreview en Debug-build groen zonder waarschuwingen.
 - [x] Taak 6-voorbereiding: handmatige checklist, gecontroleerde Obsidian-spiegel en normale PR #37.
 - [ ] Taak 6-acceptatie: praktijktest door gebruiker en verwerking van eventuele bevindingen.
+- [x] OneDrive-diagnose: 32.344 van 32.644 omslagen zijn na de migratie `Pinned + Offline`.
+- [x] Gebruikersakkoord ontvangen voor ongeveer 5,56 GB eenmalige omslaghydratatie.
+- [x] Herstelactie met scanmodus, logging, foutisolatie en hervatten getest; 3 Pester-tests groen en echte scan bevestigt 32.344 wachtende omslagen.
+- [ ] Echte omslaghydratatie uitvoeren en resultaat controleren.

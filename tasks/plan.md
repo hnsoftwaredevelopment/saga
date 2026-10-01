@@ -144,3 +144,19 @@ Tag-normalisatie
 ## Open vragen
 
 Geen blokkerende vragen; implementatie start na bevestiging van deze specificatie en volgorde.
+
+## Herstelspoor: OneDrive-omslagen hydrateren
+
+Na de opslagmigratie rapporteert Windows 32.344 van de 32.644 omslagen als `Pinned + Offline`. Met akkoord van de gebruiker wordt een eenmalige, hervatbare onderhoudsactie toegevoegd en uitgevoerd die uitsluitend `cover.jpg` hydrateert.
+
+### Taak H1: Veilige onderhoudsactie
+
+- [x] Alleen gevalideerde Saga-bibliotheken en exacte `cover.jpg`-bestanden verwerken.
+- [x] Lokale bestanden overslaan, offline bestanden sequentieel lezen en fouten isoleren.
+- [x] Scanmodus, voortgang, logbestand en natuurlijke hervatting ondersteunen.
+
+### Taak H2: Gecontroleerde uitvoering
+
+- [ ] Tests en scan op de echte bibliotheek uitvoeren.
+- [ ] Hydratatie starten en voortgang bewaken.
+- [ ] Na voltooiing offline-aantal en Saga-performance opnieuw controleren.
