@@ -1,27 +1,28 @@
-# Milestone 38 Todo
+# Milestone 39 todo
 
-- [x] PR #38 gemerged en nieuwe branch vanaf actuele `main` gemaakt.
+- [x] PR #39 gemerged en lokale `main` bijgewerkt.
 - [x] Lokale gebruikerswijzigingen veilig behouden en buiten scope geplaatst.
-- [x] Bestaande selectie, kwaliteitsopdracht, batchrepository en WPF-patronen onderzocht.
-- [x] Specificatie en implementatieplan opgesteld.
-- [x] Eerst falende dashboardtests voor bulkselectie en bevestiging toevoegen.
-- [x] Viewmodelselectie en bulkbeslissing implementeren.
-- [x] Repositorybatch transactioneel maken en gericht testen.
-- [x] DataGrid-multiselectie en selectiebrug toevoegen.
-- [x] Gelokaliseerde bevestiging in alle zes talen toevoegen.
-- [x] Gerichte tests uitvoeren en iedere increment committen.
-- [x] Featurestatus, README en handmatige checklist bijwerken en naar Obsidian spiegelen.
-- [x] Volledige Debug-testset uitvoeren (754 geslaagd).
-- [x] Schone Debug-build maken en controleren (`Saga.exe` 2026.10.1.54).
-- [x] Diffreview op correctheid, eenvoud, architectuur, beveiliging en prestaties afgerond zonder bevindingen.
-- [x] Definition of Done afgerond: handmatige acceptatie geslaagd en beschikbare GitHub-controles groen.
-- [x] Gewone, niet-draft PR #39 geopend.
-- [x] GitHub-controles beoordeeld: CodeQL, CodeRabbit en GitGuardian groen; geen reviewopmerkingen.
+- [x] Nieuwe branch `codex/milestone-39-bulk-author-repair` vanaf actuele `main` gemaakt.
+- [x] Bestaande batchservice, auteurinvoer, dashboardroute en tests onderzocht.
+- [x] Aannames, veiligheidsgrenzen, specificatie en implementatieplan opgesteld.
+- [ ] Specificatie en plan door gebruiker laten bevestigen.
+- [ ] Eerst falende tests voor bulkcontext van het auteursvenster toevoegen.
+- [ ] Auteurherstelviewmodel uitbreiden zonder regressie van suggesties en vrije invoer.
+- [ ] Eerst falende dashboardtests voor selectie, annuleren en gemengde resultaten toevoegen.
+- [ ] Dashboardbatch en resultaatgedreven reconciliatie implementeren.
+- [ ] Gelokaliseerde bulkcontext en resultaatsamenvattingen in zes talen toevoegen.
+- [ ] LibraryViewModel-doorwerking en relevante layout/compositietests bewaken.
+- [ ] Iedere functionele increment gericht testen en afzonderlijk committen.
+- [ ] README, featurestatus en handmatige checklist bijwerken en naar Obsidian spiegelen.
+- [ ] Volledige Debug-testset en schone Debug-build uitvoeren.
+- [ ] Code-review en Definition of Done afronden.
+- [ ] Gewone PR openen en GitHub-controles beoordelen.
 
 ## Buiten scope
 
-- Bulkherstel van auteur of andere metadata.
+- Andere bulkherstelacties dan ontbrekende auteur.
+- Meerdere auteurs voor één boek.
 - Selectie over meerdere kwaliteitscategorieën.
+- Externe auteurzoekdienst of automatisch raden.
 - Icoonknop voor `Dit is correct`.
-- Nieuwe kwaliteitsregels of een databasewijziging.
 - Hervatten van omslaghydratatie voordat OneDrive volledig is gesynchroniseerd.

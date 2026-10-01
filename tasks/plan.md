@@ -1,84 +1,88 @@
-# Milestone 38 Implementatieplan: bulk kwaliteitsbeslissingen
+# Milestone 39 implementatieplan: bulkherstel ontbrekende auteur
 
 ## Overzicht
 
-Milestone 38 maakt meervoudige selectie op de Quality Page mogelijk en past `Dit is correct` veilig toe op alle geselecteerde rijen binnen één categorie. Enkelvoudige herstel- en navigatieacties blijven beperkt tot precies één boek.
+Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerdere geselecteerde boeken binnen `Ontbrekende auteur`. De applicatieservice ondersteunt batches al; het werk concentreert zich op dashboardselectie, begrijpelijke context, resultaatverwerking en regressiebewaking.
 
 ## Architectuurbeslissingen
 
-- Het viewmodel bezit de betekenisvolle selectie; de WPF DataGrid geeft `SelectedItems` via één event door.
-- De bestaande enkelvoudige selectie blijft de primaire rij voor bestaande acties en navigatie.
-- Meerdere beslissingen worden als één repositorybatch opgeslagen en door één SQLite-transactie beschermd.
-- Alleen meervoudige acties vragen bevestiging; het huidige snelle enkelvoudige gedrag blijft bestaan.
+- De huidige `MetadataQualityAuthorRepairService` blijft de enige opslagroute en verwerkt ieder boek onafhankelijk.
+- De dashboardselectie wordt vlak voor uitvoering vastgelegd en gefilterd op de actuele categorie.
+- Het auteursvenster is de expliciete bevestiging en toont enkelvoudige of bulkcontext zonder een redundante tweede vraag.
+- Het dashboard reconcilieert ieder itemresultaat met de werkelijk opnieuw ingelezen `Book`.
+- Volledig mislukte rijen blijven zichtbaar en geselecteerd; opgeslagen boeken verdwijnen wanneer het signaal is opgelost.
 - De lokale gebruikerswijzigingen in `BookDetailsView.xaml` en `SettingsWindow.xaml` blijven buiten deze milestone.
 
-## Taak 1: Selectie- en commandocontract
+## Taak 1: bulkcontract van auteursinvoer
 
-**Beschrijving:** Voeg eerst falende viewmodeltests toe voor multiselectie, bevestigen, annuleren, opslagfout en enkelvoudige acties.
+**Beschrijving:** Voeg eerst falende tests toe voor enkelvoudige en meervoudige context in het auteurvenster en breid het viewmodel minimaal uit.
 
 **Acceptatiecriteria:**
-- [x] Meerdere geldige rijen activeren `Dit is correct`.
-- [x] Open- en herstelacties zijn bij meerdere rijen uitgeschakeld.
-- [x] Annuleren en fouten behouden alle rijen.
+- [ ] Eén boek toont de bestaande titelcontext.
+- [ ] Meerdere boeken tonen het juiste aantal.
+- [ ] Suggesties, vrije invoer en validatie blijven gelijk.
 
-**Verificatie:** Gerichte dashboardtests falen vóór en slagen na implementatie.
+**Verificatie:** Gerichte `MetadataQualityAuthorRepairViewModelTests` gaan rood en daarna groen.
+
+**Bestanden:** auteurherstelviewmodel en bijbehorende tests.
+
+## Taak 2: dashboardbatch en deelresultaten
+
+**Beschrijving:** Schrijf falende dashboardtests en laat de bestaande herstelopdracht alle actuele geselecteerde ontbrekende-auteurrijen verwerken.
+
+**Acceptatiecriteria:**
+- [ ] De opdracht accepteert één of meerdere rijen uitsluitend onder `Ontbrekende auteur`.
+- [ ] Annuleren schrijft niets; succes verwerkt alle geselecteerde id’s.
+- [ ] Gemengde resultaten verversen opgeslagen boeken en behouden mislukte rijen en selectie.
+
+**Verificatie:** Gerichte dashboardtests bewijzen succes, annuleren, waarschuwing, stale, not-found, fout en onverwachte uitzondering.
 
 **Bestanden:** dashboardviewmodel en dashboardtests.
 
-## Taak 2: Transactionele batchopslag
+## Taak 3: WPF-context en gelokaliseerde samenvatting
 
-**Beschrijving:** Bescherm de bestaande batchtoevoeging van uitsluitingen met één SQLite-transactie.
-
-**Acceptatiecriteria:**
-- [x] Alle unieke sleutels worden samen opgeslagen.
-- [x] Een fout kan geen gedeeltelijk zichtbare batch achterlaten.
-- [x] Bestaande enkelvoudige en dubbele toevoegingen blijven idempotent.
-
-**Verificatie:** Gerichte repository-integratietests groen.
-
-**Bestanden:** EF-repository en bestaande integratietest.
-
-## Taak 3: WPF-selectie en bevestiging
-
-**Beschrijving:** Maak de grid meervoudig selecteerbaar, verbind de selectie met het viewmodel en voeg een gelokaliseerde bevestiging toe.
+**Beschrijving:** Maak bulkcontext en resultaatmeldingen begrijpelijk en toegankelijk in alle zes talen.
 
 **Acceptatiecriteria:**
-- [x] DataGrid gebruikt uitgebreide volledige-rijselectie.
-- [x] Selectiewijzigingen bereiken het viewmodel.
-- [x] Twee of meer rijen tonen een bevestiging met het juiste aantal.
+- [ ] Het venster toont het juiste aantal geselecteerde boeken en een duidelijke bevestigingsactie.
+- [ ] Resultaatmeldingen onderscheiden volledig succes, write-backwaarschuwingen en mislukkingen.
+- [ ] Toetsenbordgedrag, focus en auteursuggesties regresseren niet.
 
 **Verificatie:** Layout-, lokalisatie- en compositietests groen.
 
-**Bestanden:** dashboardvenster, interactiecontract/-service, resourcebestanden en tests.
+**Bestanden:** auteurvenster, resources, interactiecompositie en bijbehorende tests.
 
-## Taak 4: Documentatie en oplevering
+## Taak 4: bibliotheekverversing en oplevering
 
-**Beschrijving:** Werk featurestatus, README en handmatige checklist bij, spiegel Markdown, bouw één actuele Debug-build en open een gewone PR.
+**Beschrijving:** Bewaak de doorwerking naar hoofdbibliotheek en auteursfilters, werk documentatie bij en lever een actuele Debug-build en gewone PR.
 
 **Acceptatiecriteria:**
-- [x] Volledige testset en Debug-build zijn groen.
-- [x] `Builds\Debug` bevat precies één actuele `Saga.exe`.
-- [x] Alle Markdown is identiek naar Obsidian gespiegeld.
-- [x] Branchdiff bevat de lokale gebruikerswijzigingen niet.
+- [ ] Alle gerepareerde boeken en auteursfilters zijn zonder herstart actueel.
+- [ ] Volledige tests en Debug-build zijn groen.
+- [ ] Handmatige checklist en Obsidian-spiegel zijn gereed.
+- [ ] De branchdiff bevat de lokale gebruikerswijzigingen niet.
 
-**Verificatie:** Definition of Done, diffreview en GitHub-controles.
+**Verificatie:** LibraryViewModel-tests, volledige Definition of Done, diffreview en GitHub-controles.
 
-## Risico's en maatregelen
+**Bestanden:** LibraryViewModel-tests, README, featurestatus, checklist en taakstatus.
+
+## Risico’s en maatregelen
 
 | Risico | Maatregel |
 |---|---|
-| Meervoudige selectie activeert per ongeluk een enkelvoudige reparatie | Alle enkelvoudige opdrachten delen de voorwaarde `SelectedBookCount == 1` |
-| Opslag faalt halverwege | Volledige repositorybatch in één transactie |
-| UI-selectie en viewmodel lopen uiteen | Eén `SelectionChanged`-brug en gerichte tests voor selectieovergangen |
-| Verkeerde categorie of verouderde rij wordt opgeslagen | Selectie vlak voor opslag filteren op de actuele categorie |
-| OneDrive wordt belast | Geen bibliotheek- of omslagbestanden aanraken in deze slice |
+| Een geldige auteur wordt door verouderde dashboarddata overschreven | Service leest elk boek opnieuw en retourneert `NotApplicable` |
+| Een fout halverwege wordt ten onrechte als volledig succes getoond | Ieder item heeft een status; UI reconcilieert en rapporteert per uitkomstgroep |
+| Mislukte rijen verdwijnen uit beeld | Alleen actuele opgeslagen boeken worden herevalueerd; `Failed` blijft geselecteerd |
+| Grote selectie blokkeert de interface langdurig | Bestaande asynchrone opdracht gebruiken en geen extra database- of netwerkwerk toevoegen |
+| Bulkselectie activeert andere enkelvoudige reparaties | Alleen auteurherstel krijgt bulkondersteuning; overige opdrachten vereisen `SelectedBookCount == 1` |
 
 ## Checkpoint
 
-- [x] Gerichte tests groen.
-- [x] Volledige tests en Debug-build groen (754 tests; Saga 2026.10.1.54).
-- [x] Handmatige checklist volledig geslaagd op 1 oktober 2026.
-- [x] PR #39 is mergeable; CodeQL, CodeRabbit en GitGuardian zijn groen.
+- [ ] Specificatie en plan goedgekeurd.
+- [ ] Gerichte tests per increment groen.
+- [ ] Volledige tests en Debug-build groen.
+- [ ] Handmatige checklist gereed.
+- [ ] Gewone, mergeable PR geopend.
 
 ## Gepauzeerd onderhoud
 
