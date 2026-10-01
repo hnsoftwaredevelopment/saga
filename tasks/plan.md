@@ -59,7 +59,7 @@ Milestone 38 maakt meervoudige selectie op de Quality Page mogelijk en past `Dit
 - [x] Volledige testset en Debug-build zijn groen.
 - [x] `Builds\Debug` bevat precies één actuele `Saga.exe`.
 - [x] Alle Markdown is identiek naar Obsidian gespiegeld.
-- [ ] Branchdiff bevat de lokale gebruikerswijzigingen niet.
+- [x] Branchdiff bevat de lokale gebruikerswijzigingen niet.
 
 **Verificatie:** Definition of Done, diffreview en GitHub-controles.
 

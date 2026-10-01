@@ -13,7 +13,8 @@
 - [x] Featurestatus, README en handmatige checklist bijwerken en naar Obsidian spiegelen.
 - [x] Volledige Debug-testset uitvoeren (754 geslaagd).
 - [x] Schone Debug-build maken en controleren (`Saga.exe` 2026.10.1.54).
-- [ ] Diffreview en Definition of Done afronden.
+- [x] Diffreview op correctheid, eenvoud, architectuur, beveiliging en prestaties afgerond zonder bevindingen.
+- [ ] Resterende Definition of Done-punten afronden met handmatige acceptatie en GitHub-controles.
 - [ ] Gewone PR openen en GitHub-controles beoordelen.
 
 ## Buiten scope
