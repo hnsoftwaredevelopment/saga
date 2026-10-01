@@ -3,6 +3,7 @@ namespace EbookManager.Presentation.Images;
 public sealed class CoverThumbnailCache<TThumbnail>
     where TThumbnail : class
 {
+    private const string MissingSourceVersion = "missing";
     private readonly int capacity;
     private readonly Func<string, int, CancellationToken, Task<TThumbnail?>> loader;
     private readonly Dictionary<string, CacheEntry> entries = new(StringComparer.OrdinalIgnoreCase);
@@ -51,6 +52,11 @@ public sealed class CoverThumbnailCache<TThumbnail>
 
         var thumbnail = await loader(path, decodePixelWidth, cancellationToken).ConfigureAwait(false);
         cancellationToken.ThrowIfCancellationRequested();
+        if (thumbnail is null && sourceVersion != MissingSourceVersion)
+        {
+            return null;
+        }
+
         lock (sync)
         {
             if (entries.TryGetValue(key, out var cached))
@@ -85,7 +91,7 @@ public sealed class CoverThumbnailCache<TThumbnail>
                 var file = new FileInfo(path);
                 return file.Exists
                     ? $"{file.LastWriteTimeUtc.Ticks}:{file.Length}"
-                    : "missing";
+                    : MissingSourceVersion;
             }
             catch (Exception exception) when (
                 exception is IOException or UnauthorizedAccessException or ArgumentException or

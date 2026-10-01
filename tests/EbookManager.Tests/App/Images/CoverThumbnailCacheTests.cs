@@ -70,6 +70,33 @@ public sealed class CoverThumbnailCacheTests
     }
 
     [Fact]
+    public async Task GetAsync_retries_an_existing_thumbnail_after_a_temporary_load_failure()
+    {
+        var path = Path.GetTempFileName();
+        try
+        {
+            var loads = 0;
+            var cache = new CoverThumbnailCache<string>(
+                capacity: 4,
+                (_, _, _) =>
+                {
+                    loads++;
+                    return Task.FromResult<string?>(loads == 1 ? null : "cover");
+                });
+
+            (await cache.GetAsync(path, 48, default)).Should().BeNull();
+            (await cache.GetAsync(path, 48, default)).Should().Be("cover");
+
+            loads.Should().Be(2);
+            cache.Count.Should().Be(1);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
     public async Task GetAsync_reloads_a_thumbnail_when_the_source_file_changes()
     {
         var path = Path.GetTempFileName();
