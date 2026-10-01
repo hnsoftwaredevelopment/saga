@@ -16,11 +16,11 @@ Milestone 37 verplaatst het bestaande beheer van genegeerde kwaliteitsmeldingen 
 **Beschrijving:** Leg met eerst falende tests vast dat Instellingen een tabblad Kwaliteit bevat, dat de beheeractie daarin staat en dat iedere taal een begrijpelijke tabtitel heeft.
 
 **Acceptatiecriteria:**
-- [ ] De layouttest vindt één kwaliteitstab met de bestaande beheeractie.
-- [ ] De duplicatentab bevat die actie niet meer.
-- [ ] Alle zes resourcebestanden bevatten `SettingsQualitySection`.
+- [x] De layouttest vindt één kwaliteitstab met de bestaande beheeractie.
+- [x] De duplicatentab bevat die actie niet meer.
+- [x] Alle zes resourcebestanden bevatten `SettingsQualitySection`.
 
-**Verificatie:** Gerichte layout- en lokalisatietests falen vóór en slagen na implementatie.
+**Verificatie:** De 7 gerichte layout- en lokalisatietests faalden vóór en slagen na implementatie.
 
 **Bestanden:** layouttest, lokalisatietest en resourcebestanden.
 
@@ -29,11 +29,11 @@ Milestone 37 verplaatst het bestaande beheer van genegeerde kwaliteitsmeldingen 
 **Beschrijving:** Verplaats de bestaande uitleg en knop naar een eigen tabblad zonder opdrachtbinding of toegankelijkheid te wijzigen.
 
 **Acceptatiecriteria:**
-- [ ] De kwaliteitsactie staat uitsluitend onder `Kwaliteit`.
-- [ ] De knop behoudt opdracht, focusbaarheid en toegankelijke naam.
-- [ ] Alle duplicateninstellingen blijven onder `Duplicaten` staan.
+- [x] De kwaliteitsactie staat uitsluitend onder `Kwaliteit`.
+- [x] De knop behoudt opdracht, focusbaarheid en toegankelijke naam.
+- [x] Alle duplicateninstellingen blijven onder `Duplicaten` staan.
 
-**Verificatie:** Gerichte tests groen en XAML-build slaagt.
+**Verificatie:** Gerichte tests zijn groen en de Debug-publicatie slaagt zonder waarschuwingen of fouten.
 
 **Bestanden:** `SettingsWindow.xaml`.
 
@@ -42,10 +42,10 @@ Milestone 37 verplaatst het bestaande beheer van genegeerde kwaliteitsmeldingen 
 **Beschrijving:** Werk featurestatus, README en handmatige checklist bij, spiegel Markdown, bouw één actuele Debug-build en open een gewone PR.
 
 **Acceptatiecriteria:**
-- [ ] Volledige testset slaagt.
-- [ ] Debug-build heeft 0 waarschuwingen en 0 fouten.
-- [ ] `Builds\Debug` bevat precies één actuele `Saga.exe`.
-- [ ] Alle gewijzigde Markdown is identiek gespiegeld naar Obsidian.
+- [x] Volledige testset slaagt: 746 van 746 tests groen.
+- [x] Debug-build heeft 0 waarschuwingen en 0 fouten.
+- [x] `Builds\Debug` bevat precies één actuele `Saga.exe`, versie `2026.10.1.45`, gebouwd op 1 oktober 2026 om 14:41.
+- [x] Alle gewijzigde Markdown is identiek gespiegeld naar Obsidian.
 
 **Verificatie:** Definition of Done, diffreview en GitHub-controles.
 
@@ -60,9 +60,9 @@ Milestone 37 verplaatst het bestaande beheer van genegeerde kwaliteitsmeldingen 
 
 ## Checkpoint
 
-- [ ] Gerichte tests groen.
-- [ ] Volledige tests en build groen.
-- [ ] Handmatige checklist klaar voor de gebruiker.
+- [x] Gerichte tests groen.
+- [x] Volledige tests en build groen.
+- [x] Handmatige checklist klaar voor de gebruiker.
 - [ ] Gewone, mergeable PR geopend.
 
 ## Gepauzeerd onderhoud

@@ -101,8 +101,6 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
 - Improve large-library scrolling and filtering in a separate performance slice with measurable checks on a representative library.
-- Add direct repair for messy tags after the missing-cover slice.
-- Give quality decisions their own `Quality` tab in Settings instead of placing them under `Duplicates`.
 - Let users select multiple missing-author books and apply one chosen author to all selected books.
 - Let users select multiple quality rows and mark them as correct in one action.
 - Add export or filtered worklists for large cleanup sessions.
@@ -111,4 +109,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Messy-tag repair, a dedicated Quality settings tab, bulk decisions, bulk repair, and heuristic tuning remain follow-up work.
+Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestone 36 adds the accepted messy-tag repair. Milestone 37 moves ignored-quality management from `Duplicates` to its own `Quality` tab in Settings. Bulk decisions, bulk repair, export, configurable checks, and heuristic tuning remain follow-up work.

@@ -4,13 +4,14 @@
 - [x] Lokale gebruikerswijzigingen veilig behouden en buiten scope geplaatst.
 - [x] Bestaande Instellingen-layout, beheeropdracht, tests en lokalisatie onderzocht.
 - [x] Specificatie en implementatieplan opgesteld.
-- [ ] Eerst falende layout- en lokalisatietests toevoegen.
-- [ ] `SettingsQualitySection` in alle zes talen toevoegen.
-- [ ] Kwaliteitsbeheer van `Duplicaten` naar een eigen tabblad verplaatsen.
-- [ ] Gerichte tests uitvoeren.
-- [ ] Featurestatus, README en handmatige checklist bijwerken en spiegelen naar Obsidian.
-- [ ] Volledige Debug-testset en schone Debug-build uitvoeren.
-- [ ] Diffreview en Definition of Done afronden.
+- [x] Eerst falende layout- en lokalisatietests toevoegen.
+- [x] `SettingsQualitySection` in alle zes talen toevoegen.
+- [x] Kwaliteitsbeheer van `Duplicaten` naar een eigen tabblad verplaatsen.
+- [x] Gerichte tests uitvoeren: 7 van 7 groen.
+- [x] Featurestatus, README en handmatige checklist bijwerken en spiegelen naar Obsidian.
+- [x] Volledige Debug-testset uitvoeren: 746 van 746 groen.
+- [x] Schone Debug-build uitvoeren: 0 waarschuwingen, 0 fouten, één `Saga.exe` versie `2026.10.1.45`.
+- [x] Diffreview en Definition of Done afgerond; geen blokkerende bevindingen.
 - [ ] Gewone PR openen en GitHub-controles beoordelen.
 
 ## Buiten scope
