@@ -154,6 +154,125 @@ public sealed class MetadataQualityDashboardViewModelTests
     }
 
     [Fact]
+    public async Task Mark_correct_stores_and_removes_all_selected_rows_after_bulk_confirmation()
+    {
+        var repository = new RecordingMetadataQualityExclusionRepository();
+        var confirmationCount = 0;
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [
+                CreateBook("Alpha", ["Unknown"], coverBytes: [1]),
+                CreateBook("Beta", ["Unknown"], coverBytes: [1]),
+                CreateBook("Gamma", ["Unknown"], coverBytes: [1])
+            ],
+            key => key,
+            repository: repository,
+            confirmMarkCorrect: (count, _) =>
+            {
+                confirmationCount = count;
+                return Task.FromResult(true);
+            });
+        var issue = dashboard.Issues.Single(item => item.SignalKey == MetadataQualitySignalKeys.MissingAuthor);
+        var selectedRows = issue.Rows.Take(2).ToArray();
+        dashboard.SetSelectedBooks(selectedRows);
+
+        await dashboard.MarkSelectedIssueCorrectCommand.ExecuteAsync(null);
+
+        confirmationCount.Should().Be(2);
+        repository.AddedKeys.Should().BeEquivalentTo(selectedRows.Select(row =>
+            new MetadataQualityExclusionKey(row.Id, MetadataQualitySignalKeys.MissingAuthor)));
+        issue.Rows.Should().ContainSingle().Which.Title.Should().Be("Gamma");
+        dashboard.SelectedBook.Should().BeSameAs(issue.Rows.Single());
+        dashboard.SelectedBookCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Mark_correct_bulk_confirmation_cancelled_keeps_every_row()
+    {
+        var repository = new RecordingMetadataQualityExclusionRepository();
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [
+                CreateBook("Alpha", ["Unknown"], coverBytes: [1]),
+                CreateBook("Beta", ["Unknown"], coverBytes: [1])
+            ],
+            key => key,
+            repository: repository,
+            confirmMarkCorrect: (_, _) => Task.FromResult(false));
+        var issue = dashboard.SelectedIssue!;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.MarkSelectedIssueCorrectCommand.ExecuteAsync(null);
+
+        repository.AddedKeys.Should().BeEmpty();
+        issue.Rows.Should().HaveCount(2);
+        dashboard.SelectedBookCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Mark_correct_bulk_storage_failure_keeps_every_row_and_selection()
+    {
+        var repository = new RecordingMetadataQualityExclusionRepository(
+            new InvalidOperationException("Storage failed"));
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [
+                CreateBook("Alpha", ["Unknown"], coverBytes: [1]),
+                CreateBook("Beta", ["Unknown"], coverBytes: [1])
+            ],
+            key => $"localized:{key}",
+            repository: repository,
+            confirmMarkCorrect: (_, _) => Task.FromResult(true));
+        var issue = dashboard.SelectedIssue!;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.MarkSelectedIssueCorrectCommand.ExecuteAsync(null);
+
+        issue.Rows.Should().HaveCount(2);
+        dashboard.SelectedBookCount.Should().Be(2);
+        dashboard.StatusMessage.Should().Be("localized:MetadataQualityMarkCorrectFailed");
+    }
+
+    [Fact]
+    public void Multiple_selection_disables_single_book_actions()
+    {
+        var books = new[]
+        {
+            CreateBook("Alpha", ["Unknown"], coverBytes: [1]),
+            CreateBook("Beta", ["Unknown"], coverBytes: [1])
+        };
+        var dashboard = new MetadataQualityDashboardViewModel(
+            books,
+            key => key,
+            repository: new RecordingMetadataQualityExclusionRepository(),
+            authorRepairService: new RecordingAuthorRepairService(books[0]),
+            showAuthorRepair: (_, _) => Task.FromResult(true),
+            confirmMarkCorrect: (_, _) => Task.FromResult(true));
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue!.Rows);
+
+        dashboard.SelectedBookCount.Should().Be(2);
+        dashboard.MarkSelectedIssueCorrectCommand.CanExecute(null).Should().BeTrue();
+        dashboard.CanOpenSelectedBook.Should().BeFalse();
+        dashboard.RepairMissingAuthorCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Mark_correct_single_selection_does_not_request_confirmation()
+    {
+        var confirmationCalls = 0;
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [CreateBook("Alpha", ["Unknown"], coverBytes: [1])],
+            key => key,
+            repository: new RecordingMetadataQualityExclusionRepository(),
+            confirmMarkCorrect: (_, _) =>
+            {
+                confirmationCalls++;
+                return Task.FromResult(true);
+            });
+
+        await dashboard.MarkSelectedIssueCorrectCommand.ExecuteAsync(null);
+
+        confirmationCalls.Should().Be(0);
+    }
+
+    [Fact]
     public async Task Repair_missing_author_uses_known_authors_and_reevaluates_the_saved_book()
     {
         var missingAuthor = CreateBook("Boek zonder auteur", ["Unknown"]);
