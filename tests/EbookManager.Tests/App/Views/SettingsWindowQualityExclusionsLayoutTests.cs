@@ -6,14 +6,16 @@ namespace EbookManager.Tests.App.Views;
 public sealed class SettingsWindowQualityExclusionsLayoutTests
 {
     [Fact]
-    public void Duplicates_section_exposes_accessible_quality_exclusions_management_action()
+    public void Quality_section_exposes_accessible_quality_exclusions_management_action()
     {
         var document = XDocument.Load(
             Path.Combine(AppContext.BaseDirectory, "TestAssets", "SettingsWindow.xaml"));
         XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
 
-        var button = document.Descendants(presentation + "Button")
+        var qualityTab = document.Descendants(presentation + "TabItem")
+            .Single(element => RequiredAttribute(element, "Header") == "{loc:Loc SettingsQualitySection}");
+        var button = qualityTab.Descendants(presentation + "Button")
             .Single(element => (string?)element.Attribute(xaml + "Name") == "ManageMetadataQualityExclusionsButton");
 
         RequiredAttribute(button, "Content").Should().Be("{loc:Loc ManageMetadataQualityExclusions}");
@@ -21,6 +23,12 @@ public sealed class SettingsWindowQualityExclusionsLayoutTests
             "{Binding LibraryViewModel.ShowMetadataQualityExclusionsCommand, ElementName=SettingsRoot}");
         RequiredAttribute(button, "Focusable").Should().Be("True");
         RequiredAttribute(button, "AutomationProperties.Name").Should().Be("{loc:Loc ManageMetadataQualityExclusions}");
+
+        var duplicatesTab = document.Descendants(presentation + "TabItem")
+            .Single(element => RequiredAttribute(element, "Header") == "{loc:Loc SettingsDuplicatesSection}");
+        duplicatesTab.Descendants(presentation + "Button")
+            .Should().NotContain(element =>
+                (string?)element.Attribute(xaml + "Name") == "ManageMetadataQualityExclusionsButton");
     }
 
     private static string RequiredAttribute(XElement element, XName name) =>

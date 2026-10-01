@@ -240,6 +240,7 @@
   <data name="SettingsImportSection" xml:space="preserve"><value>Import</value></data>
   <data name="SettingsMetadataSection" xml:space="preserve"><value>Metadata</value></data>
   <data name="SettingsDuplicatesSection" xml:space="preserve"><value>Duplicates</value></data>
+  <data name="SettingsQualitySection" xml:space="preserve"><value>Quality</value></data>
   <data name="SettingsConfirmationsSection" xml:space="preserve"><value>Confirmations</value></data>
   <data name="SettingsDiagnosticsSection" xml:space="preserve"><value>Diagnostics</value></data>
   <data name="AuthorSortStrategy" xml:space="preserve"><value>Author sorting</value></data>

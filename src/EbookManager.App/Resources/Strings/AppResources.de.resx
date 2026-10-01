@@ -368,6 +368,7 @@
   <data name="SettingsDuplicatesSection" xml:space="preserve">
     <value>Duplikate</value>
   </data>
+  <data name="SettingsQualitySection" xml:space="preserve"><value>Qualität</value></data>
   <data name="SettingsConfirmationsSection" xml:space="preserve">
     <value>Bestaetigungen</value>
   </data>

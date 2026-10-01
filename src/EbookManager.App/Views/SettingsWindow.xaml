@@ -456,6 +456,25 @@
         </StackPanel>
       </TabItem>
 
+      <TabItem Header="{loc:Loc SettingsQualitySection}">
+        <StackPanel Margin="12">
+          <TextBlock Text="{loc:Loc MetadataQualityExclusionsSettingsTitle}"
+                     FontWeight="SemiBold"
+                     Margin="0,0,0,6" />
+          <TextBlock Text="{loc:Loc MetadataQualityExclusionsSettingsDescription}"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Margin="0,0,0,8" />
+          <Button x:Name="ManageMetadataQualityExclusionsButton"
+                  Content="{loc:Loc ManageMetadataQualityExclusions}"
+                  HorizontalAlignment="Left"
+                  MinWidth="210"
+                  Focusable="True"
+                  AutomationProperties.Name="{loc:Loc ManageMetadataQualityExclusions}"
+                  Command="{Binding LibraryViewModel.ShowMetadataQualityExclusionsCommand, ElementName=SettingsRoot}" />
+        </StackPanel>
+      </TabItem>
+
       <TabItem Header="{loc:Loc SettingsDuplicatesSection}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="12">
@@ -478,21 +497,6 @@
                   MinWidth="170"
                   Margin="0,0,0,16"
                   Command="{Binding LibraryViewModel.ShowDuplicateExclusionsCommand, ElementName=SettingsRoot}" />
-          <TextBlock Text="{loc:Loc MetadataQualityExclusionsSettingsTitle}"
-                     FontWeight="SemiBold"
-                     Margin="0,0,0,6" />
-          <TextBlock Text="{loc:Loc MetadataQualityExclusionsSettingsDescription}"
-                     TextWrapping="Wrap"
-                     Foreground="{DynamicResource TextSecondaryBrush}"
-                     Margin="0,0,0,8" />
-          <Button x:Name="ManageMetadataQualityExclusionsButton"
-                  Content="{loc:Loc ManageMetadataQualityExclusions}"
-                  HorizontalAlignment="Left"
-                  MinWidth="210"
-                  Margin="0,0,0,16"
-                  Focusable="True"
-                  AutomationProperties.Name="{loc:Loc ManageMetadataQualityExclusions}"
-                  Command="{Binding LibraryViewModel.ShowMetadataQualityExclusionsCommand, ElementName=SettingsRoot}" />
           <TextBlock Text="{loc:Loc DuplicateMergeDefaults}"
                      FontWeight="SemiBold"
                      Margin="0,0,0,6" />
