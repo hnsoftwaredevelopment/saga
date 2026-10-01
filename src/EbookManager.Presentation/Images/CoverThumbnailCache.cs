@@ -38,7 +38,8 @@ public sealed class CoverThumbnailCache<TThumbnail>
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(decodePixelWidth);
         cancellationToken.ThrowIfCancellationRequested();
 
-        var key = CreateKey(path, decodePixelWidth);
+        var sourceVersion = await GetSourceVersionAsync(path, cancellationToken).ConfigureAwait(false);
+        var key = CreateKey(path, decodePixelWidth, sourceVersion);
         lock (sync)
         {
             if (entries.TryGetValue(key, out var cached))
@@ -70,8 +71,29 @@ public sealed class CoverThumbnailCache<TThumbnail>
         return thumbnail;
     }
 
-    private static string CreateKey(string path, int decodePixelWidth) =>
-        $"{decodePixelWidth}\0{path}";
+    private static string CreateKey(string path, int decodePixelWidth, string sourceVersion) =>
+        $"{decodePixelWidth}\0{sourceVersion}\0{path}";
+
+    private static Task<string> GetSourceVersionAsync(
+        string path,
+        CancellationToken cancellationToken) =>
+        Task.Run(() =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                var file = new FileInfo(path);
+                return file.Exists
+                    ? $"{file.LastWriteTimeUtc.Ticks}:{file.Length}"
+                    : "missing";
+            }
+            catch (Exception exception) when (
+                exception is IOException or UnauthorizedAccessException or ArgumentException or
+                    NotSupportedException)
+            {
+                return "unavailable";
+            }
+        }, cancellationToken);
 
     private void MarkMostRecent(LinkedListNode<string> node)
     {

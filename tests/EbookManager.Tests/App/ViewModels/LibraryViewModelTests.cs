@@ -56,6 +56,23 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Search_reports_an_unexpected_background_failure()
+    {
+        var reportedFailure = new TaskCompletionSource<Exception>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var viewModel = CreateViewModel(
+            [CreateBook("Dune", ["Frank Herbert"])],
+            searchFilterDelay: _ => Task.FromException(new InvalidOperationException("filter failed")),
+            searchFilterErrorReporter: exception => reportedFailure.TrySetResult(exception));
+        await viewModel.RefreshAsync();
+
+        viewModel.SearchText = "dune";
+
+        var exception = await reportedFailure.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        exception.Should().BeOfType<InvalidOperationException>();
+        exception.Message.Should().Be("filter failed");
+    }
+
+    [Fact]
     public async Task Search_preserves_the_selected_book_without_reloading_details()
     {
         var book = CreateBook("The Hobbit", ["J.R.R. Tolkien"]);
@@ -348,6 +365,32 @@ public sealed class LibraryViewModelTests
         viewModel.SearchText = "avondgroep";
 
         viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == first.Id);
+    }
+
+    [Fact]
+    public async Task Custom_metadata_refresh_invalidates_a_search_index_built_while_values_are_loading()
+    {
+        var book = CreateBook("Book", ["Author"]);
+        var customMetadataRepository = new InMemoryCustomMetadataRepository();
+        var field = customMetadataRepository.AddDefinition("Leesclub", CustomMetadataFieldType.Text);
+        customMetadataRepository.SetValue(new CustomMetadataValue(book.Id, field.Id, TextValue: "Avondgroep"));
+        var viewModel = CreateViewModel(
+            [book],
+            currentLibrary: CreateActiveLibrary(),
+            customMetadataRepository: customMetadataRepository);
+        await viewModel.RefreshAsync();
+
+        customMetadataRepository.SetValue(new CustomMetadataValue(book.Id, field.Id, TextValue: "Middaggroep"));
+        customMetadataRepository.BlockNextValuesRequest();
+        var refresh = viewModel.RefreshCustomMetadataColumnsAsync();
+        await customMetadataRepository.WaitForBlockedValuesRequestAsync();
+
+        viewModel.SearchText = "avondgroep";
+        customMetadataRepository.ReleaseBlockedValuesRequest();
+        await refresh;
+        viewModel.SearchText = "middaggroep";
+
+        viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == book.Id);
     }
 
     [Fact]
@@ -1529,8 +1572,8 @@ public sealed class LibraryViewModelTests
         {
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("nl-NL");
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("nl-NL");
-            var english = CreateBook("English Book", ["Author"], language: "en", tags: ["Nederlands"]);
-            var dutch = CreateBook("Dutch Book", ["Author"], language: "nl", tags: ["User Tag"]);
+            var english = CreateBook("First Book", ["Author"], language: "en", tags: ["Nederlands"]);
+            var dutch = CreateBook("Second Book", ["Author"], language: "nl", tags: ["User Tag"]);
             var viewModel = CreateViewModel([english, dutch]);
 
             await viewModel.RefreshAsync();
@@ -1538,15 +1581,19 @@ public sealed class LibraryViewModelTests
                 .Should().Equal("Engels (1)", "Nederlands (1)");
             viewModel.CategoryFilters.Select(filter => filter.DisplayName)
                 .Should().Contain("Nederlands (1)");
+            viewModel.SearchText = "Engels";
+            viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == english.Id);
 
             CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
             viewModel.RefreshLocalizedFilterDisplayNames();
+            viewModel.SearchText = "Dutch";
 
             viewModel.LanguageFilters.Select(filter => filter.DisplayName)
                 .Should().Equal("English (1)", "Dutch (1)");
             viewModel.CategoryFilters.Select(filter => filter.DisplayName)
                 .Should().Contain("Nederlands (1)");
+            viewModel.VisibleBooks.Should().ContainSingle(row => row.Id == dutch.Id);
         }
         finally
         {
@@ -3578,7 +3625,8 @@ public sealed class LibraryViewModelTests
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null,
-        Func<CancellationToken, Task>? searchFilterDelay = null)
+        Func<CancellationToken, Task>? searchFilterDelay = null,
+        Action<Exception>? searchFilterErrorReporter = null)
     {
         repository ??= new StaticBookRepository(books);
         var bookService = new BookService(
@@ -3612,7 +3660,8 @@ public sealed class LibraryViewModelTests
             metadataQualityTitleAuthorRepairService: metadataQualityTitleAuthorRepairService,
             performanceReporter: performanceReporter,
             localize: localize,
-            searchFilterDelay: searchFilterDelay ?? (_ => Task.CompletedTask));
+            searchFilterDelay: searchFilterDelay ?? (_ => Task.CompletedTask),
+            searchFilterErrorReporter: searchFilterErrorReporter);
     }
 
     private static Book CreateBook(
@@ -3667,6 +3716,9 @@ public sealed class LibraryViewModelTests
     {
         private readonly List<CustomMetadataFieldDefinition> definitions = [];
         private readonly Dictionary<(Guid BookId, Guid FieldId), CustomMetadataValue> values = [];
+        private TaskCompletionSource? blockedValuesRequestStarted;
+        private TaskCompletionSource? blockedValuesRequestRelease;
+        private bool blockNextValuesRequest;
 
         public int GetValuesCalls { get; private set; }
         public int GetValuesForBooksCalls { get; private set; }
@@ -3696,6 +3748,18 @@ public sealed class LibraryViewModelTests
 
         public void SetValue(CustomMetadataValue value) =>
             values[(value.BookId, value.FieldId)] = value;
+
+        public void BlockNextValuesRequest()
+        {
+            blockNextValuesRequest = true;
+            blockedValuesRequestStarted = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            blockedValuesRequestRelease = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+
+        public Task WaitForBlockedValuesRequestAsync() =>
+            blockedValuesRequestStarted!.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        public void ReleaseBlockedValuesRequest() => blockedValuesRequestRelease!.TrySetResult();
 
         public Task<IReadOnlyList<CustomMetadataFieldDefinition>> ListDefinitionsAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<CustomMetadataFieldDefinition>>(definitions);
@@ -3733,13 +3797,21 @@ public sealed class LibraryViewModelTests
                 values.Values.Where(value => value.BookId == bookId).ToList());
         }
 
-        public Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
+        public async Task<IReadOnlyList<CustomMetadataValue>> GetValuesForBooksAsync(
             IReadOnlyCollection<Guid> bookIds,
             CancellationToken cancellationToken)
         {
             GetValuesForBooksCalls++;
-            return Task.FromResult<IReadOnlyList<CustomMetadataValue>>(
-                values.Values.Where(value => bookIds.Contains(value.BookId)).ToList());
+            if (blockNextValuesRequest &&
+                blockedValuesRequestStarted is { } started &&
+                blockedValuesRequestRelease is { } release)
+            {
+                blockNextValuesRequest = false;
+                started.TrySetResult();
+                await release.Task.WaitAsync(cancellationToken);
+            }
+
+            return values.Values.Where(value => bookIds.Contains(value.BookId)).ToList();
         }
 
         public Task SetValueAsync(CustomMetadataValue value, CancellationToken cancellationToken)

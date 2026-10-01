@@ -1,4 +1,5 @@
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -134,7 +135,8 @@ public sealed class AsyncCoverImage : Image
             }
             catch (Exception exception) when (
                 exception is IOException or UnauthorizedAccessException or NotSupportedException or
-                    InvalidOperationException or FormatException)
+                    InvalidOperationException or FormatException or COMException or ArgumentException or
+                    OverflowException)
             {
                 return null;
             }

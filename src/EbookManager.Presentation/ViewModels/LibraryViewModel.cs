@@ -57,6 +57,7 @@ public sealed partial class LibraryViewModel : ObservableObject
     private readonly ILibraryPerformanceReporter? performanceReporter;
     private readonly Func<string, string> localize;
     private readonly Func<CancellationToken, Task> searchFilterDelay;
+    private readonly Action<Exception> searchFilterErrorReporter;
     private readonly SemaphoreSlim settingsSaveLock = new(1, 1);
     private IReadOnlyList<Book> books = [];
     private BookSearchIndex? bookSearchIndex;
@@ -122,7 +123,8 @@ public sealed partial class LibraryViewModel : ObservableObject
         Func<string, string>? localize = null,
         IBookCoverSearchService? bookCoverSearchService = null,
         IMetadataQualityCoverRepairService? metadataQualityCoverRepairService = null,
-        Func<CancellationToken, Task>? searchFilterDelay = null)
+        Func<CancellationToken, Task>? searchFilterDelay = null,
+        Action<Exception>? searchFilterErrorReporter = null)
     {
         this.bookRepository = bookRepository;
         this.searchService = searchService;
@@ -152,6 +154,11 @@ public sealed partial class LibraryViewModel : ObservableObject
         this.localize = localize ?? DefaultGroupText;
         this.searchFilterDelay = searchFilterDelay ??
             (cancellationToken => Task.Delay(SearchInputDelay, cancellationToken));
+        this.searchFilterErrorReporter = searchFilterErrorReporter ??
+            (exception => Trace.TraceError(
+                "Applying the delayed library search filter failed: {0}: {1}",
+                exception.GetType().Name,
+                exception.Message));
         currentLibraryName = currentLibrary?.Current?.Name;
         currentLibraryPath = currentLibrary?.Current?.DirectoryPath;
 
@@ -478,6 +485,7 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
 
         Details.RefreshLocalizedDisplayNames();
+        InvalidateBookViewCaches();
     }
 
     public async Task RefreshSettingsDependentDisplayAsync(CancellationToken cancellationToken = default)
@@ -769,10 +777,10 @@ public sealed partial class LibraryViewModel : ObservableObject
         IReadOnlyList<Book> sourceBooks,
         CancellationToken cancellationToken)
     {
-        InvalidateBookViewCaches();
         if (customMetadataRepository is null || sourceBooks.Count == 0)
         {
             customMetadataValuesByBookId = [];
+            InvalidateBookViewCaches();
             return;
         }
 
@@ -790,16 +798,17 @@ public sealed partial class LibraryViewModel : ObservableObject
                         value => FormatCustomMetadataValue(
                             customMetadataFieldDefinitionMap[value.FieldId].Type,
                             value)));
+        InvalidateBookViewCaches();
     }
 
     private async Task RefreshCustomMetadataValuesForBookAsync(
         Guid bookId,
         CancellationToken cancellationToken)
     {
-        InvalidateBookViewCaches();
         if (customMetadataRepository is null)
         {
             customMetadataValuesByBookId.Remove(bookId);
+            InvalidateBookViewCaches();
             return;
         }
 
@@ -814,17 +823,18 @@ public sealed partial class LibraryViewModel : ObservableObject
         if (formattedValues.Count == 0)
         {
             customMetadataValuesByBookId.Remove(bookId);
+            InvalidateBookViewCaches();
             return;
         }
 
         customMetadataValuesByBookId[bookId] = formattedValues;
+        InvalidateBookViewCaches();
     }
 
     private async Task RefreshCustomMetadataValuesForBooksAsync(
         IReadOnlyCollection<Guid> bookIds,
         CancellationToken cancellationToken)
     {
-        InvalidateBookViewCaches();
         if (customMetadataRepository is null || bookIds.Count == 0)
         {
             return;
@@ -854,6 +864,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
             customMetadataValuesByBookId.Remove(bookId);
         }
+
+        InvalidateBookViewCaches();
     }
 
     private IReadOnlyDictionary<Guid, string> GetCustomMetadataValues(Guid bookId) =>
@@ -1087,6 +1099,10 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
         {
+        }
+        catch (Exception exception)
+        {
+            searchFilterErrorReporter(exception);
         }
         finally
         {

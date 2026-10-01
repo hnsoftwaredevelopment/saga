@@ -70,6 +70,37 @@ public sealed class CoverThumbnailCacheTests
     }
 
     [Fact]
+    public async Task GetAsync_reloads_a_thumbnail_when_the_source_file_changes()
+    {
+        var path = Path.GetTempFileName();
+        try
+        {
+            var loads = 0;
+            var cache = new CoverThumbnailCache<string>(
+                capacity: 4,
+                (sourcePath, _, _) =>
+                {
+                    loads++;
+                    return Task.FromResult<string?>(File.ReadAllText(sourcePath));
+                });
+            File.WriteAllText(path, "first");
+            File.SetLastWriteTimeUtc(path, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+            (await cache.GetAsync(path, 48, default)).Should().Be("first");
+
+            File.WriteAllText(path, "second");
+            File.SetLastWriteTimeUtc(path, new DateTime(2026, 1, 2, 0, 0, 0, DateTimeKind.Utc));
+
+            (await cache.GetAsync(path, 48, default)).Should().Be("second");
+            loads.Should().Be(2);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
     public async Task GetAsync_does_not_cache_a_cancelled_load()
     {
         var loads = 0;
