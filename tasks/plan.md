@@ -63,7 +63,7 @@ Milestone 37 verplaatst het bestaande beheer van genegeerde kwaliteitsmeldingen 
 - [x] Gerichte tests groen.
 - [x] Volledige tests en build groen.
 - [x] Handmatige checklist klaar voor de gebruiker.
-- [ ] Gewone, mergeable PR geopend.
+- [x] Gewone PR #38 geopend; mergeability en controles worden op GitHub bewaakt.
 
 ## Gepauzeerd onderhoud
 

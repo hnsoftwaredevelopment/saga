@@ -12,7 +12,7 @@
 - [x] Volledige Debug-testset uitvoeren: 746 van 746 groen.
 - [x] Schone Debug-build uitvoeren: 0 waarschuwingen, 0 fouten, één `Saga.exe` versie `2026.10.1.45`.
 - [x] Diffreview en Definition of Done afgerond; geen blokkerende bevindingen.
-- [ ] Gewone PR openen en GitHub-controles beoordelen.
+- [x] Gewone PR #38 geopend; GitHub-controles zijn gestart.
 
 ## Buiten scope
 
