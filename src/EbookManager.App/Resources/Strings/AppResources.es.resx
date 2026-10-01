@@ -612,6 +612,16 @@
   <data name="MetadataQualityPossibleTitleAuthorSwapDescription" xml:space="preserve"><value>Libros cuyo título parece el nombre de una persona, pero cuyo autor no.</value></data>
   <data name="MetadataQualityMessyTags" xml:space="preserve"><value>Etiquetas desordenadas</value></data>
   <data name="MetadataQualityMessyTagsDescription" xml:space="preserve"><value>Etiquetas con espacios adicionales o valores separados por comas.</value></data>
+  <data name="MetadataQualityCleanTags" xml:space="preserve"><value>Limpiar etiquetas</value></data>
+  <data name="MetadataQualityTagRepairTitle" xml:space="preserve"><value>Limpiar etiquetas</value></data>
+  <data name="MetadataQualityTagRepairDescription" xml:space="preserve"><value>Revise la propuesta y ajuste las etiquetas si es necesario antes de guardarlas.</value></data>
+  <data name="MetadataQualityCurrentTags" xml:space="preserve"><value>Etiquetas actuales</value></data>
+  <data name="MetadataQualityNewTags" xml:space="preserve"><value>Nuevas etiquetas</value></data>
+  <data name="MetadataQualityTagRepairHelp" xml:space="preserve"><value>Use una etiqueta por línea. Las comas se separan; se eliminan los valores vacíos, los espacios adicionales y las etiquetas duplicadas.</value></data>
+  <data name="MetadataQualityChangeTags" xml:space="preserve"><value>Cambiar etiquetas</value></data>
+  <data name="MetadataQualityTagRepairFailed" xml:space="preserve"><value>No se pudieron cambiar las etiquetas. Inténtelo de nuevo.</value></data>
+  <data name="MetadataQualityTagRepairWriteBackWarning" xml:space="preserve"><value>Las etiquetas se guardaron, pero no se pudieron escribir en todos los archivos de libro relacionados.</value></data>
+  <data name="MetadataQualityTagRepairNotNeeded" xml:space="preserve"><value>Estas etiquetas ya no necesitan limpieza.</value></data>
   <data name="Yes" xml:space="preserve"><value>Sí</value></data>
   <data name="MetadataQualityMarkCorrect" xml:space="preserve"><value>Esto es correcto</value></data>
   <data name="MetadataQualityMarkCorrectFailed" xml:space="preserve"><value>No se pudo guardar esta decisión de calidad. Inténtelo de nuevo.</value></data>

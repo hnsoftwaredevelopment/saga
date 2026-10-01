@@ -51,6 +51,9 @@
     <None Include="..\..\src\EbookManager.App\Views\MetadataQualitySeriesRepairWindow.xaml"
           Link="TestAssets\MetadataQualitySeriesRepairWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\MetadataQualityTagRepairWindow.xaml"
+          Link="TestAssets\MetadataQualityTagRepairWindow.xaml"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\MetadataQualityTitleAuthorRepairWindow.xaml"
           Link="TestAssets\MetadataQualityTitleAuthorRepairWindow.xaml"
           CopyToOutputDirectory="PreserveNewest" />

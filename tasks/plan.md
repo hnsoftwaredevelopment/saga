@@ -85,11 +85,11 @@ Tag-normalisatie
 
 **Acceptatiecriteria:**
 
-- [ ] Het veld `Nieuwe tags` krijgt focus en ondersteunt toetsenbordbewerking met één tag per regel.
-- [ ] `Tags wijzigen` volgt `CanSave`; annuleren blijft veilig.
-- [ ] Labels, automation names, contrast en bestaande themaresources worden gebruikt.
+- [x] Het veld `Nieuwe tags` krijgt focus en ondersteunt toetsenbordbewerking met één tag per regel.
+- [x] `Tags wijzigen` volgt `CanSave`; annuleren blijft veilig.
+- [x] Labels, automation names, contrast en bestaande themaresources worden gebruikt.
 
-**Verificatie:** XAML-layouttest en bouw van de WPF-app.
+**Verificatie:** De 2 XAML-layouttests zijn groen en de WPF-app bouwt zonder waarschuwingen of fouten.
 
 **Afhankelijkheden:** Taak 2.
 
@@ -101,11 +101,11 @@ Tag-normalisatie
 
 **Acceptatiecriteria:**
 
-- [ ] De echte applicatie opent het nieuwe venster vanuit de Quality Page.
-- [ ] De herstelde boekgegevens verschijnen direct in Quality Page en bibliotheek.
-- [ ] Alle ondersteunde resx-bestanden bevatten dezelfde nieuwe sleutels.
+- [x] De echte applicatie opent het nieuwe venster vanuit de Quality Page.
+- [x] De herstelde boekgegevens verschijnen direct in Quality Page en bibliotheek.
+- [x] Alle ondersteunde resx-bestanden bevatten dezelfde nieuwe sleutels.
 
-**Verificatie:** Compositie- en resourcecontroles, gerichte tests en schone Debug-build.
+**Verificatie:** Compositie, 6 taalbestanden, 21 gerichte tagtests en een schone Debug-build zijn gecontroleerd.
 
 **Afhankelijkheden:** Taken 3 en 4.
 
@@ -113,9 +113,9 @@ Tag-normalisatie
 
 ## Checkpoint 2
 
-- [ ] Gerichte tests, volledige testsuite en opmaakcontrole zijn groen.
-- [ ] Debug-build bevat nul waarschuwingen en nul fouten.
-- [ ] Zelfreview op correctheid, eenvoud, architectuur, beveiliging, toegankelijkheid en prestaties is afgerond.
+- [x] Gerichte tests, volledige testsuite en opmaakcontrole zijn groen.
+- [x] Debug-build bevat nul waarschuwingen en nul fouten.
+- [x] Zelfreview op correctheid, eenvoud, architectuur, beveiliging, toegankelijkheid en prestaties is afgerond.
 
 ## Taak 6: Praktijkacceptatie en oplevering
 

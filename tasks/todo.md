@@ -10,7 +10,7 @@
 - [x] Taak 2: bewerkbaar herstelviewmodel; 4 gerichte tests groen.
 - [x] Checkpoint 1: 12 gerichte logica- en viewmodeltests groen en tussentijdse review afgerond.
 - [x] Taak 3: Quality Page-opdracht en directe herbeoordeling; 7 nieuwe en 62 totale dashboardtests groen.
-- [ ] Taak 4: toegankelijk WPF-herstelvenster.
-- [ ] Taak 5: compositie en lokalisatie.
-- [ ] Checkpoint 2: volledige tests, opmaakcontrole, zelfreview en Debug-build groen.
+- [x] Taak 4: toegankelijk WPF-herstelvenster; 2 layouttests groen.
+- [x] Taak 5: compositie en lokalisatie; alle 6 talen compleet en applicatiebouw groen.
+- [x] Checkpoint 2: 741 tests, opmaakcontrole, zelfreview en Debug-build groen zonder waarschuwingen.
 - [ ] Taak 6: handmatige checklist, Obsidian-spiegel en normale PR.
