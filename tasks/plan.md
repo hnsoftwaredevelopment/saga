@@ -82,4 +82,4 @@ Milestone 40 rondt de bestaande duplicate-merge af door na iedere geslaagde merg
 - [x] Lokale schermaanpassingen afzonderlijk vastgelegd.
 - [x] Rode en groene tests per increment vastgelegd.
 - [ ] Volledige Definition of Done afgerond.
-- [ ] Gewone, niet-draft PR geopend.
+- [x] Gewone, niet-draft PR #41 geopend; handmatige acceptatie en GitHub-controles staan nog open.

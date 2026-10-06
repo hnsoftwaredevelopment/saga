@@ -16,7 +16,8 @@
 - [x] Volledige testset uitgevoerd (772 geslaagd; 0 overgeslagen).
 - [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.6.25; 0 waarschuwingen en 0 fouten).
 - [x] Branchdiff beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; gedeelde sidecarwriter toegevoegd en daarna geen bevindingen.
-- [ ] Gewone, niet-draft PR openen en GitHub-controles volgen.
+- [x] Gewone, niet-draft PR #41 geopend.
+- [ ] Handmatige checklist uitvoeren en GitHub-controles en eventuele reviewopmerkingen beoordelen.
 
 ## Buiten scope
 
