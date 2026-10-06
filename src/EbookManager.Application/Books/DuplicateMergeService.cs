@@ -63,25 +63,12 @@ public sealed class DuplicateMergeService(
         try
         {
             var files = await bookRepository.ListFilesAsync(target.Id, cancellationToken);
-            var writtenDirectories = new HashSet<string>(
-                OperatingSystem.IsWindows()
-                    ? StringComparer.OrdinalIgnoreCase
-                    : StringComparer.Ordinal);
-            foreach (var file in files)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var absolutePath = fileStore.GetAbsolutePath(file.RelativePath);
-                var directory = Path.GetDirectoryName(absolutePath);
-                if (directory is null || !writtenDirectories.Add(directory))
-                {
-                    continue;
-                }
-
-                await metadataSidecarStore.WriteAsync(
-                    absolutePath,
-                    target.Metadata,
-                    cancellationToken);
-            }
+            await MetadataSidecarWriter.WriteAsync(
+                fileStore,
+                metadataSidecarStore,
+                target.Metadata,
+                files,
+                cancellationToken);
 
             return new DuplicateMergeSidecarResult(DuplicateMergeSidecarStatus.Succeeded);
         }
