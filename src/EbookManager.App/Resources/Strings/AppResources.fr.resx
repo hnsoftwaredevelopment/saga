@@ -287,6 +287,8 @@
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>La liste des doublons est obsolete. Saga a actualise la bibliotheque ; ouvrez de nouveau la vue des doublons.</value>
   </data>
+  <data name="DuplicateMergeSidecarWarningTitle" xml:space="preserve"><value>Fusion terminée avec un avertissement</value></data>
+  <data name="DuplicateMergeSidecarWarningMessage" xml:space="preserve"><value>Les livres ont été fusionnés, mais Saga n'a pas pu mettre à jour metadata.json dans chaque dossier de livre. Enregistrez à nouveau les métadonnées du livre cible pour réessayer.</value></data>
   <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
     <value>Marquage impossible</value>
   </data>

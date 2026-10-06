@@ -200,6 +200,8 @@
   <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is samengevoegd.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Samenvoegen mislukt</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>De duplicatenlijst is verouderd. Saga heeft de bibliotheek ververst; open het duplicatenoverzicht opnieuw.</value></data>
+  <data name="DuplicateMergeSidecarWarningTitle" xml:space="preserve"><value>Samenvoegen voltooid met waarschuwing</value></data>
+  <data name="DuplicateMergeSidecarWarningMessage" xml:space="preserve"><value>De boeken zijn samengevoegd, maar Saga kon metadata.json niet in iedere boekmap bijwerken. Sla de metadata van het doelboek opnieuw op om het opnieuw te proberen.</value></data>
   <data name="DuplicateIgnoreFailedTitle" xml:space="preserve"><value>Markeren mislukt</value></data>
   <data name="DuplicateIgnoreFailedMessage" xml:space="preserve"><value>Saga kon dit boek niet markeren als geen duplicaat. Probeer het opnieuw.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteurmatch</value></data>

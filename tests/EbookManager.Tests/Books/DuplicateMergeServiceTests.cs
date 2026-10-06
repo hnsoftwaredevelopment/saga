@@ -140,6 +140,26 @@ public sealed class DuplicateMergeServiceTests
             write.Metadata.Authors.SequenceEqual(new[] { "Bron auteur" }));
     }
 
+    [Fact]
+    public async Task Merge_reports_sidecar_failure_after_database_merge_succeeds()
+    {
+        var source = CreateBook("Bron titel", ["Auteur"]);
+        var target = CreateBook("Doel titel", ["Auteur"]);
+        var repository = new RecordingBookRepository(
+            [source, target],
+            [CreateFile(target.Id, "books/target/book.epub", EbookFormat.Epub)]);
+        var service = new DuplicateMergeService(
+            repository,
+            new TestLibraryFileStore("C:/library"),
+            new ThrowingMetadataSidecarStore());
+
+        var result = await service.MergeAsync(source.Id, target.Id, [], default);
+
+        result.SidecarStatus.Should().Be(DuplicateMergeSidecarStatus.Failed);
+        result.SidecarMessage.Should().Be("sidecar unavailable");
+        repository.UpdatedBook.Should().NotBeNull();
+    }
+
     private sealed class RecordingBookRepository : IBookRepository
     {
         private readonly Dictionary<Guid, Book> books = [];
@@ -275,6 +295,18 @@ public sealed class DuplicateMergeServiceTests
             Writes.Add((bookFilePath, metadata));
             return Task.CompletedTask;
         }
+    }
+
+    private sealed class ThrowingMetadataSidecarStore : IMetadataSidecarStore
+    {
+        public Task<BookMetadata?> TryReadAsync(string bookFilePath, CancellationToken cancellationToken) =>
+            Task.FromResult<BookMetadata?>(null);
+
+        public Task WriteAsync(
+            string bookFilePath,
+            BookMetadata metadata,
+            CancellationToken cancellationToken) =>
+            throw new IOException("sidecar unavailable");
     }
 
     private static BookFile CreateFile(Guid bookId, string relativePath, EbookFormat format) =>

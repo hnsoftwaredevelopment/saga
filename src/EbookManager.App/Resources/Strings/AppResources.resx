@@ -200,6 +200,8 @@
   <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is merged.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Merge failed</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>The duplicate list is outdated. Saga refreshed the library; open the duplicate overview again.</value></data>
+  <data name="DuplicateMergeSidecarWarningTitle" xml:space="preserve"><value>Merge completed with a warning</value></data>
+  <data name="DuplicateMergeSidecarWarningMessage" xml:space="preserve"><value>The books were merged, but Saga could not update metadata.json in every book folder. Save the target book's metadata again to retry.</value></data>
   <data name="DuplicateIgnoreFailedTitle" xml:space="preserve"><value>Ignore failed</value></data>
   <data name="DuplicateIgnoreFailedMessage" xml:space="preserve"><value>Saga could not mark this book as not a duplicate. Please try again.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Author match</value></data>
