@@ -146,7 +146,7 @@
     <value> livres</value>
   </data>
   <data name="DuplicateSelectionHelp" xml:space="preserve">
-    <value>Astuce : maintenez Ctrl pendant la selection d'un autre livre pour selectionner plusieurs doublons.</value>
+    <value>Selectionnez deux livres du meme groupe, puis choisissez Fusionner. Maintenez Ctrl pendant la selection du second livre.</value>
   </data>
   <data name="MarkAsNotDuplicate" xml:space="preserve">
     <value>Marquer ce livre comme non doublon</value>

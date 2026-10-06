@@ -146,7 +146,7 @@
     <value> libri</value>
   </data>
   <data name="DuplicateSelectionHelp" xml:space="preserve">
-    <value>Suggerimento: tieni premuto Ctrl mentre selezioni un altro libro per selezionare piu duplicati.</value>
+    <value>Seleziona due libri dello stesso gruppo e scegli Unisci. Tieni premuto Ctrl mentre selezioni il secondo libro.</value>
   </data>
   <data name="MarkAsNotDuplicate" xml:space="preserve">
     <value>Segna questo libro come non duplicato</value>

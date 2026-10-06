@@ -105,7 +105,7 @@
   <data name="DuplicateCandidatesNone" xml:space="preserve"><value>Geen mogelijke duplicaten gevonden.</value></data>
   <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groepen</value></data>
   <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> boeken</value></data>
-  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Tip: houd Ctrl ingedrukt terwijl u een volgend boek selecteert om meerdere duplicaten te selecteren.</value></data>
+  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Selecteer twee boeken binnen dezelfde groep en kies Samenvoegen. Houd Ctrl ingedrukt terwijl u het tweede boek selecteert.</value></data>
   <data name="MarkAsNotDuplicate" xml:space="preserve"><value>Dit boek markeren als geen duplicaat</value></data>
   <data name="MarkAsNotDuplicateShort" xml:space="preserve"><value>Geen dup.</value></data>
   <data name="DuplicateExclusionsSettingsTitle" xml:space="preserve"><value>Genegeerde duplicaten</value></data>

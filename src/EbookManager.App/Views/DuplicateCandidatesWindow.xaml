@@ -89,6 +89,24 @@
                   Fill="{DynamicResource DangerBrush}" />
           </Viewbox>
         </Button>
+        <Button x:Name="MergeSelectedButton"
+                DockPanel.Dock="Right"
+                MinWidth="122"
+                Margin="0,0,8,0"
+                Padding="10,4"
+                IsEnabled="{Binding CanMergeSelectedCandidates}"
+                Click="MergeSelectedCandidatesClicked"
+                AutomationProperties.Name="{loc:Loc Merge}">
+          <StackPanel Orientation="Horizontal">
+            <Viewbox Width="18" Height="18">
+              <Path Data="{StaticResource MergePreviewMergeIconGeometry}"
+                    Fill="{DynamicResource SuccessBrush}" />
+            </Viewbox>
+            <TextBlock Text="{loc:Loc Merge}"
+                       Margin="7,0,0,0"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Button>
         <ToggleButton DockPanel.Dock="Right"
                       Content="{loc:Loc ExactMatchesOnly}"
                       IsChecked="{Binding ExactMatchesOnly, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

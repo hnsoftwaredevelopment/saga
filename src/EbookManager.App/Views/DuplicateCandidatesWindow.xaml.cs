@@ -136,6 +136,35 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
         }
     }
 
+    private async void MergeSelectedCandidatesClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        if (DataContext is not DuplicateCandidatesViewModel viewModel ||
+            sender is not Button button ||
+            isMergingCandidate)
+        {
+            return;
+        }
+
+        var preview = viewModel.CreateSelectedMergePreview();
+        if (preview is null)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        isMergingCandidate = true;
+        button.SetCurrentValue(IsEnabledProperty, false);
+        try
+        {
+            await MergeCandidateAsync(preview);
+        }
+        finally
+        {
+            isMergingCandidate = false;
+            button.SetCurrentValue(IsEnabledProperty, viewModel.CanMergeSelectedCandidates);
+        }
+    }
+
     private async void DeleteCandidateClicked(object sender, System.Windows.RoutedEventArgs e)
     {
         if (DuplicateRowsGrid.SelectedItem is not DuplicateCandidateRowViewModel row)
@@ -211,6 +240,16 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
             return;
         }
 
+        await MergeCandidateAsync(preview);
+    }
+
+    private async Task MergeCandidateAsync(DuplicateMergePreviewViewModel preview)
+    {
+        if (DataContext is not DuplicateCandidatesViewModel viewModel)
+        {
+            return;
+        }
+
         var previewWindow = new DuplicateMergePreviewWindow(preview)
         {
             Owner = this
@@ -267,7 +306,9 @@ public partial class DuplicateCandidatesWindow : System.Windows.Window
     {
         if (DataContext is DuplicateCandidatesViewModel viewModel)
         {
-            viewModel.SetSelectedRows(DuplicateRowsGrid.SelectedItems.OfType<DuplicateCandidateRowViewModel>());
+            viewModel.UpdateSelectedRows(
+                e.AddedItems.OfType<DuplicateCandidateRowViewModel>(),
+                e.RemovedItems.OfType<DuplicateCandidateRowViewModel>());
         }
     }
 

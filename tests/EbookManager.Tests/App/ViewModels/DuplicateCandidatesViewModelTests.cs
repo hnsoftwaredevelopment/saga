@@ -116,6 +116,127 @@ public sealed class DuplicateCandidatesViewModelTests
     }
 
     [Fact]
+    public void Selected_pair_in_same_group_enables_merge_and_creates_preview()
+    {
+        var source = CreateBook("De Hobbit", ["Unknown"], series: null, language: null);
+        var target = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            series: "Midden-aarde",
+            language: "nl",
+            description: "Een rijker gevuld basisboek.");
+        var viewModel = new DuplicateCandidatesViewModel(
+            new DuplicateCandidateResult(
+            [
+                new DuplicateCandidateGroup(
+                    "de hobbit:0",
+                    "De Hobbit",
+                    "J.R.R. Tolkien, Unknown",
+                    [source, target])
+            ]));
+        var selectedRows = viewModel.Rows.ToArray();
+
+        viewModel.UpdateSelectedRows(selectedRows, []);
+        var preview = viewModel.CreateSelectedMergePreview();
+
+        viewModel.CanMergeSelectedCandidates.Should().BeTrue();
+        preview.Should().NotBeNull();
+        preview!.Source.Id.Should().Be(source.Id);
+        preview.Target.Id.Should().Be(target.Id);
+    }
+
+    [Fact]
+    public void Selected_books_from_different_groups_cannot_be_merged_together()
+    {
+        var firstPair = new[]
+        {
+            CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null),
+            CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null)
+        };
+        var secondPair = new[]
+        {
+            CreateBook("Duin", ["Frank Herbert"], series: null, language: null),
+            CreateBook("duin", ["Frank Herbert"], series: null, language: null)
+        };
+        var viewModel = new DuplicateCandidatesViewModel(
+            new DuplicateCandidateResult(
+            [
+                new DuplicateCandidateGroup("de hobbit:0", "De Hobbit", "J.R.R. Tolkien", firstPair),
+                new DuplicateCandidateGroup("duin:0", "Duin", "Frank Herbert", secondPair)
+            ]));
+
+        viewModel.UpdateSelectedRows([viewModel.Rows[0], viewModel.Rows[2]], []);
+
+        viewModel.CanMergeSelectedCandidates.Should().BeFalse();
+        viewModel.CreateSelectedMergePreview().Should().BeNull();
+    }
+
+    [Fact]
+    public void Removing_one_selected_book_disables_pair_merge()
+    {
+        var books = new[]
+        {
+            CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null),
+            CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null)
+        };
+        var viewModel = new DuplicateCandidatesViewModel(
+            new DuplicateCandidateResult(
+            [
+                new DuplicateCandidateGroup("de hobbit:0", "De Hobbit", "J.R.R. Tolkien", books)
+            ]));
+        var selectedRows = viewModel.Rows.ToArray();
+        viewModel.UpdateSelectedRows(selectedRows, []);
+
+        viewModel.UpdateSelectedRows([], [selectedRows[1]]);
+
+        viewModel.CanMergeSelectedCandidates.Should().BeFalse();
+        viewModel.CreateSelectedMergePreview().Should().BeNull();
+    }
+
+    [Fact]
+    public void Match_filter_replaces_visible_rows_in_one_notification()
+    {
+        var exactPair = new[]
+        {
+            CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null),
+            CreateBook("de hobbit", ["J.R.R. Tolkien"], series: null, language: null)
+        };
+        var titlePair = new[]
+        {
+            CreateBook("Duin", ["Frank Herbert"], series: null, language: null),
+            CreateBook("duin", ["Unknown"], series: null, language: null)
+        };
+        var viewModel = new DuplicateCandidatesViewModel(
+            new DuplicateCandidateResult(
+            [
+                new DuplicateCandidateGroup("de hobbit:0", "De Hobbit", "J.R.R. Tolkien", exactPair),
+                new DuplicateCandidateGroup(
+                    "duin:title:0",
+                    "Duin",
+                    "Frank Herbert, Unknown",
+                    titlePair,
+                    DuplicateCandidateMatchKind.TitleOnly)
+            ]));
+        var originalRows = viewModel.Rows;
+        var originalCollectionChanges = 0;
+        var rowsPropertyChanges = 0;
+        originalRows.CollectionChanged += (_, _) => originalCollectionChanges++;
+        viewModel.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(DuplicateCandidatesViewModel.Rows))
+            {
+                rowsPropertyChanges++;
+            }
+        };
+
+        viewModel.ExactMatchesOnly = false;
+
+        originalCollectionChanges.Should().Be(0);
+        rowsPropertyChanges.Should().Be(1);
+        viewModel.Rows.Should().HaveCount(4);
+    }
+
+    [Fact]
     public async Task DeleteCandidate_removes_book_and_recomputes_duplicate_groups()
     {
         var first = CreateBook("De Hobbit", ["J.R.R. Tolkien"], series: null, language: null);

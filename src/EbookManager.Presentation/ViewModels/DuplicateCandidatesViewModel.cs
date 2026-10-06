@@ -16,11 +16,14 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
     private readonly Func<DuplicateCandidateRowViewModel, DuplicateCandidateRowViewModel, IReadOnlyList<DuplicateMergeFieldSelection>, CancellationToken, Task<bool>>? mergeCandidateAsync;
     private readonly Func<IReadOnlyCollection<DuplicateExclusionPair>, CancellationToken, Task>? ignoreCandidatesAsync;
     private readonly AsyncRelayCommand deleteSelectedCandidatesCommand;
+    private readonly HashSet<DuplicateCandidateRowViewModel> selectedRows = [];
     private IReadOnlyList<Book> books;
     private IReadOnlyList<DuplicateCandidateGroup> allGroups;
     private IReadOnlySet<DuplicateExclusionPair> excludedPairs;
     private DuplicateMergeDefaultSettings mergeDefaults = new();
     private bool exactMatchesOnly = true;
+    private ObservableCollection<DuplicateCandidateGroupViewModel> groups = [];
+    private ObservableCollection<DuplicateCandidateRowViewModel> rows = [];
 
     public DuplicateCandidatesViewModel(
         DuplicateCandidateResult result,
@@ -47,11 +50,24 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         ApplyVisibleGroups();
     }
 
-    public ObservableCollection<DuplicateCandidateGroupViewModel> Groups { get; } = [];
-    public ObservableCollection<DuplicateCandidateRowViewModel> Rows { get; } = [];
+    public ObservableCollection<DuplicateCandidateGroupViewModel> Groups
+    {
+        get => groups;
+        private set => SetProperty(ref groups, value);
+    }
+
+    public ObservableCollection<DuplicateCandidateRowViewModel> Rows
+    {
+        get => rows;
+        private set => SetProperty(ref rows, value);
+    }
+
     public int GroupCount => Groups.Count;
     public int BookCount => Groups.Sum(group => group.Books.Count);
     public bool HasGroups => Groups.Count > 0;
+    public bool CanMergeSelectedCandidates =>
+        selectedRows.Count == 2 &&
+        selectedRows.Select(row => row.MatchKey).Distinct(StringComparer.Ordinal).Count() == 1;
     public string SummaryText => $"{GroupCount} groups, {BookCount} books";
     public bool HasChanges { get; private set; }
     public bool HasMergeSuccessMessage => !string.IsNullOrWhiteSpace(MergeSuccessBookTitle);
@@ -75,15 +91,21 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
         set => mergeDefaults = value ?? new DuplicateMergeDefaultSettings();
     }
 
-    public void SetSelectedRows(IEnumerable<DuplicateCandidateRowViewModel> selectedRows)
+    public void UpdateSelectedRows(
+        IEnumerable<DuplicateCandidateRowViewModel> addedRows,
+        IEnumerable<DuplicateCandidateRowViewModel> removedRows)
     {
-        var selectedIds = selectedRows.Select(row => row.Id).ToHashSet();
-        foreach (var row in Rows)
+        foreach (var row in removedRows)
         {
-            row.IsSelected = selectedIds.Contains(row.Id);
+            row.IsSelected = false;
         }
 
-        deleteSelectedCandidatesCommand.NotifyCanExecuteChanged();
+        foreach (var row in addedRows)
+        {
+            row.IsSelected = true;
+        }
+
+        NotifySelectionStateChanged();
     }
 
     public async Task DeleteCandidateAsync(
@@ -202,6 +224,20 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
             : new DuplicateMergePreviewViewModel(mergePair.Value.Source, mergePair.Value.Target, MergeDefaults);
     }
 
+    public DuplicateMergePreviewViewModel? CreateSelectedMergePreview()
+    {
+        if (!CanMergeSelectedCandidates)
+        {
+            return null;
+        }
+
+        var orderedRows = selectedRows
+            .OrderByDescending(row => row.MetadataScore)
+            .ThenBy(row => row.Title, StringComparer.CurrentCultureIgnoreCase)
+            .ToArray();
+        return new DuplicateMergePreviewViewModel(orderedRows[1], orderedRows[0], MergeDefaults);
+    }
+
     private async Task DeleteSelectedCandidatesAsync(CancellationToken cancellationToken)
     {
         var selectedRows = Rows
@@ -266,11 +302,11 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
 
     private void ApplyVisibleGroups()
     {
-        Groups.Clear();
-        Rows.Clear();
+        var visibleGroups = new ObservableCollection<DuplicateCandidateGroupViewModel>();
+        var visibleRows = new ObservableCollection<DuplicateCandidateRowViewModel>();
         foreach (var group in FilterGroups(allGroups))
         {
-            Groups.Add(new DuplicateCandidateGroupViewModel(group));
+            visibleGroups.Add(new DuplicateCandidateGroupViewModel(group));
             foreach (var book in group.Books)
             {
                 var row = new DuplicateCandidateRowViewModel(
@@ -280,15 +316,24 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
                     book,
                     libraryPath);
                 row.PropertyChanged += OnRowPropertyChanged;
-                Rows.Add(row);
+                visibleRows.Add(row);
             }
         }
+
+        foreach (var row in Rows)
+        {
+            row.PropertyChanged -= OnRowPropertyChanged;
+        }
+
+        selectedRows.Clear();
+        Groups = visibleGroups;
+        Rows = visibleRows;
 
         OnPropertyChanged(nameof(GroupCount));
         OnPropertyChanged(nameof(BookCount));
         OnPropertyChanged(nameof(HasGroups));
         OnPropertyChanged(nameof(SummaryText));
-        deleteSelectedCandidatesCommand.NotifyCanExecuteChanged();
+        NotifySelectionStateChanged();
     }
 
     private IEnumerable<DuplicateCandidateGroup> FilterGroups(IReadOnlyList<DuplicateCandidateGroup> candidateGroups) =>
@@ -318,10 +363,26 @@ public sealed partial class DuplicateCandidatesViewModel : ObservableObject
 
     private void OnRowPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(DuplicateCandidateRowViewModel.IsSelected))
+        if (e.PropertyName == nameof(DuplicateCandidateRowViewModel.IsSelected) &&
+            sender is DuplicateCandidateRowViewModel row)
         {
-            deleteSelectedCandidatesCommand.NotifyCanExecuteChanged();
+            if (row.IsSelected)
+            {
+                selectedRows.Add(row);
+            }
+            else
+            {
+                selectedRows.Remove(row);
+            }
+
+            NotifySelectionStateChanged();
         }
+    }
+
+    private void NotifySelectionStateChanged()
+    {
+        deleteSelectedCandidatesCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanMergeSelectedCandidates));
     }
 }
 
