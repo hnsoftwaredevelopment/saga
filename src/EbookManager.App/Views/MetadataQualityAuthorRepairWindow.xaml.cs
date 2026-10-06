@@ -48,9 +48,9 @@ public partial class MetadataQualityAuthorRepairWindow : Window
     private void AuthorInputPreviewKeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Down &&
-            AuthorSuggestionsPopup.IsOpen &&
             AuthorSuggestions.Items.Count > 0)
         {
+            AuthorSuggestionsPopup.IsOpen = true;
             AuthorSuggestions.SelectedIndex = 0;
             AuthorSuggestions.ScrollIntoView(AuthorSuggestions.SelectedItem);
             Keyboard.Focus(AuthorSuggestions);

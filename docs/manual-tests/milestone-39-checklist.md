@@ -3,7 +3,8 @@
 ## Voorbereiding
 
 - [X] Start de actuele Debug-versie van `Builds\Debug\Saga.exe`.
-- [X] Open een bibliotheek met minstens drie boeken onder `Ontbrekende auteur` en minstens één reeds bekende auteur.
+- [X] Open een bibliotheek met minstens vier boeken onder `Ontbrekende auteur` en minstens één reeds bekende auteur.
+- [X] Reserveer twee boeken voor de bulkronde met een bekende auteur en twee andere boeken voor de bulkronde met een nieuwe auteur.
 - [X] Open het kwaliteitsscherm en kies `Ontbrekende auteur`.
 
 ## Selectie en beschikbare acties

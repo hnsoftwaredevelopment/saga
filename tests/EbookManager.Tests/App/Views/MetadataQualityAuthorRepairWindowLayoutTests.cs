@@ -6,6 +6,18 @@ namespace EbookManager.Tests.App.Views;
 public sealed class MetadataQualityAuthorRepairWindowLayoutTests
 {
     [Fact]
+    public void Arrow_down_opens_known_authors_before_text_is_entered()
+    {
+        var source = File.ReadAllText(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataQualityAuthorRepairWindow.xaml.cs"));
+
+        source.Should().Contain("e.Key == Key.Down &&");
+        source.Should().Contain("AuthorSuggestions.Items.Count > 0)");
+        source.Should().NotContain("AuthorSuggestionsPopup.IsOpen &&");
+        source.Should().Contain("AuthorSuggestionsPopup.IsOpen = true;");
+    }
+
+    [Fact]
     public void Window_keeps_typed_text_separate_from_the_changing_suggestion_list()
     {
         var document = XDocument.Load(
