@@ -361,10 +361,14 @@
   <data name="MetadataQualityExclusionsSettingsDescription" xml:space="preserve"><value>View or restore quality issues that were previously marked as correct for the active library.</value></data>
   <data name="ManageMetadataQualityExclusions" xml:space="preserve"><value>Manage ignored quality issues</value></data>
   <data name="MetadataQualityAuthorRepairTitle" xml:space="preserve"><value>Repair missing author</value></data>
-  <data name="MetadataQualityAuthorRepairDescription" xml:space="preserve"><value>Choose a known author or enter a new author for this book.</value></data>
+  <data name="MetadataQualityAuthorRepairDescription" xml:space="preserve"><value>Choose a known author or enter a new author.</value></data>
   <data name="MetadataQualityAuthorRepairAuthorInput" xml:space="preserve"><value>Author name</value></data>
   <data name="MetadataQualityAuthorRepairAuthorHelp" xml:space="preserve"><value>Suggestions come from the active library. A new name can also be entered.</value></data>
-  <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Save repaired author</value></data>
+  <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Change author</value></data>
+  <data name="MetadataQualityAuthorRepairBulkBookContext" xml:space="preserve"><value>{0} selected books</value></data>
+  <data name="MetadataQualityAuthorRepairBulkSave" xml:space="preserve"><value>Change author for {0} books</value></data>
+  <data name="MetadataQualityAuthorRepairBulkSucceeded" xml:space="preserve"><value>Author changed for {0} books.</value></data>
+  <data name="MetadataQualityAuthorRepairBulkResult" xml:space="preserve"><value>{0} changed, {1} changed with file warnings, {2} skipped because an author was already present, {3} no longer available, and {4} failed.</value></data>
   <data name="MetadataQualityRepair" xml:space="preserve"><value>Repair</value></data>
   <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Change author</value></data>
   <data name="MetadataQualityRepairMissingAuthor" xml:space="preserve"><value>Repair missing author</value></data>

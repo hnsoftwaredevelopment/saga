@@ -97,15 +97,26 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Keep external responses bounded and untrusted, use fixed HTTPS hosts, and report no-results, network, validation, and storage failures without metadata loss.
 - Keep the workflow localized in all six supported languages and do not add a package, API key, or database migration.
 
+## Milestone 39: Repair missing authors in bulk
+
+- Select one or multiple books within `Missing author` and choose `Change author`.
+- Choose one known author from live suggestions or enter a completely new author for every selected book.
+- Show the selected-book count in the repair window and make the change action an explicit confirmation.
+- Re-read every book immediately before saving and never overwrite a valid author that appeared after the dashboard opened.
+- Process results per book through the existing SQLite, sidecar and supported ebook write-back route.
+- Reconcile successful, partially saved, stale, removed and failed books separately so the dashboard always reflects stored reality.
+- Keep fully failed rows visible and selected, while summarizing all result counts in the current language.
+- Refresh the main library and author filters once for the complete batch.
+- Keep every other repair action limited to exactly one selected book.
+
 ## Follow-up ideas
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
 - Improve large-library scrolling and filtering in a separate performance slice with measurable checks on a representative library.
-- Let users select multiple missing-author books and apply one chosen author to all selected books.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
 - Tune heuristics after testing on real-world Calibre libraries.
 
 ## Status
 
-Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestone 36 adds the accepted messy-tag repair. Milestone 37, accepted on 1 October 2026, moves ignored-quality management from `Duplicates` to its own `Quality` tab in Settings. Milestone 38 was accepted on 1 October 2026 and lets users select multiple rows within the active quality signal and mark them correct together after confirmation; the repository stores the entire decision batch atomically. Bulk metadata repair, export, configurable checks, and heuristic tuning remain follow-up work.
+Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestone 36 adds the accepted messy-tag repair. Milestone 37 moves ignored-quality management to its own `Quality` tab in Settings. Milestone 38 was accepted on 1 October 2026 and adds atomic bulk quality decisions. Milestone 39 is ready for acceptance testing and applies one chosen author to multiple selected missing-author books while preserving accurate per-book results. Other bulk metadata repair, export, configurable checks, and heuristic tuning remain follow-up work.

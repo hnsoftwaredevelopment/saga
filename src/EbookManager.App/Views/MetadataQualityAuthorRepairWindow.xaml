@@ -32,36 +32,56 @@
               Focusable="True"
               AutomationProperties.Name="{loc:Loc Cancel}" />
       <Button x:Name="SaveAuthorRepairButton"
-              Content="{loc:Loc Save}"
+              Content="{Binding SaveButtonText}"
               MinWidth="90"
               Margin="8,0,0,0"
               IsDefault="True"
               IsEnabled="{Binding CanSave}"
               Focusable="True"
               Click="SaveClicked"
-              AutomationProperties.Name="{loc:Loc MetadataQualityAuthorRepairSave}" />
+              AutomationProperties.Name="{Binding SaveButtonText}" />
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Text="{loc:Loc Title}"
+      <TextBlock x:Name="BookContextLabel"
+                 Text="{Binding ContextLabel}"
                  FontWeight="SemiBold" />
-      <TextBlock Text="{Binding BookTitle}"
+      <TextBlock x:Name="BookContextText"
+                 Text="{Binding ContextText}"
                  Margin="0,4,0,14"
                  TextWrapping="Wrap"
                  Foreground="{DynamicResource TextSecondaryBrush}" />
       <TextBlock Text="{loc:Loc Authors}"
                  FontWeight="SemiBold" />
-      <ComboBox x:Name="AuthorInput"
-                ItemsSource="{Binding Suggestions}"
-                Text="{Binding AuthorText, UpdateSourceTrigger=PropertyChanged}"
-                IsEditable="True"
-                IsTextSearchEnabled="False"
-                StaysOpenOnEdit="True"
-                MaxDropDownHeight="180"
-                Margin="0,4,0,6"
-                Loaded="AuthorInputLoaded"
-                PreviewKeyDown="AuthorInputPreviewKeyDown"
-                AutomationProperties.Name="{loc:Loc MetadataQualityAuthorRepairAuthorInput}" />
+      <TextBox x:Name="AuthorInput"
+               Text="{Binding AuthorText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+               Margin="0,4,0,6"
+               Loaded="AuthorInputLoaded"
+               TextChanged="AuthorInputTextChanged"
+               PreviewKeyDown="AuthorInputPreviewKeyDown"
+               AutomationProperties.Name="{loc:Loc MetadataQualityAuthorRepairAuthorInput}" />
+      <Popup x:Name="AuthorSuggestionsPopup"
+             PlacementTarget="{Binding ElementName=AuthorInput}"
+             Placement="Bottom"
+             StaysOpen="False"
+             AllowsTransparency="True"
+             PopupAnimation="Fade">
+        <Border Width="{Binding ActualWidth, ElementName=AuthorInput}"
+                MaxHeight="180"
+                Background="{DynamicResource PanelBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1">
+          <ListBox x:Name="AuthorSuggestions"
+                   ItemsSource="{Binding Suggestions}"
+                   MaxHeight="180"
+                   ScrollViewer.CanContentScroll="True"
+                   VirtualizingStackPanel.IsVirtualizing="True"
+                   VirtualizingStackPanel.VirtualizationMode="Recycling"
+                   PreviewKeyDown="AuthorSuggestionsPreviewKeyDown"
+                   PreviewMouseLeftButtonUp="AuthorSuggestionsMouseLeftButtonUp"
+                   AutomationProperties.Name="{loc:Loc MetadataQualityAuthorRepairAuthorInput}" />
+        </Border>
+      </Popup>
       <TextBlock Text="{loc:Loc MetadataQualityAuthorRepairAuthorHelp}"
                  TextWrapping="Wrap"
                  FontSize="12"

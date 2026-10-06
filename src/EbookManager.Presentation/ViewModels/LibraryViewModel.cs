@@ -4237,7 +4237,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 userInteraction.ShowMetadataQualityLanguageRepairAsync,
                 metadataQualitySeriesRepairService,
                 userInteraction.ShowMetadataQualitySeriesRepairAsync,
-                repairedBook => ApplyPersistedMetadataChanges([repairedBook]),
+                repairedBooks => ApplyPersistedMetadataChanges(repairedBooks),
                 metadataQualityTitleAuthorRepairService,
                 userInteraction.ShowMetadataQualityTitleAuthorRepairAsync,
                 bookCoverSearchService,

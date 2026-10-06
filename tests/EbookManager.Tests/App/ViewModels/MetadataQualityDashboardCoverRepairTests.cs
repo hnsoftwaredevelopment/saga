@@ -48,7 +48,7 @@ public sealed class MetadataQualityDashboardCoverRepairTests
                 return true;
             },
             coverRepairService: repairService,
-            bookRepaired: repaired => notifiedBook = repaired);
+            booksRepaired: repaired => notifiedBook = repaired.Single());
         dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
             issue.SignalKey == MetadataQualitySignalKeys.MissingCover);
 

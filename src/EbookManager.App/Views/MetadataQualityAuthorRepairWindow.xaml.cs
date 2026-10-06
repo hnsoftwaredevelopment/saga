@@ -7,7 +7,7 @@ namespace EbookManager.App.Views;
 
 public partial class MetadataQualityAuthorRepairWindow : Window
 {
-    private TextBox? editableTextBox;
+    private bool isApplyingSuggestion;
 
     public MetadataQualityAuthorRepairWindow(MetadataQualityAuthorRepairViewModel viewModel)
     {
@@ -17,40 +17,87 @@ public partial class MetadataQualityAuthorRepairWindow : Window
 
     private void AuthorInputLoaded(object sender, RoutedEventArgs e)
     {
-        editableTextBox = AuthorInput.Template.FindName("PART_EditableTextBox", AuthorInput) as TextBox;
-        if (editableTextBox is not null)
-        {
-            editableTextBox.TextChanged += AuthorTextChanged;
-        }
-
         AuthorInput.Focus();
-        Keyboard.Focus(editableTextBox is not null ? editableTextBox : AuthorInput);
+        Keyboard.Focus(AuthorInput);
+        AuthorInput.CaretIndex = AuthorInput.Text.Length;
     }
 
-    private void AuthorTextChanged(object sender, TextChangedEventArgs e)
+    private void AuthorInputTextChanged(object sender, TextChangedEventArgs e)
     {
+        if (isApplyingSuggestion)
+        {
+            return;
+        }
+
         Dispatcher.BeginInvoke(() =>
         {
             if (DataContext is MetadataQualityAuthorRepairViewModel viewModel &&
                 viewModel.Suggestions.Count > 0 &&
-                AuthorInput.IsKeyboardFocusWithin)
+                AuthorInput.IsKeyboardFocused &&
+                !string.IsNullOrWhiteSpace(AuthorInput.Text))
             {
-                AuthorInput.IsDropDownOpen = true;
+                AuthorSuggestionsPopup.IsOpen = true;
+            }
+            else
+            {
+                AuthorSuggestionsPopup.IsOpen = false;
             }
         });
     }
 
     private void AuthorInputPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter &&
-            AuthorInput.IsDropDownOpen &&
-            AuthorInput.SelectedItem is string selectedAuthor &&
-            DataContext is MetadataQualityAuthorRepairViewModel viewModel)
+        if (e.Key == Key.Down &&
+            AuthorSuggestions.Items.Count > 0)
+        {
+            AuthorSuggestionsPopup.IsOpen = true;
+            AuthorSuggestions.SelectedIndex = 0;
+            AuthorSuggestions.ScrollIntoView(AuthorSuggestions.SelectedItem);
+            Keyboard.Focus(AuthorSuggestions);
+            e.Handled = true;
+        }
+    }
+
+    private void AuthorSuggestionsPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && AuthorSuggestions.SelectedItem is string selectedAuthor)
+        {
+            UseSuggestion(selectedAuthor);
+            e.Handled = true;
+        }
+    }
+
+    private void AuthorSuggestionsMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        var item = ItemsControl.ContainerFromElement(
+            AuthorSuggestions,
+            e.OriginalSource as DependencyObject) as ListBoxItem;
+        if (item?.DataContext is string selectedAuthor)
+        {
+            UseSuggestion(selectedAuthor);
+            e.Handled = true;
+        }
+    }
+
+    private void UseSuggestion(string selectedAuthor)
+    {
+        if (DataContext is not MetadataQualityAuthorRepairViewModel viewModel)
+        {
+            return;
+        }
+
+        isApplyingSuggestion = true;
+        try
         {
             viewModel.UseSuggestion(selectedAuthor);
-            AuthorInput.IsDropDownOpen = false;
-            editableTextBox?.CaretIndex = editableTextBox.Text.Length;
-            e.Handled = true;
+            AuthorSuggestionsPopup.IsOpen = false;
+            AuthorInput.Focus();
+            Keyboard.Focus(AuthorInput);
+            AuthorInput.CaretIndex = AuthorInput.Text.Length;
+        }
+        finally
+        {
+            isApplyingSuggestion = false;
         }
     }
 
