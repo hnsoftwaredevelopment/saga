@@ -108,16 +108,57 @@ public sealed class DuplicateMergeServiceTests
         repository.UpdatedBook.Metadata.CoverBytes.Should().Equal(1, 2, 3);
     }
 
+    [Fact]
+    public async Task Merge_writes_final_metadata_once_to_each_linked_book_directory()
+    {
+        var source = CreateBook("Bron titel", ["Bron auteur"]);
+        var target = CreateBook("Doel titel", ["Doel auteur"]);
+        var files = new[]
+        {
+            CreateFile(source.Id, "books/aa/source/book.pdf", EbookFormat.Pdf),
+            CreateFile(target.Id, "books/bb/target/book.epub", EbookFormat.Epub),
+            CreateFile(target.Id, "books/bb/target/book.mobi", EbookFormat.Mobi)
+        };
+        var repository = new RecordingBookRepository([source, target], files);
+        var fileStore = new TestLibraryFileStore("C:/library");
+        var sidecarStore = new RecordingMetadataSidecarStore();
+        var service = new DuplicateMergeService(repository, fileStore, sidecarStore);
+
+        var result = await service.MergeAsync(
+            source.Id,
+            target.Id,
+            [new DuplicateMergeFieldSelection(DuplicateMergeMetadataField.Authors, DuplicateMergeAction.Copy)],
+            default);
+
+        result.SidecarStatus.Should().Be(DuplicateMergeSidecarStatus.Succeeded);
+        sidecarStore.Writes.Should().HaveCount(2);
+        sidecarStore.Writes.Select(write => Path.GetDirectoryName(write.BookFilePath))
+            .Should().BeEquivalentTo(
+                Path.GetFullPath("C:/library/books/aa/source"),
+                Path.GetFullPath("C:/library/books/bb/target"));
+        sidecarStore.Writes.Should().OnlyContain(write =>
+            write.Metadata.Authors.SequenceEqual(new[] { "Bron auteur" }));
+    }
+
     private sealed class RecordingBookRepository : IBookRepository
     {
         private readonly Dictionary<Guid, Book> books = [];
 
+        private readonly List<BookFile> files;
+
         public RecordingBookRepository(params Book[] books)
+            : this(books, [])
+        {
+        }
+
+        public RecordingBookRepository(IEnumerable<Book> books, IEnumerable<BookFile> files)
         {
             foreach (var book in books)
             {
                 this.books.Add(book.Id, book);
             }
+
+            this.files = files.ToList();
         }
 
         public Guid? AttachedSourceBookId { get; private set; }
@@ -163,6 +204,14 @@ public sealed class DuplicateMergeServiceTests
         {
             AttachedSourceBookId = sourceBookId;
             AttachedTargetBookId = targetBookId;
+            for (var index = 0; index < files.Count; index++)
+            {
+                if (files[index].BookId == sourceBookId)
+                {
+                    files[index] = files[index] with { BookId = targetBookId };
+                }
+            }
+
             return Task.CompletedTask;
         }
 
@@ -183,7 +232,7 @@ public sealed class DuplicateMergeServiceTests
             Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
 
         public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<BookFile>>([]);
+            Task.FromResult<IReadOnlyList<BookFile>>(files.Where(file => file.BookId == bookId).ToArray());
 
         public Task UpdateFileWriteBackAsync(
             Guid fileId,
@@ -191,6 +240,53 @@ public sealed class DuplicateMergeServiceTests
             CancellationToken cancellationToken) =>
             Task.CompletedTask;
     }
+
+    private sealed class TestLibraryFileStore(string rootPath) : ILibraryFileStore
+    {
+        public string GetAbsolutePath(string relativePath) =>
+            Path.GetFullPath(Path.Combine(rootPath, relativePath.Replace('/', Path.DirectorySeparatorChar)));
+
+        public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
+            Guid bookId,
+            string sourcePath,
+            byte[]? coverBytes,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task DeleteFileAsync(string relativePath, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task DeleteBookDirectoryAsync(Guid bookId, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class RecordingMetadataSidecarStore : IMetadataSidecarStore
+    {
+        public List<(string BookFilePath, BookMetadata Metadata)> Writes { get; } = [];
+
+        public Task<BookMetadata?> TryReadAsync(string bookFilePath, CancellationToken cancellationToken) =>
+            Task.FromResult<BookMetadata?>(null);
+
+        public Task WriteAsync(
+            string bookFilePath,
+            BookMetadata metadata,
+            CancellationToken cancellationToken)
+        {
+            Writes.Add((bookFilePath, metadata));
+            return Task.CompletedTask;
+        }
+    }
+
+    private static BookFile CreateFile(Guid bookId, string relativePath, EbookFormat format) =>
+        new(
+            Guid.NewGuid(),
+            bookId,
+            format,
+            relativePath,
+            Guid.NewGuid().ToString("N"),
+            123,
+            MetadataWriteBackStatus.NotAttempted,
+            null);
 
     private static Book CreateBook(
         string title,
