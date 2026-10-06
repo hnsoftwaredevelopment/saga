@@ -1441,6 +1441,42 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Duplicate_candidate_merge_warns_when_sidecar_write_fails_but_keeps_merge_result()
+    {
+        var source = CreateBook("De Hobbit", ["J.R.R. Tolkien"], formats: [EbookFormat.Pdf]);
+        var target = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            language: "nl",
+            series: "Midden-aarde",
+            formats: [EbookFormat.Epub]);
+        var targetAfter = target with { Formats = [EbookFormat.Epub, EbookFormat.Pdf] };
+        var repository = new SidecarMergeBookRepository([source, target], [targetAfter], target.Id);
+        var interaction = new ScriptedUserInteractionService();
+        var duplicateMergeService = new DuplicateMergeService(
+            repository,
+            new NoopLibraryFileStore(),
+            new ThrowingMetadataSidecarStore());
+        var viewModel = CreateViewModel(
+            [source, target],
+            interaction,
+            repository: repository,
+            currentLibrary: CreateActiveLibrary(),
+            duplicateMergeService: duplicateMergeService);
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+        var sourceRow = interaction.DuplicateCandidates!.Rows.Single(row => row.Id == source.Id);
+
+        await interaction.DuplicateCandidates.MergeCandidateAsync(sourceRow, CancellationToken.None);
+
+        interaction.LastMessageTitle.Should().Be("DuplicateMergeSidecarWarningTitle");
+        interaction.LastMessageText.Should().Be("DuplicateMergeSidecarWarningMessage");
+        interaction.DuplicateCandidates.HasChanges.Should().BeTrue();
+        interaction.DuplicateCandidates.HasGroups.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Duplicate_candidate_merge_refreshes_when_candidate_no_longer_exists()
     {
         var source = CreateBook("De Hobbit", ["J.R.R. Tolkien"], formats: [EbookFormat.Pdf]);
@@ -3682,6 +3718,7 @@ public sealed class LibraryViewModelTests
         IMetadataQualitySeriesRepairService? metadataQualitySeriesRepairService = null,
         IMetadataQualityTitleAuthorRepairService? metadataQualityTitleAuthorRepairService = null,
         IMetadataQualityTagRepairService? metadataQualityTagRepairService = null,
+        DuplicateMergeService? duplicateMergeService = null,
         DirectoryScanner? directoryScanner = null,
         ILibraryPerformanceReporter? performanceReporter = null,
         Func<string, string>? localize = null,
@@ -3704,6 +3741,7 @@ public sealed class LibraryViewModelTests
             new BookSearchService(),
             details,
             userInteraction ?? new ScriptedUserInteractionService(),
+            duplicateMergeService: duplicateMergeService,
             bookService: bookService,
             libraryService: libraryService,
             currentLibrary: currentLibrary,
@@ -4128,7 +4166,7 @@ public sealed class LibraryViewModelTests
         }
         public Task<BookFileDeleteRepositoryResult> DeleteFileAsync(Guid bookId, Guid fileId, CancellationToken cancellationToken) =>
             Task.FromResult(new BookFileDeleteRepositoryResult(BookFileDeleteRepositoryStatus.NotFound));
-        public Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<BookFile>>([]);
+        public virtual Task<IReadOnlyList<BookFile>> ListFilesAsync(Guid bookId, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<BookFile>>([]);
         public Task UpdateFileWriteBackAsync(Guid fileId, MetadataWriteResult result, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 
@@ -4277,6 +4315,32 @@ public sealed class LibraryViewModelTests
             Guid targetBookId,
             CancellationToken cancellationToken) =>
             throw new KeyNotFoundException($"Source book '{sourceBookId}' does not exist.");
+    }
+
+    private sealed class SidecarMergeBookRepository(
+        IReadOnlyList<Book> firstRefreshBooks,
+        IReadOnlyList<Book> laterRefreshBooks,
+        Guid targetBookId)
+        : RefreshingBookRepository(firstRefreshBooks, laterRefreshBooks)
+    {
+        public override Task<IReadOnlyList<BookFile>> ListFilesAsync(
+            Guid bookId,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<BookFile>>(
+                bookId == targetBookId
+                    ?
+                    [
+                        new BookFile(
+                            Guid.NewGuid(),
+                            targetBookId,
+                            EbookFormat.Epub,
+                            "books/target/book.epub",
+                            "hash",
+                            123,
+                            MetadataWriteBackStatus.NotAttempted,
+                            null)
+                    ]
+                    : []);
     }
 
     private sealed class ConflictingBookRepository(
@@ -4535,6 +4599,20 @@ public sealed class LibraryViewModelTests
     private sealed class NoopMetadataAdapterResolver : IMetadataAdapterResolver
     {
         public IMetadataAdapter Resolve(EbookFormat format) => new NoopMetadataAdapter();
+    }
+
+    private sealed class ThrowingMetadataSidecarStore : IMetadataSidecarStore
+    {
+        public Task<BookMetadata?> TryReadAsync(
+            string bookFilePath,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<BookMetadata?>(null);
+
+        public Task WriteAsync(
+            string bookFilePath,
+            BookMetadata metadata,
+            CancellationToken cancellationToken) =>
+            throw new IOException("sidecar unavailable");
     }
 
     private sealed class NoopMetadataAdapter : IMetadataAdapter

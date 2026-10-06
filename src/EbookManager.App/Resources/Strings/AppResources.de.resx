@@ -146,7 +146,7 @@
     <value> Buecher</value>
   </data>
   <data name="DuplicateSelectionHelp" xml:space="preserve">
-    <value>Tipp: Halten Sie Strg gedrueckt, waehrend Sie ein weiteres Buch auswaehlen, um mehrere Duplikate zu markieren.</value>
+    <value>Waehlen Sie zwei Buecher derselben Gruppe aus und waehlen Sie Zusammenfuehren. Halten Sie bei der Auswahl des zweiten Buches Strg gedrueckt.</value>
   </data>
   <data name="MarkAsNotDuplicate" xml:space="preserve">
     <value>Dieses Buch als kein Duplikat markieren</value>
@@ -287,6 +287,8 @@
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>Die Duplikatliste ist veraltet. Saga hat die Bibliothek aktualisiert; oeffnen Sie die Duplikatuebersicht erneut.</value>
   </data>
+  <data name="DuplicateMergeSidecarWarningTitle" xml:space="preserve"><value>Zusammenführen mit Warnung abgeschlossen</value></data>
+  <data name="DuplicateMergeSidecarWarningMessage" xml:space="preserve"><value>Die Bücher wurden zusammengeführt, aber Saga konnte metadata.json nicht in jedem Buchordner aktualisieren. Speichern Sie die Metadaten des Zielbuchs erneut, um es noch einmal zu versuchen.</value></data>
   <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
     <value>Markieren fehlgeschlagen</value>
   </data>

@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 39 is ready for acceptance testing and lets users apply one existing or new author to multiple selected books under `Missing author`, with safe per-book results and one combined library refresh. Milestone 38 was accepted on 1 October 2026 and added confirmed bulk quality decisions. Milestone 37 gives ignored-quality management its own `Quality` tab in Settings, while Milestone 36 added the accepted messy-tag repair.
+Milestone 40 is ready for acceptance testing and keeps SQLite and every relevant portable `metadata.json` sidecar synchronized after duplicate merges, with a clear warning when sidecar storage fails. Milestone 39 added accepted bulk missing-author repair, while Milestone 38 added confirmed bulk quality decisions.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -51,7 +51,7 @@ Milestone 39 is ready for acceptance testing and lets users apply one existing o
 - sectioned settings foundation for duplicates and diagnostics preferences
 - duplicate merge default actions prepared in Settings and applied to merge previews
 - duplicate finder with compare, delete, field-by-field merge, and a separate `Geen duplicaat` exclusion workflow for possible matches
-- duplicate merge currently updates SQLite but not the portable `metadata.json` sidecar; this remaining consistency gap is tracked in [issue #1](https://github.com/hnsoftwaredevelopment/saga/issues/1)
+- duplicate merge keeps SQLite and every relevant portable `metadata.json` sidecar synchronized, deduplicates writes per book folder, and reports sidecar warnings without misrepresenting the completed merge
 - custom metadata fields with Calibre custom-column import
 - customizable column visibility, saved grid layouts, and user-defined views
 - multi-book metadata editing and cleanup actions for facets such as authors and tags
@@ -76,7 +76,7 @@ Milestone 39 is ready for acceptance testing and lets users apply one existing o
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 39 checklist](docs/manual-tests/milestone-39-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 40 checklist](docs/manual-tests/milestone-40-checklist.md).
 
 ## Prerequisites
 
@@ -139,7 +139,7 @@ Metadata extraction is intentionally conservative:
 - CBZ: first supported image as cover, filename fallback for title/author
 - PDF, CBR, MOBI, AZW, AZW3, and KFX: safe import with filename fallback
 
-SQLite is authoritative for metadata inside the application. Metadata edits are also written to a portable `metadata.json` sidecar file next to the managed book file, except duplicate merges: those currently update SQLite only, pending [issue #1](https://github.com/hnsoftwaredevelopment/saga/issues/1).
+SQLite is authoritative for metadata inside the application. Metadata edits are also written to a portable `metadata.json` sidecar file next to the managed book file. Duplicate merges synchronize the definitive target metadata with the sidecars in every relevant book folder; a sidecar error is reported without disguising or rolling back the completed database merge.
 
 During import, metadata is resolved in this order:
 
@@ -191,6 +191,9 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-35-checklist.md](docs/manual-tests/milestone-35-checklist.md)
 - [docs/manual-tests/milestone-36-checklist.md](docs/manual-tests/milestone-36-checklist.md)
 - [docs/manual-tests/milestone-37-checklist.md](docs/manual-tests/milestone-37-checklist.md)
+- [docs/manual-tests/milestone-38-checklist.md](docs/manual-tests/milestone-38-checklist.md)
+- [docs/manual-tests/milestone-39-checklist.md](docs/manual-tests/milestone-39-checklist.md)
+- [docs/manual-tests/milestone-40-checklist.md](docs/manual-tests/milestone-40-checklist.md)
 
 ## Later-Version Candidates
 

@@ -120,7 +120,7 @@
                      Grid.Column="1"
                      Text="{loc:Loc BookshelfUsesCoversOnly}"
                      TextWrapping="Wrap"
-                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     Foreground="{StaticResource TextSecondaryBrush}"
                      Margin="0,0,0,12">
             <TextBlock.Style>
               <Style TargetType="TextBlock">

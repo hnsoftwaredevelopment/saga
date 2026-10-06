@@ -4179,7 +4179,19 @@ public sealed partial class LibraryViewModel : ObservableObject
     {
         try
         {
-            await duplicateMergeService.MergeAsync(sourceRow.Id, targetRow.Id, selections, cancellationToken);
+            var result = await duplicateMergeService.MergeAsync(
+                sourceRow.Id,
+                targetRow.Id,
+                selections,
+                cancellationToken);
+            if (result.SidecarStatus == DuplicateMergeSidecarStatus.Failed)
+            {
+                await userInteraction.ShowMessageAsync(
+                    localize("DuplicateMergeSidecarWarningTitle"),
+                    localize("DuplicateMergeSidecarWarningMessage"),
+                    cancellationToken);
+            }
+
             return true;
         }
         catch (KeyNotFoundException exception)

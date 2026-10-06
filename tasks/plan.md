@@ -1,89 +1,85 @@
-# Milestone 39 implementatieplan: bulkherstel ontbrekende auteur
+# Milestone 40 implementatieplan: duplicate-merge sidecarconsistentie
 
 ## Overzicht
 
-Milestone 39 breidt het bestaande veilige auteurherstel uit van één naar meerdere geselecteerde boeken binnen `Ontbrekende auteur`. De applicatieservice ondersteunt batches al; het werk concentreert zich op dashboardselectie, begrijpelijke context, resultaatverwerking en regressiebewaking.
+Milestone 40 rondt de bestaande duplicate-merge af door na iedere geslaagde merge de definitieve doelmetadata ook naar `metadata.json` te schrijven. De database-merge blijft de gezaghebbende stap. Sidecars worden daarna éénmaal per unieke map van alle gekoppelde doelbestanden bijgewerkt. Een sidecarfout draait de reeds geslaagde database-merge niet terug, maar wordt wel als duidelijke waarschuwing aan de gebruiker gemeld.
 
 ## Architectuurbeslissingen
 
-- De huidige `MetadataQualityAuthorRepairService` blijft de enige opslagroute en verwerkt ieder boek onafhankelijk.
-- De dashboardselectie wordt vlak voor uitvoering vastgelegd en gefilterd op de actuele categorie.
-- Het auteursvenster is de expliciete bevestiging en toont enkelvoudige of bulkcontext zonder een redundante tweede vraag.
-- Het dashboard reconcilieert ieder itemresultaat met de werkelijk opnieuw ingelezen `Book`.
-- Volledig mislukte rijen blijven zichtbaar en geselecteerd; opgeslagen boeken verdwijnen wanneer het signaal is opgelost.
-- De lokale gebruikerswijzigingen in `BookDetailsView.xaml` en `SettingsWindow.xaml` blijven buiten deze milestone.
+- `DuplicateMergeService` blijft eigenaar van de volledige mergevolgorde.
+- De bestaande `IMetadataSidecarStore` en `ILibraryFileStore` worden hergebruikt; er komt geen tweede JSON-implementatie.
+- Na het koppelen en bijwerken worden de actuele doelbestanden opnieuw uit de repository gelezen.
+- Sidecars worden per unieke absolute map geschreven met platformpassende padvergelijking.
+- Een sidecarfout levert een gestructureerd resultaat op. De merge blijft zichtbaar als uitgevoerd en de UI toont een gelokaliseerde waarschuwing.
+- Native metadata-write-back in EPUB-, PDF- of andere boekbestanden blijft buiten scope.
+- De lokale gebruikerswijzigingen in `BookDetailsView.xaml` en `SettingsWindow.xaml` worden afzonderlijk geverifieerd en gecommit.
 
-## Taak 1: bulkcontract van auteursinvoer
+## Taak 1: lokale schermaanpassingen veilig opnemen
 
-**Beschrijving:** Voeg eerst falende tests toe voor enkelvoudige en meervoudige context in het auteurvenster en breid het viewmodel minimaal uit.
-
-**Acceptatiecriteria:**
-- [x] Eén boek toont de bestaande titelcontext.
-- [x] Meerdere boeken tonen het juiste aantal.
-- [x] Suggesties, vrije invoer en validatie blijven gelijk.
-
-**Verificatie:** Gerichte `MetadataQualityAuthorRepairViewModelTests` gaan rood en daarna groen.
-
-**Bestanden:** auteurherstelviewmodel en bijbehorende tests.
-
-## Taak 2: dashboardbatch en deelresultaten
-
-**Beschrijving:** Schrijf falende dashboardtests en laat de bestaande herstelopdracht alle actuele geselecteerde ontbrekende-auteurrijen verwerken.
+**Beschrijving:** Verifieer en commit de twee reeds aanwezige gebruikerswijzigingen zonder ze met de mergefunctionaliteit te vermengen.
 
 **Acceptatiecriteria:**
-- [x] De opdracht accepteert één of meerdere rijen uitsluitend onder `Ontbrekende auteur`.
-- [x] Annuleren schrijft niets; succes verwerkt alle geselecteerde id’s.
-- [x] Gemengde resultaten verversen opgeslagen boeken en behouden mislukte rijen en selectie.
+- [x] De knoppen in boekdetails behouden de door de gebruiker gekozen icoonweergave.
+- [x] De bestaande instellingstekst gebruikt de gekozen resourcebinding.
+- [x] De XAML- en compositietests blijven groen.
 
-**Verificatie:** Gerichte dashboardtests bewijzen succes, annuleren, waarschuwing, stale, not-found, fout en onverwachte uitzondering.
+**Verificatie:** Gerichte layout-/compositietests en een Debug-build.
 
-**Bestanden:** dashboardviewmodel en dashboardtests.
+**Afhankelijkheden:** Geen.
 
-## Taak 3: WPF-context en gelokaliseerde samenvatting
+## Taak 2: sidecarcontract testgestuurd uitbreiden
 
-**Beschrijving:** Maak bulkcontext en resultaatmeldingen begrijpelijk en toegankelijk in alle zes talen.
-
-**Acceptatiecriteria:**
-- [x] Het venster toont het juiste aantal geselecteerde boeken en een duidelijke bevestigingsactie.
-- [x] Resultaatmeldingen onderscheiden volledig succes, write-backwaarschuwingen en mislukkingen.
-- [x] Toetsenbordgedrag, focus en auteursuggesties regresseren niet.
-
-**Verificatie:** Layout-, lokalisatie- en compositietests groen.
-
-**Bestanden:** auteurvenster, resources, interactiecompositie en bijbehorende tests.
-
-## Taak 4: bibliotheekverversing en oplevering
-
-**Beschrijving:** Bewaak de doorwerking naar hoofdbibliotheek en auteursfilters, werk documentatie bij en lever een actuele Debug-build en gewone PR.
+**Beschrijving:** Voeg eerst falende servicetests toe voor schrijven naar één of meerdere unieke boekmappen, met de definitieve samengevoegde metadata.
 
 **Acceptatiecriteria:**
-- [x] Alle gerepareerde boeken en auteursfilters zijn zonder herstart actueel.
-- [x] Volledige tests en Debug-build zijn groen (761 tests; Saga 2026.10.1.67).
-- [x] Handmatige checklist en Obsidian-spiegel zijn gereed.
-- [x] De branchdiff bevat de lokale gebruikerswijzigingen niet.
+- [x] De doelmetadata wordt na een merge naar `metadata.json` geschreven.
+- [x] Meerdere formaten in dezelfde map veroorzaken slechts één sidecarschrijfopdracht.
+- [x] Verschillende gekoppelde mappen krijgen ieder dezelfde definitieve metadata.
 
-**Verificatie:** LibraryViewModel-tests, volledige Definition of Done, diffreview en GitHub-controles.
+**Verificatie:** Gerichte `DuplicateMergeServiceTests` gaan eerst rood en daarna groen.
 
-**Bestanden:** LibraryViewModel-tests, README, featurestatus, checklist en taakstatus.
+**Afhankelijkheden:** Taak 1.
 
-## Risico’s en maatregelen
+## Taak 3: veilige foutafhandeling en gebruikersmelding
+
+**Beschrijving:** Modelleer het sidecarresultaat en laat de bibliotheeklaag bij een schrijffout een waarschuwing tonen, terwijl de geslaagde merge correct uit het duplicatenoverzicht verdwijnt.
+
+**Acceptatiecriteria:**
+- [x] Een sidecarfout wordt niet als volledig succes gemeld.
+- [x] De gebruiker ziet dat de boeken wel zijn samengevoegd maar `metadata.json` niet volledig is bijgewerkt.
+- [x] De duplicate finder en hoofdbibliotheek blijven volgens de bestaande verversingsregels werken.
+
+**Verificatie:** Eerst falende service- en `LibraryViewModel`-tests, daarna groen; lokalisatietests voor alle zes talen.
+
+**Afhankelijkheden:** Taak 2.
+
+## Taak 4: documentatie, volledige verificatie en oplevering
+
+**Beschrijving:** Werk featurestatus, README en handmatige checklist bij, spiegel Markdown naar Obsidian, voer de volledige Definition of Done uit en lever een actuele Debug-build en gewone PR.
+
+**Acceptatiecriteria:**
+- [x] GitHub-issue #1 is aantoonbaar afgedekt door regressietests.
+- [x] Volledige tests en Debug-build zijn groen (772 tests; Saga 2026.10.6.25).
+- [x] De handmatige checklist en Obsidian-spiegel zijn gereed.
+- [x] De branchdiff bevat alleen Milestone 40 en de afzonderlijk overeengekomen schermaanpassingen.
+
+**Verificatie:** Volledige testset, schone Debug-build, diffreview en GitHub-controles.
+
+**Afhankelijkheden:** Taken 1-3.
+
+## Risico's en maatregelen
 
 | Risico | Maatregel |
 |---|---|
-| Een geldige auteur wordt door verouderde dashboarddata overschreven | Service leest elk boek opnieuw en retourneert `NotApplicable` |
-| Een fout halverwege wordt ten onrechte als volledig succes getoond | Ieder item heeft een status; UI reconcilieert en rapporteert per uitkomstgroep |
-| Mislukte rijen verdwijnen uit beeld | Alleen actuele opgeslagen boeken worden herevalueerd; `Failed` blijft geselecteerd |
-| Grote selectie blokkeert de interface langdurig | Bestaande asynchrone opdracht gebruiken en geen extra database- of netwerkwerk toevoegen |
-| Bulkselectie activeert andere enkelvoudige reparaties | Alleen auteurherstel krijgt bulkondersteuning; overige opdrachten vereisen `SelectedBookCount == 1` |
+| De database-merge slaagt maar een sidecar niet | Gestructureerde waarschuwing; geen onjuiste rollbackclaim |
+| Dezelfde map wordt meerdere keren geschreven | Unieke absolute mappen verzamelen met platformpassende vergelijking |
+| Verouderde bron- of doeldata wordt weggeschreven | Definitieve doelmetadata en actuele gekoppelde bestanden na de merge gebruiken |
+| Bestaande embedded metadata verandert onverwacht | Alleen de sidecarstore aanroepen; native write-back buiten scope houden |
 
 ## Checkpoint
 
-- [x] Specificatie en plan goedgekeurd.
-- [x] Gerichte tests per increment groen.
-- [x] Volledige tests en Debug-build groen (761 tests; Saga 2026.10.1.67).
-- [x] Handmatige checklist gereed.
-- [x] Gewone PR #40 geopend; mergebaarheid en controles worden op GitHub gevolgd.
-
-## Gepauzeerd onderhoud
-
-De eenmalige hydratatie van OneDrive-omslagen blijft gepauzeerd totdat OneDrive de opslagmigratie online volledig heeft verwerkt.
+- [x] Specificatie en volgorde door gebruiker goedgekeurd.
+- [x] Lokale schermaanpassingen afzonderlijk vastgelegd.
+- [x] Rode en groene tests per increment vastgelegd.
+- [ ] Volledige Definition of Done afgerond.
+- [x] Gewone, niet-draft PR #41 geopend; handmatige acceptatie en GitHub-controles staan nog open.

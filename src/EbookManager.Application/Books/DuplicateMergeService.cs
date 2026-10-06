@@ -3,7 +3,10 @@ using EbookManager.Domain.Books;
 
 namespace EbookManager.Application.Books;
 
-public sealed class DuplicateMergeService(IBookRepository bookRepository)
+public sealed class DuplicateMergeService(
+    IBookRepository bookRepository,
+    ILibraryFileStore? fileStore = null,
+    IMetadataSidecarStore? metadataSidecarStore = null)
 {
     public async Task<DuplicateMergeResult> MergeFormatsOnlyAsync(
         Guid sourceBookId,
@@ -39,10 +42,46 @@ public sealed class DuplicateMergeService(IBookRepository bookRepository)
 
         await bookRepository.AttachFilesToBookAsync(sourceBookId, targetBookId, cancellationToken);
         await bookRepository.UpdateAsync(mergedTarget, cancellationToken);
+        var sidecarResult = await WriteSidecarMetadataAsync(mergedTarget, cancellationToken);
         return new DuplicateMergeResult(
             sourceBookId,
             targetBookId,
-            DuplicateMergeMetadataPolicy.MergeSelectedFields);
+            DuplicateMergeMetadataPolicy.MergeSelectedFields,
+            sidecarResult.Status,
+            sidecarResult.Message);
+    }
+
+    private async Task<DuplicateMergeSidecarResult> WriteSidecarMetadataAsync(
+        Book target,
+        CancellationToken cancellationToken)
+    {
+        if (fileStore is null || metadataSidecarStore is null)
+        {
+            return new DuplicateMergeSidecarResult(DuplicateMergeSidecarStatus.NotAttempted);
+        }
+
+        try
+        {
+            var files = await bookRepository.ListFilesAsync(target.Id, cancellationToken);
+            await MetadataSidecarWriter.WriteAsync(
+                fileStore,
+                metadataSidecarStore,
+                target.Metadata,
+                files,
+                cancellationToken);
+
+            return new DuplicateMergeSidecarResult(DuplicateMergeSidecarStatus.Succeeded);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            return new DuplicateMergeSidecarResult(
+                DuplicateMergeSidecarStatus.Failed,
+                exception.Message);
+        }
     }
 
     private static Book ApplySelectedMetadata(
@@ -276,4 +315,17 @@ public sealed record DuplicateMergeFieldSelection(
 public sealed record DuplicateMergeResult(
     Guid SourceBookId,
     Guid TargetBookId,
-    DuplicateMergeMetadataPolicy MetadataPolicy);
+    DuplicateMergeMetadataPolicy MetadataPolicy,
+    DuplicateMergeSidecarStatus SidecarStatus = DuplicateMergeSidecarStatus.NotAttempted,
+    string? SidecarMessage = null);
+
+public enum DuplicateMergeSidecarStatus
+{
+    NotAttempted,
+    Succeeded,
+    Failed
+}
+
+internal sealed record DuplicateMergeSidecarResult(
+    DuplicateMergeSidecarStatus Status,
+    string? Message = null);
