@@ -50,6 +50,9 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     [ObservableProperty]
     private string? statusMessage;
 
+    [ObservableProperty]
+    private bool isStatusMessageSuccess;
+
     public MetadataQualityDashboardViewModel(
         IReadOnlyList<Book> books,
         Func<string, string> localize,
@@ -430,14 +433,30 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
 
         if (selectedRows.Length > 1)
         {
-            StatusMessage = string.Format(
-                CultureInfo.CurrentCulture,
-                localize("MetadataQualityAuthorRepairBulkResult"),
-                succeeded,
-                writeBackWarnings,
-                notApplicable,
-                notFound,
-                failedBookIds.Count);
+            if (succeeded == selectedRows.Length &&
+                writeBackWarnings == 0 &&
+                notApplicable == 0 &&
+                notFound == 0 &&
+                failedBookIds.Count == 0)
+            {
+                StatusMessage = string.Format(
+                    CultureInfo.CurrentCulture,
+                    localize("MetadataQualityAuthorRepairBulkSucceeded"),
+                    succeeded);
+                IsStatusMessageSuccess = true;
+            }
+            else
+            {
+                StatusMessage = string.Format(
+                    CultureInfo.CurrentCulture,
+                    localize("MetadataQualityAuthorRepairBulkResult"),
+                    succeeded,
+                    writeBackWarnings,
+                    notApplicable,
+                    notFound,
+                    failedBookIds.Count);
+            }
+
             return;
         }
 
@@ -454,6 +473,8 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             _ => localize("MetadataQualityAuthorRepairFailed")
         };
     }
+
+    partial void OnStatusMessageChanging(string? value) => IsStatusMessageSuccess = false;
 
     private bool CanRepairUnknownLanguage() =>
         languageRepairService is not null &&

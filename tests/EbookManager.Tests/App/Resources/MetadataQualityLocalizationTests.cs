@@ -32,6 +32,7 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityAuthorRepairSave",
         "MetadataQualityAuthorRepairBulkBookContext",
         "MetadataQualityAuthorRepairBulkSave",
+        "MetadataQualityAuthorRepairBulkSucceeded",
         "MetadataQualityAuthorRepairBulkResult",
         "MetadataQualityRepair",
         "MetadataQualityChangeAuthor",
@@ -114,6 +115,7 @@ public sealed class MetadataQualityLocalizationTests
         values.Values.Should().NotContain(value => MetadataQualitySignalKeys.All.Contains(value));
         values["MetadataQualityAuthorRepairBulkBookContext"].Should().Contain("{0}");
         values["MetadataQualityAuthorRepairBulkSave"].Should().Contain("{0}");
+        values["MetadataQualityAuthorRepairBulkSucceeded"].Should().Contain("{0}");
         foreach (var placeholder in Enumerable.Range(0, 5).Select(index => $"{{{index}}}"))
         {
             values["MetadataQualityAuthorRepairBulkResult"].Should().Contain(placeholder);

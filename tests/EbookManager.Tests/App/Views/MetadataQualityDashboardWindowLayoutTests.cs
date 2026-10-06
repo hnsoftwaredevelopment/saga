@@ -6,6 +6,31 @@ namespace EbookManager.Tests.App.Views;
 public sealed class MetadataQualityDashboardWindowLayoutTests
 {
     [Fact]
+    public void StatusMessage_uses_success_colour_only_for_successful_results()
+    {
+        var document = XDocument.Load(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataQualityDashboardWindow.xaml"));
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+
+        var status = document.Descendants(presentation + "TextBlock")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "StatusMessageText");
+        var style = status.Element(presentation + "TextBlock.Style")!
+            .Element(presentation + "Style")!;
+        style.Elements(presentation + "Setter")
+            .Should().Contain(element =>
+                (string?)element.Attribute("Property") == "Foreground" &&
+                (string?)element.Attribute("Value") == "{DynamicResource DangerBrush}");
+        style.Descendants(presentation + "DataTrigger")
+            .Should().Contain(trigger =>
+                (string?)trigger.Attribute("Binding") == "{Binding IsStatusMessageSuccess}" &&
+                (string?)trigger.Attribute("Value") == "True" &&
+                trigger.Elements(presentation + "Setter").Any(setter =>
+                    (string?)setter.Attribute("Property") == "Foreground" &&
+                    (string?)setter.Attribute("Value") == "{DynamicResource SuccessBrush}"));
+    }
+
+    [Fact]
     public void IssuePane_CanBeResizedWithoutCollapsingEitherPane()
     {
         var document = XDocument.Load(

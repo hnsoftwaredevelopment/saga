@@ -335,9 +335,12 @@ public sealed class MetadataQualityDashboardViewModelTests
         MetadataQualityAuthorRepairViewModel? shownRepair = null;
         var dashboard = new MetadataQualityDashboardViewModel(
             [alpha, beta],
-            key => key == "MetadataQualityAuthorRepairBulkResult"
-                ? "bulk:{0}:{1}:{2}:{3}:{4}"
-                : key,
+            key => key switch
+            {
+                "MetadataQualityAuthorRepairBulkSucceeded" => "success:{0}",
+                "MetadataQualityAuthorRepairBulkResult" => "bulk:{0}:{1}:{2}:{3}:{4}",
+                _ => key
+            },
             authorRepairService: repairService,
             showAuthorRepair: (repair, _) =>
             {
@@ -362,7 +365,8 @@ public sealed class MetadataQualityDashboardViewModelTests
         issue.Rows.Should().BeEmpty();
         refreshBatches.Should().Be(1);
         refreshedBooks.Select(book => book.Id).Should().BeEquivalentTo([alpha.Id, beta.Id]);
-        dashboard.StatusMessage.Should().Be("bulk:2:0:0:0:0");
+        dashboard.StatusMessage.Should().Be("success:2");
+        dashboard.IsStatusMessageSuccess.Should().BeTrue();
     }
 
     [Fact]
@@ -406,6 +410,7 @@ public sealed class MetadataQualityDashboardViewModelTests
         dashboard.SelectedBookCount.Should().Be(1);
         dashboard.SelectedBook!.Id.Should().Be(beta.Id);
         dashboard.StatusMessage.Should().Be("bulk:1:1:0:0:1");
+        dashboard.IsStatusMessageSuccess.Should().BeFalse();
     }
 
     [Fact]

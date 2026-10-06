@@ -647,6 +647,7 @@
   <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Cambiar autor</value></data>
   <data name="MetadataQualityAuthorRepairBulkBookContext" xml:space="preserve"><value>{0} libros seleccionados</value></data>
   <data name="MetadataQualityAuthorRepairBulkSave" xml:space="preserve"><value>Cambiar el autor de {0} libros</value></data>
+  <data name="MetadataQualityAuthorRepairBulkSucceeded" xml:space="preserve"><value>Autor cambiado en {0} libros.</value></data>
   <data name="MetadataQualityAuthorRepairBulkResult" xml:space="preserve"><value>{0} cambiados, {1} cambiados con advertencias de archivo, {2} omitidos porque ya tenían autor, {3} ya no disponibles y {4} fallidos.</value></data>
   <data name="MetadataQualityRepair" xml:space="preserve"><value>Corregir</value></data>
   <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Cambiar autor</value></data>

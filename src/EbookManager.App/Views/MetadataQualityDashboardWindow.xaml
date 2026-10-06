@@ -30,10 +30,21 @@
     </StackPanel>
 
     <StackPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
-      <TextBlock Text="{Binding StatusMessage}"
+      <TextBlock x:Name="StatusMessageText"
+                 Text="{Binding StatusMessage}"
                  TextWrapping="Wrap"
-                 Margin="0,0,0,8"
-                 Foreground="{DynamicResource DangerBrush}" />
+                 Margin="0,0,0,8">
+        <TextBlock.Style>
+          <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsStatusMessageSuccess}" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </TextBlock.Style>
+      </TextBlock>
       <WrapPanel x:Name="QualityActionsPanel"
                  HorizontalAlignment="Right">
         <Button Content="{loc:Loc Close}"

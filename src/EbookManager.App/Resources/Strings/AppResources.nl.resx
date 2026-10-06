@@ -367,6 +367,7 @@
   <data name="MetadataQualityAuthorRepairSave" xml:space="preserve"><value>Auteur wijzigen</value></data>
   <data name="MetadataQualityAuthorRepairBulkBookContext" xml:space="preserve"><value>{0} geselecteerde boeken</value></data>
   <data name="MetadataQualityAuthorRepairBulkSave" xml:space="preserve"><value>Auteur wijzigen voor {0} boeken</value></data>
+  <data name="MetadataQualityAuthorRepairBulkSucceeded" xml:space="preserve"><value>Auteur gewijzigd voor {0} boeken.</value></data>
   <data name="MetadataQualityAuthorRepairBulkResult" xml:space="preserve"><value>{0} gewijzigd, {1} gewijzigd met bestandswaarschuwingen, {2} overgeslagen omdat al een auteur aanwezig was, {3} niet meer beschikbaar en {4} mislukt.</value></data>
   <data name="MetadataQualityRepair" xml:space="preserve"><value>Herstellen</value></data>
   <data name="MetadataQualityChangeAuthor" xml:space="preserve"><value>Auteur wijzigen</value></data>
