@@ -2,49 +2,56 @@
 
 ## Voorbereiding
 
-- [ ] Start de actuele Debug-versie van `Builds\Debug\Saga.exe`.
-- [ ] Open een bibliotheek met minstens drie boeken onder `Ontbrekende auteur` en minstens één reeds bekende auteur.
-- [ ] Open het kwaliteitsscherm en kies `Ontbrekende auteur`.
+- [X] Start de actuele Debug-versie van `Builds\Debug\Saga.exe`.
+- [X] Open een bibliotheek met minstens drie boeken onder `Ontbrekende auteur` en minstens één reeds bekende auteur.
+- [X] Open het kwaliteitsscherm en kies `Ontbrekende auteur`.
 
 ## Selectie en beschikbare acties
 
-- [ ] Selecteer met `Ctrl` meerdere niet-aaneengesloten boeken.
-- [ ] Selecteer met `Shift` een aaneengesloten reeks boeken.
-- [ ] Controleer dat `Auteur wijzigen` bij meerdere geselecteerde boeken beschikbaar is.
-- [ ] Controleer dat openen, taal, serie, titel/auteur, omslag en tags bij een bulkselectie niet beschikbaar zijn.
-- [ ] Controleer dat `Dit is correct` beschikbaar blijft voor de geselecteerde kwaliteitsmeldingen.
+- [X] Selecteer met `Ctrl` meerdere niet-aaneengesloten boeken.
+- [X] Selecteer met `Shift` een aaneengesloten reeks boeken.
+- [X] Controleer dat `Auteur wijzigen` bij meerdere geselecteerde boeken beschikbaar is.
+- [X] Controleer dat openen, taal, serie, titel/auteur, omslag en tags bij een bulkselectie niet beschikbaar zijn.
+- [X] Controleer dat `Dit is correct` beschikbaar blijft voor de geselecteerde kwaliteitsmeldingen.
 
 ## Annuleren
 
-- [ ] Kies `Auteur wijzigen` met meerdere boeken geselecteerd.
-- [ ] Controleer dat het venster het juiste aantal geselecteerde boeken toont.
-- [ ] Controleer dat de bevestigingsknop vermeldt voor hoeveel boeken de auteur wordt gewijzigd.
-- [ ] Sluit met `Annuleren` of `Escape` en controleer dat geen boek is gewijzigd en de selectie behouden blijft.
+- [X] Kies `Auteur wijzigen` met meerdere boeken geselecteerd.
+- [X] Controleer dat het venster het juiste aantal geselecteerde boeken toont.
+- [X] Controleer dat de bevestigingsknop vermeldt voor hoeveel boeken de auteur wordt gewijzigd.
+- [X] Sluit met `Annuleren` of `Escape` en controleer dat geen boek is gewijzigd en de selectie behouden blijft.
 
 ## Bekende auteur toepassen
 
-- [ ] Open het auteursvenster opnieuw en typ een deel van een bekende auteursnaam.
-- [ ] Controleer dat de suggesties direct en correct worden gefilterd.
-- [ ] Kies de auteur met muis of `Enter` en controleer dat de volledige naam in het invoerveld staat.
-- [ ] Bevestig en controleer dat alle geselecteerde boeken uit `Ontbrekende auteur` verdwijnen.
-- [ ] Controleer dat de resultaatsamenvatting de juiste aantallen toont.
-- [ ] Sluit het kwaliteitsscherm en controleer in de hoofdbibliotheek dat alle boeken de gekozen auteur tonen.
-- [ ] Controleer dat het auteursfilter direct de nieuwe aantallen toont en `Unknown` voor deze boeken verdwenen is.
+- [X] Open het auteursvenster opnieuw en typ een deel van een bekende auteursnaam.
+- [X] Controleer dat de suggesties direct en correct worden gefilterd.
+- [X] Kies de auteur met muis of `Enter` en controleer dat de volledige naam in het invoerveld staat.
+- [X] Bevestig en controleer dat alle geselecteerde boeken uit `Ontbrekende auteur` verdwijnen.
+- [X] Controleer dat de resultaatsamenvatting de juiste aantallen toont.
+- [X] Sluit het kwaliteitsscherm en controleer in de hoofdbibliotheek dat alle boeken de gekozen auteur tonen.
+- [X] Controleer dat het auteursfilter direct de nieuwe aantallen toont en `Unknown` voor deze boeken verdwenen is.
 
 ## Nieuwe auteur en enkelvoudige regressie
 
-- [ ] Selecteer meerdere andere boeken zonder auteur en voer een volledig nieuwe auteursnaam in.
-- [ ] Controleer dat geldige vrije invoer kan worden bevestigd en op alle geselecteerde boeken verschijnt.
-- [ ] Open de actie daarna voor één boek en controleer dat de boektitel wordt getoond en de knop alleen `Auteur wijzigen` zegt.
-- [ ] Controleer dat het bestaande enkelvoudige herstel nog normaal werkt.
+- [X] Selecteer meerdere andere boeken zonder auteur en voer een volledig nieuwe auteursnaam in.
+- [X] Controleer dat geldige vrije invoer kan worden bevestigd en op alle geselecteerde boeken verschijnt.
+- [X] Open de actie daarna voor één boek en controleer dat de boektitel wordt getoond en de knop alleen `Auteur wijzigen` zegt.
+- [X] Controleer dat het bestaande enkelvoudige herstel nog normaal werkt.
 
 ## Toetsenbord, talen en foutafhandeling
 
-- [ ] Doorloop selectie, auteursuggestie, bevestigen en annuleren volledig met het toetsenbord.
-- [ ] Schakel Saga naar een andere taal en controleer bulkcontext, knop en resultaatsamenvatting.
-- [ ] Indien een opslag- of write-backfout veilig kan worden nagebootst: controleer dat volledig mislukte boeken zichtbaar en geselecteerd blijven en dat bestandswaarschuwingen duidelijk worden gemeld.
-- [ ] Controleer kort dat de overige kwaliteitscategorieën en herstelacties nog normaal werken met één geselecteerd boek.
+- [X] Doorloop selectie, auteursuggestie, bevestigen en annuleren volledig met het toetsenbord.
+- [X] Schakel Saga naar een andere taal en controleer bulkcontext, knop en resultaatsamenvatting.
+- [X] Indien een opslag- of write-backfout veilig kan worden nagebootst: controleer dat volledig mislukte boeken zichtbaar en geselecteerd blijven en dat bestandswaarschuwingen duidelijk worden gemeld.
+- [X] Controleer kort dat de overige kwaliteitscategorieën en herstelacties nog normaal werken met één geselecteerd boek.
 
 ## Resultaat
 
-- [ ] Alle bovenstaande controles zijn geslaagd, of afwijkingen zijn met de exacte stappen genoteerd.
+- [X] Alle bovenstaande controles zijn geslaagd, of afwijkingen zijn met de exacte stappen genoteerd.
+
+## Bevinding tijdens de test
+
+- [X] Een volledig geslaagde bulkwijziging toont alleen een korte groene bevestiging.
+- [X] Een resultaat met fouten, waarschuwingen of overgeslagen boeken toont de uitgebreide rode uitsplitsing.
+
+Deze verbetering is handmatig bevestigd met Debug-build `2026.10.6.8`.
