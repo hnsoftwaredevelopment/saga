@@ -4,6 +4,7 @@ using EbookManager.Domain.Books;
 using EbookManager.Domain.CustomMetadata;
 using EbookManager.Domain.Importing;
 using EbookManager.Domain.Metadata;
+using EbookManager.Infrastructure.Files;
 using EbookManager.Infrastructure.Persistence;
 using EbookManager.Infrastructure.Persistence.Entities;
 using EbookManager.Infrastructure.Persistence.Repositories;
@@ -617,7 +618,9 @@ public sealed class LibraryDbContextTests
         var libraryPath = library.DirectoryPath;
         var factory = await CreateMigratedFactoryAsync(libraryPath);
         var repository = new EfBookRepository(factory, libraryPath);
-        var service = new DuplicateMergeService(repository);
+        var fileStore = new ManagedLibraryFileStore(libraryPath);
+        var sidecarStore = new JsonMetadataSidecarStore();
+        var service = new DuplicateMergeService(repository, fileStore, sidecarStore);
         var duplicateService = new DuplicateCandidateService();
         var sourceBook = CreateBook("De Hobbit", ["Unknown"]) with
         {
@@ -627,20 +630,32 @@ public sealed class LibraryDbContextTests
         {
             CoverRelativePath = null
         };
-        await repository.AddAsync(sourceBook, CreateFile(sourceBook.Id, Hash('A')), default);
-        await repository.AddAsync(targetBook, CreateFile(targetBook.Id, Hash('B')), default);
+        var sourceFile = CreateFile(sourceBook.Id, Hash('A'));
+        var targetFile = CreateFile(targetBook.Id, Hash('B'));
+        await repository.AddAsync(sourceBook, sourceFile, default);
+        await repository.AddAsync(targetBook, targetFile, default);
         duplicateService.FindCandidates(await repository.ListAsync(default))
             .Groups.Should().ContainSingle();
 
         await service.MergeAsync(
             sourceBook.Id,
             targetBook.Id,
-            [new DuplicateMergeFieldSelection(DuplicateMergeMetadataField.Formats, DuplicateMergeAction.Merge)],
+            [new DuplicateMergeFieldSelection(DuplicateMergeMetadataField.Authors, DuplicateMergeAction.Copy)],
             default);
 
         var books = await repository.ListAsync(default);
-        books.Should().ContainSingle().Which.Id.Should().Be(targetBook.Id);
+        var mergedBook = books.Should().ContainSingle().Which;
+        mergedBook.Id.Should().Be(targetBook.Id);
+        mergedBook.Metadata.Authors.Should().Equal("Unknown");
         duplicateService.FindCandidates(books).Groups.Should().BeEmpty();
+        var sourceSidecar = await sidecarStore.TryReadAsync(
+            fileStore.GetAbsolutePath(sourceFile.RelativePath),
+            default);
+        var targetSidecar = await sidecarStore.TryReadAsync(
+            fileStore.GetAbsolutePath(targetFile.RelativePath),
+            default);
+        sourceSidecar.Should().Be(mergedBook.Metadata);
+        targetSidecar.Should().Be(mergedBook.Metadata);
     }
 
     [Fact]
