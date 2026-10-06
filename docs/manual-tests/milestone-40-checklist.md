@@ -4,13 +4,21 @@ Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe`. Maak voo
 
 ## Lokale schermaanpassingen
 
-- [ ] Selecteer een boek en controleer dat de acties Opslaan, Ongedaan maken en Verwijderen als duidelijke icoonknoppen worden getoond.
-- [ ] Open Instellingen en controleer dat de toelichting bij de boekenplankinstelling leesbaar blijft in het actieve thema.
+- [X] Selecteer een boek en controleer dat de acties Opslaan, Ongedaan maken en Verwijderen als duidelijke icoonknoppen worden getoond.
+- [X] Open Instellingen en controleer dat de toelichting bij de boekenplankinstelling leesbaar blijft in het actieve thema.
 
 ## Annuleren
 
-- [ ] Open het duplicatenoverzicht en start Samenvoegen voor een duplicaatpaar.
+- [ ] Open het duplicatenoverzicht en selecteer één boek. Controleer dat de knop **Samenvoegen** zichtbaar maar nog uitgeschakeld is.
+- [ ] Houd Ctrl ingedrukt, selecteer een tweede boek uit dezelfde duplicaatgroep en controleer dat **Samenvoegen** actief wordt.
+- [ ] Klik op **Samenvoegen** en controleer dat het voorbeeldvenster zonder lange blokkade opent.
 - [ ] Annuleer het voorbeeldvenster en controleer dat beide boeken, hun metadata en hun bestanden ongewijzigd blijven.
+
+## Responsiviteit
+
+- [ ] Selecteer en deselecteer enkele boeken en controleer dat het scherm direct blijft reageren.
+- [ ] Schakel **Alleen exacte matches** uit en controleer dat de uitgebreidere lijst binnen een werkbare tijd verschijnt en Saga bedienbaar blijft.
+- [ ] Schakel **Alleen exacte matches** opnieuw in en controleer dat de exacte lijst weer verschijnt.
 
 ## Samenvoegen en metadata
 

@@ -13,10 +13,11 @@
 - [x] Gestructureerd resultaat en gelokaliseerde gebruikerswaarschuwing implementeren.
 - [x] Gerichte tests per increment uitvoeren en afzonderlijk committen.
 - [x] README, featurestatus en handmatige checklist bijwerken en naar Obsidian spiegelen.
-- [x] Volledige testset uitgevoerd (772 geslaagd; 0 overgeslagen).
+- [x] Volledige testset uitgevoerd (777 geslaagd; 0 overgeslagen).
 - [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.6.25; 0 waarschuwingen en 0 fouten).
 - [x] Branchdiff beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; gedeelde sidecarwriter toegevoegd en daarna geen bevindingen.
 - [x] Gewone, niet-draft PR #41 geopend.
+- [x] Bevindingen uit de eerste handmatige test opgelost: zichtbare selectieactie en responsieve selectie/filterwisseling.
 - [ ] Handmatige checklist uitvoeren en GitHub-controles en eventuele reviewopmerkingen beoordelen.
 
 ## Buiten scope
