@@ -162,4 +162,5 @@ Er zijn geen blokkerende open vragen. De goedgekeurde specificatie bepaalt dat d
 - [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
 - [x] Implementatie testgestuurd en incrementeel afgerond.
 - [ ] Definition of Done afgerond; tests, build, documentatiespiegel en eigen codereview zijn gereed, PR en handmatige acceptatie volgen nog.
-- [ ] Gewone, niet-draft PR geopend en handmatig geaccepteerd.
+- [x] Gewone, niet-draft PR #43 geopend.
+- [ ] PR #43 handmatig geaccepteerd.

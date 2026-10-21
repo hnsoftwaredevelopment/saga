@@ -16,7 +16,8 @@
 - [x] Volledige testset met .NET 10 uitgevoerd: 797 tests geslaagd, geen fouten of overgeslagen tests.
 - [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.23`.
 - [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; geen bevindingen.
-- [ ] Gewone, niet-draft PR openen en GitHub-controles beoordelen.
+- [x] Gewone, niet-draft PR #43 geopend.
+- [ ] GitHub-controles voor PR #43 beoordelen.
 - [ ] Handmatige acceptatiechecklist laten uitvoeren.
 
 ## Buiten scope
