@@ -26,6 +26,8 @@ public sealed class MetadataQualityLanguageRepairWindowLayoutTests
         RequiredAttribute(languageInput, "AutomationProperties.Name").Should().NotBeNullOrWhiteSpace();
 
         var save = Button(document, xaml, "SaveLanguageRepairButton");
+        RequiredAttribute(save, "Content").Should().Be("{Binding SaveButtonText}");
+        RequiredAttribute(save, "AutomationProperties.Name").Should().Be("{Binding SaveButtonText}");
         RequiredAttribute(save, "IsDefault").Should().Be("True");
         RequiredAttribute(save, "IsEnabled").Should().Be("{Binding CanSave}");
         RequiredAttribute(save, "Click").Should().Be("SaveClicked");
@@ -34,6 +36,15 @@ public sealed class MetadataQualityLanguageRepairWindowLayoutTests
         var cancel = Button(document, xaml, "CancelLanguageRepairButton");
         RequiredAttribute(cancel, "IsCancel").Should().Be("True");
         AssertAccessible(cancel);
+
+        var contextLabel = document.Descendants(presentation + "TextBlock")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "BookContextLabel");
+        RequiredAttribute(contextLabel, "Text").Should().Be("{Binding ContextLabel}");
+
+        var contextText = document.Descendants(presentation + "TextBlock")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "BookContextText");
+        RequiredAttribute(contextText, "Text").Should().Be("{Binding ContextText}");
+        RequiredAttribute(contextText, "TextWrapping").Should().Be("Wrap");
     }
 
     private static XElement Button(XDocument document, XNamespace xaml, string name)

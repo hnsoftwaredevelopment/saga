@@ -1,85 +1,163 @@
-# Milestone 40 implementatieplan: duplicate-merge sidecarconsistentie
+# Milestone 41 implementatieplan: bulk taalherstel
 
 ## Overzicht
 
-Milestone 40 rondt de bestaande duplicate-merge af door na iedere geslaagde merge de definitieve doelmetadata ook naar `metadata.json` te schrijven. De database-merge blijft de gezaghebbende stap. Sidecars worden daarna éénmaal per unieke map van alle gekoppelde doelbestanden bijgewerkt. Een sidecarfout draait de reeds geslaagde database-merge niet terug, maar wordt wel als duidelijke waarschuwing aan de gebruiker gemeld.
+Milestone 41 breidt het bestaande herstel van `Ontbrekende of onbekende taal` uit van één boek naar één of meerdere geselecteerde boeken. De bestaande applicatieservice verwerkt al meerdere boek-id’s en blijft de veilige opslagroute. De wijziging richt zich daarom op een duidelijke bulkcontext in het taalvenster, resultaatgedreven dashboardverwerking, één verversing van de hoofdbibliotheek en begrijpelijke gelokaliseerde terugkoppeling.
 
 ## Architectuurbeslissingen
 
-- `DuplicateMergeService` blijft eigenaar van de volledige mergevolgorde.
-- De bestaande `IMetadataSidecarStore` en `ILibraryFileStore` worden hergebruikt; er komt geen tweede JSON-implementatie.
-- Na het koppelen en bijwerken worden de actuele doelbestanden opnieuw uit de repository gelezen.
-- Sidecars worden per unieke absolute map geschreven met platformpassende padvergelijking.
-- Een sidecarfout levert een gestructureerd resultaat op. De merge blijft zichtbaar als uitgevoerd en de UI toont een gelokaliseerde waarschuwing.
-- Native metadata-write-back in EPUB-, PDF- of andere boekbestanden blijft buiten scope.
-- De lokale gebruikerswijzigingen in `BookDetailsView.xaml` en `SettingsWindow.xaml` worden afzonderlijk geverifieerd en gecommit.
+- `MetadataQualityLanguageRepairService` blijft verantwoordelijk voor opnieuw inlezen, toepasbaarheidscontrole, normalisatie en opslag per boek.
+- `MetadataQualityDashboardViewModel` verzamelt uitsluitend actuele geselecteerde rijen uit `unknown-language` en verwerkt ieder batchresultaat afzonderlijk.
+- De bestaande bulkauteurworkflow is het patroon voor selectieherstel, tellingen, waarschuwingen en één gebundelde bibliotheekverversing.
+- `MetadataQualityLanguageRepairViewModel` krijgt dezelfde enkelvoudige/bulkcontext als het auteursvenster, maar behoudt de bestaande gesloten lijst van geldige talen.
+- Andere herstelacties blijven enkelvoudig; er komt geen databasewijziging, dependency of externe taaldetectie.
 
-## Taak 1: lokale schermaanpassingen veilig opnemen
+## Afhankelijkheden
 
-**Beschrijving:** Verifieer en commit de twee reeds aanwezige gebruikerswijzigingen zonder ze met de mergefunctionaliteit te vermengen.
+```text
+Taaldialoogcontext en contract
+        │
+        └── Dashboardbulkverwerking
+                  │
+                  └── Lokalisatie en WPF-layout
+                            │
+                            └── Integratie, documentatie en acceptatiebuild
+```
+
+## Taak 1: taaldialoog geschikt maken voor één of meerdere boeken
+
+**Beschrijving:** Breid het taalviewmodel uit met een enkelvoudige titelcontext, bulkcontext, geselecteerd aantal en passende bevestigingstekst zonder de bestaande taalkeuze te veranderen.
 
 **Acceptatiecriteria:**
-- [x] De knoppen in boekdetails behouden de door de gebruiker gekozen icoonweergave.
-- [x] De bestaande instellingstekst gebruikt de gekozen resourcebinding.
-- [x] De XAML- en compositietests blijven groen.
+- [x] Eén boek toont de boektitel en de bestaande actie `Taal wijzigen`.
+- [x] Meerdere boeken tonen het aantal en een expliciete bulkbevestiging.
+- [x] Een geldige taalkeuze blijft vereist; annuleren heeft geen effect.
 
-**Verificatie:** Gerichte layout-/compositietests en een Debug-build.
+**Verificatie:** Eerst falende en daarna groene `MetadataQualityLanguageRepairViewModelTests`.
 
 **Afhankelijkheden:** Geen.
 
-## Taak 2: sidecarcontract testgestuurd uitbreiden
+**Waarschijnlijk geraakte bestanden:**
+- `src/EbookManager.Presentation/ViewModels/MetadataQualityLanguageRepairViewModel.cs`
+- `tests/EbookManager.Tests/App/ViewModels/MetadataQualityLanguageRepairViewModelTests.cs`
 
-**Beschrijving:** Voeg eerst falende servicetests toe voor schrijven naar één of meerdere unieke boekmappen, met de definitieve samengevoegde metadata.
+**Omvang:** Klein.
+
+## Taak 2: geselecteerde taalproblemen als batch verwerken
+
+**Beschrijving:** Maak `Taal wijzigen` beschikbaar voor iedere niet-lege selectie binnen de taalcategorie en verwerk alle service-uitkomsten volgens de werkelijke opgeslagen toestand.
 
 **Acceptatiecriteria:**
-- [x] De doelmetadata wordt na een merge naar `metadata.json` geschreven.
-- [x] Meerdere formaten in dezelfde map veroorzaken slechts één sidecarschrijfopdracht.
-- [x] Verschillende gekoppelde mappen krijgen ieder dezelfde definitieve metadata.
+- [x] De opdracht ontvangt alle unieke geselecteerde boek-id’s in stabiele volgorde.
+- [x] Succes, write-backwaarschuwing, niet meer toepasselijk, verwijderd en mislukt worden afzonderlijk gereconcilieerd.
+- [x] Volledig mislukte rijen blijven geselecteerd; anders wordt de logisch volgende rij geselecteerd.
+- [x] De hoofdbibliotheek en taalfilters worden eenmaal met alle gereconcilieerde boeken bijgewerkt.
 
-**Verificatie:** Gerichte `DuplicateMergeServiceTests` gaan eerst rood en daarna groen.
+**Verificatie:** Eerst falende en daarna groene `MetadataQualityDashboardViewModelTests`, inclusief annuleren en onverwachte fout.
 
 **Afhankelijkheden:** Taak 1.
 
-## Taak 3: veilige foutafhandeling en gebruikersmelding
+**Waarschijnlijk geraakte bestanden:**
+- `src/EbookManager.Presentation/ViewModels/MetadataQualityDashboardViewModel.cs`
+- `tests/EbookManager.Tests/App/ViewModels/MetadataQualityDashboardViewModelTests.cs`
 
-**Beschrijving:** Modelleer het sidecarresultaat en laat de bibliotheeklaag bij een schrijffout een waarschuwing tonen, terwijl de geslaagde merge correct uit het duplicatenoverzicht verdwijnt.
+**Omvang:** Middelgroot.
+
+## Checkpoint na taken 1-2
+
+- [x] Gerichte viewmodel- en dashboardtests zijn groen.
+- [x] Enkelvoudig taalherstel en bulkauteurherstel zijn niet veranderd.
+- [x] De branch bevat twee afzonderlijk verifieerbare increments.
+
+## Taak 3: bulkcontext en uitkomsten begrijpelijk tonen
+
+**Beschrijving:** Bind contextlabel, contexttekst en bevestigingstekst in het taalvenster en voeg alle benodigde teksten toe in de zes ondersteunde talen.
 
 **Acceptatiecriteria:**
-- [x] Een sidecarfout wordt niet als volledig succes gemeld.
-- [x] De gebruiker ziet dat de boeken wel zijn samengevoegd maar `metadata.json` niet volledig is bijgewerkt.
-- [x] De duplicate finder en hoofdbibliotheek blijven volgens de bestaande verversingsregels werken.
+- [x] Het venster toont bij bulk het juiste aantal geselecteerde boeken.
+- [x] Volledig succes gebruikt een korte groene melding; gemengde resultaten tonen alle relevante aantallen.
+- [x] Teksten en toegankelijke namen zijn aanwezig in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
 
-**Verificatie:** Eerst falende service- en `LibraryViewModel`-tests, daarna groen; lokalisatietests voor alle zes talen.
+**Verificatie:** Eerst falende en daarna groene layout- en lokalisatietests.
 
-**Afhankelijkheden:** Taak 2.
+**Afhankelijkheden:** Taken 1-2.
 
-## Taak 4: documentatie, volledige verificatie en oplevering
+**Waarschijnlijk geraakte bestanden:**
+- `src/EbookManager.App/Views/MetadataQualityLanguageRepairWindow.xaml`
+- `src/EbookManager.App/Resources/Strings/AppResources*.resx`
+- bijbehorende layout- en lokalisatietests onder `tests/EbookManager.Tests/App`.
 
-**Beschrijving:** Werk featurestatus, README en handmatige checklist bij, spiegel Markdown naar Obsidian, voer de volledige Definition of Done uit en lever een actuele Debug-build en gewone PR.
+**Omvang:** Middelgroot; de resourcebestanden zijn één mechanische vertaalset.
+
+## Taak 4: bibliotheekintegratie en regressies bewijzen
+
+**Beschrijving:** Bewijs dat meerdere opgeslagen taalwijzigingen in één keer de actieve bibliotheek, zichtbare rijen en taalfilters bijwerken en dat andere kwaliteitsacties hun selectiegrenzen behouden.
 
 **Acceptatiecriteria:**
-- [x] GitHub-issue #1 is aantoonbaar afgedekt door regressietests.
-- [x] Volledige tests en Debug-build zijn groen (772 tests; Saga 2026.10.6.25).
-- [x] De handmatige checklist en Obsidian-spiegel zijn gereed.
-- [x] De branchdiff bevat alleen Milestone 40 en de afzonderlijk overeengekomen schermaanpassingen.
+- [x] De bibliotheek ontvangt alle gereconcilieerde boeken in één callback.
+- [x] Taalfilters en zichtbare metadata zijn zonder herstart actueel.
+- [x] Openen, omslag, serie, tags en titel/auteur blijven bij meerdere selectie uitgeschakeld; bulkauteurherstel blijft werken.
 
-**Verificatie:** Volledige testset, schone Debug-build, diffreview en GitHub-controles.
+**Verificatie:** Gerichte `LibraryViewModelTests` en dashboardregressietests.
 
-**Afhankelijkheden:** Taken 1-3.
+**Afhankelijkheden:** Taken 2-3.
 
-## Risico's en maatregelen
+**Waarschijnlijk geraakte bestanden:**
+- `tests/EbookManager.Tests/App/ViewModels/LibraryViewModelTests.cs`
+- zo nodig een minimale aanpassing in `src/EbookManager.Presentation/ViewModels/LibraryViewModel.cs`.
 
-| Risico | Maatregel |
-|---|---|
-| De database-merge slaagt maar een sidecar niet | Gestructureerde waarschuwing; geen onjuiste rollbackclaim |
-| Dezelfde map wordt meerdere keren geschreven | Unieke absolute mappen verzamelen met platformpassende vergelijking |
-| Verouderde bron- of doeldata wordt weggeschreven | Definitieve doelmetadata en actuele gekoppelde bestanden na de merge gebruiken |
-| Bestaande embedded metadata verandert onverwacht | Alleen de sidecarstore aanroepen; native write-back buiten scope houden |
+**Omvang:** Klein.
+
+## Checkpoint na taken 3-4
+
+- [x] Alle gerichte tests zijn groen.
+- [x] De WPF-app bouwt zonder waarschuwingen of fouten.
+- [x] De volledige bulktaalstroom is klaar voor handmatige acceptatie.
+
+## Taak 5: documentatie, volledige verificatie en oplevering
+
+**Beschrijving:** Werk featurestatus, README, voortgang en handmatige checklist bij, spiegel Markdown naar Obsidian en voer de volledige Definition of Done uit.
+
+**Acceptatiecriteria:**
+- [x] De handmatige checklist behandelt één boek, meerdere boeken, zoeken, annuleren, gemengde resultaten en regressies.
+- [x] De volledige testset en schone Debug-build zijn groen met .NET 10.
+- [x] De branchdiff bevat uitsluitend Milestone 41 en PR #42 is als gewone, niet-draft PR geopend.
+
+**Verificatie:** Volledige tests, build/publish, `git diff --check`, eigen codereview en GitHub-controles.
+
+**Afhankelijkheden:** Taken 1-4.
+
+**Waarschijnlijk geraakte bestanden:**
+- `README.md`
+- `docs/feature-requests/metadata-quality-dashboard.md`
+- `docs/manual-tests/milestone-41-checklist.md`
+- `tasks/plan.md`
+- `tasks/todo.md`
+
+**Omvang:** Middelgroot.
+
+## Risico’s en maatregelen
+
+| Risico | Impact | Maatregel |
+|---|---|---|
+| Een boek krijgt intussen een geldige taal | Middel | Service leest ieder boek opnieuw en retourneert `NotApplicable` zonder overschrijven |
+| Een deel van de batch faalt | Middel | Resultaten per boek verwerken; mislukte rijen zichtbaar en geselecteerd houden |
+| Dashboard en hoofdbibliotheek lopen uiteen | Hoog | Actuele teruggelezen boeken verzamelen en één gebundelde callback gebruiken |
+| Bulkactie wordt buiten de taalcategorie actief | Middel | Commandvoorwaarden en regressietests per signaal en selectieomvang |
+| Vertalingen maken de knop of context onleesbaar | Laag | Dynamische knoptekst, tekstomloop en layouttests voor langere labels |
+
+## Open vragen
+
+Er zijn geen blokkerende open vragen. De geaccepteerde specificatie en het bulkauteurpatroon bepalen het gedrag.
 
 ## Checkpoint
 
-- [x] Specificatie en volgorde door gebruiker goedgekeurd.
-- [x] Lokale schermaanpassingen afzonderlijk vastgelegd.
+- [x] Specificatie door gebruiker goedgekeurd.
+- [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
 - [x] Rode en groene tests per increment vastgelegd.
+- [x] Eigen codereview afgerond; de gedeelde batchresultaatverwerking voorkomt dubbele auteur- en taallogica.
+- [x] Gewone, niet-draft PR #42 geopend.
+- [x] CodeRabbit-bevinding over een onverwachte fout per boek met een regressietest opgelost.
+- [x] Handmatige acceptatie door gebruiker afgerond; de workflow is herkenbaar en talen worden correct opgeslagen.
 - [x] Volledige Definition of Done afgerond.
-- [x] Gewone, niet-draft PR #41 geopend; handmatige acceptatie en GitHub-controles afgerond.
+- [x] GitHub-controles na de laatste correctie opnieuw beoordeeld: CodeQL en GitGuardian groen; CodeRabbit-bevinding opgelost.

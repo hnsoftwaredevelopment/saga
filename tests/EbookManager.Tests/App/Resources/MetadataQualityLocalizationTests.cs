@@ -47,6 +47,10 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityLanguageRepairInput",
         "MetadataQualityLanguageRepairHelp",
         "MetadataQualityLanguageRepairSave",
+        "MetadataQualityLanguageRepairBulkBookContext",
+        "MetadataQualityLanguageRepairBulkSave",
+        "MetadataQualityLanguageRepairBulkSucceeded",
+        "MetadataQualityLanguageRepairBulkResult",
         "MetadataQualityLanguageRepairFailed",
         "MetadataQualityLanguageRepairWriteBackWarning",
         "MetadataQualityLanguageRepairNotNeeded",
@@ -116,9 +120,13 @@ public sealed class MetadataQualityLocalizationTests
         values["MetadataQualityAuthorRepairBulkBookContext"].Should().Contain("{0}");
         values["MetadataQualityAuthorRepairBulkSave"].Should().Contain("{0}");
         values["MetadataQualityAuthorRepairBulkSucceeded"].Should().Contain("{0}");
+        values["MetadataQualityLanguageRepairBulkBookContext"].Should().Contain("{0}");
+        values["MetadataQualityLanguageRepairBulkSave"].Should().Contain("{0}");
+        values["MetadataQualityLanguageRepairBulkSucceeded"].Should().Contain("{0}");
         foreach (var placeholder in Enumerable.Range(0, 5).Select(index => $"{{{index}}}"))
         {
             values["MetadataQualityAuthorRepairBulkResult"].Should().Contain(placeholder);
+            values["MetadataQualityLanguageRepairBulkResult"].Should().Contain(placeholder);
         }
     }
 

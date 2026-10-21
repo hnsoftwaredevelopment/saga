@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 40 was accepted on 21 October 2026 and keeps SQLite and every relevant portable `metadata.json` sidecar synchronized after duplicate merges, with a clear warning when sidecar storage fails. It also adds a visible two-book merge action and keeps the duplicate overview responsive for large libraries. Milestone 39 added accepted bulk missing-author repair, while Milestone 38 added confirmed bulk quality decisions.
+Milestone 41 is ready for acceptance testing and applies one chosen language to multiple selected books with missing or invalid language metadata, while preserving per-book failures and file warnings. Milestone 40 was accepted on 21 October 2026 and keeps SQLite and every relevant portable `metadata.json` sidecar synchronized after duplicate merges, with a clear warning when sidecar storage fails.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -60,6 +60,7 @@ Milestone 40 was accepted on 21 October 2026 and keeps SQLite and every relevant
 - direct missing-author repair from the quality dashboard with known-author suggestions and free entry for a new author
 - bulk missing-author repair that applies one chosen author to multiple selected books while preserving per-book failures and file warnings
 - direct missing- or unknown-language repair from the quality dashboard with a searchable list of valid languages
+- bulk missing- or unknown-language repair that applies one chosen language to multiple selected books and refreshes the library and language filters together
 - direct missing-series repair with live suggestions while preserving the existing series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
 - editable messy-tag repair with a one-tag-per-line proposal, deduplication, whitespace cleanup, and support for an empty final tag list
@@ -76,7 +77,7 @@ Milestone 40 was accepted on 21 October 2026 and keeps SQLite and every relevant
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 40 checklist](docs/manual-tests/milestone-40-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 41 checklist](docs/manual-tests/milestone-41-checklist.md).
 
 ## Prerequisites
 

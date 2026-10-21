@@ -57,6 +57,29 @@ public sealed class MetadataQualityLanguageRepairServiceTests
         repository.UpdateCalls.Should().Be(0);
     }
 
+    [Fact]
+    public async Task RepairAsync_reports_an_unexpected_book_failure_and_continues_with_the_next_book()
+    {
+        var first = CreateBook(language: null);
+        var failing = CreateBook(language: null);
+        var last = CreateBook(language: null);
+        var repository = new InMemoryBookRepository(first, failing, last);
+        repository.FailingReadBookIds.Add(failing.Id);
+        var service = CreateService(repository);
+
+        var result = await service.RepairAsync([first.Id, failing.Id, last.Id], "nl", default);
+
+        result.Items.Should().HaveCount(3);
+        result.Items.Single(item => item.BookId == first.Id).Status
+            .Should().Be(MetadataQualityLanguageRepairStatus.Succeeded);
+        var failed = result.Items.Single(item => item.BookId == failing.Id);
+        failed.Status.Should().Be(MetadataQualityLanguageRepairStatus.Failed);
+        failed.Message.Should().Be("Read failed.");
+        result.Items.Single(item => item.BookId == last.Id).Status
+            .Should().Be(MetadataQualityLanguageRepairStatus.Succeeded);
+        repository.UpdateCalls.Should().Be(2);
+    }
+
     private static MetadataQualityLanguageRepairService CreateService(InMemoryBookRepository repository) =>
         new(
             repository,
@@ -82,22 +105,30 @@ public sealed class MetadataQualityLanguageRepairServiceTests
             created);
     }
 
-    private sealed class InMemoryBookRepository(Book book) : IBookRepository
+    private sealed class InMemoryBookRepository(params Book[] seed) : IBookRepository
     {
-        private Book? storedBook = book;
+        private readonly Dictionary<Guid, Book> books = seed.ToDictionary(book => book.Id);
 
         public int UpdateCalls { get; private set; }
+        public HashSet<Guid> FailingReadBookIds { get; } = [];
 
         public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) =>
-            Task.FromResult<IReadOnlyList<Book>>(storedBook is null ? [] : [storedBook]);
+            Task.FromResult<IReadOnlyList<Book>>(books.Values.ToArray());
 
-        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) =>
-            Task.FromResult(storedBook?.Id == id ? storedBook : null);
+        public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
+        {
+            if (FailingReadBookIds.Contains(id))
+            {
+                throw new IOException("Read failed.");
+            }
+
+            return Task.FromResult(books.GetValueOrDefault(id));
+        }
 
         public Task UpdateAsync(Book updatedBook, CancellationToken cancellationToken)
         {
             UpdateCalls++;
-            storedBook = updatedBook;
+            books[updatedBook.Id] = updatedBook;
             return Task.CompletedTask;
         }
 

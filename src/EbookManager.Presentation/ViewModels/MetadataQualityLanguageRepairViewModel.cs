@@ -12,8 +12,35 @@ public sealed partial class MetadataQualityLanguageRepairViewModel : ObservableO
     private MetadataQualityLanguageOption? selectedLanguage;
 
     public MetadataQualityLanguageRepairViewModel(string bookTitle)
+        : this([bookTitle], key => key)
     {
-        BookTitle = bookTitle;
+    }
+
+    public MetadataQualityLanguageRepairViewModel(
+        IReadOnlyCollection<string> bookTitles,
+        Func<string, string> localize)
+    {
+        ArgumentNullException.ThrowIfNull(bookTitles);
+        ArgumentNullException.ThrowIfNull(localize);
+
+        if (bookTitles.Count == 0)
+        {
+            throw new ArgumentException("At least one book title is required.", nameof(bookTitles));
+        }
+
+        AffectedBookCount = bookTitles.Count;
+        BookTitle = AffectedBookCount == 1 ? bookTitles.Single() : null;
+        ContextLabel = localize(AffectedBookCount == 1 ? "Title" : "MetadataMultiEditSelectedBooks");
+        ContextText = BookTitle ?? string.Format(
+            CultureInfo.CurrentCulture,
+            localize("MetadataQualityLanguageRepairBulkBookContext"),
+            AffectedBookCount);
+        SaveButtonText = AffectedBookCount == 1
+            ? localize("MetadataQualityLanguageRepairSave")
+            : string.Format(
+                CultureInfo.CurrentCulture,
+                localize("MetadataQualityLanguageRepairBulkSave"),
+                AffectedBookCount);
         Languages = CultureInfo
             .GetCultures(CultureTypes.NeutralCultures)
             .Select(culture => MetadataQualityLanguageRules.Normalize(culture.Name))
@@ -27,7 +54,11 @@ public sealed partial class MetadataQualityLanguageRepairViewModel : ObservableO
             .ToArray();
     }
 
-    public string BookTitle { get; }
+    public int AffectedBookCount { get; }
+    public string? BookTitle { get; }
+    public string ContextLabel { get; }
+    public string ContextText { get; }
+    public string SaveButtonText { get; }
     public IReadOnlyList<MetadataQualityLanguageOption> Languages { get; }
     public string? NormalizedLanguage => SelectedLanguage?.Code;
     public bool CanSave => NormalizedLanguage is not null;

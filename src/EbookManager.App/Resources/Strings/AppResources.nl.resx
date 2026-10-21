@@ -384,6 +384,10 @@
   <data name="MetadataQualityLanguageRepairInput" xml:space="preserve"><value>Taal</value></data>
   <data name="MetadataQualityLanguageRepairHelp" xml:space="preserve"><value>Talen worden met hun naam getoond en als consistente taalcode opgeslagen.</value></data>
   <data name="MetadataQualityLanguageRepairSave" xml:space="preserve"><value>Taal opslaan</value></data>
+  <data name="MetadataQualityLanguageRepairBulkBookContext" xml:space="preserve"><value>{0} boeken geselecteerd</value></data>
+  <data name="MetadataQualityLanguageRepairBulkSave" xml:space="preserve"><value>Taal wijzigen voor {0} boeken</value></data>
+  <data name="MetadataQualityLanguageRepairBulkSucceeded" xml:space="preserve"><value>{0} boeken gewijzigd</value></data>
+  <data name="MetadataQualityLanguageRepairBulkResult" xml:space="preserve"><value>{0} gewijzigd, {1} opgeslagen met waarschuwingen, {2} overgeslagen, {3} niet meer beschikbaar, {4} mislukt.</value></data>
   <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>De taal kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
   <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>De taal is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
   <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Dit boek heeft al een geldige taal. Saga heeft de actuele boekgegevens geladen.</value></data>

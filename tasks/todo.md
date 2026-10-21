@@ -1,29 +1,30 @@
-# Milestone 40 todo
+# Milestone 41 todo
 
-- [x] PR #40 als gemerged vastgesteld en lokale `main` bijgewerkt.
-- [x] Lokale gebruikerswijzigingen veilig bewaard tijdens de branchwissel.
-- [x] Branch `codex/milestone-40-duplicate-sidecar` vanaf actuele `main` gemaakt.
-- [x] GitHub-issue #1, mergeworkflow, sidecarstore en bestaande tests onderzocht.
-- [x] Specificatie, aannames, veiligheidsgrenzen en implementatieplan vastgelegd.
-- [x] Specificatie en volgorde door gebruiker bevestigd.
-- [x] Lokale wijzigingen in `BookDetailsView.xaml` en `SettingsWindow.xaml` gericht verifiëren en afzonderlijk committen.
-- [x] Eerst falende tests toevoegen voor definitieve sidecarmetadata en unieke boekmappen.
-- [x] Sidecarschrijven na duplicate-merge implementeren.
-- [x] Eerst falende tests toevoegen voor sidecarwaarschuwingen en bestaande verversing.
-- [x] Gestructureerd resultaat en gelokaliseerde gebruikerswaarschuwing implementeren.
-- [x] Gerichte tests per increment uitvoeren en afzonderlijk committen.
-- [x] README, featurestatus en handmatige checklist bijwerken en naar Obsidian spiegelen.
-- [x] Volledige testset uitgevoerd (777 geslaagd; 0 overgeslagen).
-- [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.6.33; 0 waarschuwingen en 0 fouten).
-- [x] Branchdiff beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; gedeelde sidecarwriter toegevoegd en daarna geen bevindingen.
-- [x] Gewone, niet-draft PR #41 geopend.
-- [x] Bevindingen uit de eerste handmatige test opgelost: zichtbare selectieactie en responsieve selectie/filterwisseling.
-- [x] Handmatige checklist uitgevoerd; samenvoegen, annuleren, responsiviteit, sidecars en regressies werken zoals verwacht.
-- [x] GitHub-controles en reviewstatus beoordeeld; alle verplichte controles zijn groen en er zijn geen openstaande bevindingen.
+- [x] PR #41 als gemerged vastgesteld en lokale `main` bijgewerkt.
+- [x] .NET 10 SDK 10.0.402 als actieve project-SDK gecontroleerd.
+- [x] Branch `codex/milestone-41-bulk-language-repair` vanaf actuele `main` gemaakt.
+- [x] Bestaande taalservice, dashboardstroom, taaldialoog en bulkauteurpatroon onderzocht.
+- [x] Specificatie, aannames, veiligheidsgrenzen en acceptatiecriteria vastgelegd.
+- [x] Specificatie door gebruiker goedgekeurd.
+- [x] Implementatieplan en volgorde door gebruiker bevestigd.
+- [x] Taaldialoogcontext eerst rood getest en daarna geïmplementeerd.
+- [x] Dashboardbulkselectie en resultaatverwerking eerst rood getest en daarna geïmplementeerd.
+- [x] Gerichte checkpointtests uitgevoerd en increments afzonderlijk gecommit.
+- [x] WPF-layout, toegankelijke namen en zes talen testgestuurd uitgebreid.
+- [x] Bibliotheekverversing en regressies voor andere kwaliteitsacties bewezen.
+- [x] README, featurestatus en handmatige checklist bijgewerkt en naar Obsidian gespiegeld.
+- [x] Volledige testset met .NET 10 uitgevoerd (788 geslaagd; 0 overgeslagen).
+- [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.21.16; 0 waarschuwingen en 0 fouten; alleen `Builds\Debug`).
+- [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; dubbele batchverwerking samengevoegd en daarna geen openstaande bevindingen.
+- [x] Gewone, niet-draft PR #42 geopend.
+- [x] CodeRabbit-bevinding over het voortzetten na een onverwachte boekfout testgestuurd opgelost.
+- [x] GitHub-controles na de laatste correctie beoordeeld: CodeQL en GitGuardian groen; CodeRabbit-bevinding opgelost en vervolgstatus groen ondanks reviewlimiet.
+- [x] Handmatige acceptatiechecklist uitgevoerd en door gebruiker goedgekeurd.
 
 ## Buiten scope
 
+- Automatische taaldetectie uit boekinhoud of metadata.
 - Online metadata- of omslagzoeken via BoekenBase.
-- Native metadata-write-back naar ebookbestanden tijdens duplicate-merge.
-- Wijzigingen aan de duplicate-detectieregels of mergekeuzes.
-- Nieuwe Quality Page-functionaliteit.
+- Bulkherstel voor serie, tags, omslagen of titel/auteur.
+- Wijzigingen aan de `unknown-language`-kwaliteitsregel.
+- Database- of bestandsformaatwijzigingen.
