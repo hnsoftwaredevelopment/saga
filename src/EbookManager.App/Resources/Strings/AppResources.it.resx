@@ -664,6 +664,10 @@
   <data name="MetadataQualityLanguageRepairInput" xml:space="preserve"><value>Lingua</value></data>
   <data name="MetadataQualityLanguageRepairHelp" xml:space="preserve"><value>Le lingue sono mostrate per nome e salvate con un codice coerente.</value></data>
   <data name="MetadataQualityLanguageRepairSave" xml:space="preserve"><value>Salva lingua</value></data>
+  <data name="MetadataQualityLanguageRepairBulkBookContext" xml:space="preserve"><value>{0} libri selezionati</value></data>
+  <data name="MetadataQualityLanguageRepairBulkSave" xml:space="preserve"><value>Modifica la lingua di {0} libri</value></data>
+  <data name="MetadataQualityLanguageRepairBulkSucceeded" xml:space="preserve"><value>{0} libri modificati</value></data>
+  <data name="MetadataQualityLanguageRepairBulkResult" xml:space="preserve"><value>{0} modificati, {1} salvati con avvisi, {2} ignorati, {3} non disponibili, {4} non riusciti.</value></data>
   <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>Non è stato possibile salvare la lingua. Controlla il libro e riprova.</value></data>
   <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>La lingua è stata salvata, ma non è stato possibile aggiornare tutti i file di metadati o ebook collegati.</value></data>
   <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Questo libro ha già una lingua valida. Saga ha caricato i dati aggiornati del libro.</value></data>

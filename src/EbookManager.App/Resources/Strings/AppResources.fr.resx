@@ -664,6 +664,10 @@
   <data name="MetadataQualityLanguageRepairInput" xml:space="preserve"><value>Langue</value></data>
   <data name="MetadataQualityLanguageRepairHelp" xml:space="preserve"><value>Les langues sont affichées par nom et enregistrées avec un code cohérent.</value></data>
   <data name="MetadataQualityLanguageRepairSave" xml:space="preserve"><value>Enregistrer la langue</value></data>
+  <data name="MetadataQualityLanguageRepairBulkBookContext" xml:space="preserve"><value>{0} livres sélectionnés</value></data>
+  <data name="MetadataQualityLanguageRepairBulkSave" xml:space="preserve"><value>Modifier la langue de {0} livres</value></data>
+  <data name="MetadataQualityLanguageRepairBulkSucceeded" xml:space="preserve"><value>{0} livres modifiés</value></data>
+  <data name="MetadataQualityLanguageRepairBulkResult" xml:space="preserve"><value>{0} modifiés, {1} enregistrés avec avertissements, {2} ignorés, {3} indisponibles, {4} en échec.</value></data>
   <data name="MetadataQualityLanguageRepairFailed" xml:space="preserve"><value>La langue n’a pas pu être enregistrée. Vérifiez le livre et réessayez.</value></data>
   <data name="MetadataQualityLanguageRepairWriteBackWarning" xml:space="preserve"><value>La langue a été enregistrée, mais certains fichiers de métadonnées ou de livre numérique associés n’ont pas pu être mis à jour.</value></data>
   <data name="MetadataQualityLanguageRepairNotNeeded" xml:space="preserve"><value>Ce livre possède déjà une langue valide. Saga a chargé les données actuelles du livre.</value></data>
