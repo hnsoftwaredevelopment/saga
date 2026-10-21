@@ -1477,6 +1477,37 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Duplicate_candidate_merge_warns_when_sidecar_sync_is_not_configured()
+    {
+        var source = CreateBook("De Hobbit", ["J.R.R. Tolkien"], formats: [EbookFormat.Pdf]);
+        var target = CreateBook(
+            "De Hobbit",
+            ["J.R.R. Tolkien"],
+            language: "nl",
+            series: "Midden-aarde",
+            formats: [EbookFormat.Epub]);
+        var targetAfter = target with { Formats = [EbookFormat.Epub, EbookFormat.Pdf] };
+        var repository = new SidecarMergeBookRepository([source, target], [targetAfter], target.Id);
+        var interaction = new ScriptedUserInteractionService();
+        var viewModel = CreateViewModel(
+            [source, target],
+            interaction,
+            repository: repository,
+            currentLibrary: CreateActiveLibrary(),
+            duplicateMergeService: new DuplicateMergeService(repository));
+
+        await viewModel.RefreshAsync();
+        await viewModel.ShowDuplicateCandidatesCommand.ExecuteAsync(null);
+        var sourceRow = interaction.DuplicateCandidates!.Rows.Single(row => row.Id == source.Id);
+
+        await interaction.DuplicateCandidates.MergeCandidateAsync(sourceRow, CancellationToken.None);
+
+        interaction.LastMessageTitle.Should().Be("DuplicateMergeSidecarWarningTitle");
+        interaction.LastMessageText.Should().Be("DuplicateMergeSidecarWarningMessage");
+        interaction.DuplicateCandidates.HasChanges.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Duplicate_candidate_merge_refreshes_when_candidate_no_longer_exists()
     {
         var source = CreateBook("De Hobbit", ["J.R.R. Tolkien"], formats: [EbookFormat.Pdf]);

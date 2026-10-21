@@ -16,20 +16,38 @@ internal static class MetadataSidecarWriter
             OperatingSystem.IsWindows()
                 ? StringComparer.OrdinalIgnoreCase
                 : StringComparer.Ordinal);
+        Exception? firstFailure = null;
+
         foreach (var file in files)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var absolutePath = fileStore.GetAbsolutePath(file.RelativePath);
-            var directory = Path.GetDirectoryName(absolutePath);
-            if (directory is null || !writtenDirectories.Add(directory))
+            try
             {
-                continue;
-            }
+                var absolutePath = fileStore.GetAbsolutePath(file.RelativePath);
+                var directory = Path.GetDirectoryName(absolutePath);
+                if (directory is null || !writtenDirectories.Add(directory))
+                {
+                    continue;
+                }
 
-            await metadataSidecarStore.WriteAsync(
-                absolutePath,
-                metadata,
-                cancellationToken);
+                await metadataSidecarStore.WriteAsync(
+                    absolutePath,
+                    metadata,
+                    cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception exception)
+            {
+                firstFailure ??= exception;
+            }
+        }
+
+        if (firstFailure is not null)
+        {
+            throw new IOException(firstFailure.Message, firstFailure);
         }
     }
 }

@@ -160,6 +160,31 @@ public sealed class DuplicateMergeServiceTests
         repository.UpdatedBook.Should().NotBeNull();
     }
 
+    [Fact]
+    public async Task Merge_attempts_remaining_book_directories_after_one_sidecar_write_fails()
+    {
+        var source = CreateBook("Bron titel", ["Auteur"]);
+        var target = CreateBook("Doel titel", ["Auteur"]);
+        var repository = new RecordingBookRepository(
+            [source, target],
+            [
+                CreateFile(source.Id, "books/aa/source/book.pdf", EbookFormat.Pdf),
+                CreateFile(target.Id, "books/bb/target/book.epub", EbookFormat.Epub)
+            ]);
+        var sidecarStore = new PartiallyThrowingMetadataSidecarStore("books\\aa\\source");
+        var service = new DuplicateMergeService(
+            repository,
+            new TestLibraryFileStore("C:/library"),
+            sidecarStore);
+
+        var result = await service.MergeAsync(source.Id, target.Id, [], default);
+
+        result.SidecarStatus.Should().Be(DuplicateMergeSidecarStatus.Failed);
+        sidecarStore.Attempts.Should().HaveCount(2);
+        sidecarStore.SuccessfulWrites.Should().ContainSingle(path =>
+            path.Contains(Path.Combine("books", "bb", "target"), StringComparison.OrdinalIgnoreCase));
+    }
+
     private sealed class RecordingBookRepository : IBookRepository
     {
         private readonly Dictionary<Guid, Book> books = [];
@@ -307,6 +332,30 @@ public sealed class DuplicateMergeServiceTests
             BookMetadata metadata,
             CancellationToken cancellationToken) =>
             throw new IOException("sidecar unavailable");
+    }
+
+    private sealed class PartiallyThrowingMetadataSidecarStore(string failingDirectory) : IMetadataSidecarStore
+    {
+        public List<string> Attempts { get; } = [];
+        public List<string> SuccessfulWrites { get; } = [];
+
+        public Task<BookMetadata?> TryReadAsync(string bookFilePath, CancellationToken cancellationToken) =>
+            Task.FromResult<BookMetadata?>(null);
+
+        public Task WriteAsync(
+            string bookFilePath,
+            BookMetadata metadata,
+            CancellationToken cancellationToken)
+        {
+            Attempts.Add(bookFilePath);
+            if (bookFilePath.Contains(failingDirectory, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new IOException("sidecar unavailable");
+            }
+
+            SuccessfulWrites.Add(bookFilePath);
+            return Task.CompletedTask;
+        }
     }
 
     private static BookFile CreateFile(Guid bookId, string relativePath, EbookFormat format) =>

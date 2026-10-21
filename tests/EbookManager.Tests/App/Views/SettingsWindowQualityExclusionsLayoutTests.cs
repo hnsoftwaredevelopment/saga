@@ -31,6 +31,20 @@ public sealed class SettingsWindowQualityExclusionsLayoutTests
                 (string?)element.Attribute(xaml + "Name") == "ManageMetadataQualityExclusionsButton");
     }
 
+    [Fact]
+    public void Bookshelf_columns_explanation_follows_live_theme_changes()
+    {
+        var document = XDocument.Load(
+            Path.Combine(AppContext.BaseDirectory, "TestAssets", "SettingsWindow.xaml"));
+        XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+
+        var explanation = document.Descendants(presentation + "TextBlock")
+            .Single(element => RequiredAttribute(element, "Text") == "{loc:Loc BookshelfUsesCoversOnly}");
+
+        RequiredAttribute(explanation, "Foreground")
+            .Should().Be("{DynamicResource TextSecondaryBrush}");
+    }
+
     private static string RequiredAttribute(XElement element, XName name) =>
         element.Attribute(name)?.Value ?? throw new InvalidOperationException(
             $"Required attribute '{name}' is missing from '{element.Name.LocalName}'.");

@@ -4184,7 +4184,7 @@ public sealed partial class LibraryViewModel : ObservableObject
                 targetRow.Id,
                 selections,
                 cancellationToken);
-            if (result.SidecarStatus == DuplicateMergeSidecarStatus.Failed)
+            if (result.SidecarStatus != DuplicateMergeSidecarStatus.Succeeded)
             {
                 await userInteraction.ShowMessageAsync(
                     localize("DuplicateMergeSidecarWarningTitle"),
