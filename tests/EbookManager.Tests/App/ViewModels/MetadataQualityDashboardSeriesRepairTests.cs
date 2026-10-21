@@ -24,6 +24,24 @@ public sealed class MetadataQualityDashboardSeriesRepairTests
     }
 
     [Fact]
+    public void Series_repair_is_enabled_for_multiple_selected_series_rows()
+    {
+        var first = CreateBook(series: null, seriesNumber: 1);
+        var second = CreateBook(series: null, seriesNumber: 2);
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [first, second],
+            key => key,
+            seriesRepairService: new RecordingSeriesRepairService(first),
+            showSeriesRepair: (_, _) => Task.FromResult(true));
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.SeriesNumberWithoutSeries);
+
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        dashboard.RepairMissingSeriesCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
     public async Task Repair_missing_series_uses_known_suggestions_and_reevaluates_the_book()
     {
         var book = CreateBook(series: null, seriesNumber: 2);
@@ -70,6 +88,100 @@ public sealed class MetadataQualityDashboardSeriesRepairTests
 
         service.BookIds.Should().BeEmpty();
         dashboard.SelectedIssue.Rows.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Repair_missing_series_applies_one_series_to_all_selected_books()
+    {
+        var first = CreateBook(series: null, seriesNumber: 1);
+        var second = CreateBook(series: null, seriesNumber: 4);
+        var repairedFirst = first with { Metadata = CopyMetadataWithSeries(first.Metadata, "Discworld") };
+        var repairedSecond = second with { Metadata = CopyMetadataWithSeries(second.Metadata, "Discworld") };
+        var service = new RecordingSeriesRepairService(
+            new MetadataQualitySeriesRepairItemResult(
+                first.Id,
+                MetadataQualitySeriesRepairStatus.Succeeded,
+                repairedFirst),
+            new MetadataQualitySeriesRepairItemResult(
+                second.Id,
+                MetadataQualitySeriesRepairStatus.Succeeded,
+                repairedSecond));
+        MetadataQualitySeriesRepairViewModel? shownRepair = null;
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [first, second],
+            key => key switch
+            {
+                "MetadataQualitySeriesRepairBulkSucceeded" => "{0} books changed",
+                _ => key
+            },
+            seriesRepairService: service,
+            showSeriesRepair: (repair, _) =>
+            {
+                shownRepair = repair;
+                repair.SeriesText = "Discworld";
+                return Task.FromResult(true);
+            });
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.SeriesNumberWithoutSeries);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairMissingSeriesCommand.ExecuteAsync(null);
+
+        shownRepair.Should().NotBeNull();
+        shownRepair!.AffectedBookCount.Should().Be(2);
+        service.BookIds.Should().BeEquivalentTo([first.Id, second.Id]);
+        service.Series.Should().Be("Discworld");
+        dashboard.SelectedIssue.Rows.Should().BeEmpty();
+        dashboard.StatusMessage.Should().Be("2 books changed");
+        dashboard.IsStatusMessageSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Repair_missing_series_keeps_failed_bulk_rows_selected_and_summarizes_results()
+    {
+        var succeeded = CreateBook(series: null, seriesNumber: 1);
+        var failed = CreateBook(series: null, seriesNumber: 2);
+        var stale = CreateBook(series: null, seriesNumber: 3);
+        var removed = CreateBook(series: null, seriesNumber: 4);
+        var repaired = succeeded with { Metadata = CopyMetadataWithSeries(succeeded.Metadata, "Saga") };
+        var currentStale = stale with { Metadata = CopyMetadataWithSeries(stale.Metadata, "Bestaand") };
+        var service = new RecordingSeriesRepairService(
+            new MetadataQualitySeriesRepairItemResult(
+                succeeded.Id,
+                MetadataQualitySeriesRepairStatus.Succeeded,
+                repaired),
+            new MetadataQualitySeriesRepairItemResult(
+                failed.Id,
+                MetadataQualitySeriesRepairStatus.Failed),
+            new MetadataQualitySeriesRepairItemResult(
+                stale.Id,
+                MetadataQualitySeriesRepairStatus.NotApplicable,
+                currentStale),
+            new MetadataQualitySeriesRepairItemResult(
+                removed.Id,
+                MetadataQualitySeriesRepairStatus.NotFound));
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [succeeded, failed, stale, removed],
+            key => key == "MetadataQualitySeriesRepairBulkResult"
+                ? "bulk:{0}:{1}:{2}:{3}:{4}"
+                : key,
+            seriesRepairService: service,
+            showSeriesRepair: (repair, _) =>
+            {
+                repair.SeriesText = "Saga";
+                return Task.FromResult(true);
+            });
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.SeriesNumberWithoutSeries);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairMissingSeriesCommand.ExecuteAsync(null);
+
+        dashboard.SelectedIssue.Rows.Should().ContainSingle(row => row.Id == failed.Id);
+        dashboard.SelectedBook.Should().NotBeNull();
+        dashboard.SelectedBook!.Id.Should().Be(failed.Id);
+        dashboard.StatusMessage.Should().Be("bulk:1:0:1:1:1");
+        dashboard.IsStatusMessageSuccess.Should().BeFalse();
     }
 
     [Theory]
@@ -144,10 +256,15 @@ public sealed class MetadataQualityDashboardSeriesRepairTests
             metadata.CoverBytes);
 
     private sealed class RecordingSeriesRepairService(
-        Book repairedBook,
-        MetadataQualitySeriesRepairStatus status = MetadataQualitySeriesRepairStatus.Succeeded)
-        : IMetadataQualitySeriesRepairService
+        params MetadataQualitySeriesRepairItemResult[] results) : IMetadataQualitySeriesRepairService
     {
+        public RecordingSeriesRepairService(
+            Book repairedBook,
+            MetadataQualitySeriesRepairStatus status = MetadataQualitySeriesRepairStatus.Succeeded)
+            : this(new MetadataQualitySeriesRepairItemResult(repairedBook.Id, status, repairedBook))
+        {
+        }
+
         public IReadOnlyList<Guid> BookIds { get; private set; } = [];
         public string? Series { get; private set; }
 
@@ -158,10 +275,7 @@ public sealed class MetadataQualityDashboardSeriesRepairTests
         {
             BookIds = bookIds.ToArray();
             Series = series;
-            return Task.FromResult(new MetadataQualitySeriesRepairBatchResult(
-            [
-                new MetadataQualitySeriesRepairItemResult(repairedBook.Id, status, repairedBook)
-            ]));
+            return Task.FromResult(new MetadataQualitySeriesRepairBatchResult(results));
         }
     }
 }

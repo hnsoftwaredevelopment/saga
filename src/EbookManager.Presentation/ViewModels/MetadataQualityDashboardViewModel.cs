@@ -578,6 +578,18 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             _ => MetadataQualityBatchRepairStatus.Failed
         }, item.Book);
 
+    private static MetadataQualityBatchRepairItem ToBatchRepairItem(
+        MetadataQualitySeriesRepairItemResult item) =>
+        new(item.BookId, item.Status switch
+        {
+            MetadataQualitySeriesRepairStatus.Succeeded => MetadataQualityBatchRepairStatus.Succeeded,
+            MetadataQualitySeriesRepairStatus.SavedWithWriteBackErrors =>
+                MetadataQualityBatchRepairStatus.SavedWithWriteBackErrors,
+            MetadataQualitySeriesRepairStatus.NotApplicable => MetadataQualityBatchRepairStatus.NotApplicable,
+            MetadataQualitySeriesRepairStatus.NotFound => MetadataQualityBatchRepairStatus.NotFound,
+            _ => MetadataQualityBatchRepairStatus.Failed
+        }, item.Book);
+
     private sealed record MetadataQualityBatchRepairItem(
         Guid BookId,
         MetadataQualityBatchRepairStatus Status,
@@ -595,37 +607,53 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private bool CanRepairMissingSeries() =>
         seriesRepairService is not null &&
         showSeriesRepair is not null &&
-        SelectedBookCount == 1 &&
+        selectedBooks.Count > 0 &&
         SelectedIssue?.SignalKey == MetadataQualitySignalKeys.SeriesNumberWithoutSeries &&
-        SelectedBook is not null &&
-        SelectedIssue.Rows.Contains(SelectedBook);
+        selectedBooks.All(SelectedIssue.Rows.Contains);
 
     private async Task RepairMissingSeriesAsync(CancellationToken cancellationToken)
     {
-        var selectedBook = SelectedBook;
-        if (!CanRepairMissingSeries() || selectedBook is null ||
-            seriesRepairService is null || showSeriesRepair is null ||
-            !books.TryGetValue(selectedBook.Id, out var book) ||
-            book.Metadata.SeriesNumber is not { } seriesNumber)
+        var issue = SelectedIssue;
+        var selectedRows = issue is null
+            ? []
+            : selectedBooks.Where(issue.Rows.Contains).DistinctBy(row => row.Id).ToArray();
+        if (!CanRepairMissingSeries() || issue is null || selectedRows.Length == 0 ||
+            seriesRepairService is null || showSeriesRepair is null)
         {
             return;
         }
 
+        var bookContexts = selectedRows
+            .Select(row => books.TryGetValue(row.Id, out var book) &&
+                book.Metadata.SeriesNumber is { } seriesNumber
+                    ? (row.Title, SeriesNumber: seriesNumber)
+                    : ((string Title, decimal SeriesNumber)?)null)
+            .Where(context => context is not null)
+            .Select(context => context!.Value)
+            .ToArray();
+        if (bookContexts.Length != selectedRows.Length)
+        {
+            StatusMessage = localize("MetadataQualitySeriesRepairFailed");
+            return;
+        }
+
         var repair = new MetadataQualitySeriesRepairViewModel(
-            selectedBook.Title,
-            seriesNumber,
-            books.Values.Select(candidate => candidate.Metadata.Series));
+            bookContexts,
+            books.Values.Select(candidate => candidate.Metadata.Series),
+            localize);
         if (!await showSeriesRepair(repair, cancellationToken) ||
             repair.NormalizedSeries is not { } series)
         {
             return;
         }
 
-        MetadataQualitySeriesRepairItemResult? result;
+        MetadataQualitySeriesRepairBatchResult batch;
         try
         {
-            result = (await seriesRepairService.RepairAsync([selectedBook.Id], series, cancellationToken))
-                .Items.SingleOrDefault(item => item.BookId == selectedBook.Id);
+            batch = await seriesRepairService.RepairAsync(
+                selectedRows.Select(row => row.Id).ToArray(),
+                series,
+                cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -637,26 +665,15 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
-        if (result?.Book is { } repairedBook)
-        {
-            ReconcileBook(repairedBook);
-        }
-        else if (result?.Status == MetadataQualitySeriesRepairStatus.NotFound)
-        {
-            RemoveBook(selectedBook.Id);
-        }
-
-        StatusMessage = result?.Status switch
-        {
-            MetadataQualitySeriesRepairStatus.Succeeded => null,
-            MetadataQualitySeriesRepairStatus.SavedWithWriteBackErrors =>
-                localize("MetadataQualitySeriesRepairWriteBackWarning"),
-            MetadataQualitySeriesRepairStatus.NotApplicable =>
-                localize("MetadataQualitySeriesRepairNotNeeded"),
-            MetadataQualitySeriesRepairStatus.NotFound =>
-                localize("MetadataQualityBookUnavailableMessage"),
-            _ => localize("MetadataQualitySeriesRepairFailed")
-        };
+        ReconcileBatchRepair(
+            issue,
+            selectedRows,
+            batch.Items.Select(ToBatchRepairItem).ToArray(),
+            "MetadataQualitySeriesRepairBulkSucceeded",
+            "MetadataQualitySeriesRepairBulkResult",
+            "MetadataQualitySeriesRepairFailed",
+            "MetadataQualitySeriesRepairWriteBackWarning",
+            "MetadataQualitySeriesRepairNotNeeded");
     }
 
     private bool CanRepairTitleAuthor() =>
