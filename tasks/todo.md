@@ -18,7 +18,8 @@
 - [x] Branchdiff beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; gedeelde sidecarwriter toegevoegd en daarna geen bevindingen.
 - [x] Gewone, niet-draft PR #41 geopend.
 - [x] Bevindingen uit de eerste handmatige test opgelost: zichtbare selectieactie en responsieve selectie/filterwisseling.
-- [ ] Handmatige checklist uitvoeren en GitHub-controles en eventuele reviewopmerkingen beoordelen.
+- [x] Handmatige checklist uitgevoerd; samenvoegen, annuleren, responsiviteit, sidecars en regressies werken zoals verwacht.
+- [x] GitHub-controles en reviewstatus beoordeeld; alle verplichte controles zijn groen en er zijn geen openstaande bevindingen.
 
 ## Buiten scope
 
