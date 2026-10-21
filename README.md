@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 40 is ready for acceptance testing and keeps SQLite and every relevant portable `metadata.json` sidecar synchronized after duplicate merges, with a clear warning when sidecar storage fails. Milestone 39 added accepted bulk missing-author repair, while Milestone 38 added confirmed bulk quality decisions.
+Milestone 40 was accepted on 21 October 2026 and keeps SQLite and every relevant portable `metadata.json` sidecar synchronized after duplicate merges, with a clear warning when sidecar storage fails. It also adds a visible two-book merge action and keeps the duplicate overview responsive for large libraries. Milestone 39 added accepted bulk missing-author repair, while Milestone 38 added confirmed bulk quality decisions.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
