@@ -369,109 +369,15 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
-        var results = batch.Items
-            .GroupBy(item => item.BookId)
-            .ToDictionary(group => group.Key, group => group.Last());
-        var firstSelectedIndex = selectedRows
-            .Select(issue.Rows.IndexOf)
-            .Where(index => index >= 0)
-            .DefaultIfEmpty(0)
-            .Min();
-        var failedBookIds = new HashSet<Guid>();
-        var succeeded = 0;
-        var writeBackWarnings = 0;
-        var notApplicable = 0;
-        var notFound = 0;
-        var reconciledBooks = new List<Book>();
-
-        foreach (var row in selectedRows)
-        {
-            if (!results.TryGetValue(row.Id, out var result))
-            {
-                failedBookIds.Add(row.Id);
-                continue;
-            }
-
-            switch (result.Status)
-            {
-                case MetadataQualityAuthorRepairStatus.Succeeded when result.Book is not null:
-                    succeeded++;
-                    ReconcileBook(result.Book, notifyLibrary: false);
-                    reconciledBooks.Add(result.Book);
-                    break;
-                case MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors when result.Book is not null:
-                    writeBackWarnings++;
-                    ReconcileBook(result.Book, notifyLibrary: false);
-                    reconciledBooks.Add(result.Book);
-                    break;
-                case MetadataQualityAuthorRepairStatus.NotApplicable when result.Book is not null:
-                    notApplicable++;
-                    ReconcileBook(result.Book, notifyLibrary: false);
-                    reconciledBooks.Add(result.Book);
-                    break;
-                case MetadataQualityAuthorRepairStatus.NotFound:
-                    notFound++;
-                    RemoveBook(row.Id);
-                    break;
-                default:
-                    failedBookIds.Add(row.Id);
-                    break;
-            }
-        }
-
-        if (reconciledBooks.Count > 0)
-        {
-            booksRepaired?.Invoke(reconciledBooks);
-        }
-
-        var failedRows = issue.Rows.Where(row => failedBookIds.Contains(row.Id)).ToArray();
-        SetSelectedBooks(failedRows.Length > 0
-            ? failedRows
-            : issue.Rows.Count == 0
-                ? []
-                : [issue.Rows[Math.Min(firstSelectedIndex, issue.Rows.Count - 1)]]);
-
-        if (selectedRows.Length > 1)
-        {
-            if (succeeded == selectedRows.Length &&
-                writeBackWarnings == 0 &&
-                notApplicable == 0 &&
-                notFound == 0 &&
-                failedBookIds.Count == 0)
-            {
-                StatusMessage = string.Format(
-                    CultureInfo.CurrentCulture,
-                    localize("MetadataQualityAuthorRepairBulkSucceeded"),
-                    succeeded);
-                IsStatusMessageSuccess = true;
-            }
-            else
-            {
-                StatusMessage = string.Format(
-                    CultureInfo.CurrentCulture,
-                    localize("MetadataQualityAuthorRepairBulkResult"),
-                    succeeded,
-                    writeBackWarnings,
-                    notApplicable,
-                    notFound,
-                    failedBookIds.Count);
-            }
-
-            return;
-        }
-
-        var singleResult = results.GetValueOrDefault(selectedRows[0].Id);
-        StatusMessage = singleResult?.Status switch
-        {
-            MetadataQualityAuthorRepairStatus.Succeeded when succeeded == 1 => null,
-            MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors when writeBackWarnings == 1 =>
-                localize("MetadataQualityAuthorRepairWriteBackWarning"),
-            MetadataQualityAuthorRepairStatus.NotApplicable when notApplicable == 1 =>
-                localize("MetadataQualityAuthorRepairNotNeeded"),
-            MetadataQualityAuthorRepairStatus.NotFound when notFound == 1 =>
-                localize("MetadataQualityBookUnavailableMessage"),
-            _ => localize("MetadataQualityAuthorRepairFailed")
-        };
+        ReconcileBatchRepair(
+            issue,
+            selectedRows,
+            batch.Items.Select(ToBatchRepairItem).ToArray(),
+            "MetadataQualityAuthorRepairBulkSucceeded",
+            "MetadataQualityAuthorRepairBulkResult",
+            "MetadataQualityAuthorRepairFailed",
+            "MetadataQualityAuthorRepairWriteBackWarning",
+            "MetadataQualityAuthorRepairNotNeeded");
     }
 
     partial void OnStatusMessageChanging(string? value) => IsStatusMessageSuccess = false;
@@ -522,7 +428,28 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
-        var results = batch.Items
+        ReconcileBatchRepair(
+            issue,
+            selectedRows,
+            batch.Items.Select(ToBatchRepairItem).ToArray(),
+            "MetadataQualityLanguageRepairBulkSucceeded",
+            "MetadataQualityLanguageRepairBulkResult",
+            "MetadataQualityLanguageRepairFailed",
+            "MetadataQualityLanguageRepairWriteBackWarning",
+            "MetadataQualityLanguageRepairNotNeeded");
+    }
+
+    private void ReconcileBatchRepair(
+        MetadataQualityIssueViewModel issue,
+        IReadOnlyList<MetadataQualityBookRowViewModel> selectedRows,
+        IReadOnlyList<MetadataQualityBatchRepairItem> items,
+        string bulkSucceededKey,
+        string bulkResultKey,
+        string failedKey,
+        string writeBackWarningKey,
+        string notNeededKey)
+    {
+        var results = items
             .GroupBy(item => item.BookId)
             .ToDictionary(group => group.Key, group => group.Last());
         var firstSelectedIndex = selectedRows
@@ -547,22 +474,22 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
 
             switch (result.Status)
             {
-                case MetadataQualityLanguageRepairStatus.Succeeded when result.Book is not null:
+                case MetadataQualityBatchRepairStatus.Succeeded when result.Book is not null:
                     succeeded++;
                     ReconcileBook(result.Book, notifyLibrary: false);
                     reconciledBooks.Add(result.Book);
                     break;
-                case MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors when result.Book is not null:
+                case MetadataQualityBatchRepairStatus.SavedWithWriteBackErrors when result.Book is not null:
                     writeBackWarnings++;
                     ReconcileBook(result.Book, notifyLibrary: false);
                     reconciledBooks.Add(result.Book);
                     break;
-                case MetadataQualityLanguageRepairStatus.NotApplicable when result.Book is not null:
+                case MetadataQualityBatchRepairStatus.NotApplicable when result.Book is not null:
                     notApplicable++;
                     ReconcileBook(result.Book, notifyLibrary: false);
                     reconciledBooks.Add(result.Book);
                     break;
-                case MetadataQualityLanguageRepairStatus.NotFound:
+                case MetadataQualityBatchRepairStatus.NotFound:
                     notFound++;
                     RemoveBook(row.Id);
                     break;
@@ -584,9 +511,9 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
                 ? []
                 : [issue.Rows[Math.Min(firstSelectedIndex, issue.Rows.Count - 1)]]);
 
-        if (selectedRows.Length > 1)
+        if (selectedRows.Count > 1)
         {
-            if (succeeded == selectedRows.Length &&
+            if (succeeded == selectedRows.Count &&
                 writeBackWarnings == 0 &&
                 notApplicable == 0 &&
                 notFound == 0 &&
@@ -594,7 +521,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             {
                 StatusMessage = string.Format(
                     CultureInfo.CurrentCulture,
-                    localize("MetadataQualityLanguageRepairBulkSucceeded"),
+                    localize(bulkSucceededKey),
                     succeeded);
                 IsStatusMessageSuccess = true;
             }
@@ -602,7 +529,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             {
                 StatusMessage = string.Format(
                     CultureInfo.CurrentCulture,
-                    localize("MetadataQualityLanguageRepairBulkResult"),
+                    localize(bulkResultKey),
                     succeeded,
                     writeBackWarnings,
                     notApplicable,
@@ -616,15 +543,53 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         var singleResult = results.GetValueOrDefault(selectedRows[0].Id);
         StatusMessage = singleResult?.Status switch
         {
-            MetadataQualityLanguageRepairStatus.Succeeded when succeeded == 1 => null,
-            MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors when writeBackWarnings == 1 =>
-                localize("MetadataQualityLanguageRepairWriteBackWarning"),
-            MetadataQualityLanguageRepairStatus.NotApplicable when notApplicable == 1 =>
-                localize("MetadataQualityLanguageRepairNotNeeded"),
-            MetadataQualityLanguageRepairStatus.NotFound when notFound == 1 =>
+            MetadataQualityBatchRepairStatus.Succeeded when succeeded == 1 => null,
+            MetadataQualityBatchRepairStatus.SavedWithWriteBackErrors when writeBackWarnings == 1 =>
+                localize(writeBackWarningKey),
+            MetadataQualityBatchRepairStatus.NotApplicable when notApplicable == 1 =>
+                localize(notNeededKey),
+            MetadataQualityBatchRepairStatus.NotFound when notFound == 1 =>
                 localize("MetadataQualityBookUnavailableMessage"),
-            _ => localize("MetadataQualityLanguageRepairFailed")
+            _ => localize(failedKey)
         };
+    }
+
+    private static MetadataQualityBatchRepairItem ToBatchRepairItem(
+        MetadataQualityAuthorRepairItemResult item) =>
+        new(item.BookId, item.Status switch
+        {
+            MetadataQualityAuthorRepairStatus.Succeeded => MetadataQualityBatchRepairStatus.Succeeded,
+            MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors =>
+                MetadataQualityBatchRepairStatus.SavedWithWriteBackErrors,
+            MetadataQualityAuthorRepairStatus.NotApplicable => MetadataQualityBatchRepairStatus.NotApplicable,
+            MetadataQualityAuthorRepairStatus.NotFound => MetadataQualityBatchRepairStatus.NotFound,
+            _ => MetadataQualityBatchRepairStatus.Failed
+        }, item.Book);
+
+    private static MetadataQualityBatchRepairItem ToBatchRepairItem(
+        MetadataQualityLanguageRepairItemResult item) =>
+        new(item.BookId, item.Status switch
+        {
+            MetadataQualityLanguageRepairStatus.Succeeded => MetadataQualityBatchRepairStatus.Succeeded,
+            MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors =>
+                MetadataQualityBatchRepairStatus.SavedWithWriteBackErrors,
+            MetadataQualityLanguageRepairStatus.NotApplicable => MetadataQualityBatchRepairStatus.NotApplicable,
+            MetadataQualityLanguageRepairStatus.NotFound => MetadataQualityBatchRepairStatus.NotFound,
+            _ => MetadataQualityBatchRepairStatus.Failed
+        }, item.Book);
+
+    private sealed record MetadataQualityBatchRepairItem(
+        Guid BookId,
+        MetadataQualityBatchRepairStatus Status,
+        Book? Book);
+
+    private enum MetadataQualityBatchRepairStatus
+    {
+        Succeeded,
+        SavedWithWriteBackErrors,
+        NotApplicable,
+        NotFound,
+        Failed
     }
 
     private bool CanRepairMissingSeries() =>
