@@ -19,7 +19,7 @@
 - [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.32`.
 - [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; één onvertaalde legacy-route verwijderd en opnieuw volledig geverifieerd.
 - [x] Gewone, niet-draft PR #44 geopend.
-- [ ] GitHub-controles van PR #44 beoordelen.
+- [x] GitHub-controles van PR #44 beoordeeld: CodeQL en GitGuardian groen; CodeRabbit heeft wegens de gratis limiet geen inhoudelijke review uitgevoerd.
 - [ ] Handmatige acceptatiechecklist laten uitvoeren.
 
 ## Buiten scope
