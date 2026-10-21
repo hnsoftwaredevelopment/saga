@@ -20,14 +20,18 @@
                Source="/Resources/Splash/SplashBase.png"/>
 
         <StackPanel Orientation="Vertical" Margin="0,-3,20,0">
-            <StackPanel Orientation="Horizontal"
-                        Margin="10,-3,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top">
+            <Grid x:Name="BrandHeading"
+                  Margin="10,-3,0,0"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Saga"
                            FontSize="62"
-                           VerticalAlignment="Bottom"
+                           VerticalAlignment="Center"
                            Margin="0,0,15,0"
                            Foreground="AntiqueWhite"
                            FontFamily="{StaticResource BrandFont}"
@@ -35,14 +39,15 @@
                            IsEnabled="False"/>
 
                 <TextBlock x:Name="SubtitleText"
+                           Grid.Column="1"
                            FontSize="36"
-                           VerticalAlignment="Bottom"
-                           Margin="0,0,0,5"
+                           VerticalAlignment="Center"
+                           Margin="0,0,10,0"
                            Foreground="DarkOrange"
                            FontFamily="{StaticResource BrandFontMedium}"
                            Cursor="None"
                            IsEnabled="False"/>
-            </StackPanel>
+            </Grid>
 
             <StackPanel Orientation="Horizontal">
                 <Image x:Name="AppLogoImage"
