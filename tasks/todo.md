@@ -17,7 +17,7 @@
 - [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.23`.
 - [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; geen bevindingen.
 - [x] Gewone, niet-draft PR #43 geopend.
-- [ ] GitHub-controles voor PR #43 beoordelen.
+- [x] GitHub-controles voor PR #43 beoordeeld: CodeQL en GitGuardian zijn groen; de runner-migratiemelding is alleen informatief.
 - [ ] Handmatige acceptatiechecklist laten uitvoeren.
 
 ## Buiten scope

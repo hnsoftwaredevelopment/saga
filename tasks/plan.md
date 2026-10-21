@@ -131,7 +131,7 @@ Bestaand detailgedrag inventariseren
 - [x] Volledige testset is groen zonder overgeslagen tests.
 - [x] Schone Debug-build slaagt zonder waarschuwingen of fouten en alleen `Builds/Debug` bevat de actuele build.
 - [x] De complete diff is beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; er zijn geen bevindingen.
-- [ ] De branch bevat uitsluitend Milestone 42 en de PR is geen draft.
+- [x] De branch bevat uitsluitend Milestone 42 en PR #43 is geen draft.
 
 **Verificatie:** Volledige tests, clean/build, `git diff --check`, eigen codereview, GitHub-controles en daarna de handmatige checklist.
 
