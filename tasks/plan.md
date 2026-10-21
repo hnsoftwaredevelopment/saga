@@ -157,5 +157,7 @@ Er zijn geen blokkerende open vragen. De geaccepteerde specificatie en het bulka
 - [x] Rode en groene tests per increment vastgelegd.
 - [x] Eigen codereview afgerond; de gedeelde batchresultaatverwerking voorkomt dubbele auteur- en taallogica.
 - [x] Gewone, niet-draft PR #42 geopend.
+- [x] CodeRabbit-bevinding over een onverwachte fout per boek met een regressietest opgelost.
+- [x] Handmatige acceptatie door gebruiker afgerond; de workflow is herkenbaar en talen worden correct opgeslagen.
 - [ ] Volledige Definition of Done afgerond.
-- [ ] GitHub-controles beoordeeld en handmatige acceptatie afgerond.
+- [ ] GitHub-controles na de laatste correctie opnieuw beoordeeld.

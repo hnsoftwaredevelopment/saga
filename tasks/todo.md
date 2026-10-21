@@ -13,12 +13,13 @@
 - [x] WPF-layout, toegankelijke namen en zes talen testgestuurd uitgebreid.
 - [x] Bibliotheekverversing en regressies voor andere kwaliteitsacties bewezen.
 - [x] README, featurestatus en handmatige checklist bijgewerkt en naar Obsidian gespiegeld.
-- [x] Volledige testset met .NET 10 uitgevoerd (787 geslaagd; 0 overgeslagen).
-- [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.21.13; 0 waarschuwingen en 0 fouten; alleen `Builds\Debug`).
+- [x] Volledige testset met .NET 10 uitgevoerd (788 geslaagd; 0 overgeslagen).
+- [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.21.16; 0 waarschuwingen en 0 fouten; alleen `Builds\Debug`).
 - [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; dubbele batchverwerking samengevoegd en daarna geen openstaande bevindingen.
 - [x] Gewone, niet-draft PR #42 geopend.
+- [x] CodeRabbit-bevinding over het voortzetten na een onverwachte boekfout testgestuurd opgelost.
 - [ ] GitHub-controles beoordelen.
-- [ ] Handmatige acceptatiechecklist laten uitvoeren.
+- [x] Handmatige acceptatiechecklist uitgevoerd en door gebruiker goedgekeurd.
 
 ## Buiten scope
 
