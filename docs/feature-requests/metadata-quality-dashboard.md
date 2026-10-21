@@ -109,6 +109,18 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Refresh the main library and author filters once for the complete batch.
 - Keep every other repair action limited to exactly one selected book.
 
+## Milestone 41: Repair missing or unknown languages in bulk
+
+- Select one or multiple books within `Missing or unknown language` and choose `Change language`.
+- Choose one valid language from the existing searchable, localized language list for every selected book.
+- Show the selected-book count in the repair window and make the bulk change explicit on the confirmation button.
+- Re-read every book immediately before saving and never overwrite a valid language that appeared after the dashboard opened.
+- Process results per book through the existing SQLite, sidecar and supported ebook write-back route.
+- Reconcile successful, partially saved, stale, removed and failed books separately so the dashboard reflects stored reality.
+- Keep fully failed rows visible and selected, while summarizing all result counts in the current language.
+- Refresh the main library and language filters once for the complete batch.
+- Keep other single-book repair actions unchanged; bulk missing-author repair and bulk `This is correct` remain available in their own contexts.
+
 ## Follow-up ideas
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
@@ -119,4 +131,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestone 36 adds the accepted messy-tag repair. Milestone 37 moves ignored-quality management to its own `Quality` tab in Settings. Milestone 38 was accepted on 1 October 2026 and adds atomic bulk quality decisions. Milestone 39 is ready for acceptance testing and applies one chosen author to multiple selected missing-author books while preserving accurate per-book results. Other bulk metadata repair, export, configurable checks, and heuristic tuning remain follow-up work.
+Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestones 36 through 40 are accepted, including messy-tag repair, the dedicated Quality settings tab, bulk quality decisions, bulk missing-author repair and duplicate-sidecar consistency. Milestone 41 is ready for acceptance testing and applies one chosen language to multiple selected missing- or invalid-language books while preserving accurate per-book results. Other bulk metadata repair, export, configurable checks and heuristic tuning remain follow-up work.

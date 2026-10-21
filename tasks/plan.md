@@ -29,9 +29,9 @@ Taaldialoogcontext en contract
 **Beschrijving:** Breid het taalviewmodel uit met een enkelvoudige titelcontext, bulkcontext, geselecteerd aantal en passende bevestigingstekst zonder de bestaande taalkeuze te veranderen.
 
 **Acceptatiecriteria:**
-- [ ] Eén boek toont de boektitel en de bestaande actie `Taal wijzigen`.
-- [ ] Meerdere boeken tonen het aantal en een expliciete bulkbevestiging.
-- [ ] Een geldige taalkeuze blijft vereist; annuleren heeft geen effect.
+- [x] Eén boek toont de boektitel en de bestaande actie `Taal wijzigen`.
+- [x] Meerdere boeken tonen het aantal en een expliciete bulkbevestiging.
+- [x] Een geldige taalkeuze blijft vereist; annuleren heeft geen effect.
 
 **Verificatie:** Eerst falende en daarna groene `MetadataQualityLanguageRepairViewModelTests`.
 
@@ -48,10 +48,10 @@ Taaldialoogcontext en contract
 **Beschrijving:** Maak `Taal wijzigen` beschikbaar voor iedere niet-lege selectie binnen de taalcategorie en verwerk alle service-uitkomsten volgens de werkelijke opgeslagen toestand.
 
 **Acceptatiecriteria:**
-- [ ] De opdracht ontvangt alle unieke geselecteerde boek-id’s in stabiele volgorde.
-- [ ] Succes, write-backwaarschuwing, niet meer toepasselijk, verwijderd en mislukt worden afzonderlijk gereconcilieerd.
-- [ ] Volledig mislukte rijen blijven geselecteerd; anders wordt de logisch volgende rij geselecteerd.
-- [ ] De hoofdbibliotheek en taalfilters worden eenmaal met alle gereconcilieerde boeken bijgewerkt.
+- [x] De opdracht ontvangt alle unieke geselecteerde boek-id’s in stabiele volgorde.
+- [x] Succes, write-backwaarschuwing, niet meer toepasselijk, verwijderd en mislukt worden afzonderlijk gereconcilieerd.
+- [x] Volledig mislukte rijen blijven geselecteerd; anders wordt de logisch volgende rij geselecteerd.
+- [x] De hoofdbibliotheek en taalfilters worden eenmaal met alle gereconcilieerde boeken bijgewerkt.
 
 **Verificatie:** Eerst falende en daarna groene `MetadataQualityDashboardViewModelTests`, inclusief annuleren en onverwachte fout.
 
@@ -65,18 +65,18 @@ Taaldialoogcontext en contract
 
 ## Checkpoint na taken 1-2
 
-- [ ] Gerichte viewmodel- en dashboardtests zijn groen.
-- [ ] Enkelvoudig taalherstel en bulkauteurherstel zijn niet veranderd.
-- [ ] De branch bevat twee afzonderlijk verifieerbare increments.
+- [x] Gerichte viewmodel- en dashboardtests zijn groen.
+- [x] Enkelvoudig taalherstel en bulkauteurherstel zijn niet veranderd.
+- [x] De branch bevat twee afzonderlijk verifieerbare increments.
 
 ## Taak 3: bulkcontext en uitkomsten begrijpelijk tonen
 
 **Beschrijving:** Bind contextlabel, contexttekst en bevestigingstekst in het taalvenster en voeg alle benodigde teksten toe in de zes ondersteunde talen.
 
 **Acceptatiecriteria:**
-- [ ] Het venster toont bij bulk het juiste aantal geselecteerde boeken.
-- [ ] Volledig succes gebruikt een korte groene melding; gemengde resultaten tonen alle relevante aantallen.
-- [ ] Teksten en toegankelijke namen zijn aanwezig in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
+- [x] Het venster toont bij bulk het juiste aantal geselecteerde boeken.
+- [x] Volledig succes gebruikt een korte groene melding; gemengde resultaten tonen alle relevante aantallen.
+- [x] Teksten en toegankelijke namen zijn aanwezig in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
 
 **Verificatie:** Eerst falende en daarna groene layout- en lokalisatietests.
 
@@ -94,9 +94,9 @@ Taaldialoogcontext en contract
 **Beschrijving:** Bewijs dat meerdere opgeslagen taalwijzigingen in één keer de actieve bibliotheek, zichtbare rijen en taalfilters bijwerken en dat andere kwaliteitsacties hun selectiegrenzen behouden.
 
 **Acceptatiecriteria:**
-- [ ] De bibliotheek ontvangt alle gereconcilieerde boeken in één callback.
-- [ ] Taalfilters en zichtbare metadata zijn zonder herstart actueel.
-- [ ] Openen, omslag, serie, tags en titel/auteur blijven bij meerdere selectie uitgeschakeld; bulkauteurherstel blijft werken.
+- [x] De bibliotheek ontvangt alle gereconcilieerde boeken in één callback.
+- [x] Taalfilters en zichtbare metadata zijn zonder herstart actueel.
+- [x] Openen, omslag, serie, tags en titel/auteur blijven bij meerdere selectie uitgeschakeld; bulkauteurherstel blijft werken.
 
 **Verificatie:** Gerichte `LibraryViewModelTests` en dashboardregressietests.
 
@@ -110,17 +110,17 @@ Taaldialoogcontext en contract
 
 ## Checkpoint na taken 3-4
 
-- [ ] Alle gerichte tests zijn groen.
-- [ ] De WPF-app bouwt zonder waarschuwingen of fouten.
-- [ ] De volledige bulktaalstroom is klaar voor handmatige acceptatie.
+- [x] Alle gerichte tests zijn groen.
+- [x] De WPF-app bouwt zonder waarschuwingen of fouten.
+- [x] De volledige bulktaalstroom is klaar voor handmatige acceptatie.
 
 ## Taak 5: documentatie, volledige verificatie en oplevering
 
 **Beschrijving:** Werk featurestatus, README, voortgang en handmatige checklist bij, spiegel Markdown naar Obsidian en voer de volledige Definition of Done uit.
 
 **Acceptatiecriteria:**
-- [ ] De handmatige checklist behandelt één boek, meerdere boeken, zoeken, annuleren, gemengde resultaten en regressies.
-- [ ] De volledige testset en schone Debug-build zijn groen met .NET 10.
+- [x] De handmatige checklist behandelt één boek, meerdere boeken, zoeken, annuleren, gemengde resultaten en regressies.
+- [x] De volledige testset en schone Debug-build zijn groen met .NET 10.
 - [ ] De branchdiff bevat uitsluitend Milestone 41 en de PR is geen draft.
 
 **Verificatie:** Volledige tests, build/publish, `git diff --check`, eigen codereview en GitHub-controles.
@@ -154,6 +154,6 @@ Er zijn geen blokkerende open vragen. De geaccepteerde specificatie en het bulka
 
 - [x] Specificatie door gebruiker goedgekeurd.
 - [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
-- [ ] Rode en groene tests per increment vastgelegd.
+- [x] Rode en groene tests per increment vastgelegd.
 - [ ] Volledige Definition of Done afgerond.
 - [ ] Gewone, niet-draft PR geopend en handmatig geaccepteerd.
