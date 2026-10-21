@@ -6,7 +6,7 @@
 - [x] Bestaande taalservice, dashboardstroom, taaldialoog en bulkauteurpatroon onderzocht.
 - [x] Specificatie, aannames, veiligheidsgrenzen en acceptatiecriteria vastgelegd.
 - [x] Specificatie door gebruiker goedgekeurd.
-- [ ] Implementatieplan en volgorde door gebruiker laten bevestigen.
+- [x] Implementatieplan en volgorde door gebruiker bevestigd.
 - [ ] Taaldialoogcontext eerst rood testen en daarna implementeren.
 - [ ] Dashboardbulkselectie en resultaatverwerking eerst rood testen en daarna implementeren.
 - [ ] Gerichte checkpointtests uitvoeren en increments afzonderlijk committen.

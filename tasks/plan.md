@@ -153,7 +153,7 @@ Er zijn geen blokkerende open vragen. De geaccepteerde specificatie en het bulka
 ## Checkpoint
 
 - [x] Specificatie door gebruiker goedgekeurd.
-- [ ] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
+- [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
 - [ ] Rode en groene tests per increment vastgelegd.
 - [ ] Volledige Definition of Done afgerond.
 - [ ] Gewone, niet-draft PR geopend en handmatig geaccepteerd.
