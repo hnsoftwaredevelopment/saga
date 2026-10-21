@@ -37,45 +37,59 @@ public sealed class MetadataQualityLanguageRepairService(
         var results = new List<MetadataQualityLanguageRepairItemResult>(distinctBookIds.Length);
         foreach (var bookId in distinctBookIds)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var currentBook = await bookRepository.GetAsync(bookId, cancellationToken);
-            if (currentBook is null)
+            try
             {
-                results.Add(new(bookId, MetadataQualityLanguageRepairStatus.NotFound));
-                continue;
-            }
+                cancellationToken.ThrowIfCancellationRequested();
+                var currentBook = await bookRepository.GetAsync(bookId, cancellationToken);
+                if (currentBook is null)
+                {
+                    results.Add(new(bookId, MetadataQualityLanguageRepairStatus.NotFound));
+                    continue;
+                }
 
-            if (!MetadataQualitySignalEvaluator.Applies(currentBook, MetadataQualitySignalKeys.UnknownLanguage))
-            {
-                results.Add(new(bookId, MetadataQualityLanguageRepairStatus.NotApplicable, currentBook));
-                continue;
-            }
+                if (!MetadataQualitySignalEvaluator.Applies(currentBook, MetadataQualitySignalKeys.UnknownLanguage))
+                {
+                    results.Add(new(bookId, MetadataQualityLanguageRepairStatus.NotApplicable, currentBook));
+                    continue;
+                }
 
-            var updatedBook = currentBook with
+                var updatedBook = currentBook with
+                {
+                    Metadata = CopyMetadataWithLanguage(currentBook.Metadata, normalizedLanguage),
+                    UpdatedUtc = DateTimeOffset.UtcNow
+                };
+                var saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
+                var reloadedBook = await bookRepository.GetAsync(bookId, cancellationToken);
+                var databaseWasUpdated = reloadedBook?.Metadata.Language == normalizedLanguage;
+                var hasFileWriteBackError = saveResult.FileResults.Any(file =>
+                    file.Result.Status == MetadataWriteBackStatus.Failed);
+                var status = saveResult.Status switch
+                {
+                    BookSaveStatus.Succeeded when hasFileWriteBackError =>
+                        MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors,
+                    BookSaveStatus.Succeeded => MetadataQualityLanguageRepairStatus.Succeeded,
+                    BookSaveStatus.Failed when databaseWasUpdated =>
+                        MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors,
+                    _ => MetadataQualityLanguageRepairStatus.Failed
+                };
+                results.Add(new(
+                    bookId,
+                    status,
+                    reloadedBook,
+                    saveResult.Message,
+                    saveResult.FileResults));
+            }
+            catch (OperationCanceledException)
             {
-                Metadata = CopyMetadataWithLanguage(currentBook.Metadata, normalizedLanguage),
-                UpdatedUtc = DateTimeOffset.UtcNow
-            };
-            var saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
-            var reloadedBook = await bookRepository.GetAsync(bookId, cancellationToken);
-            var databaseWasUpdated = reloadedBook?.Metadata.Language == normalizedLanguage;
-            var hasFileWriteBackError = saveResult.FileResults.Any(file =>
-                file.Result.Status == MetadataWriteBackStatus.Failed);
-            var status = saveResult.Status switch
+                throw;
+            }
+            catch (Exception exception)
             {
-                BookSaveStatus.Succeeded when hasFileWriteBackError =>
-                    MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors,
-                BookSaveStatus.Succeeded => MetadataQualityLanguageRepairStatus.Succeeded,
-                BookSaveStatus.Failed when databaseWasUpdated =>
-                    MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors,
-                _ => MetadataQualityLanguageRepairStatus.Failed
-            };
-            results.Add(new(
-                bookId,
-                status,
-                reloadedBook,
-                saveResult.Message,
-                saveResult.FileResults));
+                results.Add(new(
+                    bookId,
+                    MetadataQualityLanguageRepairStatus.Failed,
+                    Message: exception.Message));
+            }
         }
 
         return new MetadataQualityLanguageRepairBatchResult(results.AsReadOnly());
