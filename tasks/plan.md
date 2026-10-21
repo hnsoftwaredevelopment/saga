@@ -1,163 +1,165 @@
-# Milestone 41 implementatieplan: bulk taalherstel
+# Milestone 42 implementatieplan: detailactie titel en auteur omwisselen verifiëren
 
 ## Overzicht
 
-Milestone 41 breidt het bestaande herstel van `Ontbrekende of onbekende taal` uit van één boek naar één of meerdere geselecteerde boeken. De bestaande applicatieservice verwerkt al meerdere boek-id’s en blijft de veilige opslagroute. De wijziging richt zich daarom op een duidelijke bulkcontext in het taalvenster, resultaatgedreven dashboardverwerking, één verversing van de hoofdbibliotheek en begrijpelijke gelokaliseerde terugkoppeling.
+Milestone 42 bouwt geen tweede omwisselfunctie, maar rondt de bestaande detailactie aantoonbaar af. De kernroute bestaat al in `BookDetailsView` en `BookDetailsViewModel`. De uitvoering concentreert zich daarom op ontbrekend testbewijs voor opslaan, bibliotheekverversing, filters, toegankelijkheid en lokalisatie. Alleen een door een falende test aangetoond functioneel gat wordt met een minimale codewijziging hersteld.
 
 ## Architectuurbeslissingen
 
-- `MetadataQualityLanguageRepairService` blijft verantwoordelijk voor opnieuw inlezen, toepasbaarheidscontrole, normalisatie en opslag per boek.
-- `MetadataQualityDashboardViewModel` verzamelt uitsluitend actuele geselecteerde rijen uit `unknown-language` en verwerkt ieder batchresultaat afzonderlijk.
-- De bestaande bulkauteurworkflow is het patroon voor selectieherstel, tellingen, waarschuwingen en één gebundelde bibliotheekverversing.
-- `MetadataQualityLanguageRepairViewModel` krijgt dezelfde enkelvoudige/bulkcontext als het auteursvenster, maar behoudt de bestaande gesloten lijst van geldige talen.
-- Andere herstelacties blijven enkelvoudig; er komt geen databasewijziging, dependency of externe taaldetectie.
+- `BookDetailsViewModel.SwapTitleAndAuthorsCommand` blijft de enige detailactie voor het staged omwisselen.
+- `SaveCommand`, `BookService` en het bestaande `BookSaved`-event blijven de opslag- en verversingsroute.
+- `UndoCommand` blijft de veilige terugweg vóór opslag; er komt geen extra bevestigingsvenster.
+- De bestaande knoppositie, het pijlenpictogram en de gelokaliseerde tooltip blijven behouden wanneer de verificatie slaagt.
+- Een titel die scheidingstekens bevat blijft na omwisselen één auteur; de bestaande `singleAuthorText`-route bewaakt dit.
+- De Quality Page-heuristiek en algemene multibewerking blijven buiten scope.
 
 ## Afhankelijkheden
 
 ```text
-Taaldialoogcontext en contract
+Bestaand detailgedrag inventariseren
         │
-        └── Dashboardbulkverwerking
-                  │
-                  └── Lokalisatie en WPF-layout
-                            │
-                            └── Integratie, documentatie en acceptatiebuild
+        ├── Opslagroute en randgevallen bewijzen
+        │          │
+        │          └── Bibliotheekregel en auteursfilters bewijzen
+        │
+        └── XAML, pictogram, toegankelijkheid en lokalisatie bewijzen
+                         │
+                         └── Documentatie, acceptatiebuild en review
 ```
 
-## Taak 1: taaldialoog geschikt maken voor één of meerdere boeken
+## Taak 1: staged omwisselen en opslaan volledig bewijzen
 
-**Beschrijving:** Breid het taalviewmodel uit met een enkelvoudige titelcontext, bulkcontext, geselecteerd aantal en passende bevestigingstekst zonder de bestaande taalkeuze te veranderen.
+**Beschrijving:** Voeg eerst falende tests toe die de bestaande gebruikersroute als één geheel beschrijven: omwisselen, staged toestand, opslaan en behoud van overige metadata. Leg ook het randgeval vast waarin de voormalige titel een puntkomma bevat en toch één auteur moet blijven.
 
 **Acceptatiecriteria:**
-- [x] Eén boek toont de boektitel en de bestaande actie `Taal wijzigen`.
-- [x] Meerdere boeken tonen het aantal en een expliciete bulkbevestiging.
-- [x] Een geldige taalkeuze blijft vereist; annuleren heeft geen effect.
+- [ ] De knop verwisselt de huidige titel en auteurs zonder onmiddellijk naar de repository te schrijven.
+- [ ] `Ongedaan maken` herstelt de oorspronkelijke waarden vóór opslag.
+- [ ] `Opslaan` schrijft de verwisselde waarden via de bestaande opslagroute en laat overige metadata intact.
+- [ ] Een voormalige titel met een puntkomma wordt als precies één auteur opgeslagen.
 
-**Verificatie:** Eerst falende en daarna groene `MetadataQualityLanguageRepairViewModelTests`.
+**Verificatie:** Rode test vastleggen, daarna groene `BookDetailsViewModelTests`; alleen bij bewezen afwijking minimale productcode aanpassen.
 
 **Afhankelijkheden:** Geen.
 
 **Waarschijnlijk geraakte bestanden:**
-- `src/EbookManager.Presentation/ViewModels/MetadataQualityLanguageRepairViewModel.cs`
-- `tests/EbookManager.Tests/App/ViewModels/MetadataQualityLanguageRepairViewModelTests.cs`
+- `tests/EbookManager.Tests/App/ViewModels/BookDetailsViewModelTests.cs`
+- zo nodig `src/EbookManager.Presentation/ViewModels/BookDetailsViewModel.cs`
 
 **Omvang:** Klein.
 
-## Taak 2: geselecteerde taalproblemen als batch verwerken
+## Taak 2: bibliotheekverversing en filters bewijzen
 
-**Beschrijving:** Maak `Taal wijzigen` beschikbaar voor iedere niet-lege selectie binnen de taalcategorie en verwerk alle service-uitkomsten volgens de werkelijke opgeslagen toestand.
+**Beschrijving:** Bewijs op `LibraryViewModel`-niveau dat een vanuit details opgeslagen omwisseling de zichtbare rij, actieve zoekresultaten, selectie en auteursfilters bijwerkt zonder herstart.
 
 **Acceptatiecriteria:**
-- [x] De opdracht ontvangt alle unieke geselecteerde boek-id’s in stabiele volgorde.
-- [x] Succes, write-backwaarschuwing, niet meer toepasselijk, verwijderd en mislukt worden afzonderlijk gereconcilieerd.
-- [x] Volledig mislukte rijen blijven geselecteerd; anders wordt de logisch volgende rij geselecteerd.
-- [x] De hoofdbibliotheek en taalfilters worden eenmaal met alle gereconcilieerde boeken bijgewerkt.
+- [ ] De zichtbare boekregel toont na opslaan de nieuwe titel en auteur.
+- [ ] Het oude auteursfilter verdwijnt wanneer het niet meer gebruikt wordt en het nieuwe filter verschijnt met het juiste aantal.
+- [ ] Een actief zoekfilter wordt opnieuw toegepast op de gewijzigde metadata.
+- [ ] De detailselectie blijft op het opgeslagen boek staan wanneer het nog in de actieve weergave past.
 
-**Verificatie:** Eerst falende en daarna groene `MetadataQualityDashboardViewModelTests`, inclusief annuleren en onverwachte fout.
+**Verificatie:** Eerst falende en daarna groene gerichte `LibraryViewModelTests`.
 
 **Afhankelijkheden:** Taak 1.
 
 **Waarschijnlijk geraakte bestanden:**
-- `src/EbookManager.Presentation/ViewModels/MetadataQualityDashboardViewModel.cs`
-- `tests/EbookManager.Tests/App/ViewModels/MetadataQualityDashboardViewModelTests.cs`
+- `tests/EbookManager.Tests/App/ViewModels/LibraryViewModelTests.cs`
+- zo nodig `src/EbookManager.Presentation/ViewModels/LibraryViewModel.cs`
 
-**Omvang:** Middelgroot.
+**Omvang:** Klein tot middelgroot.
 
 ## Checkpoint na taken 1-2
 
-- [x] Gerichte viewmodel- en dashboardtests zijn groen.
-- [x] Enkelvoudig taalherstel en bulkauteurherstel zijn niet veranderd.
-- [x] De branch bevat twee afzonderlijk verifieerbare increments.
+- [ ] De volledige opslagroute is door waarneembare toestand bewezen.
+- [ ] Geen tweede opslag- of verversingsroute is toegevoegd.
+- [ ] Gerichte detail- en bibliotheektests zijn groen.
 
-## Taak 3: bulkcontext en uitkomsten begrijpelijk tonen
+## Taak 3: knop, pictogram, toetsenbordtoegang en zes talen bewijzen
 
-**Beschrijving:** Bind contextlabel, contexttekst en bevestigingstekst in het taalvenster en voeg alle benodigde teksten toe in de zes ondersteunde talen.
+**Beschrijving:** Vul statische WPF-layout- en lokalisatietests aan voor de bestaande omwisselknop. De test controleert commandbinding, pictogram, tooltip en toegankelijke naam zonder de huidige schermindeling onnodig te wijzigen.
 
 **Acceptatiecriteria:**
-- [x] Het venster toont bij bulk het juiste aantal geselecteerde boeken.
-- [x] Volledig succes gebruikt een korte groene melding; gemengde resultaten tonen alle relevante aantallen.
-- [x] Teksten en toegankelijke namen zijn aanwezig in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
+- [ ] De knop is aan `SwapTitleAndAuthorsCommand` gebonden en gebruikt het bestaande `SwapTitleAuthorIconGeometry`.
+- [ ] De knop blijft een echte WPF-`Button` en is daardoor met Tab, Enter en Spatie bedienbaar.
+- [ ] Tooltip en `AutomationProperties.Name` gebruiken dezelfde gelokaliseerde sleutel.
+- [ ] De lokalisatiesleutel bevat een niet-lege, geldige tekst in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
 
-**Verificatie:** Eerst falende en daarna groene layout- en lokalisatietests.
+**Verificatie:** Eerst falende en daarna groene `BookDetailsViewLayoutTests` en lokalisatietests.
 
-**Afhankelijkheden:** Taken 1-2.
+**Afhankelijkheden:** Geen; uitvoering volgt na het eerste checkpoint om commits klein te houden.
 
 **Waarschijnlijk geraakte bestanden:**
-- `src/EbookManager.App/Views/MetadataQualityLanguageRepairWindow.xaml`
-- `src/EbookManager.App/Resources/Strings/AppResources*.resx`
-- bijbehorende layout- en lokalisatietests onder `tests/EbookManager.Tests/App`.
+- `tests/EbookManager.Tests/App/Views/BookDetailsViewLayoutTests.cs`
+- relevante lokalisatietest onder `tests/EbookManager.Tests/App/Resources`.
+- alleen bij een bewezen fout `src/EbookManager.App/Views/BookDetailsView.xaml` of `src/EbookManager.App/Resources/Strings/AppResources*.resx`.
 
-**Omvang:** Middelgroot; de resourcebestanden zijn één mechanische vertaalset.
+**Omvang:** Klein; eventuele resourcewijzigingen vormen één mechanische set.
 
-## Taak 4: bibliotheekintegratie en regressies bewijzen
+## Taak 4: status en handmatige acceptatie voorbereiden
 
-**Beschrijving:** Bewijs dat meerdere opgeslagen taalwijzigingen in één keer de actieve bibliotheek, zichtbare rijen en taalfilters bijwerken en dat andere kwaliteitsacties hun selectiegrenzen behouden.
-
-**Acceptatiecriteria:**
-- [x] De bibliotheek ontvangt alle gereconcilieerde boeken in één callback.
-- [x] Taalfilters en zichtbare metadata zijn zonder herstart actueel.
-- [x] Openen, omslag, serie, tags en titel/auteur blijven bij meerdere selectie uitgeschakeld; bulkauteurherstel blijft werken.
-
-**Verificatie:** Gerichte `LibraryViewModelTests` en dashboardregressietests.
-
-**Afhankelijkheden:** Taken 2-3.
-
-**Waarschijnlijk geraakte bestanden:**
-- `tests/EbookManager.Tests/App/ViewModels/LibraryViewModelTests.cs`
-- zo nodig een minimale aanpassing in `src/EbookManager.Presentation/ViewModels/LibraryViewModel.cs`.
-
-**Omvang:** Klein.
-
-## Checkpoint na taken 3-4
-
-- [x] Alle gerichte tests zijn groen.
-- [x] De WPF-app bouwt zonder waarschuwingen of fouten.
-- [x] De volledige bulktaalstroom is klaar voor handmatige acceptatie.
-
-## Taak 5: documentatie, volledige verificatie en oplevering
-
-**Beschrijving:** Werk featurestatus, README, voortgang en handmatige checklist bij, spiegel Markdown naar Obsidian en voer de volledige Definition of Done uit.
+**Beschrijving:** Werk de actuele projectstatus bij, leg de bestaande detailactie vast en maak een compacte handmatige checklist voor herkenbaarheid, staged gedrag, opslaan, ongedaan maken en bibliotheekverversing.
 
 **Acceptatiecriteria:**
-- [x] De handmatige checklist behandelt één boek, meerdere boeken, zoeken, annuleren, gemengde resultaten en regressies.
-- [x] De volledige testset en schone Debug-build zijn groen met .NET 10.
-- [x] De branchdiff bevat uitsluitend Milestone 41 en PR #42 is als gewone, niet-draft PR geopend.
+- [ ] README vermeldt Milestone 41 als geaccepteerd en verwijst naar de actuele Milestone 42-checklist.
+- [ ] De kwaliteitsdocumentatie noemt de geverifieerde detailactie zonder de heuristiek als nauwkeuriger voor te stellen.
+- [ ] De checklist behandelt muis, toetsenbord, meerdere auteurs, puntkomma in titel, opslaan, ongedaan maken, filters en herstart.
+- [ ] Alle gewijzigde Markdown is met gelijke hashes naar Obsidian gespiegeld.
 
-**Verificatie:** Volledige tests, build/publish, `git diff --check`, eigen codereview en GitHub-controles.
+**Verificatie:** `git diff --check`, linkcontrole door inspectie en hashvergelijking met de Obsidian-spiegel.
 
-**Afhankelijkheden:** Taken 1-4.
+**Afhankelijkheden:** Taken 1-3.
 
 **Waarschijnlijk geraakte bestanden:**
 - `README.md`
 - `docs/feature-requests/metadata-quality-dashboard.md`
-- `docs/manual-tests/milestone-41-checklist.md`
+- `docs/manual-tests/milestone-42-checklist.md`
 - `tasks/plan.md`
 - `tasks/todo.md`
 
-**Omvang:** Middelgroot.
+**Omvang:** Middelgroot, hoofdzakelijk documentatie.
 
-## Risico’s en maatregelen
+## Checkpoint na taken 3-4
+
+- [ ] Alle gerichte tests zijn groen.
+- [ ] De interface volgt de bestaande vormgeving en toegankelijkheidspatronen.
+- [ ] De acceptatiechecklist en projectstatus zijn actueel en gespiegeld.
+
+## Taak 5: Definition of Done en oplevering
+
+**Beschrijving:** Voer de projectbrede kwaliteitsbar uit en lever een gewone, niet-draft PR op voor handmatige acceptatie.
+
+**Acceptatiecriteria:**
+- [ ] Volledige testset is groen zonder overgeslagen tests.
+- [ ] Schone Debug-build slaagt zonder waarschuwingen of fouten en alleen `Builds/Debug` bevat de actuele build.
+- [ ] De complete diff is beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties.
+- [ ] De branch bevat uitsluitend Milestone 42 en de PR is geen draft.
+
+**Verificatie:** Volledige tests, clean/build, `git diff --check`, eigen codereview, GitHub-controles en daarna de handmatige checklist.
+
+**Afhankelijkheden:** Taken 1-4.
+
+**Waarschijnlijk geraakte bestanden:** Geen nieuwe; verificatie en eventuele kleine correcties blijven binnen de voorgaande taakgrenzen.
+
+**Omvang:** Klein.
+
+## Risico's en maatregelen
 
 | Risico | Impact | Maatregel |
 |---|---|---|
-| Een boek krijgt intussen een geldige taal | Middel | Service leest ieder boek opnieuw en retourneert `NotApplicable` zonder overschrijven |
-| Een deel van de batch faalt | Middel | Resultaten per boek verwerken; mislukte rijen zichtbaar en geselecteerd houden |
-| Dashboard en hoofdbibliotheek lopen uiteen | Hoog | Actuele teruggelezen boeken verzamelen en één gebundelde callback gebruiken |
-| Bulkactie wordt buiten de taalcategorie actief | Middel | Commandvoorwaarden en regressietests per signaal en selectieomvang |
-| Vertalingen maken de knop of context onleesbaar | Laag | Dynamische knoptekst, tekstomloop en layouttests voor langere labels |
+| Bestaande functie dubbel implementeren | Middel | Eerst bestaande route testen; alleen aangetoonde gaten wijzigen |
+| Een titel met puntkomma wordt meerdere auteurs | Hoog | Expliciete opslagtest voor één voormalige titel met scheidingsteken |
+| Opslag ververst rij maar niet auteursfilters of zoeken | Hoog | Integratietest op `LibraryViewModel` met waarneembare filters en zichtbare rijen |
+| Knop is visueel aanwezig maar onvoldoende toegankelijk | Middel | XAML-test voor echte `Button`, command, tooltip en automation name |
+| Documentatie suggereert dat de heuristiek alle gevallen vindt | Laag | Detailactie beschrijven als handmatige aanvulling, niet als heuristiekverbetering |
+| Bestaande gebruikersaanpassingen aan detailscherm raken verloren | Hoog | Layout niet herschrijven; huidige plaatsing en stijl behouden |
 
 ## Open vragen
 
-Er zijn geen blokkerende open vragen. De geaccepteerde specificatie en het bulkauteurpatroon bepalen het gedrag.
+Er zijn geen blokkerende open vragen. De goedgekeurde specificatie bepaalt dat de bestaande staged workflow, knoppositie en het pictogram behouden blijven.
 
-## Checkpoint
+## Goedkeuringscheckpoint
 
-- [x] Specificatie door gebruiker goedgekeurd.
-- [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
-- [x] Rode en groene tests per increment vastgelegd.
-- [x] Eigen codereview afgerond; de gedeelde batchresultaatverwerking voorkomt dubbele auteur- en taallogica.
-- [x] Gewone, niet-draft PR #42 geopend.
-- [x] CodeRabbit-bevinding over een onverwachte fout per boek met een regressietest opgelost.
-- [x] Handmatige acceptatie door gebruiker afgerond; de workflow is herkenbaar en talen worden correct opgeslagen.
-- [x] Volledige Definition of Done afgerond.
-- [x] GitHub-controles na de laatste correctie opnieuw beoordeeld: CodeQL en GitGuardian groen; CodeRabbit-bevinding opgelost.
+- [x] Specificatie en afbakening door gebruiker goedgekeurd.
+- [ ] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
+- [ ] Implementatie testgestuurd en incrementeel afgerond.
+- [ ] Definition of Done afgerond.
+- [ ] Gewone, niet-draft PR geopend en handmatig geaccepteerd.
