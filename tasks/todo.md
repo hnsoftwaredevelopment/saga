@@ -18,7 +18,7 @@
 - [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; geen bevindingen.
 - [x] Gewone, niet-draft PR #43 geopend.
 - [x] GitHub-controles voor PR #43 beoordeeld: CodeQL en GitGuardian zijn groen; de runner-migratiemelding is alleen informatief.
-- [ ] Handmatige acceptatiechecklist laten uitvoeren.
+- [x] Handmatige acceptatiechecklist uitgevoerd; titel en auteur wisselen werkt volledig zoals verwacht.
 
 ## Buiten scope
 

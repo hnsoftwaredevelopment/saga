@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 42 is ready for acceptance testing and verifies the existing detail action that stages a title-and-author swap, supports Save and Undo, and refreshes the library and author filters after saving. Milestone 41 was accepted on 21 October 2026 and applies one chosen language to multiple selected books with missing or invalid language metadata, while preserving per-book failures and file warnings.
+Milestone 42 was accepted on 21 October 2026 and verifies the existing detail action that stages a title-and-author swap, supports Save and Undo, and refreshes the library and author filters after saving. Milestone 41 applies one chosen language to multiple selected books with missing or invalid language metadata, while preserving per-book failures and file warnings.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
