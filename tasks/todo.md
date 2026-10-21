@@ -17,7 +17,7 @@
 - [x] README, featurestatus en handmatige checklist bijgewerkt en met gelijke hashes naar Obsidian gespiegeld.
 - [x] Volledige testset met .NET 10 uitgevoerd: 805 tests geslaagd, geen fouten of overgeslagen tests.
 - [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.32`.
-- [ ] Branchdiff zelf beoordelen op correctheid, eenvoud, architectuur, beveiliging en prestaties.
+- [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; één onvertaalde legacy-route verwijderd en opnieuw volledig geverifieerd.
 - [ ] Gewone, niet-draft PR openen en GitHub-controles beoordelen.
 - [ ] Handmatige acceptatiechecklist laten uitvoeren.
 

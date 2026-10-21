@@ -108,7 +108,7 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 - [x] README en quality-roadmap beschrijven Milestone 43 zonder vervolgwensen als gerealiseerd te presenteren.
 - [x] De handmatige checklist behandelt Splash, selectie, suggesties, verschillende nummers, annuleren, resultaten, filters en herstart.
 - [x] Volledige tests en schone Debug-build slagen zonder waarschuwingen of overgeslagen tests.
-- [ ] De complete diff is zelf beoordeeld en de branch bevat alleen Milestone 43.
+- [x] De complete diff is zelf beoordeeld en de branch bevat alleen Milestone 43.
 - [x] Alle gewijzigde Markdown heeft gelijke hashes in de Obsidian-spiegel.
 
 **Verificatie:** Volledige tests, clean/build, `git diff --check`, hashcontrole, eigen codereview en GitHub-controles.
@@ -130,5 +130,5 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 
 - [x] Hoofdfunctionaliteit en robuuste Splash-aanpak door gebruiker goedgekeurd.
 - [x] Volledige specificatie en implementatieplan door gebruiker bevestigd.
-- [ ] Implementatie testgestuurd en incrementeel afgerond.
+- [x] Implementatie testgestuurd en incrementeel afgerond.
 - [ ] Definition of Done en gewone PR afgerond.
