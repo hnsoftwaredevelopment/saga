@@ -1,6 +1,6 @@
 # Milestone 41 handmatige testchecklist: meerdere talen herstellen
 
-Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe` (versie 2026.10.21.10). Kies bij voorkeur minstens drie boeken onder `Ontbrekende of onbekende taal`, waarvan je de metadata veilig kunt aanpassen.
+Gebruik uitsluitend de actuele Debug-build uit `Builds\Debug\Saga.exe` (versie 2026.10.21.13). Kies bij voorkeur minstens drie boeken onder `Ontbrekende of onbekende taal`, waarvan je de metadata veilig kunt aanpassen.
 
 ## Selectie en beschikbare acties
 

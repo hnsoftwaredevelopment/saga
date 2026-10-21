@@ -155,5 +155,6 @@ Er zijn geen blokkerende open vragen. De geaccepteerde specificatie en het bulka
 - [x] Specificatie door gebruiker goedgekeurd.
 - [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
 - [x] Rode en groene tests per increment vastgelegd.
+- [x] Eigen codereview afgerond; de gedeelde batchresultaatverwerking voorkomt dubbele auteur- en taallogica.
 - [ ] Volledige Definition of Done afgerond.
 - [ ] Gewone, niet-draft PR geopend en handmatig geaccepteerd.

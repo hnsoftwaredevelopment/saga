@@ -14,8 +14,8 @@
 - [x] Bibliotheekverversing en regressies voor andere kwaliteitsacties bewezen.
 - [x] README, featurestatus en handmatige checklist bijgewerkt en naar Obsidian gespiegeld.
 - [x] Volledige testset met .NET 10 uitgevoerd (787 geslaagd; 0 overgeslagen).
-- [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.21.10; 0 waarschuwingen en 0 fouten; alleen `Builds\Debug`).
-- [ ] Branchdiff zelf beoordelen op correctheid, eenvoud, architectuur, beveiliging en prestaties.
+- [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.21.13; 0 waarschuwingen en 0 fouten; alleen `Builds\Debug`).
+- [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; dubbele batchverwerking samengevoegd en daarna geen openstaande bevindingen.
 - [ ] Gewone, niet-draft PR openen en GitHub-controles beoordelen.
 - [ ] Handmatige acceptatiechecklist laten uitvoeren.
 
