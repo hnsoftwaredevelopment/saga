@@ -18,7 +18,7 @@
 - [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; dubbele batchverwerking samengevoegd en daarna geen openstaande bevindingen.
 - [x] Gewone, niet-draft PR #42 geopend.
 - [x] CodeRabbit-bevinding over het voortzetten na een onverwachte boekfout testgestuurd opgelost.
-- [ ] GitHub-controles beoordelen.
+- [x] GitHub-controles na de laatste correctie beoordeeld: CodeQL en GitGuardian groen; CodeRabbit-bevinding opgelost en vervolgstatus groen ondanks reviewlimiet.
 - [x] Handmatige acceptatiechecklist uitgevoerd en door gebruiker goedgekeurd.
 
 ## Buiten scope

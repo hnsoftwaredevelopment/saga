@@ -159,5 +159,5 @@ Er zijn geen blokkerende open vragen. De geaccepteerde specificatie en het bulka
 - [x] Gewone, niet-draft PR #42 geopend.
 - [x] CodeRabbit-bevinding over een onverwachte fout per boek met een regressietest opgelost.
 - [x] Handmatige acceptatie door gebruiker afgerond; de workflow is herkenbaar en talen worden correct opgeslagen.
-- [ ] Volledige Definition of Done afgerond.
-- [ ] GitHub-controles na de laatste correctie opnieuw beoordeeld.
+- [x] Volledige Definition of Done afgerond.
+- [x] GitHub-controles na de laatste correctie opnieuw beoordeeld: CodeQL en GitGuardian groen; CodeRabbit-bevinding opgelost.
