@@ -6,7 +6,7 @@
 - [x] Vastgesteld dat de functie al aanwezig is en niet opnieuw gebouwd moet worden.
 - [x] Specificatie, aannames, grenzen en acceptatiecriteria vastgelegd.
 - [x] Specificatie door gebruiker goedgekeurd.
-- [ ] Implementatieplan en volgorde door gebruiker bevestigen.
+- [x] Implementatieplan en volgorde door gebruiker bevestigd.
 - [ ] Opslag- en puntkommarandgeval eerst rood en daarna groen testen.
 - [ ] Bibliotheekregel, zoeken, selectie en auteursfilters eerst rood en daarna groen testen.
 - [ ] XAML-command, pictogram, toetsenbordtoegang en zes talen testgestuurd controleren.

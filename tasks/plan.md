@@ -159,7 +159,7 @@ Er zijn geen blokkerende open vragen. De goedgekeurde specificatie bepaalt dat d
 ## Goedkeuringscheckpoint
 
 - [x] Specificatie en afbakening door gebruiker goedgekeurd.
-- [ ] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
+- [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
 - [ ] Implementatie testgestuurd en incrementeel afgerond.
 - [ ] Definition of Done afgerond.
 - [ ] Gewone, niet-draft PR geopend en handmatig geaccepteerd.
