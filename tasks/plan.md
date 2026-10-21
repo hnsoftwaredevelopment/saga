@@ -111,7 +111,7 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 - [x] De complete diff is zelf beoordeeld en de branch bevat alleen Milestone 43.
 - [x] Alle gewijzigde Markdown heeft gelijke hashes in de Obsidian-spiegel.
 
-**Verificatie:** Volledige tests, clean/build, `git diff --check`, hashcontrole, eigen codereview en GitHub-controles.
+**Verificatie:** Volledige tests, clean/build, `git diff --check`, hashcontrole, eigen codereview en GitHub-controles in PR #44.
 
 **Omvang:** Middelgroot, hoofdzakelijk verificatie en documentatie.
 
