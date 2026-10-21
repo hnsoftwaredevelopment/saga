@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 42 was accepted on 21 October 2026 and verifies the existing detail action that stages a title-and-author swap, supports Save and Undo, and refreshes the library and author filters after saving. Milestone 41 applies one chosen language to multiple selected books with missing or invalid language metadata, while preserving per-book failures and file warnings.
+Milestone 43 is ready for acceptance testing and applies one chosen series name to multiple selected books that have a series number but no series name, while preserving every individual series number and reporting per-book results. The Splash title and subtitle now use layout-based vertical centering. Milestone 42 was accepted on 21 October 2026 and verifies the existing detail action for swapping title and author.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -62,6 +62,7 @@ Milestone 42 was accepted on 21 October 2026 and verifies the existing detail ac
 - direct missing- or unknown-language repair from the quality dashboard with a searchable list of valid languages
 - bulk missing- or unknown-language repair that applies one chosen language to multiple selected books and refreshes the library and language filters together
 - direct missing-series repair with live suggestions while preserving the existing series number
+- bulk missing-series repair that applies one chosen series name while preserving each selected book's own series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
 - detail-pane title-and-author swap for any editable book, with staged Save and Undo behavior and immediate library refresh after saving
 - editable messy-tag repair with a one-tag-per-line proposal, deduplication, whitespace cleanup, and support for an empty final tag list
@@ -78,7 +79,7 @@ Milestone 42 was accepted on 21 October 2026 and verifies the existing detail ac
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 42 checklist](docs/manual-tests/milestone-42-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 43 checklist](docs/manual-tests/milestone-43-checklist.md).
 
 ## Prerequisites
 
@@ -198,6 +199,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-40-checklist.md](docs/manual-tests/milestone-40-checklist.md)
 - [docs/manual-tests/milestone-41-checklist.md](docs/manual-tests/milestone-41-checklist.md)
 - [docs/manual-tests/milestone-42-checklist.md](docs/manual-tests/milestone-42-checklist.md)
+- [docs/manual-tests/milestone-43-checklist.md](docs/manual-tests/milestone-43-checklist.md)
 
 ## Later-Version Candidates
 

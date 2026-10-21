@@ -8,15 +8,15 @@
 - [x] Volledige specificatie, aannames, grenzen en acceptatiecriteria vastgelegd.
 - [x] Implementatieplan en taakvolgorde vastgelegd.
 - [x] Volledige specificatie en plan door gebruiker bevestigd; oorspronkelijke Splash-margecorrectie mag door de Grid-variant worden vervangen.
-- [ ] Splash-layout eerst rood en daarna groen testen en afzonderlijk committen.
-- [ ] Serieviewmodel en venster voor één en meerdere boeken testgestuurd uitbreiden.
-- [ ] Bulkselectie en generieke resultaatreconciliatie testgestuurd aansluiten.
-- [ ] Meerdere serienummers, stale series en bibliotheek-/filterverversing bewijzen.
-- [ ] Nieuwe teksten in zes talen toevoegen en testen.
-- [ ] Gerichte checkpoints uitvoeren en increments afzonderlijk committen.
-- [ ] README, featurestatus en handmatige checklist bijwerken en naar Obsidian spiegelen.
-- [ ] Volledige testset met .NET 10 uitvoeren.
-- [ ] Schone Debug-build controleren en versie vastleggen.
+- [x] Splash-layout eerst rood en daarna groen getest en afzonderlijk gecommit.
+- [x] Serieviewmodel en venster voor één en meerdere boeken testgestuurd uitgebreid.
+- [x] Bulkselectie en generieke resultaatreconciliatie testgestuurd aangesloten.
+- [x] Meerdere serienummers, stale series en bibliotheek-/filterverversing bewezen.
+- [x] Nieuwe teksten in zes talen toegevoegd en getest.
+- [x] Gericht checkpoint uitgevoerd: 32 tests geslaagd, geen fouten of overgeslagen tests; increments afzonderlijk gecommit.
+- [x] README, featurestatus en handmatige checklist bijgewerkt en met gelijke hashes naar Obsidian gespiegeld.
+- [x] Volledige testset met .NET 10 uitgevoerd: 805 tests geslaagd, geen fouten of overgeslagen tests.
+- [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.32`.
 - [ ] Branchdiff zelf beoordelen op correctheid, eenvoud, architectuur, beveiliging en prestaties.
 - [ ] Gewone, niet-draft PR openen en GitHub-controles beoordelen.
 - [ ] Handmatige acceptatiechecklist laten uitvoeren.

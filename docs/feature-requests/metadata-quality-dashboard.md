@@ -131,6 +131,18 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Keep the existing arrow icon keyboard accessible and provide its localized tooltip and accessible name in all six supported languages.
 - Preserve every other metadata field and do not change the possible-title-author-swap heuristic.
 
+## Milestone 43: Repair missing series names in bulk
+
+- Select one or multiple books within `Series number without series` and choose `Change series`.
+- Choose one known series from live suggestions or enter a completely new series name for every selected book.
+- Show the selected-book count and explain that every book keeps its own series number.
+- Re-read every book immediately before saving and never overwrite a series name that appeared after the dashboard opened.
+- Process results per book through the existing SQLite, sidecar and supported ebook write-back route.
+- Reconcile successful, partially saved, stale, removed and failed books separately so the dashboard reflects stored reality.
+- Keep fully failed rows visible and selected, while summarizing all result counts in the current language.
+- Refresh the main library and series filters once for the complete batch.
+- Keep single-book series repair, other quality repairs and existing bulk actions unchanged.
+
 ## Follow-up ideas
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
@@ -141,4 +153,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestones 36 through 42 are accepted, including messy-tag repair, the dedicated Quality settings tab, bulk quality decisions, bulk missing-author repair, duplicate-sidecar consistency, bulk missing-language repair and the verified detail action for manually swapping title and authors. Milestone 42 covers Save, Undo, library refresh, author filters, accessibility and localization; it does not claim that the quality heuristic can find every swapped book. Other bulk metadata repair, export, configurable checks and heuristic tuning remain follow-up work.
+Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestones 36 through 42 are accepted, including messy-tag repair, the dedicated Quality settings tab, bulk quality decisions, bulk missing-author repair, duplicate-sidecar consistency, bulk missing-language repair and the verified detail action for manually swapping title and authors. Milestone 43 is ready for acceptance testing and applies one chosen series name to multiple selected books while preserving every individual series number and accurate per-book results. Other bulk metadata repair, export, configurable checks and heuristic tuning remain follow-up work.

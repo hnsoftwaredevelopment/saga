@@ -18,9 +18,9 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 **Beschrijving:** Vervang de horizontale titel-StackPanel door een Grid dat titel en subtitel onafhankelijk van lettergrootte en DPI verticaal centreert. Behoud de bestaande uitstraling en algemene positie.
 
 **Acceptatiecriteria:**
-- [ ] Titel en subtitel staan in afzonderlijke automatische Grid-kolommen.
-- [ ] Beide teksten gebruiken `VerticalAlignment="Center"`.
-- [ ] De kinderen hebben geen verticale correctiemarges; alleen de titelgroep bepaalt haar schermpositie.
+- [x] Titel en subtitel staan in afzonderlijke automatische Grid-kolommen.
+- [x] Beide teksten gebruiken `VerticalAlignment="Center"`.
+- [x] De kinderen hebben geen verticale correctiemarges; alleen de titelgroep bepaalt haar schermpositie.
 
 **Verificatie:** Eerst een falende statische Splash-layouttest, daarna gerichte groene test en Debug-build.
 
@@ -35,10 +35,10 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 **Beschrijving:** Breid het serieviewmodel en venster uit met context voor één titel/serienummer of een bulkselectie. Behoud de snelle bestaande suggestielijst en vrije invoer.
 
 **Acceptatiecriteria:**
-- [ ] Eén boek toont ongewijzigd titel en serienummer.
-- [ ] Meerdere boeken tonen het aantal, de behoudmelding en een bevestigingsknop met het aantal.
-- [ ] Bekende series en vrije invoer werken even vlot als bij één boek.
-- [ ] Alle nieuwe teksten bestaan in zes talen en kunnen omlopen.
+- [x] Eén boek toont ongewijzigd titel en serienummer.
+- [x] Meerdere boeken tonen het aantal, de behoudmelding en een bevestigingsknop met het aantal.
+- [x] Bekende series en vrije invoer werken even vlot als bij één boek.
+- [x] Alle nieuwe teksten bestaan in zes talen en kunnen omlopen.
 
 **Verificatie:** Rode en groene viewmodel-, layout- en lokalisatietests.
 
@@ -52,19 +52,19 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 
 ## Checkpoint na taken 1-2
 
-- [ ] Splash-layouttest en serievenstertests zijn groen.
-- [ ] Enkelvoudige seriecontext is niet gewijzigd.
-- [ ] Geen productlogica of opslagroute is gedupliceerd.
+- [x] Splash-layouttest en serievenstertests zijn groen.
+- [x] Enkelvoudige seriecontext is niet gewijzigd.
+- [x] Geen productlogica of opslagroute is gedupliceerd.
 
 ## Taak 3: bulkselectie en resultaatverwerking aansluiten
 
 **Beschrijving:** Maak `Serie wijzigen` beschikbaar voor iedere geldige selectie binnen de seriecategorie en verwerk de bestaande servicebatch via de generieke reconciliatie.
 
 **Acceptatiecriteria:**
-- [ ] Eén of meerdere geselecteerde serierijen activeren de actie.
-- [ ] Annuleren schrijft niets; bevestigen stuurt alle unieke geselecteerde ids en één serienaam.
-- [ ] Succes, write-backwaarschuwing, verouderd, verwijderd en mislukt worden per boek correct verwerkt.
-- [ ] Volledig mislukte boeken blijven zichtbaar en geselecteerd; volledig succes geeft een korte groene melding.
+- [x] Eén of meerdere geselecteerde serierijen activeren de actie.
+- [x] Annuleren schrijft niets; bevestigen stuurt alle unieke geselecteerde ids en één serienaam.
+- [x] Succes, write-backwaarschuwing, verouderd, verwijderd en mislukt worden per boek correct verwerkt.
+- [x] Volledig mislukte boeken blijven zichtbaar en geselecteerd; volledig succes geeft een korte groene melding.
 
 **Verificatie:** Eerst falende dashboardtests voor beschikbaarheid, annuleren, succes en gemengde resultaten; daarna groen met minimale productcode.
 
@@ -80,10 +80,10 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 **Beschrijving:** Bewijs dat verschillende serienummers behouden blijven, inmiddels ingevulde series niet worden overschreven en de hoofdbibliotheek plus seriefilters éénmaal verversen.
 
 **Acceptatiecriteria:**
-- [ ] Meerdere boeken krijgen dezelfde serie en behouden ieder hun oorspronkelijke serienummer.
-- [ ] Een inmiddels geldige serienaam levert `NotApplicable` op zonder write.
-- [ ] De bibliotheekregels en seriefilters tonen direct de actuele waarden.
-- [ ] Overige metadata blijft intact.
+- [x] Meerdere boeken krijgen dezelfde serie en behouden ieder hun oorspronkelijke serienummer.
+- [x] Een inmiddels geldige serienaam levert `NotApplicable` op zonder write.
+- [x] De bibliotheekregels en seriefilters tonen direct de actuele waarden.
+- [x] Overige metadata blijft intact.
 
 **Verificatie:** Gerichte service- en LibraryViewModel-tests, gevolgd door een gericht checkpoint.
 
@@ -96,20 +96,20 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 
 ## Checkpoint na taken 3-4
 
-- [ ] Alle gerichte bulkserietests zijn groen.
-- [ ] Enkelvoudig herstel en bestaande bulkacties blijven groen.
-- [ ] Opslag, dashboard en bibliotheek tonen dezelfde toestand.
+- [x] Alle gerichte bulkserietests zijn groen.
+- [x] Enkelvoudig herstel en bestaande bulkacties blijven groen.
+- [x] Opslag, dashboard en bibliotheek tonen dezelfde toestand.
 
 ## Taak 5: documentatie, build en oplevering
 
 **Beschrijving:** Werk status en checklist bij, spiegel Markdown, voer de volledige Definition of Done uit en open een gewone niet-draft PR.
 
 **Acceptatiecriteria:**
-- [ ] README en quality-roadmap beschrijven Milestone 43 zonder vervolgwensen als gerealiseerd te presenteren.
-- [ ] De handmatige checklist behandelt Splash, selectie, suggesties, verschillende nummers, annuleren, resultaten, filters en herstart.
-- [ ] Volledige tests en schone Debug-build slagen zonder waarschuwingen of overgeslagen tests.
+- [x] README en quality-roadmap beschrijven Milestone 43 zonder vervolgwensen als gerealiseerd te presenteren.
+- [x] De handmatige checklist behandelt Splash, selectie, suggesties, verschillende nummers, annuleren, resultaten, filters en herstart.
+- [x] Volledige tests en schone Debug-build slagen zonder waarschuwingen of overgeslagen tests.
 - [ ] De complete diff is zelf beoordeeld en de branch bevat alleen Milestone 43.
-- [ ] Alle gewijzigde Markdown heeft gelijke hashes in de Obsidian-spiegel.
+- [x] Alle gewijzigde Markdown heeft gelijke hashes in de Obsidian-spiegel.
 
 **Verificatie:** Volledige tests, clean/build, `git diff --check`, hashcontrole, eigen codereview en GitHub-controles.
 
