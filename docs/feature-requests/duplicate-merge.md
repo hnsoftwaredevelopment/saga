@@ -79,6 +79,6 @@ Deze instellingen hoeven niet in de eerste versie van de merge-workflow te zitte
 
 ## Status
 
-Grotendeels geïmplementeerd. De duplicate finder ondersteunt inmiddels een merge-preview, een expliciete keuze van bron- en doelboek, acties per metadataveld, het behouden van gekoppelde bestandsformaten en verversing van de duplicate finder en hoofdweergave.
+Geïmplementeerd. De duplicate finder ondersteunt een merge-preview, een expliciete keuze van bron- en doelboek, acties per metadataveld, het behouden van gekoppelde bestandsformaten en verversing van de duplicate finder en hoofdweergave.
 
-Nog open: de samengevoegde metadata wordt in SQLite opgeslagen, maar de merge-route werkt de draagbare `metadata.json` sidecar nog niet bij. GitHub-issue #1 volgt uitsluitend dit resterende consistentiepunt en de bijbehorende regressietest. Totdat dit is opgelost, is het acceptatiecriterium voor de sidecar nog niet behaald.
+Milestone 40 rondt GitHub-issue #1 af. Na de database-merge leest Saga alle actuele doelbestanden en schrijft de definitieve samengevoegde metadata eenmaal per unieke boekmap naar `metadata.json`. Een sidecarfout draait de reeds uitgevoerde merge niet terug, maar wordt als duidelijke waarschuwing getoond met de instructie om de doelmetadata opnieuw op te slaan. Een integratietest schrijft en leest de echte sidecars voor zowel de oorspronkelijke bronmap als de doelmap.

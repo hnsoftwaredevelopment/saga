@@ -151,24 +151,12 @@ public sealed class BookService(
             return;
         }
 
-        var writtenDirectories = new HashSet<string>(
-            OperatingSystem.IsWindows()
-                ? StringComparer.OrdinalIgnoreCase
-                : StringComparer.Ordinal);
-        foreach (var file in files)
-        {
-            var absolutePath = fileStore.GetAbsolutePath(file.RelativePath);
-            var directory = Path.GetDirectoryName(absolutePath);
-            if (directory is null || !writtenDirectories.Add(directory))
-            {
-                continue;
-            }
-
-            await metadataSidecarStore.WriteAsync(
-                absolutePath,
-                book.Metadata,
-                cancellationToken);
-        }
+        await MetadataSidecarWriter.WriteAsync(
+            fileStore,
+            metadataSidecarStore,
+            book.Metadata,
+            files,
+            cancellationToken);
     }
 
     public async Task<BookDeleteResult> DeleteAsync(

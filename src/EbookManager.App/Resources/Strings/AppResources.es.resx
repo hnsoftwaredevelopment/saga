@@ -146,7 +146,7 @@
     <value> libros</value>
   </data>
   <data name="DuplicateSelectionHelp" xml:space="preserve">
-    <value>Consejo: mantenga Ctrl mientras selecciona otro libro para seleccionar varios duplicados.</value>
+    <value>Seleccione dos libros del mismo grupo y elija Combinar. Mantenga Ctrl mientras selecciona el segundo libro.</value>
   </data>
   <data name="MarkAsNotDuplicate" xml:space="preserve">
     <value>Marcar este libro como no duplicado</value>
@@ -287,6 +287,8 @@
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>La lista de duplicados esta obsoleta. Saga actualizo la biblioteca; abra de nuevo la vista de duplicados.</value>
   </data>
+  <data name="DuplicateMergeSidecarWarningTitle" xml:space="preserve"><value>Combinación completada con una advertencia</value></data>
+  <data name="DuplicateMergeSidecarWarningMessage" xml:space="preserve"><value>Los libros se combinaron, pero Saga no pudo actualizar metadata.json en todas las carpetas de libros. Guarda de nuevo los metadatos del libro de destino para volver a intentarlo.</value></data>
   <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
     <value>No se pudo marcar</value>
   </data>

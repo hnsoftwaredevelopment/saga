@@ -146,7 +146,7 @@
     <value> livres</value>
   </data>
   <data name="DuplicateSelectionHelp" xml:space="preserve">
-    <value>Astuce : maintenez Ctrl pendant la selection d'un autre livre pour selectionner plusieurs doublons.</value>
+    <value>Selectionnez deux livres du meme groupe, puis choisissez Fusionner. Maintenez Ctrl pendant la selection du second livre.</value>
   </data>
   <data name="MarkAsNotDuplicate" xml:space="preserve">
     <value>Marquer ce livre comme non doublon</value>
@@ -287,6 +287,8 @@
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>La liste des doublons est obsolete. Saga a actualise la bibliotheque ; ouvrez de nouveau la vue des doublons.</value>
   </data>
+  <data name="DuplicateMergeSidecarWarningTitle" xml:space="preserve"><value>Fusion terminée avec un avertissement</value></data>
+  <data name="DuplicateMergeSidecarWarningMessage" xml:space="preserve"><value>Les livres ont été fusionnés, mais Saga n'a pas pu mettre à jour metadata.json dans chaque dossier de livre. Enregistrez à nouveau les métadonnées du livre cible pour réessayer.</value></data>
   <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
     <value>Marquage impossible</value>
   </data>

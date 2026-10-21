@@ -146,7 +146,7 @@
     <value> libri</value>
   </data>
   <data name="DuplicateSelectionHelp" xml:space="preserve">
-    <value>Suggerimento: tieni premuto Ctrl mentre selezioni un altro libro per selezionare piu duplicati.</value>
+    <value>Seleziona due libri dello stesso gruppo e scegli Unisci. Tieni premuto Ctrl mentre selezioni il secondo libro.</value>
   </data>
   <data name="MarkAsNotDuplicate" xml:space="preserve">
     <value>Segna questo libro come non duplicato</value>
@@ -287,6 +287,8 @@
   <data name="DuplicateMergeFailedMessage" xml:space="preserve">
     <value>L'elenco duplicati e obsoleto. Saga ha aggiornato la biblioteca; apri di nuovo la panoramica duplicati.</value>
   </data>
+  <data name="DuplicateMergeSidecarWarningTitle" xml:space="preserve"><value>Unione completata con un avviso</value></data>
+  <data name="DuplicateMergeSidecarWarningMessage" xml:space="preserve"><value>I libri sono stati uniti, ma Saga non ha potuto aggiornare metadata.json in tutte le cartelle dei libri. Salva nuovamente i metadati del libro di destinazione per riprovare.</value></data>
   <data name="DuplicateIgnoreFailedTitle" xml:space="preserve">
     <value>Marcatura non riuscita</value>
   </data>

@@ -105,7 +105,7 @@
   <data name="DuplicateCandidatesNone" xml:space="preserve"><value>Geen mogelijke duplicaten gevonden.</value></data>
   <data name="DuplicateCandidateGroupsSuffix" xml:space="preserve"><value> groepen</value></data>
   <data name="DuplicateCandidateBooksSuffix" xml:space="preserve"><value> boeken</value></data>
-  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Tip: houd Ctrl ingedrukt terwijl u een volgend boek selecteert om meerdere duplicaten te selecteren.</value></data>
+  <data name="DuplicateSelectionHelp" xml:space="preserve"><value>Selecteer twee boeken binnen dezelfde groep en kies Samenvoegen. Houd Ctrl ingedrukt terwijl u het tweede boek selecteert.</value></data>
   <data name="MarkAsNotDuplicate" xml:space="preserve"><value>Dit boek markeren als geen duplicaat</value></data>
   <data name="MarkAsNotDuplicateShort" xml:space="preserve"><value>Geen dup.</value></data>
   <data name="DuplicateExclusionsSettingsTitle" xml:space="preserve"><value>Genegeerde duplicaten</value></data>
@@ -200,6 +200,8 @@
   <data name="DuplicateMergeSucceededSuffix" xml:space="preserve"><value> is samengevoegd.</value></data>
   <data name="DuplicateMergeFailedTitle" xml:space="preserve"><value>Samenvoegen mislukt</value></data>
   <data name="DuplicateMergeFailedMessage" xml:space="preserve"><value>De duplicatenlijst is verouderd. Saga heeft de bibliotheek ververst; open het duplicatenoverzicht opnieuw.</value></data>
+  <data name="DuplicateMergeSidecarWarningTitle" xml:space="preserve"><value>Samenvoegen voltooid met waarschuwing</value></data>
+  <data name="DuplicateMergeSidecarWarningMessage" xml:space="preserve"><value>De boeken zijn samengevoegd, maar Saga kon metadata.json niet in iedere boekmap bijwerken. Sla de metadata van het doelboek opnieuw op om het opnieuw te proberen.</value></data>
   <data name="DuplicateIgnoreFailedTitle" xml:space="preserve"><value>Markeren mislukt</value></data>
   <data name="DuplicateIgnoreFailedMessage" xml:space="preserve"><value>Saga kon dit boek niet markeren als geen duplicaat. Probeer het opnieuw.</value></data>
   <data name="DuplicateMatchAuthorOverlap" xml:space="preserve"><value>Auteurmatch</value></data>
