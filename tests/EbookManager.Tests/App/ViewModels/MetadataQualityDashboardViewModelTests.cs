@@ -607,6 +607,161 @@ public sealed class MetadataQualityDashboardViewModelTests
         dashboard.StatusMessage.Should().Be("localized:MetadataQualityAuthorRepairNotNeeded");
     }
 
+    [Fact]
+    public async Task Repair_unknown_language_applies_one_language_to_every_selected_book()
+    {
+        var alpha = CreateUnknownLanguageBook("Alpha");
+        var beta = CreateUnknownLanguageBook("Beta");
+        var repairedAlpha = CreateBookWithLanguage(alpha, "nl");
+        var repairedBeta = CreateBookWithLanguage(beta, "nl");
+        var repairService = new ScriptedBatchLanguageRepairService(
+            new MetadataQualityLanguageRepairBatchResult(
+            [
+                new(alpha.Id, MetadataQualityLanguageRepairStatus.Succeeded, repairedAlpha),
+                new(beta.Id, MetadataQualityLanguageRepairStatus.Succeeded, repairedBeta)
+            ]));
+        var refreshedBooks = new List<Book>();
+        var refreshBatches = 0;
+        MetadataQualityLanguageRepairViewModel? shownRepair = null;
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [alpha, beta],
+            key => key switch
+            {
+                "MetadataQualityLanguageRepairBulkSucceeded" => "success:{0}",
+                "MetadataQualityLanguageRepairBulkResult" => "bulk:{0}:{1}:{2}:{3}:{4}",
+                "MetadataQualityLanguageRepairBulkBookContext" => "{0} books selected",
+                "MetadataQualityLanguageRepairBulkSave" => "Change language for {0} books",
+                _ => key
+            },
+            languageRepairService: repairService,
+            showLanguageRepair: (repair, _) =>
+            {
+                shownRepair = repair;
+                repair.SelectedLanguage = repair.Languages.Single(option => option.Code == "nl");
+                return Task.FromResult(true);
+            },
+            booksRepaired: repairedBooks =>
+            {
+                refreshBatches++;
+                refreshedBooks.AddRange(repairedBooks);
+            });
+        var issue = dashboard.Issues.Single(candidate =>
+            candidate.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+        dashboard.SelectedIssue = issue;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        shownRepair.Should().NotBeNull();
+        shownRepair!.AffectedBookCount.Should().Be(2);
+        repairService.BookIds.Should().Equal(alpha.Id, beta.Id);
+        repairService.Language.Should().Be("nl");
+        issue.Rows.Should().BeEmpty();
+        refreshBatches.Should().Be(1);
+        refreshedBooks.Select(book => book.Id).Should().BeEquivalentTo([alpha.Id, beta.Id]);
+        dashboard.StatusMessage.Should().Be("success:2");
+        dashboard.IsStatusMessageSuccess.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Repair_unknown_language_keeps_failed_bulk_rows_selected_and_reports_mixed_result()
+    {
+        var alpha = CreateUnknownLanguageBook("Alpha");
+        var beta = CreateUnknownLanguageBook("Beta");
+        var gamma = CreateUnknownLanguageBook("Gamma");
+        var repairedAlpha = CreateBookWithLanguage(alpha, "nl");
+        var repairedGamma = CreateBookWithLanguage(gamma, "nl");
+        var repairService = new ScriptedBatchLanguageRepairService(
+            new MetadataQualityLanguageRepairBatchResult(
+            [
+                new(alpha.Id, MetadataQualityLanguageRepairStatus.Succeeded, repairedAlpha),
+                new(beta.Id, MetadataQualityLanguageRepairStatus.Failed, beta),
+                new(gamma.Id, MetadataQualityLanguageRepairStatus.SavedWithWriteBackErrors, repairedGamma)
+            ]));
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [alpha, beta, gamma],
+            key => key == "MetadataQualityLanguageRepairBulkResult"
+                ? "bulk:{0}:{1}:{2}:{3}:{4}"
+                : key,
+            languageRepairService: repairService,
+            showLanguageRepair: (repair, _) =>
+            {
+                repair.SelectedLanguage = repair.Languages.Single(option => option.Code == "nl");
+                return Task.FromResult(true);
+            });
+        var issue = dashboard.Issues.Single(candidate =>
+            candidate.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+        dashboard.SelectedIssue = issue;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        issue.Rows.Should().ContainSingle().Which.Id.Should().Be(beta.Id);
+        dashboard.SelectedBookCount.Should().Be(1);
+        dashboard.SelectedBook!.Id.Should().Be(beta.Id);
+        dashboard.StatusMessage.Should().Be("bulk:1:1:0:0:1");
+        dashboard.IsStatusMessageSuccess.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Repair_unknown_language_bulk_reconciles_stale_and_removed_books()
+    {
+        var stale = CreateUnknownLanguageBook("Stale");
+        var removed = CreateUnknownLanguageBook("Removed");
+        var currentStale = CreateBookWithLanguage(stale, "de");
+        var repairService = new ScriptedBatchLanguageRepairService(
+            new MetadataQualityLanguageRepairBatchResult(
+            [
+                new(stale.Id, MetadataQualityLanguageRepairStatus.NotApplicable, currentStale),
+                new(removed.Id, MetadataQualityLanguageRepairStatus.NotFound)
+            ]));
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [stale, removed],
+            key => key == "MetadataQualityLanguageRepairBulkResult"
+                ? "bulk:{0}:{1}:{2}:{3}:{4}"
+                : key,
+            languageRepairService: repairService,
+            showLanguageRepair: (repair, _) =>
+            {
+                repair.SelectedLanguage = repair.Languages.Single(option => option.Code == "nl");
+                return Task.FromResult(true);
+            });
+        var issue = dashboard.Issues.Single(candidate =>
+            candidate.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+        dashboard.SelectedIssue = issue;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        issue.Rows.Should().BeEmpty();
+        dashboard.SelectedBookCount.Should().Be(0);
+        dashboard.StatusMessage.Should().Be("bulk:0:0:1:1:0");
+    }
+
+    [Fact]
+    public async Task Repair_unknown_language_bulk_cancel_keeps_every_selected_row()
+    {
+        var alpha = CreateUnknownLanguageBook("Alpha");
+        var beta = CreateUnknownLanguageBook("Beta");
+        var repairService = new ScriptedBatchLanguageRepairService(
+            new MetadataQualityLanguageRepairBatchResult([]));
+        var dashboard = new MetadataQualityDashboardViewModel(
+            [alpha, beta],
+            key => key,
+            languageRepairService: repairService,
+            showLanguageRepair: (_, _) => Task.FromResult(false));
+        var issue = dashboard.Issues.Single(candidate =>
+            candidate.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+        dashboard.SelectedIssue = issue;
+        dashboard.SetSelectedBooks(issue.Rows);
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        repairService.BookIds.Should().BeEmpty();
+        issue.Rows.Should().HaveCount(2);
+        dashboard.SelectedBookCount.Should().Be(2);
+    }
+
     private static Book CreateBook(
         string title,
         IReadOnlyList<string> authors,
@@ -621,6 +776,25 @@ public sealed class MetadataQualityDashboardViewModelTests
             now,
             now);
     }
+
+    private static Book CreateUnknownLanguageBook(string title)
+    {
+        var book = CreateBook(title, ["Auteur"], coverBytes: [1]);
+        return book with
+        {
+            Metadata = new BookMetadata(title, ["Auteur"], CoverBytes: [1])
+        };
+    }
+
+    private static Book CreateBookWithLanguage(Book book, string language) =>
+        book with
+        {
+            Metadata = new BookMetadata(
+                book.Metadata.Title,
+                book.Metadata.Authors,
+                Language: language,
+                CoverBytes: book.Metadata.CoverBytes)
+        };
 
     private sealed class RecordingMetadataQualityExclusionRepository(Exception? addException = null)
         : IMetadataQualityExclusionRepository
@@ -695,6 +869,23 @@ public sealed class MetadataQualityDashboardViewModelTests
         {
             BookIds = bookIds.ToArray();
             Author = author;
+            return Task.FromResult(result);
+        }
+    }
+
+    private sealed class ScriptedBatchLanguageRepairService(MetadataQualityLanguageRepairBatchResult result)
+        : IMetadataQualityLanguageRepairService
+    {
+        public IReadOnlyList<Guid> BookIds { get; private set; } = [];
+        public string? Language { get; private set; }
+
+        public Task<MetadataQualityLanguageRepairBatchResult> RepairAsync(
+            IReadOnlyCollection<Guid> bookIds,
+            string language,
+            CancellationToken cancellationToken)
+        {
+            BookIds = bookIds.ToArray();
+            Language = language;
             return Task.FromResult(result);
         }
     }
