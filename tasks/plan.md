@@ -129,6 +129,6 @@ Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of me
 ## Goedkeuringscheckpoint
 
 - [x] Hoofdfunctionaliteit en robuuste Splash-aanpak door gebruiker goedgekeurd.
-- [ ] Volledige specificatie en implementatieplan bevestigd.
+- [x] Volledige specificatie en implementatieplan door gebruiker bevestigd.
 - [ ] Implementatie testgestuurd en incrementeel afgerond.
 - [ ] Definition of Done en gewone PR afgerond.

@@ -7,7 +7,7 @@
 - [x] Scope voor bulk serieherstel en robuuste Splash-uitlijning door gebruiker goedgekeurd.
 - [x] Volledige specificatie, aannames, grenzen en acceptatiecriteria vastgelegd.
 - [x] Implementatieplan en taakvolgorde vastgelegd.
-- [ ] Volledige specificatie en plan door gebruiker bevestigd.
+- [x] Volledige specificatie en plan door gebruiker bevestigd; oorspronkelijke Splash-margecorrectie mag door de Grid-variant worden vervangen.
 - [ ] Splash-layout eerst rood en daarna groen testen en afzonderlijk committen.
 - [ ] Serieviewmodel en venster voor één en meerdere boeken testgestuurd uitbreiden.
 - [ ] Bulkselectie en generieke resultaatreconciliatie testgestuurd aansluiten.
