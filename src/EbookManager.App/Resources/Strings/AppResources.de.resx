@@ -678,6 +678,12 @@
   <data name="MetadataQualitySeriesRepairInput" xml:space="preserve"><value>Reihenname</value></data>
   <data name="MetadataQualitySeriesRepairHelp" xml:space="preserve"><value>Die Vorschläge stammen aus der aktiven Bibliothek. Sie können auch einen neuen Reihennamen eingeben.</value></data>
   <data name="MetadataQualitySeriesRepairSave" xml:space="preserve"><value>Reihe speichern</value></data>
+  <data name="MetadataQualitySeriesRepairBulkBookContext" xml:space="preserve"><value>{0} ausgewählte Bücher</value></data>
+  <data name="MetadataQualitySeriesRepairBulkSeriesNumbersLabel" xml:space="preserve"><value>Bandnummern</value></data>
+  <data name="MetadataQualitySeriesRepairBulkSeriesNumbersHelp" xml:space="preserve"><value>Jedes Buch behält seine aktuelle Bandnummer.</value></data>
+  <data name="MetadataQualitySeriesRepairBulkSave" xml:space="preserve"><value>Reihe für {0} Bücher ändern</value></data>
+  <data name="MetadataQualitySeriesRepairBulkSucceeded" xml:space="preserve"><value>{0} Bücher geändert</value></data>
+  <data name="MetadataQualitySeriesRepairBulkResult" xml:space="preserve"><value>Geändert: {0}. Dateiwarnungen: {1}. Bereits gelöst: {2}. Nicht verfügbar: {3}. Fehlgeschlagen: {4}.</value></data>
   <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>Die Reihe konnte nicht gespeichert werden. Prüfen Sie das Buch und versuchen Sie es erneut.</value></data>
   <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>Die Reihe wurde gespeichert, aber nicht alle zugehörigen Metadaten- oder E-Book-Dateien konnten aktualisiert werden.</value></data>
   <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Bei diesem Buch fehlt der Reihenname nicht mehr. Saga hat die aktuellen Buchdaten geladen.</value></data>
