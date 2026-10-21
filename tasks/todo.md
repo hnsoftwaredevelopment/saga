@@ -1,30 +1,30 @@
-# Milestone 41 todo
+# Milestone 42 todo
 
-- [x] PR #41 als gemerged vastgesteld en lokale `main` bijgewerkt.
-- [x] .NET 10 SDK 10.0.402 als actieve project-SDK gecontroleerd.
-- [x] Branch `codex/milestone-41-bulk-language-repair` vanaf actuele `main` gemaakt.
-- [x] Bestaande taalservice, dashboardstroom, taaldialoog en bulkauteurpatroon onderzocht.
-- [x] Specificatie, aannames, veiligheidsgrenzen en acceptatiecriteria vastgelegd.
+- [x] PR #42 als gemerged vastgesteld en lokale `main` bijgewerkt.
+- [x] Branch `codex/milestone-42-details-swap-title-author` vanaf actuele `main` gemaakt.
+- [x] Bestaande detailknop, command, pictogram, staged opslagroute en tests geïnventariseerd.
+- [x] Vastgesteld dat de functie al aanwezig is en niet opnieuw gebouwd moet worden.
+- [x] Specificatie, aannames, grenzen en acceptatiecriteria vastgelegd.
 - [x] Specificatie door gebruiker goedgekeurd.
 - [x] Implementatieplan en volgorde door gebruiker bevestigd.
-- [x] Taaldialoogcontext eerst rood getest en daarna geïmplementeerd.
-- [x] Dashboardbulkselectie en resultaatverwerking eerst rood getest en daarna geïmplementeerd.
-- [x] Gerichte checkpointtests uitgevoerd en increments afzonderlijk gecommit.
-- [x] WPF-layout, toegankelijke namen en zes talen testgestuurd uitgebreid.
-- [x] Bibliotheekverversing en regressies voor andere kwaliteitsacties bewezen.
-- [x] README, featurestatus en handmatige checklist bijgewerkt en naar Obsidian gespiegeld.
-- [x] Volledige testset met .NET 10 uitgevoerd (788 geslaagd; 0 overgeslagen).
-- [x] Schone Debug-build gecontroleerd (`Saga.exe` 2026.10.21.16; 0 waarschuwingen en 0 fouten; alleen `Builds\Debug`).
-- [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; dubbele batchverwerking samengevoegd en daarna geen openstaande bevindingen.
-- [x] Gewone, niet-draft PR #42 geopend.
-- [x] CodeRabbit-bevinding over het voortzetten na een onverwachte boekfout testgestuurd opgelost.
-- [x] GitHub-controles na de laatste correctie beoordeeld: CodeQL en GitGuardian groen; CodeRabbit-bevinding opgelost en vervolgstatus groen ondanks reviewlimiet.
-- [x] Handmatige acceptatiechecklist uitgevoerd en door gebruiker goedgekeurd.
+- [x] Opslag- en puntkommarandgeval met een karakterisatietest vastgelegd; de bestaande implementatie was direct groen.
+- [x] Bibliotheekregel, zoeken, selectie en auteursfilters met een integratietest vastgelegd; de bestaande implementatie was direct groen.
+- [x] XAML-command, pictogram, toetsenbordtoegang en zes talen met karakterisatietests gecontroleerd.
+- [x] Geen productcode aangepast omdat de tests geen functioneel of interfacegat aantonen.
+- [x] README, featurestatus en handmatige checklist bijgewerkt en met gelijke hashes naar Obsidian gespiegeld.
+- [x] Gerichte testcheckpoint uitgevoerd: 43 tests geslaagd, geen fouten of overgeslagen tests; increments afzonderlijk gecommit.
+- [x] Volledige testset met .NET 10 uitgevoerd: 797 tests geslaagd, geen fouten of overgeslagen tests.
+- [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.23`.
+- [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; geen bevindingen.
+- [x] Gewone, niet-draft PR #43 geopend.
+- [x] GitHub-controles voor PR #43 beoordeeld: CodeQL en GitGuardian zijn groen; de runner-migratiemelding is alleen informatief.
+- [x] Handmatige acceptatiechecklist uitgevoerd; titel en auteur wisselen werkt volledig zoals verwacht.
 
 ## Buiten scope
 
-- Automatische taaldetectie uit boekinhoud of metadata.
-- Online metadata- of omslagzoeken via BoekenBase.
-- Bulkherstel voor serie, tags, omslagen of titel/auteur.
-- Wijzigingen aan de `unknown-language`-kwaliteitsregel.
-- Database- of bestandsformaatwijzigingen.
+- Een tweede omwisselknop of nieuwe opslagroute.
+- Een extra bevestigingsvenster of automatisch opslaan.
+- Wijzigingen aan de Quality Page-heuristiek.
+- Nieuwe bulkfunctionaliteit; de algemene metadata-multibewerking ondersteunt omwisselen al.
+- Online metadata zoeken of andere boekvelden aanpassen.
+- Database-, sidecar- of ebookmetadataformaatwijzigingen.

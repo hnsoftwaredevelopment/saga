@@ -121,6 +121,16 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Refresh the main library and language filters once for the complete batch.
 - Keep other single-book repair actions unchanged; bulk missing-author repair and bulk `This is correct` remain available in their own contexts.
 
+## Milestone 42: Verify title and author swap from book details
+
+- Keep the existing title-and-author swap action available from book details for any editable book, including books that the quality heuristic does not flag.
+- Stage the swapped title and authors in the detail pane without writing immediately.
+- Let the normal `Save` action persist the change and let `Undo` restore the original values before saving.
+- Treat the former complete title as one author, even when that title contains a semicolon.
+- Refresh the visible library row, active search results, selection and author filters after saving.
+- Keep the existing arrow icon keyboard accessible and provide its localized tooltip and accessible name in all six supported languages.
+- Preserve every other metadata field and do not change the possible-title-author-swap heuristic.
+
 ## Follow-up ideas
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
@@ -131,4 +141,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestones 36 through 40 are accepted, including messy-tag repair, the dedicated Quality settings tab, bulk quality decisions, bulk missing-author repair and duplicate-sidecar consistency. Milestone 41 is ready for acceptance testing and applies one chosen language to multiple selected missing- or invalid-language books while preserving accurate per-book results. Other bulk metadata repair, export, configurable checks and heuristic tuning remain follow-up work.
+Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestones 36 through 42 are accepted, including messy-tag repair, the dedicated Quality settings tab, bulk quality decisions, bulk missing-author repair, duplicate-sidecar consistency, bulk missing-language repair and the verified detail action for manually swapping title and authors. Milestone 42 covers Save, Undo, library refresh, author filters, accessibility and localization; it does not claim that the quality heuristic can find every swapped book. Other bulk metadata repair, export, configurable checks and heuristic tuning remain follow-up work.

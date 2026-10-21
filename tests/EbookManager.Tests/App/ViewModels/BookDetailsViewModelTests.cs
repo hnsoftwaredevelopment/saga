@@ -159,6 +159,36 @@ public sealed class BookDetailsViewModelTests
     }
 
     [Fact]
+    public async Task Swap_title_and_authors_stages_then_saves_one_author_and_preserves_other_metadata()
+    {
+        var viewModel = CreateViewModel(out var repository);
+        var book = CreateBook("Deel 1; Deel 2", ["Author One", "Author Two"]);
+        Book? notified = null;
+        viewModel.BookSaved += (_, saved) => notified = saved;
+        viewModel.Load(book);
+
+        viewModel.SwapTitleAndAuthorsCommand.Execute(null);
+
+        repository.UpdatedBook.Should().BeNull();
+        viewModel.HasUnsavedChanges.Should().BeTrue();
+
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        repository.UpdatedBook.Should().NotBeNull();
+        var saved = repository.UpdatedBook!;
+        saved.Metadata.Title.Should().Be("Author One, Author Two");
+        saved.Metadata.Authors.Should().Equal("Deel 1; Deel 2");
+        saved.Metadata.Description.Should().Be(book.Metadata.Description);
+        saved.Metadata.Language.Should().Be(book.Metadata.Language);
+        saved.Metadata.Publisher.Should().Be(book.Metadata.Publisher);
+        saved.Metadata.Tags.Should().Equal(book.Metadata.Tags!);
+        saved.Metadata.Isbn.Should().Be(book.Metadata.Isbn);
+        saved.ReadingStatus.Should().Be(book.ReadingStatus);
+        notified.Should().BeSameAs(saved);
+        viewModel.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
     public void Loading_a_book_shows_available_formats_without_setting_dirty_state()
     {
         var viewModel = CreateViewModel(out _);

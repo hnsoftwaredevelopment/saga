@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 41 is ready for acceptance testing and applies one chosen language to multiple selected books with missing or invalid language metadata, while preserving per-book failures and file warnings. Milestone 40 was accepted on 21 October 2026 and keeps SQLite and every relevant portable `metadata.json` sidecar synchronized after duplicate merges, with a clear warning when sidecar storage fails.
+Milestone 42 was accepted on 21 October 2026 and verifies the existing detail action that stages a title-and-author swap, supports Save and Undo, and refreshes the library and author filters after saving. Milestone 41 applies one chosen language to multiple selected books with missing or invalid language metadata, while preserving per-book failures and file warnings.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -63,6 +63,7 @@ Milestone 41 is ready for acceptance testing and applies one chosen language to 
 - bulk missing- or unknown-language repair that applies one chosen language to multiple selected books and refreshes the library and language filters together
 - direct missing-series repair with live suggestions while preserving the existing series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
+- detail-pane title-and-author swap for any editable book, with staged Save and Undo behavior and immediate library refresh after saving
 - editable messy-tag repair with a one-tag-per-line proposal, deduplication, whitespace cleanup, and support for an empty final tag list
 - explicit cover search with up to twelve validated Google Books and Open Library choices, a locally generated fallback, safe managed storage, and replacement from book details
 - managed ebooks and covers distributed over 256 ID-based storage shards, with automatic database backup, visible first-start migration progress, and safe resume after interruption
@@ -77,7 +78,7 @@ Milestone 41 is ready for acceptance testing and applies one chosen language to 
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 41 checklist](docs/manual-tests/milestone-41-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 42 checklist](docs/manual-tests/milestone-42-checklist.md).
 
 ## Prerequisites
 
@@ -195,6 +196,8 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-38-checklist.md](docs/manual-tests/milestone-38-checklist.md)
 - [docs/manual-tests/milestone-39-checklist.md](docs/manual-tests/milestone-39-checklist.md)
 - [docs/manual-tests/milestone-40-checklist.md](docs/manual-tests/milestone-40-checklist.md)
+- [docs/manual-tests/milestone-41-checklist.md](docs/manual-tests/milestone-41-checklist.md)
+- [docs/manual-tests/milestone-42-checklist.md](docs/manual-tests/milestone-42-checklist.md)
 
 ## Later-Version Candidates
 

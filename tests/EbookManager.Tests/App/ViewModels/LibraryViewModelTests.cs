@@ -3229,6 +3229,36 @@ public sealed class LibraryViewModelTests
         viewModel.Details.Title.Should().Be("Selected");
     }
 
+    [Fact]
+    public async Task Saving_a_detail_title_author_swap_refreshes_search_row_selection_and_author_filters()
+    {
+        var book = CreateBook("Deel 1; Deel 2", ["Author One", "Author Two"]);
+        var repository = new StaticBookRepository([book]);
+        var viewModel = CreateViewModel([book], repository: repository);
+        await viewModel.RefreshAsync();
+        viewModel.SelectedBook = viewModel.VisibleBooks.Single();
+        await WaitUntilAsync(() => viewModel.Details.BookId == book.Id);
+        viewModel.SearchText = "Author One";
+
+        viewModel.Details.SwapTitleAndAuthorsCommand.Execute(null);
+        await viewModel.Details.SaveCommand.ExecuteAsync(null);
+        await WaitUntilAsync(() =>
+            viewModel.VisibleBooks.Count == 1 &&
+            viewModel.VisibleBooks[0].Title == "Author One, Author Two");
+
+        var visible = viewModel.VisibleBooks.Single();
+        visible.Id.Should().Be(book.Id);
+        visible.Authors.Should().Be("Deel 1; Deel 2");
+        viewModel.SelectedBook.Should().NotBeNull();
+        viewModel.SelectedBook!.Id.Should().Be(book.Id);
+        viewModel.SearchText.Should().Be("Author One");
+        viewModel.AuthorFilters.Should().ContainSingle(filter =>
+            filter.Name == "Deel 1; Deel 2" && filter.Count == 1);
+        viewModel.AuthorFilters.Should().NotContain(filter =>
+            filter.Name == "Author One" || filter.Name == "Author Two");
+        repository.BooksSnapshot.Single().Metadata.Authors.Should().Equal("Deel 1; Deel 2");
+    }
+
     [Theory]
     [InlineData(LibraryView.Bookshelf)]
     [InlineData(LibraryView.Detailed)]
