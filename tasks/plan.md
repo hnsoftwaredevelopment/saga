@@ -121,7 +121,7 @@ Taaldialoogcontext en contract
 **Acceptatiecriteria:**
 - [x] De handmatige checklist behandelt één boek, meerdere boeken, zoeken, annuleren, gemengde resultaten en regressies.
 - [x] De volledige testset en schone Debug-build zijn groen met .NET 10.
-- [ ] De branchdiff bevat uitsluitend Milestone 41 en de PR is geen draft.
+- [x] De branchdiff bevat uitsluitend Milestone 41 en PR #42 is als gewone, niet-draft PR geopend.
 
 **Verificatie:** Volledige tests, build/publish, `git diff --check`, eigen codereview en GitHub-controles.
 
@@ -156,5 +156,6 @@ Er zijn geen blokkerende open vragen. De geaccepteerde specificatie en het bulka
 - [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
 - [x] Rode en groene tests per increment vastgelegd.
 - [x] Eigen codereview afgerond; de gedeelde batchresultaatverwerking voorkomt dubbele auteur- en taallogica.
+- [x] Gewone, niet-draft PR #42 geopend.
 - [ ] Volledige Definition of Done afgerond.
-- [ ] Gewone, niet-draft PR geopend en handmatig geaccepteerd.
+- [ ] GitHub-controles beoordeeld en handmatige acceptatie afgerond.
