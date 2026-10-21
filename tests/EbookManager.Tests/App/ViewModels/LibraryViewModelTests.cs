@@ -689,6 +689,36 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_bulk_language_repair_refreshes_all_books_and_language_filters_together()
+    {
+        var alpha = CreateBook("Alpha", ["Auteur"], language: null, coverBytes: [1]);
+        var beta = CreateBook("Beta", ["Auteur"], language: "fictional", coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityLanguageRepairResult = true,
+            MetadataQualityLanguageRepairCode = "nl"
+        };
+        var viewModel = CreateViewModel(
+            [alpha, beta],
+            interaction,
+            currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.UnknownLanguage);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairUnknownLanguageCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualityLanguageRepair.Should().NotBeNull();
+        interaction.MetadataQualityLanguageRepair!.AffectedBookCount.Should().Be(2);
+        viewModel.VisibleBooks.Should().OnlyContain(row => row.Language != "-");
+        viewModel.LanguageFilters.Single(filter => filter.Name == "nl").Count.Should().Be(2);
+        dashboard.SelectedIssue.Rows.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Metadata_quality_series_repair_updates_the_active_library_and_series_filters()
     {
         var missing = CreateBook(
