@@ -32,12 +32,12 @@ Bestaand detailgedrag inventariseren
 **Beschrijving:** Voeg eerst falende tests toe die de bestaande gebruikersroute als één geheel beschrijven: omwisselen, staged toestand, opslaan en behoud van overige metadata. Leg ook het randgeval vast waarin de voormalige titel een puntkomma bevat en toch één auteur moet blijven.
 
 **Acceptatiecriteria:**
-- [ ] De knop verwisselt de huidige titel en auteurs zonder onmiddellijk naar de repository te schrijven.
-- [ ] `Ongedaan maken` herstelt de oorspronkelijke waarden vóór opslag.
-- [ ] `Opslaan` schrijft de verwisselde waarden via de bestaande opslagroute en laat overige metadata intact.
-- [ ] Een voormalige titel met een puntkomma wordt als precies één auteur opgeslagen.
+- [x] De knop verwisselt de huidige titel en auteurs zonder onmiddellijk naar de repository te schrijven.
+- [x] `Ongedaan maken` herstelt de oorspronkelijke waarden vóór opslag.
+- [x] `Opslaan` schrijft de verwisselde waarden via de bestaande opslagroute en laat overige metadata intact.
+- [x] Een voormalige titel met een puntkomma wordt als precies één auteur opgeslagen.
 
-**Verificatie:** Rode test vastleggen, daarna groene `BookDetailsViewModelTests`; alleen bij bewezen afwijking minimale productcode aanpassen.
+**Verificatie:** De karakterisatietest was direct groen omdat de bestaande productcode al aan de specificatie voldeed. De nieuwe `BookDetailsViewModelTests` leggen dit gedrag nu vast; er was geen productcodewijziging nodig.
 
 **Afhankelijkheden:** Geen.
 
@@ -52,12 +52,12 @@ Bestaand detailgedrag inventariseren
 **Beschrijving:** Bewijs op `LibraryViewModel`-niveau dat een vanuit details opgeslagen omwisseling de zichtbare rij, actieve zoekresultaten, selectie en auteursfilters bijwerkt zonder herstart.
 
 **Acceptatiecriteria:**
-- [ ] De zichtbare boekregel toont na opslaan de nieuwe titel en auteur.
-- [ ] Het oude auteursfilter verdwijnt wanneer het niet meer gebruikt wordt en het nieuwe filter verschijnt met het juiste aantal.
-- [ ] Een actief zoekfilter wordt opnieuw toegepast op de gewijzigde metadata.
-- [ ] De detailselectie blijft op het opgeslagen boek staan wanneer het nog in de actieve weergave past.
+- [x] De zichtbare boekregel toont na opslaan de nieuwe titel en auteur.
+- [x] Het oude auteursfilter verdwijnt wanneer het niet meer gebruikt wordt en het nieuwe filter verschijnt met het juiste aantal.
+- [x] Een actief zoekfilter wordt opnieuw toegepast op de gewijzigde metadata.
+- [x] De detailselectie blijft op het opgeslagen boek staan wanneer het nog in de actieve weergave past.
 
-**Verificatie:** Eerst falende en daarna groene gerichte `LibraryViewModelTests`.
+**Verificatie:** De integratietest was direct groen omdat de bestaande verversingsroute al correct werkte. De nieuwe gerichte `LibraryViewModelTests` beschermen dit gedrag tegen regressie.
 
 **Afhankelijkheden:** Taak 1.
 
@@ -69,21 +69,21 @@ Bestaand detailgedrag inventariseren
 
 ## Checkpoint na taken 1-2
 
-- [ ] De volledige opslagroute is door waarneembare toestand bewezen.
-- [ ] Geen tweede opslag- of verversingsroute is toegevoegd.
-- [ ] Gerichte detail- en bibliotheektests zijn groen.
+- [x] De volledige opslagroute is door waarneembare toestand bewezen.
+- [x] Geen tweede opslag- of verversingsroute is toegevoegd.
+- [x] Gerichte detail- en bibliotheektests zijn groen.
 
 ## Taak 3: knop, pictogram, toetsenbordtoegang en zes talen bewijzen
 
 **Beschrijving:** Vul statische WPF-layout- en lokalisatietests aan voor de bestaande omwisselknop. De test controleert commandbinding, pictogram, tooltip en toegankelijke naam zonder de huidige schermindeling onnodig te wijzigen.
 
 **Acceptatiecriteria:**
-- [ ] De knop is aan `SwapTitleAndAuthorsCommand` gebonden en gebruikt het bestaande `SwapTitleAuthorIconGeometry`.
-- [ ] De knop blijft een echte WPF-`Button` en is daardoor met Tab, Enter en Spatie bedienbaar.
-- [ ] Tooltip en `AutomationProperties.Name` gebruiken dezelfde gelokaliseerde sleutel.
-- [ ] De lokalisatiesleutel bevat een niet-lege, geldige tekst in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
+- [x] De knop is aan `SwapTitleAndAuthorsCommand` gebonden en gebruikt het bestaande `SwapTitleAuthorIconGeometry`.
+- [x] De knop blijft een echte WPF-`Button` en is daardoor met Tab, Enter en Spatie bedienbaar.
+- [x] Tooltip en `AutomationProperties.Name` gebruiken dezelfde gelokaliseerde sleutel.
+- [x] De lokalisatiesleutel bevat een niet-lege, geldige tekst in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
 
-**Verificatie:** Eerst falende en daarna groene `BookDetailsViewLayoutTests` en lokalisatietests.
+**Verificatie:** De nieuwe karakterisatietests waren direct groen omdat de bestaande XAML en resources al aan de specificatie voldeden. De layout- en lokalisatietests beschermen dit voortaan expliciet.
 
 **Afhankelijkheden:** Geen; uitvoering volgt na het eerste checkpoint om commits klein te houden.
 
@@ -99,10 +99,10 @@ Bestaand detailgedrag inventariseren
 **Beschrijving:** Werk de actuele projectstatus bij, leg de bestaande detailactie vast en maak een compacte handmatige checklist voor herkenbaarheid, staged gedrag, opslaan, ongedaan maken en bibliotheekverversing.
 
 **Acceptatiecriteria:**
-- [ ] README vermeldt Milestone 41 als geaccepteerd en verwijst naar de actuele Milestone 42-checklist.
-- [ ] De kwaliteitsdocumentatie noemt de geverifieerde detailactie zonder de heuristiek als nauwkeuriger voor te stellen.
-- [ ] De checklist behandelt muis, toetsenbord, meerdere auteurs, puntkomma in titel, opslaan, ongedaan maken, filters en herstart.
-- [ ] Alle gewijzigde Markdown is met gelijke hashes naar Obsidian gespiegeld.
+- [x] README vermeldt Milestone 41 als geaccepteerd en verwijst naar de actuele Milestone 42-checklist.
+- [x] De kwaliteitsdocumentatie noemt de geverifieerde detailactie zonder de heuristiek als nauwkeuriger voor te stellen.
+- [x] De checklist behandelt muis, toetsenbord, meerdere auteurs, puntkomma in titel, opslaan, ongedaan maken, filters en herstart.
+- [x] Alle gewijzigde Markdown is met gelijke hashes naar Obsidian gespiegeld.
 
 **Verificatie:** `git diff --check`, linkcontrole door inspectie en hashvergelijking met de Obsidian-spiegel.
 
@@ -119,17 +119,17 @@ Bestaand detailgedrag inventariseren
 
 ## Checkpoint na taken 3-4
 
-- [ ] Alle gerichte tests zijn groen.
-- [ ] De interface volgt de bestaande vormgeving en toegankelijkheidspatronen.
-- [ ] De acceptatiechecklist en projectstatus zijn actueel en gespiegeld.
+- [x] Alle gerichte tests zijn groen.
+- [x] De interface volgt de bestaande vormgeving en toegankelijkheidspatronen.
+- [x] De acceptatiechecklist en projectstatus zijn actueel en gespiegeld.
 
 ## Taak 5: Definition of Done en oplevering
 
 **Beschrijving:** Voer de projectbrede kwaliteitsbar uit en lever een gewone, niet-draft PR op voor handmatige acceptatie.
 
 **Acceptatiecriteria:**
-- [ ] Volledige testset is groen zonder overgeslagen tests.
-- [ ] Schone Debug-build slaagt zonder waarschuwingen of fouten en alleen `Builds/Debug` bevat de actuele build.
+- [x] Volledige testset is groen zonder overgeslagen tests.
+- [x] Schone Debug-build slaagt zonder waarschuwingen of fouten en alleen `Builds/Debug` bevat de actuele build.
 - [ ] De complete diff is beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties.
 - [ ] De branch bevat uitsluitend Milestone 42 en de PR is geen draft.
 
@@ -160,6 +160,6 @@ Er zijn geen blokkerende open vragen. De goedgekeurde specificatie bepaalt dat d
 
 - [x] Specificatie en afbakening door gebruiker goedgekeurd.
 - [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
-- [ ] Implementatie testgestuurd en incrementeel afgerond.
+- [x] Implementatie testgestuurd en incrementeel afgerond.
 - [ ] Definition of Done afgerond.
 - [ ] Gewone, niet-draft PR geopend en handmatig geaccepteerd.

@@ -7,14 +7,14 @@
 - [x] Specificatie, aannames, grenzen en acceptatiecriteria vastgelegd.
 - [x] Specificatie door gebruiker goedgekeurd.
 - [x] Implementatieplan en volgorde door gebruiker bevestigd.
-- [ ] Opslag- en puntkommarandgeval eerst rood en daarna groen testen.
-- [ ] Bibliotheekregel, zoeken, selectie en auteursfilters eerst rood en daarna groen testen.
-- [ ] XAML-command, pictogram, toetsenbordtoegang en zes talen testgestuurd controleren.
-- [ ] Alleen door tests bewezen functionele of interfacegaten minimaal herstellen.
-- [ ] README, featurestatus en handmatige checklist bijwerken en naar Obsidian spiegelen.
-- [ ] Gerichte testcheckpoint uitvoeren en increments afzonderlijk committen.
-- [ ] Volledige testset met .NET 10 uitvoeren.
-- [ ] Schone Debug-build controleren en versie vastleggen.
+- [x] Opslag- en puntkommarandgeval met een karakterisatietest vastgelegd; de bestaande implementatie was direct groen.
+- [x] Bibliotheekregel, zoeken, selectie en auteursfilters met een integratietest vastgelegd; de bestaande implementatie was direct groen.
+- [x] XAML-command, pictogram, toetsenbordtoegang en zes talen met karakterisatietests gecontroleerd.
+- [x] Geen productcode aangepast omdat de tests geen functioneel of interfacegat aantonen.
+- [x] README, featurestatus en handmatige checklist bijgewerkt en met gelijke hashes naar Obsidian gespiegeld.
+- [x] Gerichte testcheckpoint uitgevoerd: 43 tests geslaagd, geen fouten of overgeslagen tests; increments afzonderlijk gecommit.
+- [x] Volledige testset met .NET 10 uitgevoerd: 797 tests geslaagd, geen fouten of overgeslagen tests.
+- [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.23`.
 - [ ] Branchdiff zelf beoordelen op correctheid, eenvoud, architectuur, beveiliging en prestaties.
 - [ ] Gewone, niet-draft PR openen en GitHub-controles beoordelen.
 - [ ] Handmatige acceptatiechecklist laten uitvoeren.
