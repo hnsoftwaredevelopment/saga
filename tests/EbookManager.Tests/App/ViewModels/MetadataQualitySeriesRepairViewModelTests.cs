@@ -9,9 +9,9 @@ public sealed class MetadataQualitySeriesRepairViewModelTests
     public void Constructor_normalizes_known_series_and_shows_the_existing_number()
     {
         var viewModel = new MetadataQualitySeriesRepairViewModel(
-            "Boektitel",
-            2.5m,
-            ["  Dune ", "", "dune", "Foundation"]);
+            [("Boektitel", 2.5m)],
+            ["  Dune ", "", "dune", "Foundation"],
+            Localize);
 
         viewModel.BookTitle.Should().Be("Boektitel");
         viewModel.SeriesNumber.Should().Be(2.5m);
@@ -59,7 +59,7 @@ public sealed class MetadataQualitySeriesRepairViewModelTests
     [InlineData("   ")]
     public void Empty_series_cannot_be_saved(string series)
     {
-        var viewModel = new MetadataQualitySeriesRepairViewModel("Boek", 1, []);
+        var viewModel = CreateViewModel();
 
         viewModel.SeriesText = series;
 
@@ -70,7 +70,7 @@ public sealed class MetadataQualitySeriesRepairViewModelTests
     [Fact]
     public void New_series_is_trimmed_and_can_be_saved()
     {
-        var viewModel = new MetadataQualitySeriesRepairViewModel("Boek", 1, []);
+        var viewModel = CreateViewModel();
 
         viewModel.SeriesText = "  Nieuwe serie  ";
 
@@ -82,9 +82,9 @@ public sealed class MetadataQualitySeriesRepairViewModelTests
     public void Suggestions_prioritize_prefix_matches_before_partial_matches()
     {
         var viewModel = new MetadataQualitySeriesRepairViewModel(
-            "Boek",
-            1,
-            ["The Expanse", "Expanse Legacy", "The Expense", "Dune"]);
+            [("Boek", 1m)],
+            ["The Expanse", "Expanse Legacy", "The Expense", "Dune"],
+            Localize);
 
         viewModel.SeriesText = "exp";
 
@@ -94,13 +94,17 @@ public sealed class MetadataQualitySeriesRepairViewModelTests
     [Fact]
     public void UseSuggestion_preserves_the_known_spelling()
     {
-        var viewModel = new MetadataQualitySeriesRepairViewModel("Boek", 1, ["Discworld"]);
+        var viewModel = CreateViewModel(["Discworld"]);
         viewModel.SeriesText = "disc";
 
         viewModel.UseSuggestion(viewModel.Suggestions.Single());
 
         viewModel.SeriesText.Should().Be("Discworld");
     }
+
+    private static MetadataQualitySeriesRepairViewModel CreateViewModel(
+        IEnumerable<string?>? knownSeries = null) =>
+        new([("Boek", 1m)], knownSeries ?? [], Localize);
 
     private static string Localize(string key) => key switch
     {

@@ -16,14 +16,6 @@ public sealed partial class MetadataQualitySeriesRepairViewModel : ObservableObj
     private IReadOnlyList<string> suggestions;
 
     public MetadataQualitySeriesRepairViewModel(
-        string bookTitle,
-        decimal seriesNumber,
-        IEnumerable<string?> knownSeries)
-        : this([(bookTitle, seriesNumber)], knownSeries, key => key)
-    {
-    }
-
-    public MetadataQualitySeriesRepairViewModel(
         IReadOnlyCollection<(string BookTitle, decimal SeriesNumber)> books,
         IEnumerable<string?> knownSeries,
         Func<string, string> localize)
