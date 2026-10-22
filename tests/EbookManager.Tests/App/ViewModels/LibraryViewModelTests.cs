@@ -858,6 +858,41 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_bulk_title_author_swap_refreshes_only_checked_books_and_filters()
+    {
+        var first = CreateBook("Jan Jansen", ["De verdwenen stad"], language: "nl", coverBytes: [1]);
+        var second = CreateBook("Piet Peters", ["Het verloren boek"], language: "nl", coverBytes: [1]);
+        var uncheckedBook = CreateBook("Mark Visser", ["Een mooie dag"], language: "nl", coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityTitleAuthorRepairResult = true,
+            OnShowTitleAuthorRepair = repair =>
+            {
+                foreach (var row in repair.Previews.Where(row => row.BookId != uncheckedBook.Id))
+                {
+                    row.IsSelected = true;
+                }
+            }
+        };
+        var viewModel = CreateViewModel([first, second, uncheckedBook], interaction, currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+
+        viewModel.VisibleBooks.Single(row => row.Id == first.Id).Title.Should().Be("De verdwenen stad");
+        viewModel.VisibleBooks.Single(row => row.Id == second.Id).Authors.Should().Be("Piet Peters");
+        viewModel.VisibleBooks.Single(row => row.Id == uncheckedBook.Id).Title.Should().Be("Mark Visser");
+        viewModel.AuthorFilters.Should().Contain(filter => filter.Name == "Jan Jansen" && filter.Count == 1);
+        viewModel.AuthorFilters.Should().Contain(filter => filter.Name == "Piet Peters" && filter.Count == 1);
+        viewModel.AuthorFilters.Should().Contain(filter => filter.Name == "Een mooie dag" && filter.Count == 1);
+        dashboard.SelectedIssue.Rows.Should().ContainSingle(row => row.Id == uncheckedBook.Id);
+    }
+
+    [Fact]
     public async Task Show_metadata_quality_exclusions_is_disabled_without_active_library()
     {
         var interaction = new ScriptedUserInteractionService();
@@ -4808,6 +4843,7 @@ public sealed class LibraryViewModelTests
         public bool MetadataQualitySeriesRepairResult { get; init; }
         public string? MetadataQualitySeriesRepairSeries { get; init; }
         public bool MetadataQualityTitleAuthorRepairResult { get; init; }
+        public Action<MetadataQualityTitleAuthorRepairViewModel>? OnShowTitleAuthorRepair { get; init; }
         public bool MetadataQualityTagRepairResult { get; init; }
         public IReadOnlyList<string> MetadataMultiEditCustomFieldNames { get; private set; } = [];
         public string? LastMessageTitle { get; private set; }
@@ -4969,6 +5005,7 @@ public sealed class LibraryViewModelTests
             CancellationToken cancellationToken)
         {
             MetadataQualityTitleAuthorRepair = repair;
+            OnShowTitleAuthorRepair?.Invoke(repair);
             return Task.FromResult(MetadataQualityTitleAuthorRepairResult);
         }
 
