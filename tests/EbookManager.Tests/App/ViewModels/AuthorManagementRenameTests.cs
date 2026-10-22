@@ -8,6 +8,43 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed partial class AuthorManagementViewModelTests
 {
     [Fact]
+    public async Task Rename_keeps_book_pagination_in_the_existing_title_order()
+    {
+        var repository = new Repository
+        {
+            AuthorBooks = Enumerable.Range(0, 205).Select(index => new AuthorBook(Guid.NewGuid(), $"Book {index:D3}", null)).ToArray()
+        };
+        var rename = new RenameService(repository) { ResultBooks = repository.AuthorBooks.Reverse().ToArray() };
+        using var vm = new AuthorManagementViewModel(repository, new Photos(), key => key, rename);
+        await vm.SelectAsync(new(repository.Profile.Id, "Author", 205));
+        var preview = (await vm.PreviewRenameAsync())!;
+        await vm.RenameAsync(preview, "Renamed");
+
+        await vm.LoadMoreBooksAsync();
+
+        vm.Books.Select(book => book.Id).Should().OnlyHaveUniqueItems();
+        vm.Books.Should().HaveCount(205);
+        vm.Books.Select(book => book.Title).Should().BeInAscendingOrder();
+    }
+
+    [Fact]
+    public async Task Selecting_an_author_clears_file_warnings_from_the_previous_rename()
+    {
+        var repository = new Repository();
+        var rename = new RenameService(repository) { WithWarning = true };
+        using var vm = new AuthorManagementViewModel(repository, new Photos(), key => key, rename);
+        await vm.SelectAsync(new(repository.Profile.Id, "Author", 1));
+        var preview = (await vm.PreviewRenameAsync())!;
+        await vm.RenameAsync(preview, "Renamed");
+        vm.RenameWarnings.Should().ContainSingle();
+
+        await vm.SelectAsync(new(repository.Profile.Id, "Renamed", 1));
+
+        vm.RenameWarnings.Should().BeEmpty();
+        vm.StatusMessage.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Rename_keeps_selected_profile_and_tracks_books_for_main_window_refresh()
     {
         var repository = new Repository();
@@ -63,6 +100,8 @@ public sealed partial class AuthorManagementViewModelTests
         public AuthorRenameStatus Status = AuthorRenameStatus.Renamed;
         public AuthorBook Book = new(Guid.NewGuid(), "Title", null);
         public Task? Gate;
+        public bool WithWarning;
+        public IReadOnlyList<AuthorBook>? ResultBooks;
         public Task<AuthorRenamePreview?> PreviewAsync(Guid id, CancellationToken token) =>
             Task.FromResult<AuthorRenamePreview?>(new(repository.Profile, [Book.Id]));
         public async Task<AuthorRenameCompletion> RenameAsync(AuthorRenamePreview preview, string name, CancellationToken token)
@@ -70,7 +109,7 @@ public sealed partial class AuthorManagementViewModelTests
             if (Gate is not null) await Gate;
             if (Status != AuthorRenameStatus.Renamed) return new(new(Status, null, []), []);
             repository.Profile = repository.Profile with { Name = name };
-            return new(new(Status, repository.Profile, [Book]), []);
+            return new(new(Status, repository.Profile, ResultBooks ?? [Book]), WithWarning ? [Book] : []);
         }
     }
 }

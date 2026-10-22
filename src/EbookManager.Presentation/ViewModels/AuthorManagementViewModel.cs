@@ -95,6 +95,7 @@ public sealed partial class AuthorManagementViewModel(
         Books = [];
         TotalBooks = 0;
         ApplyProfile(null);
+        RenameWarnings = [];
         SetStatus("", false);
         try
         {

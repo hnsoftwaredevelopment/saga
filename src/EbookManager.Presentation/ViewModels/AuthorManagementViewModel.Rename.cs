@@ -60,7 +60,7 @@ public sealed partial class AuthorManagementViewModel
             changedBookIds.UnionWith(result.Change.BookIds);
             original = result.Change.Profile;
             ApplyProfile(savedPhoto);
-            Books = result.Change.Books.Take(200).ToArray();
+            // Titles and series did not change: keep the loaded pages in their existing title order.
             TotalBooks = result.Change.Books.Count;
             OnPropertyChanged(nameof(HasMoreBooks));
             RenameWarnings = result.Warnings;
