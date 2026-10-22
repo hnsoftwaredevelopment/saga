@@ -26,4 +26,6 @@ Commando's: `dotnet test EbookManager.sln -c Debug --no-restore`, `dotnet build 
 
 ## Grenzen
 
-De onnauwkeurige heuristiek is een afzonderlijk vervolgonderwerp. Geen wijziging aan de detailactie, schema of dependencies. Altijd gegevensbehoud, tests en Markdown-spiegel controleren. Alleen de gebruiker mergt. Handmatige acceptatie gebeurt met de bijgewerkte checklist.
+De gebruiker heeft aanvullend opdracht gegeven de detectieverbetering in deze slice mee te nemen. Naamherkenning ondersteunt initialen, tussenvoegsels en achternaam/voornaam. Een naamachtige titel alleen is onvoldoende: ook het auteursveld moet positieve aanwijzingen bevatten voor een boektitel (herkend beginlidwoord, minstens drie woorden en minstens twee kleineletterwoorden buiten de naam-tussenvoegsels). Ambigue gevallen worden niet gemeld. De 32 correct ingevulde praktijkvoorbeelden mogen niet worden gemeld; `Duenas, Maria` / `De wereld vergeten` moet wel worden gemeld en herstelbaar blijven. De detectie verandert geen metadata of uitsluitingen. Geen bibliotheekbrede zoekactie of netwerkverkeer.
+
+De controle kiest bewust precisie boven volledigheid. De beperkingen staan in docs/feature-requests/title-author-swap-detection.md. Geen wijziging aan de detailactie, schema of dependencies. Altijd gegevensbehoud, tests en Markdown-spiegel controleren. Alleen de gebruiker mergt. De bulkactie is al handmatig geaccepteerd; de detectieverbetering vraagt nog een korte hercontrole.

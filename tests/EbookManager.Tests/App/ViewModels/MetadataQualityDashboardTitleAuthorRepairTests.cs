@@ -66,13 +66,14 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
     }
 
     [Fact]
-    public void Swap_is_disabled_when_the_only_author_is_not_usable()
+    public void Missing_author_is_not_also_presented_as_a_possible_swap()
     {
         var book = CreateBook("Jan Jansen", "Unknown");
         var dashboard = CreateDashboard(book, new RecordingRepairService(book));
         dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
             issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
 
+        dashboard.SelectedIssue.Rows.Should().BeEmpty();
         dashboard.RepairTitleAuthorCommand.CanExecute(null).Should().BeFalse();
     }
 

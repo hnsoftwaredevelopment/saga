@@ -161,7 +161,7 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Compare the original full title and author list with current storage before swapping; skip changed or unavailable books safely.
 - Reuse the existing persistence service and batch reconciliation, continue after individual failures and refresh the library and author filters together.
 - Keep unselected books unchanged and failed rows selected; show localized result counts in all six languages.
-- Keep the heuristic and detail-pane Save/Undo workflow unchanged.
+- Preserve detail-pane Save/Undo. At the user's request, also tighten swap detection within this slice: require independent title-like evidence in the author field and recognize initials, particles and surname-first notation. Preserve the confirmed Duenas swap while suppressing the 32 supplied correct examples; prefer fewer supported signals over ambiguous guesses.
 
 ## Follow-up ideas
 
@@ -169,8 +169,8 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Improve large-library scrolling and filtering in a separate performance slice with measurable checks on a representative library.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
-- Tune heuristics after testing on real-world Calibre libraries. The user's title/author false positives and proposed follow-up are recorded in [detection examples](title-author-swap-detection.md).
+- Continue tuning heuristics after real-world use. The conservative title/author rules, supplied regression examples and deliberate limitations are recorded in [detection examples](title-author-swap-detection.md).
 
 ## Status
 
-Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45 is manually tested and accepted: users select books in the quality list and confirm the title/author swap once. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic remains intentionally uncertain, and false positives can be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.
+Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45's bulk action is manually tested and accepted: users select books in the quality list and confirm the title/author swap once. The additional conservative title/author detection is automatically tested and awaits manual recheck. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic now requires stronger evidence and intentionally omits ambiguous cases; any remaining false positives can still be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.

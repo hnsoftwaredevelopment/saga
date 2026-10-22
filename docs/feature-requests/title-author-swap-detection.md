@@ -2,11 +2,11 @@
 
 ## Gebruikersbevinding
 
-De gebruiker heeft Milestone 45 volledig getest en geaccepteerd. De herstelactie werkt; de detectie levert volgens de gebruiker ruim 95% onterechte meldingen op. De voorbeelden hieronder zijn aangeleverd als correct ingevulde boeken, met één afzonderlijk te beoordelen geval.
+De gebruiker heeft de bulkherstelactie van Milestone 45 volledig getest en geaccepteerd. De oude detectie levert volgens de gebruiker ruim 95% onterechte meldingen op. De voorbeelden hieronder zijn aangeleverd als correct ingevulde boeken, met één bevestigde echte omwisseling. Op verzoek wordt de detectieverbetering alsnog in dezelfde slice meegenomen.
 
-## Oorzaak in de huidige code
+## Oorzaak in de oorspronkelijke code
 
-De huidige naamherkenning accepteert uitsluitend twee tot vier woorden, ieder met een hoofdletter en minstens één kleine letter. Daardoor vallen initialen, tussenvoegsels, eenwoordige pseudoniemen en langere namen buiten de herkenning. Titels met hoofdletters worden juist vaak als naam gezien.
+De oorspronkelijke naamherkenning accepteerde uitsluitend twee tot vier woorden, ieder met een hoofdletter en minstens één kleine letter. Daardoor vielen initialen, tussenvoegsels, eenwoordige pseudoniemen en langere namen buiten de herkenning. Titels met hoofdletters werden juist vaak als naam gezien.
 
 ## Praktijkgevallen voor regressietests
 
@@ -47,13 +47,13 @@ De huidige naamherkenning accepteert uitsluitend twee tot vier woorden, ieder me
 
 De gebruiker heeft bevestigd dat `Duenas, Maria` als titel en `De wereld vergeten` als auteur een juiste detectiemelding is. Gebruik dit als positieve regressietest: deze omwisseling moet ook na het aanscherpen van de controle in de lijst blijven staan.
 
-## Voorgestelde vervolgslice
+## Aangescherpte controle binnen Milestone 45
 
-- Herken initialen, tussenvoegsels, achternaam-voornaamnotatie en afwijkend hoofdlettergebruik beter.
-- Een titel die op een naam lijkt is op zichzelf onvoldoende aanwijzing.
-- Een eenwoordige auteur of bewerkersvermelding is niet automatisch fout; geef bij onvoldoende aanwijzingen liever geen melding.
-- Gebruik eventueel aanvullende bibliotheekcontext, maar behandel herhaling nooit als bewijs op zichzelf: fout geïmporteerde waarden kunnen ook herhaald zijn.
-- Bewaak de aangeleverde correcte voorbeelden én echte omwisselingen. Meer precisie kan minder gevonden omwisselingen betekenen.
-- De detailactie blijft beschikbaar voor handmatig gevonden gevallen.
+- Alleen één bruikbare auteur kan een omwisseling opleveren. Ontbrekende auteurs blijven onder hun eigen kwaliteitsmelding vallen.
+- Een naamachtige titel is niet voldoende. Het auteursveld moet zelfstandig op een boektitel wijzen: minstens drie woorden, beginnend met een herkend lidwoord uit de zes Saga-talen en minstens twee kleineletterwoorden die geen naam-tussenvoegsel zijn.
+- Naamherkenning ondersteunt initialen, tussenvoegsels, samengestelde namen, accenten, één komma voor achternaam/voornaam en maximaal acht woorden. Een auteursveld dat als naam wordt herkend is geen omwisselsignaal.
+- Eenwoordige auteurs, bewerkersvermeldingen en onvoldoende duidelijke gevallen worden niet meer op basis van alleen hoofdlettergebruik gemeld. De 32 aangeleverde correcte voorbeelden staan als negatieve regressietests vast; het bevestigde Duenas-geval en diverse naamvormen als positieve tests.
+- Deze controle is bewust voorzichtig, niet een woordenboek of bewijs dat metadata correct is. Korte boektitels, titels zonder herkend beginlidwoord en titels volledig in titelhoofdletters kunnen worden gemist. Niet alle naamvormen of talen worden herkend.
+- Geen netwerkverkeer, bibliotheekbrede zoekopdrachten of metadatawijzigingen bij het controleren. Bestaande uitsluitingen blijven geldig. De detailactie blijft beschikbaar voor handmatig gevonden gevallen.
 
-De detectie is in Milestone 45 niet aangepast. Dit document bewaart de voorbeelden en voorgestelde richting voor een afzonderlijke slice.
+Bibliotheekcontext en verdere taalherkenning zijn mogelijke vervolgstappen, maar herhaling is nooit zelfstandig bewijs: fout geïmporteerde waarden kunnen ook herhaald zijn. Handmatige hercontrole van de kleinere lijst staat nog open in de checklist.

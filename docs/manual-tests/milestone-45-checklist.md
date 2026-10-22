@@ -32,4 +32,14 @@ Deze foutpaden zijn automatisch getest; niet veilig reproduceerbare handmatige f
 ## Acceptatie
 
 - [x] Alle toepasselijke controles zijn geslaagd; afwijkingen zijn genoteerd.
-De gebruiker heeft bevestigd dat alle checklistcontroles zijn uitgevoerd en geslaagd; Milestone 45 is geaccepteerd.
+De gebruiker heeft bevestigd dat alle bovenstaande checklistcontroles zijn uitgevoerd en geslaagd; de bulkherstelactie is geaccepteerd.
+
+## Aanvulling: terughoudender omwisselherkenning
+
+Deze aanvullende wijziging is nog niet handmatig geaccepteerd. Gebruik de nieuwe build die bij de oplevering wordt vermeld.
+
+- [ ] Open opnieuw Quality / Mogelijk omgewisselde auteur/titel: de lijst is kleiner; onder meer Dossier Gifmoord / Ed van Eeden en Dokter Finley Assistent / A.J. Cronin worden niet meer onterecht gemeld.
+- [ ] Indien nog aanwezig en niet eerder als correct gemarkeerd: Duenas, Maria / De wereld vergeten blijft zichtbaar. Eerder herstelde of uitgesloten boeken hoeven niet terug te komen.
+- [ ] Controleer één echte omwisseling; na bevestigen verdwijnt deze melding en verschijnen de juiste waarden in de bibliotheek.
+- [ ] Selecteer meerdere echte omwisselingen: de korte bevestiging gebruikt nog steeds direct de lijstselectie, zonder extra vinkjes. Annuleren wijzigt niets.
+- [ ] Eerdere beslissingen Dit is correct blijven behouden. Handmatig omwisselen via de boekdetails blijft beschikbaar, ook voor boeken die niet in deze lijst staan.

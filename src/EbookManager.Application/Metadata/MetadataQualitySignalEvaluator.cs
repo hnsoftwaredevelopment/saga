@@ -5,6 +5,18 @@ namespace EbookManager.Application.Metadata;
 
 public static class MetadataQualitySignalEvaluator
 {
+    private static readonly HashSet<string> NameParticles = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "van", "von", "de", "den", "der", "del", "della", "di", "da", "dos", "du",
+        "le", "la", "ten", "ter", "te", "el", "al", "bin", "ibn"
+    };
+
+    private static readonly HashSet<string> TitleArticles = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "de", "het", "een", "the", "a", "an", "der", "die", "das", "ein", "eine",
+        "le", "la", "les", "un", "une", "el", "los", "las", "una", "uno", "il", "lo", "gli"
+    };
+
     public static IReadOnlySet<string> Evaluate(Book book)
     {
         ArgumentNullException.ThrowIfNull(book);
@@ -75,7 +87,10 @@ public static class MetadataQualitySignalEvaluator
 
         var title = book.Metadata.Title.Trim();
         var author = book.Metadata.Authors[0].Trim();
-        return LooksLikePersonName(title) && !LooksLikePersonName(author);
+        // Capitalized words alone are too weak: require independent title-like evidence
+        // in the author field. Ambiguous cases remain available through the detail action.
+        return MetadataQualityAuthorRules.IsUsable(author) &&
+            LooksLikePersonName(title) && !LooksLikePersonName(author) && LooksLikeBookTitle(author);
     }
 
     private static bool HasMessyTags(Book book)
@@ -90,8 +105,26 @@ public static class MetadataQualitySignalEvaluator
 
     private static bool LooksLikePersonName(string value)
     {
-        var parts = value.Split(' ', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length is >= 2 and <= 4 &&
-            parts.All(part => part.Length > 1 && char.IsUpper(part[0]) && part.Skip(1).Any(char.IsLower));
+        if (value.Count(character => character == ',') > 1)
+        {
+            return false;
+        }
+
+        var parts = SplitWords(value.Replace(',', ' '));
+        return parts.Length is >= 2 and <= 8 &&
+            parts.Count(part => !NameParticles.Contains(part)) >= 2 &&
+            parts.All(part => NameParticles.Contains(part) ||
+                (char.IsUpper(part[0]) && part.All(character =>
+                    char.IsLetter(character) || character is '.' or '-' or '\'' or '’')));
     }
+
+    private static bool LooksLikeBookTitle(string value)
+    {
+        var parts = SplitWords(value);
+        return parts.Length >= 3 && TitleArticles.Contains(parts[0]) &&
+            parts.Count(part => char.IsLower(part[0]) && !NameParticles.Contains(part)) >= 2;
+    }
+
+    private static string[] SplitWords(string value) =>
+        value.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
 }

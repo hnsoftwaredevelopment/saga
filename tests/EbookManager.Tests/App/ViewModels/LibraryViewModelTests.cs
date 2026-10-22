@@ -509,7 +509,7 @@ public sealed class LibraryViewModelTests
         var unknownLanguage = CreateBook("Dwaalspoor", ["Author"], language: "fictional", coverBytes: [1]);
         var missingCover = CreateBook("Zonder omslag", ["Author"], language: "en");
         var seriesNumberOnly = CreateBook("Serienummer", ["Author"], language: "en", seriesNumber: 2, coverBytes: [1]);
-        var swapped = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl", coverBytes: [1]);
+        var swapped = CreateBook("Duenas, Maria", ["De wereld vergeten"], language: "nl", coverBytes: [1]);
         var messyTags = CreateBook("Tags", ["Author"], language: "en", tags: ["thriller, crime"], coverBytes: [1]);
 
         var dashboard = new MetadataQualityDashboardViewModel(
@@ -527,7 +527,7 @@ public sealed class LibraryViewModelTests
     [Fact]
     public async Task Show_metadata_quality_dashboard_opens_dashboard_for_current_library()
     {
-        var book = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl");
+        var book = CreateBook("Duenas, Maria", ["De wereld vergeten"], language: "nl");
         var interaction = new ScriptedUserInteractionService();
         var viewModel = CreateViewModel([book], interaction, currentLibrary: CreateActiveLibrary());
 
@@ -540,7 +540,7 @@ public sealed class LibraryViewModelTests
             .Single(issue => issue.Title == "MetadataQualityPossibleTitleAuthorSwap")
             .Rows
             .Should()
-            .ContainSingle(row => row.Title == "Karin Slaughter");
+            .ContainSingle(row => row.Title == "Duenas, Maria");
     }
 
     [Fact]
