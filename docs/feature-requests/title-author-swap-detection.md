@@ -45,7 +45,7 @@ De huidige naamherkenning accepteert uitsluitend twee tot vier woorden, ieder me
 | Een Vermoeden Van Vrijheid | Henk de Velde |
 | Een Wraakzuchtig Verleden | Constance M. Burge |
 
-`Duenas, Maria` als titel en `De wereld vergeten` als auteur is apart te beoordelen: deze regel lijkt juist een mogelijke omwisseling. Dit is een gevolgtrekking uit de velden, geen extern geverifieerd oordeel. Gebruik dit voorbeeld niet blind als negatieve test.
+De gebruiker heeft bevestigd dat `Duenas, Maria` als titel en `De wereld vergeten` als auteur een juiste detectiemelding is. Gebruik dit als positieve regressietest: deze omwisseling moet ook na het aanscherpen van de controle in de lijst blijven staan.
 
 ## Voorgestelde vervolgslice
 
