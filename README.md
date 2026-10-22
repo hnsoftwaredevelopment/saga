@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 46 is manually tested and accepted: all six quality repair routes now provide expandable, localized per-book error and warning details, including duplicate-book conflicts, while preserving the short success feedback. The user confirms clear error explanations and no noticeable slowdown. Milestone 45 is manually accepted and merged, including bulk title/author swap and more conservative swap detection. Milestone 44's per-book bulk tag cleanup is also accepted and merged.
+Milestone 47's final quality reliability improvements are manually checked and accepted, with the unreproduced conflict scenario covered by automated tests: safe restoration errors, stable selection while saving and removal of old repair feedback after This is correct. Milestone 46 is manually accepted and merged: all six quality repair routes provide localized per-book error details without a noticeable slowdown reported by the user. Milestone 45's bulk title/author swap and conservative detection, and Milestone 44's per-book tag cleanup, are also accepted and merged.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -81,7 +81,7 @@ Milestone 46 is manually tested and accepted: all six quality repair routes now 
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 46 checklist](docs/manual-tests/milestone-46-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 47 checklist](docs/manual-tests/milestone-47-checklist.md).
 
 ## Prerequisites
 
@@ -205,6 +205,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-44-checklist.md](docs/manual-tests/milestone-44-checklist.md)
 - [docs/manual-tests/milestone-45-checklist.md](docs/manual-tests/milestone-45-checklist.md)
 - [docs/manual-tests/milestone-46-checklist.md](docs/manual-tests/milestone-46-checklist.md)
+- [docs/manual-tests/milestone-47-checklist.md](docs/manual-tests/milestone-47-checklist.md)
 
 ## Later-Version Candidates
 

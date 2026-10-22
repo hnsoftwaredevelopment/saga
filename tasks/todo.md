@@ -1,4 +1,16 @@
-# Milestone 46: resultaatdetails bij kwaliteitsherstel
+# Milestone 47: betrouwbaarheid Quality afronden
+
+- [x] Gebruiker geeft opdracht voor de drie reviewbevindingen; branch vanaf actuele main ff97e5a gemaakt.
+- [x] Afgesproken scope en aanpak vastgelegd; eerst falende tests voor foutstatus, oude details, UI-binding en vertalingen.
+- [x] Gedeelde veilige terugzetverwerking, selectiesnapshot, retry, annulering en blokkering van tweede opdracht getest.
+- [x] Dit is correct ruimt oude hersteldetails op, ook als markeren zelf mislukt.
+- [x] Foutmelding en beschikbaarheid in venster aangesloten, tekst in zes talen en layout-/lokalisatietests toegevoegd.
+- [x] Volledige suite: 888 tests geslaagd, 0 mislukt of overgeslagen. Debug-build 2026.10.22.65 op 22 oktober 2026 om 14:34 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen review uitgevoerd; efficiënt alles terugzetten met een extra eerst falende regressietest bewaakt.
+- [x] Gewijzigde Markdown exact naar Obsidian gespiegeld en hashes gecontroleerd; gewone niet-draft PR #48 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/48.
+- [x] CodeQL, GitGuardian en CodeRabbit-status groen op cbc51a9; PR mergeable. Bij controle nog geen CodeRabbit-reviewbericht of inline bevindingen aanwezig; eigen review is uitgevoerd.
+- [x] Overige handmatige controles door gebruiker goedgekeurd; herstelconflict niet reproduceerbaar, bewust niet handmatig afgevinkt en automatisch afgedekt.
+
+## Afgerond: Milestone 46 resultaatdetails bij kwaliteitsherstel
 
 - [x] Gebruiker keurt richting goed voor alle kwaliteitsherstelpagina's; alleen voorbereiding gevraagd tijdens review huidige PR.
 - [x] Zes routes, huidige resultaatmodellen, BookService.Conflict en verlies van redenen in dashboard geïnventariseerd.

@@ -25,7 +25,7 @@ public partial class MetadataQualityExclusionsWindow : Window
 
     private async void RestoreAllClicked(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not MetadataQualityExclusionsViewModel viewModel || !viewModel.HasRows)
+        if (DataContext is not MetadataQualityExclusionsViewModel viewModel || !viewModel.CanRestoreAll)
         {
             return;
         }

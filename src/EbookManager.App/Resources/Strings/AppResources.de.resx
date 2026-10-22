@@ -732,5 +732,6 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>In der Bibliothek gespeichert, aber nicht alle Buchdateien konnten aktualisiert werden.</value></data>
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Die Korrektur konnte nicht abgeschlossen werden. Prüfen Sie die aktuellen Buchdaten, bevor Sie es erneut versuchen.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>Das Cover konnte nicht heruntergeladen oder verarbeitet werden. Versuchen Sie es erneut oder wählen Sie ein anderes Cover.</value></data>
+  <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>Die ignorierten Meldungen konnten nicht wiederhergestellt werden. Versuchen Sie es erneut. Prüfen Sie bei anhaltenden Problemen, ob die Bibliothek verfügbar ist.</value></data>
 </root>
 

@@ -732,5 +732,6 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>Enregistré dans la bibliothèque, mais certains fichiers du livre n’ont pas pu être mis à jour.</value></data>
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>La correction n’a pas pu être terminée. Vérifiez les données actuelles du livre avant de réessayer.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>La couverture n’a pas pu être téléchargée ou traitée. Réessayez ou choisissez une autre couverture.</value></data>
+  <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>Les signalements ignorés n’ont pas pu être rétablis. Réessayez. Si le problème persiste, vérifiez que la bibliothèque est accessible.</value></data>
 </root>
 

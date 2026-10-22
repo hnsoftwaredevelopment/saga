@@ -173,6 +173,14 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Unexpected per-book reads in author/series repair no longer discard other results or prevent the remaining books from being processed.
 - English, Dutch, German, French, Spanish and Italian translations and automated regression tests are included. The user completed and accepted the manual tests, confirming clear explanations and no noticeable slowdown.
 
+## Milestone 47: Final quality reliability improvements
+
+- Restoring selected or all ignored issues handles storage failures with a localized message and preserves the visible rows and selection until saving succeeds.
+- Restoration uses the original selected-row snapshot; changing selection while awaiting storage does not remove the newly selected rows. Both restore actions are guarded while one is running.
+- Restore all retains the efficient single-reset list update. Cancellation releases the busy state without being reported as a storage failure; retry clears the previous error.
+- Confirmed This is correct actions clear prior repair details, including when marking itself fails. Cancelling a bulk confirmation remains unchanged.
+- No new quality signal, repair route, schema or dependency. Automated regression tests and a short manual checklist cover the closing round. The user reports that the other manual checks work well; the repair-conflict scenario could not be reproduced manually and remains explicitly recorded as automatically covered.
+
 ## Follow-up ideas
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.

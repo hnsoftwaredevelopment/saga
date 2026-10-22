@@ -25,31 +25,33 @@
     </StackPanel>
 
     <StackPanel DockPanel.Dock="Bottom"
-                Orientation="Horizontal"
-                HorizontalAlignment="Right"
                 Margin="0,12,0,0">
-      <Button x:Name="RestoreSelectedQualityExclusionsButton"
-              Content="{loc:Loc RestoreSelectedQualityExclusions}"
-              Command="{Binding RestoreSelectedCommand}"
-              MinWidth="150"
-              Margin="0,0,8,0"
-              Focusable="True"
-              AutomationProperties.Name="{loc:Loc RestoreSelectedQualityExclusions}" />
-      <Button x:Name="RestoreAllQualityExclusionsButton"
-              Content="{loc:Loc RestoreAllQualityExclusions}"
-              IsEnabled="{Binding HasRows}"
-              MinWidth="130"
-              Margin="0,0,8,0"
-              Focusable="True"
-              Click="RestoreAllClicked"
-              AutomationProperties.Name="{loc:Loc RestoreAllQualityExclusions}" />
-      <Button x:Name="CloseQualityExclusionsButton"
-              Content="{loc:Loc Close}"
-              MinWidth="90"
-              IsCancel="True"
-              Focusable="True"
-              Click="CloseClicked"
-              AutomationProperties.Name="{loc:Loc Close}" />
+      <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap"
+                 Foreground="{DynamicResource DangerBrush}" Margin="0,0,0,8" />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button x:Name="RestoreSelectedQualityExclusionsButton"
+                Content="{loc:Loc RestoreSelectedQualityExclusions}"
+                Command="{Binding RestoreSelectedCommand}"
+                MinWidth="150"
+                Margin="0,0,8,0"
+                Focusable="True"
+                AutomationProperties.Name="{loc:Loc RestoreSelectedQualityExclusions}" />
+        <Button x:Name="RestoreAllQualityExclusionsButton"
+                Content="{loc:Loc RestoreAllQualityExclusions}"
+                IsEnabled="{Binding CanRestoreAll}"
+                MinWidth="130"
+                Margin="0,0,8,0"
+                Focusable="True"
+                Click="RestoreAllClicked"
+                AutomationProperties.Name="{loc:Loc RestoreAllQualityExclusions}" />
+        <Button x:Name="CloseQualityExclusionsButton"
+                Content="{loc:Loc Close}"
+                MinWidth="90"
+                IsCancel="True"
+                Focusable="True"
+                Click="CloseClicked"
+                AutomationProperties.Name="{loc:Loc Close}" />
+      </StackPanel>
     </StackPanel>
 
     <Grid>
