@@ -2,7 +2,7 @@
 
 ## Status
 
-First slice implemented for Milestone 48; user acceptance pending. See [the design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md) and [manual checklist](../manual-tests/milestone-48-checklist.md).
+Milestone 48 profiles and explicit author renaming are implemented and user-tested in PR #49. The supplied author icon is accepted. Only the final small-window layout follow-up remains. See [the profile design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md), [rename design](../superpowers/specs/2026-10-22-saga-author-rename-design.md) and [current checklist](../manual-tests/author-rename-checklist.md).
 
 ## Context
 
@@ -13,11 +13,12 @@ Saga stores authors and book-author links as library database entities. Mileston
 - Add an author profile screen.
 - First slice: show the existing name and store an optional photo, website URL and short biography.
 - First slice: searchable authors and their books in the active library; library-local, portable photos and explicit save/cancel behavior.
-- Later: editable names, birth date and optional death date.
+- Implemented: explicitly rename the same author and all linked books, preserving the profile. Block an existing destination name without merging. Book details retain per-book author assignment.
+- Later: birth date and optional death date.
 - Later: support author aliases, pseudonyms, and alternate spellings.
 - Show all books by the author in the active library.
 - Later: include books stored under linked aliases when showing an author's books.
-- Later: help users clean up metadata by linking, renaming, or merging author variants.
+- Later: consider linking author variants as a separately specified feature. Implicit author merging is explicitly excluded.
 
 ## Initial Ideas
 
@@ -36,4 +37,4 @@ Saga stores authors and book-author links as library database entities. Mileston
 
 ## Candidate Milestone
 
-Milestone 48 follows the accepted Quality reliability slice. Scope and storage choices were confirmed before implementation. Online lookup, aliases and author normalization remain future work.
+Milestone 48 follows the accepted Quality reliability slice. Scope, storage and transactional rename choices were confirmed before implementation. Online lookup, aliases and broader author normalization remain future work.

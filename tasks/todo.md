@@ -1,4 +1,19 @@
-# Milestone 48: auteursbeheer voorbereiden
+# Vervolg auteursbeheer: hernoemen
+
+- [x] Gebruiker bevestigt: hernoemen werkt voor de bestaande auteur en alle gekoppelde boeken; boekdetails blijven alleen de auteur van dat boek wijzigen.
+- [x] Gebruiker kiest expliciet geen samenvoegen bij een bestaande doelnaam; dan verwijzen naar aanpassen via boekdetails. Twee personen met dezelfde naam onderscheiden valt buiten scope.
+- [x] Technische inventarisatie en voorstel vastgelegd; oorspronkelijke gebruikersvinkjes behouden.
+- [x] Technische aanpak met transactionele databasewijziging en afzonderlijke bestandssynchronisatie bevestigd.
+- [x] PR #49 is open; bestaande branch vanaf main 1de190f uitgebreid zonder merge te veronderstellen.
+- [x] Identiteitsbehoudend hernoemen, unieke naam en duplicaatsleutels testgestuurd gebouwd.
+- [x] Bestandsverwerking met veilige resultaatstatus en commit-/annuleringsgrenzen aangesloten.
+- [x] Hernoemactie, bevestiging, selectie, hoofdschermactualisatie en zes talen gebouwd/getest; eigen SVG van gebruiker verwerkt.
+- [x] Definitief: 933 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.22.109, 22 oktober 2026 om 18:09 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; regressies voor oude waarschuwingen en paginering bij 205 boeken afgedekt. Werkbalkicoon en kleine-vensterindeling uit CodeRabbit-review verwerkt.
+- [x] Gebruiker bevestigt: hernoemen werkt goed en het icoon ziet er goed uit.
+- [x] README, featurestatus, ontwerp en beide checklists bijgewerkt; gebruikersvinkjes behouden. Alle gewijzigde Markdown exact naar Obsidian gespiegeld en SHA256-hashes gelijk.
+- [ ] Laatste indelingswijziging gericht handmatig controleren: venster verkleinen, profiel scrollen en onderknoppen bereikbaar houden. Zie docs/manual-tests/author-rename-checklist.md.
+
+## Historie: Milestone 48 auteursbeheer voorbereiden
 
 - [x] Gebruiker kiest auteursbeheer met foto en optionele website; voorbereiding akkoord.
 - [x] Bestaande Authors/BookAuthors, profielwens, foto-opslag en beide orphan-opruimroutes onderzocht.
@@ -10,7 +25,7 @@
 - [x] Doorzoekbaar auteursvenster, gepagineerde boekenlijst, websiteactie en zes talen gebouwd; WPF-render en echte beeldverwerking gecontroleerd met fictieve gegevens.
 - [x] Volledige testset: 911 geslaagd, 0 mislukt of overgeslagen; Debug-build 2026.10.22.88, 22 oktober 2026 om 15:38 (Europe/Amsterdam), 0 waarschuwingen/fouten, precies één Saga.exe onder Builds/Debug. Eigen vijfassige review, README en checklist afgerond; Markdown exact naar Obsidian gespiegeld en hashes gecontroleerd.
 - [x] Gewone niet-draft PR #49 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/49. Mergeable; GitGuardian groen bij openingscontrole. Overige review-/CI-status wordt afzonderlijk beoordeeld zodra beschikbaar.
-- [ ] Handmatige gebruikersacceptatie volgens docs/manual-tests/milestone-48-checklist.md.
+- [x] Handmatige gebruikersacceptatie volgens docs/manual-tests/milestone-48-checklist.md; gebruikersvinkjes behouden.
 
 ## Historie: Milestone 47 betrouwbaarheid Quality afronden
 
