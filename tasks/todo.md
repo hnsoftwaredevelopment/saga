@@ -1,17 +1,17 @@
-# Milestone 46: voorbereiding resultaatdetails bij kwaliteitsherstel
+# Milestone 46: resultaatdetails bij kwaliteitsherstel
 
 - [x] Gebruiker keurt richting goed voor alle kwaliteitsherstelpagina's; alleen voorbereiding gevraagd tijdens review huidige PR.
 - [x] Zes routes, huidige resultaatmodellen, BookService.Conflict en verlies van redenen in dashboard geïnventariseerd.
 - [x] Conceptspec, plan en handmatige checklist vastgelegd; geen productcode, build of huidige PR gewijzigd.
 - [x] Concrete specificatie en aanpak door gebruiker bevestigd.
 - [x] PR #46 door gebruiker gemerged; actuele origin/main opgehaald en nieuwe codex/-branch vanaf 6bee6f0 gemaakt. Lokale voorbereidingsbestanden behouden.
-- [ ] Titel/auteurconflict eerst met falende test bewijzen; minimale getypeerde reden doorgeven zonder duplicaatbescherming te wijzigen.
-- [ ] Gedeelde feedbackopbouw en begrensde toegankelijke details toevoegen; succesroute en batchreconciliatie behouden.
-- [ ] Auteur en taal aansluiten met gerichte tests voor één/bulk en foutreden.
-- [ ] Serie en tags aansluiten met gerichte tests voor stale data, overslaan en bestandswaarschuwingen.
-- [ ] Omslagdownload en -herstel op dezelfde feedback aansluiten; geen nieuwe bulk- of zoekfunctie.
-- [ ] Begrijpelijke vertalingen en placeholdertests voor alle zes talen afronden.
-- [ ] Volledige suite, Debug-build met 0 waarschuwingen/fouten, precies één Saga.exe, versie/tijd vastleggen en eigen review.
+- [x] Titel/auteurconflict eerst met falende test bewezen; minimale getypeerde reden doorgegeven zonder duplicaatbescherming te wijzigen.
+- [x] Gedeelde feedbackopbouw en begrensde, gevirtualiseerde details toegevoegd; succesroute en batchreconciliatie behouden.
+- [x] Auteur en taal aangesloten met gerichte tests voor één/bulk en foutreden.
+- [x] Serie en tags aangesloten met gerichte tests voor stale data, overslaan en bestandswaarschuwingen.
+- [x] Omslagdownload en -herstel op dezelfde feedback aangesloten; geen nieuwe bulk- of zoekfunctie.
+- [x] Begrijpelijke vertalingen en resourcecontroles voor alle zes talen afgerond.
+- [x] Volledige suite: 882 tests geslaagd, geen fouten of overgeslagen tests. Debug-build met 0 waarschuwingen/fouten; precies één Saga.exe onder Builds/Debug, versie 2026.10.22.56, 22 oktober 2026 om 13:25 (Europe/Amsterdam). Eigen vijfassige review uitgevoerd; geen open bevindingen. Randgevallen zijn testgestuurd gecorrigeerd.
 - [ ] Documentatie en Obsidian exact spiegelen; normale PR en beschikbare controles beoordelen.
 - [ ] Handmatige controle met actuele build door gebruiker; niet reproduceerbare foutpaden apart verantwoorden.
 

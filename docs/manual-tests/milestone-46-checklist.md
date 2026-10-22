@@ -1,6 +1,6 @@
 # Milestone 46: resultaatdetails bij kwaliteitsherstel
 
-Voorbereide checklist; nog geen implementatie, testbuild of uitgevoerde tests voor deze slice.
+Testbuild: `Builds\Debug\Saga.exe`, versie `2026.10.22.56`, gebouwd op 22 oktober 2026 om 13:25 (Europe/Amsterdam). De implementatie is gereed voor handmatige controle; onderstaande controles zijn nog niet door de gebruiker uitgevoerd. Automatisch: 882 tests geslaagd, 0 mislukt of overgeslagen; Debug-build met 0 waarschuwingen en fouten.
 
 ## Voorbereiding
 

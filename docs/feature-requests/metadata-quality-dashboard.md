@@ -163,6 +163,16 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Keep unselected books unchanged and failed rows selected; show localized result counts in all six languages.
 - Preserve detail-pane Save/Undo. At the user's request, also tighten swap detection within this slice: require independent title-like evidence in the author field and recognize initials, particles and surname-first notation. Preserve the confirmed Duenas swap while suppressing the 32 supplied correct examples; prefer fewer supported signals over ambiguous guesses.
 
+## Milestone 46: Result details for every quality repair
+
+- Author, language, series, title/author swap, tags and cover repair share per-book feedback for errors, warnings and skipped books.
+- A bounded, expandable and virtualized detail list shows the original book title/author and a localized reason. No second confirmation or repair selection is added.
+- Structured duplicate-book reasons survive the application and presentation layers; raw exception text is never used as UI explanation.
+- Successfully saved library changes with file-write warnings are distinguished from incomplete repairs. Full success retains the existing quiet/short green result.
+- Subsequent confirmed actions replace old feedback; changing category clears it, and a late completion from an old category cannot show its errors in the new category.
+- Unexpected per-book reads in author/series repair no longer discard other results or prevent the remaining books from being processed.
+- English, Dutch, German, French, Spanish and Italian translations and automated regression tests are included. Manual acceptance remains pending.
+
 ## Follow-up ideas
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
@@ -173,4 +183,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45's bulk action is manually tested and accepted: users select books in the quality list and confirm the title/author swap once. The additional conservative title/author detection is automatically tested and manually accepted. Duplicate-book conflicts correctly block a swap; showing the underlying failure reason rather than only a failure count is recorded as a follow-up. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic now requires stronger evidence and intentionally omits ambiguous cases; any remaining false positives can still be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.
+Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45's bulk action is manually tested and accepted: users select books in the quality list and confirm the title/author swap once. The additional conservative title/author detection is automatically tested and manually accepted. Duplicate-book conflicts correctly block a swap; showing the underlying failure reason is implemented in Milestone 46 for all six repair routes and awaits manual acceptance. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic now requires stronger evidence and intentionally omits ambiguous cases; any remaining false positives can still be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.

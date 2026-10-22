@@ -23,7 +23,7 @@ Checkpoint na 4–6: alle zes routes gedragen zich herkenbaar; oude feedback wor
 
 Stap 1 gaat vóór feedback en UI; stappen 4–6 hergebruiken dezelfde feedback; stap 8 volgt op alles. Geen agentdelegatie of parallelle wijzigingen nodig. Beschikbare redenen en veilige onbekend-fallback eerst testen, zodat er geen schijnzekerheid uit exceptionteksten ontstaat. Ondersteun SavedWithWriteBackErrors expliciet: opgeslagen metadata mag niet als geheel mislukt worden beschreven. Behoud huidige snapshotcontrole en batchreconciliatie.
 
-Commando's en project-DoD staan in de specificatie en docs/definition-of-done.md. Voorbereiding verandert alleen documentatie; tests en build zijn pas zinvol na implementatie. Er worden nu geen nieuwe testresultaten of builds geclaimd.
+Commando's en project-DoD staan in de specificatie en docs/definition-of-done.md. De implementatie is in geteste increments uitgevoerd. Resultaatverwerking staat in een gerichte partial Results naast het bestaande dashboard, zodat alle routes dezelfde redenopbouw en reconciliatie gebruiken. Tijdens de eigen review zijn late categoriewissels en onverwachte leesfouten bij auteur/serie met eerst falende regressietests afgevangen; de detailijst is gevirtualiseerd. Definitieve test-/buildgegevens staan in tasks/todo.md en de handmatige checklist.
 
 ## Historie: Milestone 45 implementatieplan, bulk titel/auteur omwisselen
 

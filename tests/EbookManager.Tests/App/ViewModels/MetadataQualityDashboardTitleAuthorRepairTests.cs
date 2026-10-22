@@ -287,6 +287,10 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
 
         service.Calls.Should().HaveCount(5);
         dashboard.StatusMessage.Should().Be("1:1:1:1:1");
+        dashboard.RepairDetails.Should().HaveCount(4);
+        dashboard.RepairDetails.Select(detail => detail.Reason).Should().BeEquivalentTo(
+            ["MetadataQualityRepairReasonFailed", "MetadataQualityRepairReasonFileWarning",
+             "MetadataQualityRepairReasonChanged", "MetadataQualityRepairReasonUnavailable"]);
         dashboard.IsStatusMessageSuccess.Should().BeFalse();
         notifications.Should().ContainSingle().Which.Should().HaveCount(3);
         dashboard.SelectedIssue.Rows.Select(row => row.Id).Should().BeEquivalentTo([failed.Id, changed.Id]);

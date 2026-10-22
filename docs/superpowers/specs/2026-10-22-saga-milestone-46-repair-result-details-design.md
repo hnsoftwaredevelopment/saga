@@ -61,3 +61,11 @@ WPF-layouttests bewaken bindingen, begrensde details, toegankelijke bediening en
 - Nooit: duplicaatbescherming omzeilen, fouttekst als instructie behandelen, technische exceptions ongefilterd tonen, herstel opnieuw uitvoeren bij openen van details, bestaande fouten als geslaagd presenteren of de PR zelf mergen.
 
 Pas gereed na de project-DoD: gerichte en volledige tests, Debug-build met 0 waarschuwingen/fouten, precies één Saga.exe onder Builds/Debug, eigen review, handmatige acceptatie, Markdown-spiegel en een gewone niet-draft PR. De gebruiker bewaakt de huidige CodeRabbit-review; deze voorbereiding start geen nieuwe review.
+
+## Implementatie en verificatie
+
+De zes routes zijn aangesloten op gedeelde resultaatfeedback in MetadataQualityDashboardViewModel.Results.cs. Een begrensde gevirtualiseerde ListBox binnen een Expander toont alleen afwijkende resultaten; bekende foutredenen hebben teksten in zes talen. Ruwe Message/FileResults worden niet als UI-uitleg gebruikt. De extra FailureReason in de reparatieresultaten heeft een veilige standaardwaarde; bestaande opslag-, snapshot- en conflictroutes blijven behouden.
+
+Eerst falende tests bewaken onder meer de ontbrekende conflictreden, de omslagfeedback, late afronding na categoriewissel en leesfouten midden in een auteur-/seriebatch. Andere regressies controleren gemengde resultaten, behoud van uitsluitingen, annuleren, vervangen van oude details, veilige onbekende reden, alle zes talen en de begrensde toegankelijke weergave. Onverwachte fouten gebruiken bewust neutrale uitleg: er wordt niet zonder bewijs beweerd dat alle metadata ongewijzigd bleef.
+
+Volledige suite: 882 geslaagd, 0 mislukt of overgeslagen. Debug-build 2026.10.22.56 op 22 oktober 2026 om 13:25 (Europe/Amsterdam): 0 waarschuwingen en fouten. Eigen review op correctheid, eenvoud, architectuur, beveiliging en prestaties is uitgevoerd. Gevonden categoriewissel- en leesfoutrandgevallen zijn verholpen; resultaatopzoeking hergebruikt een dictionary en de foutlijst virtualiseert de zichtbare regels. Er is geen nieuwe dependency of databasewijziging. Handmatige acceptatie staat nog open.
