@@ -9,7 +9,8 @@
 - [x] Profielservice, validatie, veilige foto-opslag en fout-/conflictgedrag getest, inclusief onzeker commitresultaat en annulering.
 - [x] Doorzoekbaar auteursvenster, gepagineerde boekenlijst, websiteactie en zes talen gebouwd; WPF-render en echte beeldverwerking gecontroleerd met fictieve gegevens.
 - [x] Volledige testset: 911 geslaagd, 0 mislukt of overgeslagen; Debug-build 2026.10.22.88, 22 oktober 2026 om 15:38 (Europe/Amsterdam), 0 waarschuwingen/fouten, precies één Saga.exe onder Builds/Debug. Eigen vijfassige review, README en checklist afgerond; Markdown exact naar Obsidian gespiegeld en hashes gecontroleerd.
-- [ ] Gewone PR en handmatige gebruikersacceptatie.
+- [x] Gewone niet-draft PR #49 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/49. Mergeable; GitGuardian groen bij openingscontrole. Overige review-/CI-status wordt afzonderlijk beoordeeld zodra beschikbaar.
+- [ ] Handmatige gebruikersacceptatie volgens docs/manual-tests/milestone-48-checklist.md.
 
 ## Historie: Milestone 47 betrouwbaarheid Quality afronden
 
