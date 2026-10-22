@@ -695,7 +695,7 @@
   <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Intercambiar</value></data>
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>No se pudieron intercambiar el titulo y el autor. Revise el libro e intentelo de nuevo.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>El titulo y el autor se guardaron, pero no se pudieron actualizar todos los archivos de metadatos o ebooks relacionados.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>El titulo y el autor ya no parecen estar intercambiados. Saga ha cargado los datos actuales del libro.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Los datos del libro han cambiado o no se pueden intercambiar de forma segura. Saga ha cargado los datos actuales del libro.</value></data>
   <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Buscar portada</value></data>
   <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Buscar una portada</value></data>
   <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga busca en línea mediante el título, el autor y el ISBN. Seleccione la portada que desea usar.</value></data>
@@ -721,5 +721,13 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Sin etiquetas</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} libros modificados</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Modificados: {0}. Avisos de archivo: {1}. Ya resueltos: {2}. No disponibles: {3}. Fallidos: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkContext" xml:space="preserve"><value>{0} libros para revisar</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirm" xml:space="preserve"><value>Intercambiar {0} libros marcados</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkHelp" xml:space="preserve"><value>Revise cada propuesta y marque solo los libros que desea modificar. Ninguno se marca automáticamente.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkPreview" xml:space="preserve"><value>Propuestas de intercambio de título y autor</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkChoose" xml:space="preserve"><value>Intercambiar este libro</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkUnavailable" xml:space="preserve"><value>Este libro no se puede intercambiar de forma segura. Necesita un título y exactamente un autor válido.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} libros modificados</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Modificados: {0}. Avisos de archivo: {1}. Omitidos: {2}. No disponibles: {3}. Fallidos: {4}.</value></data>
 </root>
 

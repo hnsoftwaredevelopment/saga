@@ -9,16 +9,43 @@
         MinHeight="360"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterOwner">
+  <Window.Resources>
+    <Style x:Key="SingleSwapPreview" TargetType="ScrollViewer">
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsBulk}" Value="True">
+          <Setter Property="Visibility" Value="Collapsed" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+    <Style x:Key="BulkSwapPreview" TargetType="DockPanel">
+      <Setter Property="Visibility" Value="Collapsed" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsBulk}" Value="True">
+          <Setter Property="Visibility" Value="Visible" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+  </Window.Resources>
   <DockPanel Margin="20">
     <StackPanel DockPanel.Dock="Top">
       <TextBlock Text="{loc:Loc MetadataQualityTitleAuthorRepairTitle}"
                  FontSize="20"
                  FontWeight="SemiBold"
                  Foreground="{DynamicResource TextPrimaryBrush}" />
-      <TextBlock Text="{loc:Loc MetadataQualityTitleAuthorRepairDescription}"
-                 Margin="0,5,0,16"
+      <TextBlock Margin="0,5,0,16"
                  TextWrapping="Wrap"
-                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                 Foreground="{DynamicResource TextSecondaryBrush}">
+        <TextBlock.Style>
+          <Style TargetType="TextBlock">
+            <Setter Property="Text" Value="{loc:Loc MetadataQualityTitleAuthorRepairDescription}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsBulk}" Value="True">
+                <Setter Property="Text" Value="{loc:Loc MetadataQualityTitleAuthorRepairBulkHelp}" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </TextBlock.Style>
+      </TextBlock>
     </StackPanel>
 
     <StackPanel DockPanel.Dock="Bottom"
@@ -32,16 +59,87 @@
               Focusable="True"
               AutomationProperties.Name="{loc:Loc Cancel}" />
       <Button x:Name="ConfirmTitleAuthorRepairButton"
-              Content="{loc:Loc MetadataQualityTitleAuthorRepairConfirm}"
               MinWidth="110"
               Margin="8,0,0,0"
               IsDefault="True"
+              IsEnabled="{Binding CanConfirm}"
               Focusable="True"
               Click="ConfirmClicked"
-              AutomationProperties.Name="{loc:Loc MetadataQualityTitleAuthorRepairConfirm}" />
+              AutomationProperties.Name="{Binding Content, RelativeSource={RelativeSource Self}}">
+        <Button.Style>
+          <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Content" Value="{loc:Loc MetadataQualityTitleAuthorRepairConfirm}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsBulk}" Value="True">
+                <Setter Property="Content" Value="{Binding BulkConfirmText}" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
     </StackPanel>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Grid>
+    <DockPanel Style="{StaticResource BulkSwapPreview}">
+      <TextBlock DockPanel.Dock="Top" Text="{Binding BulkContext}" Margin="0,0,0,12"
+                 FontWeight="SemiBold" TextWrapping="Wrap" />
+      <ListBox x:Name="SwapPreviews"
+               ItemsSource="{Binding Previews}"
+               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+               ScrollViewer.VerticalScrollBarVisibility="Auto"
+               VirtualizingPanel.IsVirtualizing="True"
+               VirtualizingPanel.VirtualizationMode="Recycling"
+               HorizontalContentAlignment="Stretch"
+               Focusable="True"
+               AutomationProperties.Name="{loc:Loc MetadataQualityTitleAuthorRepairBulkPreview}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Margin="8">
+              <TextBlock Text="{Binding CurrentTitle}" FontWeight="SemiBold" TextWrapping="Wrap" />
+              <CheckBox Content="{loc:Loc MetadataQualityTitleAuthorRepairBulkChoose}"
+                        IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        IsEnabled="{Binding CanRepair}" Focusable="True" Margin="0,8"
+                        AutomationProperties.Name="{Binding CurrentTitle}" />
+              <TextBlock Text="{loc:Loc MetadataQualityTitleAuthorRepairBulkUnavailable}" TextWrapping="Wrap" Margin="0,0,0,8">
+                <TextBlock.Style>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding CanRepair}" Value="False">
+                        <Setter Property="Visibility" Value="Visible" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </TextBlock.Style>
+              </TextBlock>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <GroupBox Header="{loc:Loc MetadataQualityTitleAuthorRepairCurrent}" Margin="0,0,6,0">
+                  <StackPanel Margin="8">
+                    <TextBlock Text="{loc:Loc Title}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding CurrentTitle}" TextWrapping="Wrap" Margin="0,4,0,8" />
+                    <TextBlock Text="{loc:Loc Authors}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding CurrentAuthor}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                  </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Column="1" Header="{loc:Loc MetadataQualityTitleAuthorRepairAfter}" Margin="6,0,0,0">
+                  <StackPanel Margin="8">
+                    <TextBlock Text="{loc:Loc Title}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding NewTitle}" TextWrapping="Wrap" Margin="0,4,0,8" />
+                    <TextBlock Text="{loc:Loc Authors}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding NewAuthor}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                  </StackPanel>
+                </GroupBox>
+              </Grid>
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </DockPanel>
+    <ScrollViewer Style="{StaticResource SingleSwapPreview}" VerticalScrollBarVisibility="Auto">
       <StackPanel>
         <GroupBox Header="{loc:Loc MetadataQualityTitleAuthorRepairCurrent}">
           <Grid Margin="10">
@@ -100,5 +198,6 @@
         </GroupBox>
       </StackPanel>
     </ScrollViewer>
+    </Grid>
   </DockPanel>
 </Window>
