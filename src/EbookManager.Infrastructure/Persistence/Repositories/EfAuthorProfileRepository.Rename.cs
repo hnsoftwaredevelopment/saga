@@ -41,7 +41,7 @@ public sealed partial class EfAuthorProfileRepository
         var rows = await context.BookAuthors.AsNoTracking()
             .Where(x => x.Book.BookAuthors.Any(target => target.AuthorId == author.Id))
             .OrderBy(x => x.BookId).ThenBy(x => x.Order)
-            .Select(x => new { x.BookId, x.Book.Title, x.AuthorId, x.Author.Name })
+            .Select(x => new { x.BookId, x.Book.Title, x.Book.Series, x.AuthorId, x.Author.Name })
             .ToListAsync(cancellationToken);
         var keys = rows.GroupBy(x => x.BookId).ToDictionary(group => group.Key,
             group => DuplicateKeyNormalizer.BuildDuplicateKey(group.First().Title,
@@ -78,7 +78,9 @@ public sealed partial class EfAuthorProfileRepository
             return Rejected(AuthorRenameStatus.DuplicateBook);
         }
         return new(AuthorRenameStatus.Renamed,
-            new(author.Id, author.Name, author.Biography, author.WebsiteUrl, author.PhotoRelativePath), ids.AsReadOnly());
+            new(author.Id, author.Name, author.Biography, author.WebsiteUrl, author.PhotoRelativePath),
+            rows.GroupBy(row => row.BookId).Select(group =>
+                new AuthorBook(group.Key, group.First().Title, group.First().Series)).ToArray());
     }
 
     private static AuthorRenameResult Rejected(AuthorRenameStatus status) => new(status, null, []);
