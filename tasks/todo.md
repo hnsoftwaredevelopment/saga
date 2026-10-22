@@ -20,7 +20,8 @@
 - [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; één onvertaalde legacy-route verwijderd en opnieuw volledig geverifieerd.
 - [x] Gewone, niet-draft PR #44 geopend.
 - [x] GitHub-controles van PR #44 beoordeeld: CodeQL en GitGuardian groen; CodeRabbit heeft wegens de gratis limiet geen inhoudelijke review uitgevoerd.
-- [ ] Handmatige acceptatiechecklist laten uitvoeren.
+- [x] Alle handmatige controles voor bulk serieherstel door de gebruiker geaccepteerd.
+- [ ] De 3-pixel lagere positie van de Splash-subtitel visueel laten hercontroleren met build `2026.10.22.1`.
 
 ## Buiten scope
 
