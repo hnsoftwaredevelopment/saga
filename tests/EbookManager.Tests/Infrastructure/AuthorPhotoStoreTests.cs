@@ -7,6 +7,23 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed class AuthorPhotoStoreTests
 {
     [Fact]
+    public async Task Cancellation_leaves_existing_photos_untouched_and_does_not_keep_partial_files()
+    {
+        using var directory = new TemporaryDirectory();
+        var store = new ManagedAuthorPhotoStore(directory.DirectoryPath);
+        var author = Guid.NewGuid();
+        byte[] jpeg = [0xff, 0xd8, 0xff, 0xd9];
+        var saved = await store.SaveJpegAsync(author, jpeg, default);
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        var act = () => store.SaveJpegAsync(author, jpeg, cancellation.Token);
+        await act.Should().ThrowAsync<OperationCanceledException>();
+        (await store.ReadAsync(author, saved, default)).Should().Equal(jpeg);
+        Directory.GetFiles(Path.Combine(directory.DirectoryPath, "authors"), "*.jpg", SearchOption.AllDirectories)
+            .Should().ContainSingle();
+    }
+
+    [Fact]
     public async Task Stores_unique_portable_photos_and_only_deletes_the_requested_owned_photo()
     {
         using var directory = new TemporaryDirectory();

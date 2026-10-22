@@ -733,5 +733,32 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>No se pudo completar la corrección. Comprueba los datos actuales del libro antes de intentarlo de nuevo.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>No se pudo descargar o procesar la portada. Inténtalo de nuevo o elige otra portada.</value></data>
   <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>No se pudieron restaurar los avisos ignorados. Inténtalo de nuevo. Si el problema persiste, comprueba que la biblioteca esté disponible.</value></data>
+  <data name="AuthorManagementTitle" xml:space="preserve"><value>Gestionar autores</value></data>
+  <data name="AuthorManagementDescription" xml:space="preserve"><value>Gestiona fotos, sitios web y biografías en esta biblioteca. Los datos de los libros no cambian.</value></data>
+  <data name="AuthorSearch" xml:space="preserve"><value>Buscar autores</value></data>
+  <data name="AuthorCountLabel" xml:space="preserve"><value>autores</value></data>
+  <data name="AuthorLoadMore" xml:space="preserve"><value>Cargar más</value></data>
+  <data name="AuthorNoneFound" xml:space="preserve"><value>No se encontraron autores.</value></data>
+  <data name="AuthorResizePanels" xml:space="preserve"><value>Cambiar tamaño de paneles</value></data>
+  <data name="AuthorNoPhoto" xml:space="preserve"><value>Sin foto</value></data>
+  <data name="AuthorPhoto" xml:space="preserve"><value>Foto del autor</value></data>
+  <data name="AuthorChoosePhoto" xml:space="preserve"><value>Elegir foto…</value></data>
+  <data name="AuthorRemovePhoto" xml:space="preserve"><value>Eliminar foto</value></data>
+  <data name="AuthorPhotoHelp" xml:space="preserve"><value>Opcional. JPEG o PNG, hasta 10 MB. Se guarda una copia en la biblioteca.</value></data>
+  <data name="AuthorWebsite" xml:space="preserve"><value>Sitio web (opcional)</value></data>
+  <data name="AuthorOpenWebsite" xml:space="preserve"><value>Abrir sitio web</value></data>
+  <data name="AuthorBiography" xml:space="preserve"><value>Biografía breve (opcional)</value></data>
+  <data name="AuthorBooks" xml:space="preserve"><value>Libros de esta biblioteca</value></data>
+  <data name="AuthorUnsavedMessage" xml:space="preserve"><value>¿Guardar cambios? Sí guarda, No descarta y Cancelar permite seguir editando.</value></data>
+  <data name="AuthorProfileInvalid" xml:space="preserve"><value>Introduce una dirección HTTP/HTTPS completa sin credenciales. La biografía admite hasta 10.000 caracteres.</value></data>
+  <data name="AuthorProfileSaved" xml:space="preserve"><value>Perfil guardado.</value></data>
+  <data name="AuthorProfileConflict" xml:space="preserve"><value>Este autor fue modificado o eliminado. No se guardaron tus cambios. Descártalos y vuelve a seleccionar el autor.</value></data>
+  <data name="AuthorProfileLoadFailed" xml:space="preserve"><value>No se pudieron cargar los datos. Vuelve a seleccionar el autor.</value></data>
+  <data name="AuthorProfileSaveFailed" xml:space="preserve"><value>No se pudo guardar el perfil. Tus cambios siguen disponibles; inténtalo de nuevo.</value></data>
+  <data name="AuthorPhotoInvalid" xml:space="preserve"><value>Elige un JPEG o PNG válido de hasta 10 MB y 25 millones de píxeles. Se conserva la foto anterior.</value></data>
+  <data name="AuthorPhotoLoadFailed" xml:space="preserve"><value>No se pudo cargar la foto. Los demás datos siguen disponibles.</value></data>
+  <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Perfil guardado, pero no se pudo eliminar la foto anterior.</value></data>
+  <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>No se pudo abrir el sitio en el navegador.</value></data>
+  <data name="AuthorPhotoFilter" xml:space="preserve"><value>Fotos (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
 </root>
 

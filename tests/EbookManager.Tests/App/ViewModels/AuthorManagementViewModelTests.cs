@@ -9,6 +9,21 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class AuthorManagementViewModelTests
 {
     [Fact]
+    public async Task Failed_selection_never_leaves_another_authors_profile_editable()
+    {
+        var repository = new Repository();
+        using var vm = new AuthorManagementViewModel(repository, new Photos(), key => key);
+        await vm.SelectAsync(new(repository.Profile.Id, "Author", 0));
+        repository.FailRead = true;
+
+        await vm.SelectAsync(new(Guid.NewGuid(), "Unavailable author", 0));
+
+        vm.HasProfile.Should().BeFalse();
+        vm.CanEdit.Should().BeFalse();
+        vm.StatusMessage.Should().Be("AuthorProfileLoadFailed");
+    }
+
+    [Fact]
     public async Task Editing_is_a_draft_until_saved_and_discard_restores_original()
     {
         var repository = new Repository();
@@ -52,10 +67,12 @@ public sealed class AuthorManagementViewModelTests
         public AuthorProfile Profile = new(Guid.NewGuid(), "Author", null, null, null);
         public Guid DelayedId;
         public Task<AuthorProfile?>? Delayed;
+        public bool FailRead;
         public Task<AuthorPage> SearchAsync(string query, int skip, int take, CancellationToken token) =>
             Task.FromResult(new AuthorPage([new(Profile.Id, Profile.Name, 0)], 1));
-        public Task<AuthorProfile?> GetAsync(Guid id, CancellationToken token) => id == DelayedId
-            ? Delayed! : Task.FromResult<AuthorProfile?>(Profile);
+        public Task<AuthorProfile?> GetAsync(Guid id, CancellationToken token) => FailRead
+            ? Task.FromException<AuthorProfile?>(new IOException("Cannot read"))
+            : id == DelayedId ? Delayed! : Task.FromResult<AuthorProfile?>(Profile);
         public Task<IReadOnlyList<AuthorBook>> ListBooksAsync(Guid id, int skip, int take, CancellationToken token) =>
             Task.FromResult<IReadOnlyList<AuthorBook>>([]);
         public Task<AuthorProfileSaveStatus> SaveAsync(AuthorProfile original, AuthorProfile updated, CancellationToken token)

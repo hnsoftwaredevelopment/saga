@@ -733,5 +733,32 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>La correction n’a pas pu être terminée. Vérifiez les données actuelles du livre avant de réessayer.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>La couverture n’a pas pu être téléchargée ou traitée. Réessayez ou choisissez une autre couverture.</value></data>
   <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>Les signalements ignorés n’ont pas pu être rétablis. Réessayez. Si le problème persiste, vérifiez que la bibliothèque est accessible.</value></data>
+  <data name="AuthorManagementTitle" xml:space="preserve"><value>Gérer les auteurs</value></data>
+  <data name="AuthorManagementDescription" xml:space="preserve"><value>Gérez les photos, sites et biographies dans cette bibliothèque. Les données des livres restent inchangées.</value></data>
+  <data name="AuthorSearch" xml:space="preserve"><value>Rechercher un auteur</value></data>
+  <data name="AuthorCountLabel" xml:space="preserve"><value>auteurs</value></data>
+  <data name="AuthorLoadMore" xml:space="preserve"><value>Charger la suite</value></data>
+  <data name="AuthorNoneFound" xml:space="preserve"><value>Aucun auteur trouvé.</value></data>
+  <data name="AuthorResizePanels" xml:space="preserve"><value>Redimensionner les panneaux</value></data>
+  <data name="AuthorNoPhoto" xml:space="preserve"><value>Aucune photo</value></data>
+  <data name="AuthorPhoto" xml:space="preserve"><value>Photo de l'auteur</value></data>
+  <data name="AuthorChoosePhoto" xml:space="preserve"><value>Choisir une photo…</value></data>
+  <data name="AuthorRemovePhoto" xml:space="preserve"><value>Supprimer la photo</value></data>
+  <data name="AuthorPhotoHelp" xml:space="preserve"><value>Facultatif. JPEG ou PNG, 10 Mo maximum. Une copie est enregistrée dans la bibliothèque.</value></data>
+  <data name="AuthorWebsite" xml:space="preserve"><value>Site web (facultatif)</value></data>
+  <data name="AuthorOpenWebsite" xml:space="preserve"><value>Ouvrir le site</value></data>
+  <data name="AuthorBiography" xml:space="preserve"><value>Courte biographie (facultative)</value></data>
+  <data name="AuthorBooks" xml:space="preserve"><value>Livres de cette bibliothèque</value></data>
+  <data name="AuthorUnsavedMessage" xml:space="preserve"><value>Enregistrer les modifications ? Oui enregistre, Non abandonne, Annuler poursuit la modification.</value></data>
+  <data name="AuthorProfileInvalid" xml:space="preserve"><value>Saisissez une adresse HTTP/HTTPS complète sans identifiants. La biographie est limitée à 10 000 caractères.</value></data>
+  <data name="AuthorProfileSaved" xml:space="preserve"><value>Profil enregistré.</value></data>
+  <data name="AuthorProfileConflict" xml:space="preserve"><value>Cet auteur a été modifié ou supprimé. Vos modifications ne sont pas enregistrées. Abandonnez-les et sélectionnez à nouveau l'auteur.</value></data>
+  <data name="AuthorProfileLoadFailed" xml:space="preserve"><value>Impossible de charger les données. Sélectionnez à nouveau l'auteur.</value></data>
+  <data name="AuthorProfileSaveFailed" xml:space="preserve"><value>Impossible d'enregistrer le profil. Vos modifications sont conservées ; réessayez.</value></data>
+  <data name="AuthorPhotoInvalid" xml:space="preserve"><value>Choisissez un JPEG ou PNG valide, de 10 Mo et 25 millions de pixels maximum. La photo précédente est conservée.</value></data>
+  <data name="AuthorPhotoLoadFailed" xml:space="preserve"><value>Impossible de charger la photo. Les autres données restent disponibles.</value></data>
+  <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Profil enregistré, mais l'ancienne photo n'a pas pu être supprimée.</value></data>
+  <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>Impossible d'ouvrir le site dans le navigateur.</value></data>
+  <data name="AuthorPhotoFilter" xml:space="preserve"><value>Photos (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
 </root>
 

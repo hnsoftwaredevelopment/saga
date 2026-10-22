@@ -18,9 +18,11 @@ public sealed class ManagedAuthorPhotoStore(string libraryRoot) : IAuthorPhotoSt
         var path = Resolve(authorId, relative);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         layout.EnsureNoReparsePoints(path);
+        var created = false;
         try
         {
             await using var stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true);
+            created = true;
             await stream.WriteAsync(jpeg, cancellationToken);
             await stream.FlushAsync(cancellationToken);
         }
@@ -28,7 +30,7 @@ public sealed class ManagedAuthorPhotoStore(string libraryRoot) : IAuthorPhotoSt
         {
             // This unique path belongs only to the current operation.
             layout.EnsureNoReparsePoints(path);
-            if (File.Exists(path)) File.Delete(path);
+            if (created && File.Exists(path)) File.Delete(path);
             throw;
         }
         return relative;

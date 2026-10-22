@@ -19,6 +19,27 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed class LibraryDbContextTests
 {
     [Fact]
+    public async Task Author_overview_counts_coauthors_and_lists_books_by_identity_not_partial_name()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var books = new EfBookRepository(factory, library.DirectoryPath);
+        var first = CreateBook("Shared book", ["Primary Author", "Coauthor"]);
+        var other = CreateBook("Other book", ["Primary Author Junior"]);
+        await books.AddAsync(first, CreateFile(first.Id, Hash('A')), default);
+        await books.AddAsync(other, CreateFile(other.Id, Hash('B')), default);
+        var profiles = new EfAuthorProfileRepository(factory, library.DirectoryPath);
+
+        var page = await profiles.SearchAsync("PRIMARY AUTHOR", 0, 200, default);
+        page.TotalCount.Should().Be(2);
+        var author = page.Authors.Single(x => x.Name == "Primary Author");
+        author.BookCount.Should().Be(1);
+        (await profiles.ListBooksAsync(author.Id, 0, 200, default)).Should().ContainSingle()
+            .Which.Id.Should().Be(first.Id);
+        (await profiles.SearchAsync("coauthor", 0, 200, default)).Authors.Single().BookCount.Should().Be(1);
+    }
+
+    [Fact]
     public async Task Author_profile_survives_deleting_last_book_and_is_reused_on_import()
     {
         using var library = new TemporaryLibrary();

@@ -453,5 +453,32 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>The repair could not be completed. Check the current book details before trying again.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>The cover could not be downloaded or processed. Try again or choose another cover.</value></data>
   <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>The ignored issues could not be restored. Try again. If the problem persists, check that the library is available.</value></data>
+  <data name="AuthorManagementTitle" xml:space="preserve"><value>Manage authors</value></data>
+  <data name="AuthorManagementDescription" xml:space="preserve"><value>Maintain author photos, websites and biographies in this library. Book metadata stays unchanged.</value></data>
+  <data name="AuthorSearch" xml:space="preserve"><value>Search authors</value></data>
+  <data name="AuthorCountLabel" xml:space="preserve"><value>authors</value></data>
+  <data name="AuthorLoadMore" xml:space="preserve"><value>Load more</value></data>
+  <data name="AuthorNoneFound" xml:space="preserve"><value>No authors found.</value></data>
+  <data name="AuthorResizePanels" xml:space="preserve"><value>Resize author panels</value></data>
+  <data name="AuthorNoPhoto" xml:space="preserve"><value>No photo</value></data>
+  <data name="AuthorPhoto" xml:space="preserve"><value>Author photo</value></data>
+  <data name="AuthorChoosePhoto" xml:space="preserve"><value>Choose photo…</value></data>
+  <data name="AuthorRemovePhoto" xml:space="preserve"><value>Remove photo</value></data>
+  <data name="AuthorPhotoHelp" xml:space="preserve"><value>Optional. JPEG or PNG, up to 10 MB. A copy is saved in your library.</value></data>
+  <data name="AuthorWebsite" xml:space="preserve"><value>Website (optional)</value></data>
+  <data name="AuthorOpenWebsite" xml:space="preserve"><value>Open website</value></data>
+  <data name="AuthorBiography" xml:space="preserve"><value>Short biography (optional)</value></data>
+  <data name="AuthorBooks" xml:space="preserve"><value>Books in this library</value></data>
+  <data name="AuthorUnsavedMessage" xml:space="preserve"><value>Save your changes? Yes saves them, No discards them, Cancel keeps editing.</value></data>
+  <data name="AuthorProfileInvalid" xml:space="preserve"><value>Enter an absolute http:// or https:// website without login details. The biography may contain up to 10,000 characters.</value></data>
+  <data name="AuthorProfileSaved" xml:space="preserve"><value>Author profile saved.</value></data>
+  <data name="AuthorProfileConflict" xml:space="preserve"><value>This author was changed or removed since opening. Your edits have not been saved. Cancel your edits and select the author again.</value></data>
+  <data name="AuthorProfileLoadFailed" xml:space="preserve"><value>Could not load author details. Try selecting the author again.</value></data>
+  <data name="AuthorProfileSaveFailed" xml:space="preserve"><value>Could not save the author profile. Your edits are still available; try again.</value></data>
+  <data name="AuthorPhotoInvalid" xml:space="preserve"><value>Choose a valid JPEG or PNG up to 10 MB and 25 million pixels. The previous photo has been kept.</value></data>
+  <data name="AuthorPhotoLoadFailed" xml:space="preserve"><value>The saved photo could not be loaded. Other author details remain available.</value></data>
+  <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Profile saved, but the previous photo could not be cleaned up.</value></data>
+  <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>Could not open the website in your browser.</value></data>
+  <data name="AuthorPhotoFilter" xml:space="preserve"><value>Photos (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
 </root>
 

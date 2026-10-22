@@ -31,11 +31,23 @@ public sealed partial class AuthorManagementViewModel(
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanEdit))]
     [NotifyPropertyChangedFor(nameof(CanSave))]
+    [NotifyPropertyChangedFor(nameof(CanBrowse))]
+    [NotifyPropertyChangedFor(nameof(IsWorking))]
+    [NotifyPropertyChangedFor(nameof(CanOpenWebsite))]
+    [NotifyPropertyChangedFor(nameof(CanRemovePhoto))]
     private bool isBusy;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsWorking))]
+    private bool isSearching;
 
     public bool HasProfile => original is not null;
+    public Guid? SelectedAuthorId => original?.Id;
     public bool CanEdit => HasProfile && !IsBusy && !disposed;
+    public bool CanBrowse => !IsBusy && !disposed;
+    public bool IsWorking => IsBusy || IsSearching;
     public bool CanSave => CanEdit && HasChanges;
+    public bool CanOpenWebsite => CanEdit && !string.IsNullOrWhiteSpace(Website) && AuthorProfileValidation.IsValidWebsite(Website.Trim());
+    public bool CanRemovePhoto => CanEdit && (newPhoto is not null || (!removePhoto && original?.PhotoRelativePath is not null));
     public bool HasChanges => original is not null &&
         (AuthorProfileValidation.NormalizeOptional(Biography) != original.Biography ||
          AuthorProfileValidation.NormalizeOptional(Website) != original.WebsiteUrl || newPhoto is not null || removePhoto);
@@ -48,6 +60,8 @@ public sealed partial class AuthorManagementViewModel(
     {
         OnPropertyChanged(nameof(HasChanges));
         OnPropertyChanged(nameof(CanSave));
+        OnPropertyChanged(nameof(CanOpenWebsite));
+        OnPropertyChanged(nameof(CanRemovePhoto));
     }
 
     public async Task SearchAsync(string query, bool append = false)
@@ -55,6 +69,7 @@ public sealed partial class AuthorManagementViewModel(
         if (disposed) return;
         var version = ++searchVersion;
         currentQuery = query;
+        IsSearching = true;
         try
         {
             var page = await Task.Run(() => repository.SearchAsync(query, append ? Authors.Count : 0, 200, lifetime.Token), lifetime.Token);
@@ -65,6 +80,7 @@ public sealed partial class AuthorManagementViewModel(
         }
         catch (OperationCanceledException) { }
         catch (Exception) { if (!disposed && version == searchVersion) SetStatus("AuthorProfileLoadFailed", true); }
+        finally { if (!disposed && version == searchVersion) IsSearching = false; }
     }
 
     public async Task SelectAsync(AuthorSummary author)
@@ -72,6 +88,10 @@ public sealed partial class AuthorManagementViewModel(
         if (disposed || HasChanges) return;
         var version = ++selectionVersion;
         IsBusy = true;
+        original = null;
+        Books = [];
+        TotalBooks = 0;
+        ApplyProfile(null);
         SetStatus("", false);
         try
         {
@@ -105,7 +125,12 @@ public sealed partial class AuthorManagementViewModel(
         try
         {
             var page = await Task.Run(() => repository.ListBooksAsync(original!.Id, Books.Count, 200, lifetime.Token), lifetime.Token);
-            if (!disposed) { Books = Books.Concat(page).ToArray(); OnPropertyChanged(nameof(HasMoreBooks)); }
+            if (!disposed)
+            {
+                Books = Books.Concat(page).ToArray();
+                if (page.Count < 200) TotalBooks = Books.Count;
+                OnPropertyChanged(nameof(HasMoreBooks));
+            }
         }
         catch (OperationCanceledException) { }
         catch (Exception) { if (!disposed) SetStatus("AuthorProfileLoadFailed", true); }
@@ -142,6 +167,7 @@ public sealed partial class AuthorManagementViewModel(
         if (!preservePhoto) savedPhoto = photo;
         PhotoBytes = savedPhoto;
         OnPropertyChanged(nameof(HasProfile));
+        OnPropertyChanged(nameof(SelectedAuthorId));
         OnPropertyChanged(nameof(CanEdit));
         OnPropertyChanged(nameof(HasMoreBooks));
         DraftChanged();
