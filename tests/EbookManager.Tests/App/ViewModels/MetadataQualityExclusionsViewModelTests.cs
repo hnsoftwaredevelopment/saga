@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using EbookManager.Domain.Abstractions;
 using EbookManager.Domain.Metadata;
 using EbookManager.Presentation.ViewModels;
@@ -7,6 +8,85 @@ namespace EbookManager.Tests.App.ViewModels;
 
 public sealed class MetadataQualityExclusionsViewModelTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Restore_failure_is_reported_without_removing_rows_or_selection(bool restoreAll)
+    {
+        var repository = new InMemoryMetadataQualityExclusionRepository(
+            [CreateExclusion(MetadataQualitySignalKeys.MissingCover, "Book")]) { FailRestore = true };
+        var viewModel = new MetadataQualityExclusionsViewModel(repository, key => $"localized:{key}");
+        await viewModel.LoadAsync();
+        var row = viewModel.Rows.Single();
+        viewModel.SetSelectedRows([row]);
+
+        var action = () => (restoreAll ? viewModel.RestoreAllCommand : viewModel.RestoreSelectedCommand).ExecuteAsync(null);
+        await action.Should().NotThrowAsync();
+
+        viewModel.StatusMessage.Should().Be("localized:MetadataQualityExclusionsRestoreFailed");
+        viewModel.Rows.Should().Equal(row);
+        viewModel.SelectedRows.Should().Equal(row);
+        repository.Exclusions.Should().ContainSingle();
+        viewModel.IsRestoring.Should().BeFalse();
+        viewModel.RestoreAllCommand.CanExecute(null).Should().BeTrue();
+        viewModel.RestoreSelectedCommand.CanExecute(null).Should().BeTrue();
+        repository.FailRestore = false;
+        await action();
+        viewModel.StatusMessage.Should().BeNull();
+        viewModel.Rows.Should().BeEmpty();
+        viewModel.SelectedRows.Should().BeEmpty();
+        repository.Exclusions.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Restore_uses_original_selection_and_retains_a_later_selection()
+    {
+        var gate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var repository = new InMemoryMetadataQualityExclusionRepository(
+            [CreateExclusion(MetadataQualitySignalKeys.MissingCover, "First"),
+             CreateExclusion(MetadataQualitySignalKeys.MissingCover, "Second")])
+            { BeforeRemoveAsync = () => gate.Task };
+        var viewModel = new MetadataQualityExclusionsViewModel(repository, key => key);
+        await viewModel.LoadAsync();
+        var first = viewModel.Rows[0];
+        var second = viewModel.Rows[1];
+        viewModel.SetSelectedRows([first]);
+        var operation = viewModel.RestoreSelectedCommand.ExecuteAsync(null);
+        viewModel.IsRestoring.Should().BeTrue();
+        viewModel.RestoreAllCommand.CanExecute(null).Should().BeFalse();
+        viewModel.SetSelectedRows([second]);
+        viewModel.RestoreSelectedCommand.CanExecute(null).Should().BeFalse();
+        await viewModel.RestoreAllCommand.ExecuteAsync(null);
+        repository.Exclusions.Should().HaveCount(2);
+        gate.SetResult();
+        await operation;
+        viewModel.Rows.Should().Equal(second);
+        viewModel.SelectedRows.Should().Equal(second);
+        repository.Exclusions.Should().ContainSingle().Which.Key.Should().Be(second.Key);
+        viewModel.IsRestoring.Should().BeFalse();
+        viewModel.StatusMessage.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Cancellation_keeps_rows_and_releases_the_busy_state_without_an_error_message()
+    {
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        var repository = new InMemoryMetadataQualityExclusionRepository(
+            [CreateExclusion(MetadataQualitySignalKeys.MissingCover, "Book")])
+            { BeforeRemoveAsync = () => Task.FromCanceled(cancellation.Token) };
+        var viewModel = new MetadataQualityExclusionsViewModel(repository, key => key);
+        await viewModel.LoadAsync();
+        var row = viewModel.Rows.Single();
+        viewModel.SetSelectedRows([row]);
+        var action = () => viewModel.RestoreSelectedCommand.ExecuteAsync(null);
+        await action.Should().ThrowAsync<OperationCanceledException>();
+        viewModel.IsRestoring.Should().BeFalse();
+        viewModel.Rows.Should().Equal(row);
+        viewModel.SelectedRows.Should().Equal(row);
+        viewModel.StatusMessage.Should().BeNull();
+    }
+
     [Fact]
     public async Task LoadAsync_exposes_book_signal_authors_and_date()
     {
@@ -62,6 +142,8 @@ public sealed class MetadataQualityExclusionsViewModelTests
         ]);
         var viewModel = new MetadataQualityExclusionsViewModel(repository, key => key);
         await viewModel.LoadAsync();
+        var changes = new List<NotifyCollectionChangedAction>();
+        viewModel.Rows.CollectionChanged += (_, args) => changes.Add(args.Action);
 
         await viewModel.RestoreAllCommand.ExecuteAsync(null);
 
@@ -70,6 +152,7 @@ public sealed class MetadataQualityExclusionsViewModelTests
         viewModel.HasRows.Should().BeFalse();
         viewModel.ExclusionCount.Should().Be(0);
         viewModel.RestoreAllCommand.CanExecute(null).Should().BeFalse();
+        changes.Should().Equal(NotifyCollectionChangedAction.Reset);
     }
 
     [Fact]
@@ -101,6 +184,8 @@ public sealed class MetadataQualityExclusionsViewModelTests
         private readonly List<MetadataQualityExclusion> exclusions = [.. initialExclusions];
 
         public IReadOnlyList<MetadataQualityExclusion> Exclusions => exclusions;
+        public bool FailRestore { get; set; }
+        public Func<Task>? BeforeRemoveAsync { get; init; }
 
         public Task<IReadOnlySet<MetadataQualityExclusionKey>> ListMetadataQualityExclusionsAsync(
             CancellationToken cancellationToken) =>
@@ -116,17 +201,19 @@ public sealed class MetadataQualityExclusionsViewModelTests
             CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
-        public Task RemoveMetadataQualityExclusionsAsync(
+        public async Task RemoveMetadataQualityExclusionsAsync(
             IReadOnlyCollection<MetadataQualityExclusionKey> keys,
             CancellationToken cancellationToken)
         {
+            if (FailRestore) { throw new IOException("SQL C:\\private\\library.db"); }
+            if (BeforeRemoveAsync is not null) { await BeforeRemoveAsync(); }
             var keySet = keys.ToHashSet();
             exclusions.RemoveAll(exclusion => keySet.Contains(exclusion.Key));
-            return Task.CompletedTask;
         }
 
         public Task ClearMetadataQualityExclusionsAsync(CancellationToken cancellationToken)
         {
+            if (FailRestore) { throw new IOException("SQL C:\\private\\library.db"); }
             exclusions.Clear();
             return Task.CompletedTask;
         }

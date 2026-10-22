@@ -452,5 +452,6 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>Gewijzigd in de bibliotheek, maar niet alle boekbestanden konden worden bijgewerkt.</value></data>
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Het herstel kon niet worden afgerond. Controleer de actuele boekgegevens voordat je het opnieuw probeert.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>De omslag kon niet worden gedownload of verwerkt. Probeer het opnieuw of kies een andere omslag.</value></data>
+  <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>De genegeerde meldingen konden niet worden teruggezet. Probeer het opnieuw. Controleer bij herhaling of de bibliotheek beschikbaar is.</value></data>
 </root>
 

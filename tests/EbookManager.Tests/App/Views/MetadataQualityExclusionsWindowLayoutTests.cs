@@ -41,7 +41,13 @@ public sealed class MetadataQualityExclusionsWindowLayoutTests
 
         var restoreAll = Button(document, xaml, "RestoreAllQualityExclusionsButton");
         RequiredAttribute(restoreAll, "Click").Should().Be("RestoreAllClicked");
+        RequiredAttribute(restoreAll, "IsEnabled").Should().Be("{Binding CanRestoreAll}");
         AssertAccessible(restoreAll);
+
+        document.Descendants(presentation + "TextBlock").Should().Contain(element =>
+            (string?)element.Attribute("Text") == "{Binding StatusMessage}" &&
+            (string?)element.Attribute("TextWrapping") == "Wrap" &&
+            (string?)element.Attribute("Foreground") == "{DynamicResource DangerBrush}");
 
         var close = Button(document, xaml, "CloseQualityExclusionsButton");
         RequiredAttribute(close, "IsCancel").Should().Be("True");

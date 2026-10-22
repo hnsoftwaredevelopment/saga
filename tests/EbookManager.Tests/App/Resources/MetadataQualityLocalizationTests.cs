@@ -9,6 +9,7 @@ public sealed class MetadataQualityLocalizationTests
     private static readonly string[] RequiredFeatureKeys =
     [
         "MetadataQualityRepairDetails",
+        "MetadataQualityExclusionsRestoreFailed",
         "MetadataQualityRepairReasonDuplicate",
         "MetadataQualityRepairReasonChanged",
         "MetadataQualityRepairReasonUnavailable",

@@ -732,5 +732,6 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>Guardado en la biblioteca, pero no se pudieron actualizar todos los archivos del libro.</value></data>
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>No se pudo completar la corrección. Comprueba los datos actuales del libro antes de intentarlo de nuevo.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>No se pudo descargar o procesar la portada. Inténtalo de nuevo o elige otra portada.</value></data>
+  <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>No se pudieron restaurar los avisos ignorados. Inténtalo de nuevo. Si el problema persiste, comprueba que la biblioteca esté disponible.</value></data>
 </root>
 

@@ -13,19 +13,28 @@ public sealed partial class MetadataQualityExclusionsViewModel : ObservableObjec
     private readonly AsyncRelayCommand restoreSelectedCommand;
     private readonly AsyncRelayCommand restoreAllCommand;
 
+    [ObservableProperty]
+    private string? statusMessage;
+
+    [ObservableProperty]
+    private bool isRestoring;
+
     public MetadataQualityExclusionsViewModel(
         IMetadataQualityExclusionRepository repository,
         Func<string, string> localize)
     {
         this.repository = repository;
         this.localize = localize;
-        restoreSelectedCommand = new AsyncRelayCommand(RestoreSelectedAsync, () => SelectedRows.Count > 0);
-        restoreAllCommand = new AsyncRelayCommand(RestoreAllAsync, () => Rows.Count > 0);
+        restoreSelectedCommand = new AsyncRelayCommand(RestoreSelectedAsync, () => !IsRestoring && SelectedRows.Count > 0);
+        restoreAllCommand = new AsyncRelayCommand(RestoreAllAsync, () => CanRestoreAll);
     }
 
     public ObservableCollection<MetadataQualityExclusionRowViewModel> Rows { get; } = [];
     public ObservableCollection<MetadataQualityExclusionRowViewModel> SelectedRows { get; } = [];
     public bool HasRows => Rows.Count > 0;
+    public bool CanRestoreAll => HasRows && !IsRestoring;
+
+    partial void OnIsRestoringChanged(bool value) => NotifyStateChanged();
     public int ExclusionCount => Rows.Count;
     public IAsyncRelayCommand RestoreSelectedCommand => restoreSelectedCommand;
     public IAsyncRelayCommand RestoreAllCommand => restoreAllCommand;
@@ -55,35 +64,65 @@ public sealed partial class MetadataQualityExclusionsViewModel : ObservableObjec
         NotifyStateChanged();
     }
 
-    private async Task RestoreSelectedAsync(CancellationToken cancellationToken)
+    private Task RestoreSelectedAsync(CancellationToken cancellationToken) =>
+        RestoreAsync(SelectedRows.Where(Rows.Contains).DistinctBy(row => row.Key).ToArray(),
+            restoreAll: false, cancellationToken);
+
+    private Task RestoreAllAsync(CancellationToken cancellationToken) =>
+        RestoreAsync(Rows.ToArray(), restoreAll: true, cancellationToken);
+
+    private async Task RestoreAsync(IReadOnlyList<MetadataQualityExclusionRowViewModel> rows,
+        bool restoreAll, CancellationToken cancellationToken)
     {
-        var keys = SelectedRows.Select(row => row.Key).ToArray();
-        if (keys.Length == 0)
+        if (IsRestoring || rows.Count == 0)
         {
             return;
         }
 
-        await repository.RemoveMetadataQualityExclusionsAsync(keys, cancellationToken);
-        foreach (var row in SelectedRows.ToArray())
+        IsRestoring = true;
+        StatusMessage = null;
+        try
         {
-            Rows.Remove(row);
+            if (restoreAll)
+            {
+                await repository.ClearMetadataQualityExclusionsAsync(cancellationToken);
+            }
+            else
+            {
+                await repository.RemoveMetadataQualityExclusionsAsync(
+                    rows.Select(row => row.Key).ToArray(), cancellationToken);
+            }
+
+            if (restoreAll)
+            {
+                Rows.Clear();
+                SelectedRows.Clear();
+            }
+            else
+            {
+                // The live selection can change while storage is awaited.
+                foreach (var row in rows)
+                {
+                    Rows.Remove(row);
+                }
+                foreach (var row in SelectedRows.Where(row => !Rows.Contains(row)).ToArray())
+                {
+                    SelectedRows.Remove(row);
+                }
+            }
         }
-
-        SelectedRows.Clear();
-        NotifyStateChanged();
-    }
-
-    private async Task RestoreAllAsync(CancellationToken cancellationToken)
-    {
-        if (Rows.Count == 0)
+        catch (OperationCanceledException)
         {
-            return;
+            throw;
         }
-
-        await repository.ClearMetadataQualityExclusionsAsync(cancellationToken);
-        Rows.Clear();
-        SelectedRows.Clear();
-        NotifyStateChanged();
+        catch (Exception)
+        {
+            StatusMessage = localize("MetadataQualityExclusionsRestoreFailed");
+        }
+        finally
+        {
+            IsRestoring = false;
+        }
     }
 
     private string LocalizeSignal(string signalKey)
@@ -104,6 +143,7 @@ public sealed partial class MetadataQualityExclusionsViewModel : ObservableObjec
     private void NotifyStateChanged()
     {
         OnPropertyChanged(nameof(HasRows));
+        OnPropertyChanged(nameof(CanRestoreAll));
         OnPropertyChanged(nameof(ExclusionCount));
         restoreSelectedCommand.NotifyCanExecuteChanged();
         restoreAllCommand.NotifyCanExecuteChanged();
