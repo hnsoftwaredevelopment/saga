@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 44 is manually tested and accepted: select multiple books with messy tags, review the current and cleaned tags for each book, and confirm once. Each book keeps its own tags; changed data is protected and failures remain available for retry. Milestone 43 was accepted and merged on 22 October 2026, including bulk series repair and the final Splash alignment.
+Milestone 45 is ready for manual testing: review title/author swap proposals for multiple books and explicitly check only the books to change. Nothing is checked automatically; changed book data is protected before saving. Milestone 44 is manually tested, accepted and merged, including per-book bulk tag cleanup.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -64,6 +64,7 @@ Milestone 44 is manually tested and accepted: select multiple books with messy t
 - direct missing-series repair with live suggestions while preserving the existing series number
 - bulk missing-series repair that applies one chosen series name while preserving each selected book's own series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
+- bulk title-and-author swap with an initially unchecked per-book preview, explicit opt-in and protection against changed title/author values
 - detail-pane title-and-author swap for any editable book, with staged Save and Undo behavior and immediate library refresh after saving
 - editable messy-tag repair with a one-tag-per-line proposal, deduplication, whitespace cleanup, and support for an empty final tag list
 - bulk messy-tag cleanup with a per-book before/after preview, preservation of each book's own tags, and immediate library and category-filter refresh
@@ -80,7 +81,7 @@ Milestone 44 is manually tested and accepted: select multiple books with messy t
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 44 checklist](docs/manual-tests/milestone-44-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 45 checklist](docs/manual-tests/milestone-45-checklist.md).
 
 ## Prerequisites
 
