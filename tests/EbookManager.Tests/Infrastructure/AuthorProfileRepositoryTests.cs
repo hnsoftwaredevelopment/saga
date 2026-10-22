@@ -14,12 +14,12 @@ public sealed class AuthorProfileRepositoryTests
     [Fact]
     public async Task Saves_only_profile_fields_and_rejects_a_stale_update()
     {
-        using var directory = new TemporaryDirectory();
+        using var directory = new TemporarySqliteLibrary();
         var factory = new LibraryDbContextFactory();
         await using (var context = factory.Create(directory.DirectoryPath))
         {
             await context.Database.MigrateAsync();
-            context.Authors.Add(new AuthorEntity { Id = Guid.NewGuid(), Name = "Author", NormalizedName = "AUTHOR" });
+            context.Authors.Add(new AuthorEntity { Id = Guid.NewGuid(), Name = "Author", NormalizedName = "author" });
             await context.SaveChangesAsync();
         }
         var repository = new EfAuthorProfileRepository(factory, directory.DirectoryPath);
@@ -48,7 +48,7 @@ public sealed class AuthorProfileRepositoryTests
     [InlineData("not a website")]
     public async Task Rejects_unsafe_website_without_changing_profile(string website)
     {
-        using var directory = new TemporaryDirectory();
+        using var directory = new TemporarySqliteLibrary();
         var factory = new LibraryDbContextFactory();
         var id = Guid.NewGuid();
         await using (var context = factory.Create(directory.DirectoryPath))

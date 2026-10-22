@@ -13,9 +13,9 @@ public sealed class EfAuthorProfileRepository(LibraryDbContextFactory factory, s
         ValidatePage(skip, take);
         await using var context = factory.Create(libraryPath);
         var authors = context.Authors.AsNoTracking().Where(x =>
-            x.NormalizedName != "UNKNOWN" && x.Name.Trim() != "" &&
+            x.NormalizedName != "unknown" && x.Name.Trim() != "" &&
             (x.BookAuthors.Any() || x.Biography != null || x.WebsiteUrl != null || x.PhotoRelativePath != null));
-        var normalized = query.Trim().ToUpperInvariant();
+        var normalized = query.Trim().ToLowerInvariant();
         if (normalized.Length > 0)
         {
             authors = authors.Where(x => x.NormalizedName.Contains(normalized));
