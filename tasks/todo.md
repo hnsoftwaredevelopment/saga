@@ -1,4 +1,21 @@
-# Milestone 45 todo
+# Milestone 46: voorbereiding resultaatdetails bij kwaliteitsherstel
+
+- [x] Gebruiker keurt richting goed voor alle kwaliteitsherstelpagina's; alleen voorbereiding gevraagd tijdens review huidige PR.
+- [x] Zes routes, huidige resultaatmodellen, BookService.Conflict en verlies van redenen in dashboard geïnventariseerd.
+- [x] Conceptspec, plan en handmatige checklist vastgelegd; geen productcode, build of huidige PR gewijzigd.
+- [x] Concrete specificatie en aanpak door gebruiker bevestigd.
+- [x] PR #46 door gebruiker gemerged; actuele origin/main opgehaald en nieuwe codex/-branch vanaf 6bee6f0 gemaakt. Lokale voorbereidingsbestanden behouden.
+- [ ] Titel/auteurconflict eerst met falende test bewijzen; minimale getypeerde reden doorgeven zonder duplicaatbescherming te wijzigen.
+- [ ] Gedeelde feedbackopbouw en begrensde toegankelijke details toevoegen; succesroute en batchreconciliatie behouden.
+- [ ] Auteur en taal aansluiten met gerichte tests voor één/bulk en foutreden.
+- [ ] Serie en tags aansluiten met gerichte tests voor stale data, overslaan en bestandswaarschuwingen.
+- [ ] Omslagdownload en -herstel op dezelfde feedback aansluiten; geen nieuwe bulk- of zoekfunctie.
+- [ ] Begrijpelijke vertalingen en placeholdertests voor alle zes talen afronden.
+- [ ] Volledige suite, Debug-build met 0 waarschuwingen/fouten, precies één Saga.exe, versie/tijd vastleggen en eigen review.
+- [ ] Documentatie en Obsidian exact spiegelen; normale PR en beschikbare controles beoordelen.
+- [ ] Handmatige controle met actuele build door gebruiker; niet reproduceerbare foutpaden apart verantwoorden.
+
+## Historie: Milestone 45 todo
 
 - [x] Scope goedgekeurd; bestaande code onderzocht; featurebranch gemaakt.
 - [x] Specificatie en implementatieplan vastgelegd.
