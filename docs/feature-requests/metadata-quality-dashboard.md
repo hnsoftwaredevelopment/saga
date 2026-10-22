@@ -143,6 +143,16 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Refresh the main library and series filters once for the complete batch.
 - Keep single-book series repair, other quality repairs and existing bulk actions unchanged.
 
+## Milestone 44: Clean messy tags in bulk
+
+- Select multiple books under Messy tags and review an individual before/after proposal for every book.
+- Use the existing normalizer independently for each book; an empty result explicitly says No tags.
+- Keep the bulk preview read-only; selecting one book retains the existing editable proposal.
+- Apply all proposals only after explicit confirmation; cancellation before confirmation writes nothing.
+- Compare original tags with current storage before saving; never overwrite tags changed since the preview.
+- Handle results per book, continue after individual errors, refresh the library and category filters once, and retain failed rows for retry.
+- Reuse existing metadata persistence and localized result summaries in all six languages.
+
 ## Follow-up ideas
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
@@ -153,4 +163,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 are implemented and accepted through manual testing. Milestone 33 searches Google Books and Open Library for one selected book without a cover, validates and fairly combines the choices, and falls back to a locally generated title-and-author cover when both sources are empty. A user can also replace any existing cover from book details and then save or undo the staged choice. The expanded manual acceptance check remains open. Real-world testing showed that the possible title/author swap heuristic deliberately produces many uncertain candidates; users can safely dismiss false positives with `This is correct`. Milestones 36 through 42 are accepted, including messy-tag repair, the dedicated Quality settings tab, bulk quality decisions, bulk missing-author repair, duplicate-sidecar consistency, bulk missing-language repair and the verified detail action for manually swapping title and authors. Milestone 43 is ready for acceptance testing and applies one chosen series name to multiple selected books while preserving every individual series number and accurate per-book results. Other bulk metadata repair, export, configurable checks and heuristic tuning remain follow-up work.
+Milestones 26 through 32 and 36 through 43 are implemented and accepted, including reversible quality decisions, individual repair, bulk author/language/series repair, and title/author swapping from details. Milestone 43 was merged on 22 October 2026. Milestone 44 is ready for manual acceptance: it previews and cleans each selected book's own tags and reconciles results independently. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic remains intentionally uncertain, and false positives can be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.

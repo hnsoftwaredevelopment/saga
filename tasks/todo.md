@@ -2,10 +2,10 @@
 
 - [x] Opdracht en scope goedgekeurd; bestaande code en DoD onderzocht.
 - [x] Branch, specificatie en plan gemaakt.
-- [ ] Afzonderlijke previews en veilige opslag testgestuurd implementeren.
-- [ ] Meervoudige selectie, resultaatverwerking en bibliotheekverversing.
-- [ ] Scrollbaar overzicht en zes vertalingen.
-- [ ] Gerichte en volledige tests, Debug-build en eigen review.
+- [x] Afzonderlijke previews en veilige opslag testgestuurd implementeren.
+- [x] Meervoudige selectie, resultaatverwerking en bibliotheekverversing.
+- [x] Scrollbaar overzicht en zes vertalingen.
+- [x] Gerichte controles: 200 tests; volledige set: 813 tests, geen fouten of overgeslagen tests. Debug-build 2026.10.22.15: 0 waarschuwingen en fouten. Eigen review uitgevoerd.
 - [ ] Documentatie, Obsidian-spiegel en gewone PR met controles.
 - [ ] Handmatige acceptatie door gebruiker.
 

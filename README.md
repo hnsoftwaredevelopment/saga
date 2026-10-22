@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 43 is ready for acceptance testing and applies one chosen series name to multiple selected books that have a series number but no series name, while preserving every individual series number and reporting per-book results. The Splash title and subtitle now use layout-based vertical centering. Milestone 42 was accepted on 21 October 2026 and verifies the existing detail action for swapping title and author.
+Milestone 44 is ready for acceptance testing: select multiple books with messy tags, review the current and cleaned tags for each book, and confirm once. Each book keeps its own tags; changed data is protected and failures remain available for retry. Milestone 43 was accepted and merged on 22 October 2026, including bulk series repair and the final Splash alignment.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -66,6 +66,7 @@ Milestone 43 is ready for acceptance testing and applies one chosen series name 
 - confirmed title-and-author swap repair with a clear before-and-after preview
 - detail-pane title-and-author swap for any editable book, with staged Save and Undo behavior and immediate library refresh after saving
 - editable messy-tag repair with a one-tag-per-line proposal, deduplication, whitespace cleanup, and support for an empty final tag list
+- bulk messy-tag cleanup with a per-book before/after preview, preservation of each book's own tags, and immediate library and category-filter refresh
 - explicit cover search with up to twelve validated Google Books and Open Library choices, a locally generated fallback, safe managed storage, and replacement from book details
 - managed ebooks and covers distributed over 256 ID-based storage shards, with automatic database backup, visible first-start migration progress, and safe resume after interruption
 - delete actions continue removing library records when managed file cleanup reports a warning
@@ -79,7 +80,7 @@ Milestone 43 is ready for acceptance testing and applies one chosen series name 
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 43 checklist](docs/manual-tests/milestone-43-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 44 checklist](docs/manual-tests/milestone-44-checklist.md).
 
 ## Prerequisites
 
