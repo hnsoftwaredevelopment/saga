@@ -714,5 +714,12 @@
 {0}
 
 Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das gemeldete Datei- oder OneDrive-Problem und starten Sie Saga erneut.</value></data>
+  <data name="MetadataQualityTagRepairBulkContext" xml:space="preserve"><value>{0} ausgewählte Bücher</value></data>
+  <data name="MetadataQualityTagRepairBulkSave" xml:space="preserve"><value>Schlagwörter für {0} Bücher bereinigen</value></data>
+  <data name="MetadataQualityTagRepairBulkHelp" xml:space="preserve"><value>Prüfen Sie den Vorschlag für jedes Buch. Jedes Buch behält seine eigenen bereinigten Schlagwörter. Bestätigen Sie, um alle Vorschläge anzuwenden.</value></data>
+  <data name="MetadataQualityTagRepairBulkPreview" xml:space="preserve"><value>Vorschläge zur Bereinigung der Schlagwörter</value></data>
+  <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Keine Schlagwörter</value></data>
+  <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} Bücher geändert</value></data>
+  <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Geändert: {0}. Dateiwarnungen: {1}. Bereits gelöst: {2}. Nicht verfügbar: {3}. Fehlgeschlagen: {4}.</value></data>
 </root>
 

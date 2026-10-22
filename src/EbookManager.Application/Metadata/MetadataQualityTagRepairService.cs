@@ -45,7 +45,8 @@ public interface IMetadataQualityTagRepairService
     Task<MetadataQualityTagRepairResult> RepairAsync(
         Guid bookId,
         IReadOnlyList<string> tags,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken,
+        IReadOnlyList<string>? expectedTags = null);
 }
 
 public sealed class MetadataQualityTagRepairService(
@@ -58,7 +59,8 @@ public sealed class MetadataQualityTagRepairService(
     public async Task<MetadataQualityTagRepairResult> RepairAsync(
         Guid bookId,
         IReadOnlyList<string> tags,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IReadOnlyList<string>? expectedTags = null)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(bookId, Guid.Empty);
         ArgumentNullException.ThrowIfNull(tags);
@@ -72,6 +74,11 @@ public sealed class MetadataQualityTagRepairService(
         if (!MetadataQualitySignalEvaluator.Applies(currentBook, MetadataQualitySignalKeys.MessyTags))
         {
             return new(bookId, MetadataQualityTagRepairStatus.NotApplicable, currentBook);
+        }
+
+        if (expectedTags is not null && !NullableSequenceEqual(currentBook.Metadata.Tags, expectedTags))
+        {
+            return new(bookId, MetadataQualityTagRepairStatus.Failed, currentBook);
         }
 
         var normalizedTags = MetadataQualityTagNormalizer.Normalize(tags);

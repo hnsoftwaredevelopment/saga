@@ -9,6 +9,23 @@
         MinHeight="460"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterOwner">
+  <Window.Resources>
+    <Style x:Key="SingleTagEditor" TargetType="Grid">
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsBulk}" Value="True">
+          <Setter Property="Visibility" Value="Collapsed" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+    <Style x:Key="BulkTagOverview" TargetType="DockPanel">
+      <Setter Property="Visibility" Value="Collapsed" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsBulk}" Value="True">
+          <Setter Property="Visibility" Value="Visible" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+  </Window.Resources>
   <DockPanel Margin="20">
     <StackPanel DockPanel.Dock="Top">
       <TextBlock Text="{loc:Loc MetadataQualityTagRepairTitle}"
@@ -18,7 +35,17 @@
       <TextBlock Text="{loc:Loc MetadataQualityTagRepairDescription}"
                  Margin="0,5,0,16"
                  TextWrapping="Wrap"
-                 Foreground="{DynamicResource TextSecondaryBrush}" />
+                 Foreground="{DynamicResource TextSecondaryBrush}">
+        <TextBlock.Style>
+          <Style TargetType="TextBlock">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsBulk}" Value="True">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </TextBlock.Style>
+      </TextBlock>
     </StackPanel>
 
     <StackPanel DockPanel.Dock="Bottom"
@@ -32,17 +59,76 @@
               Focusable="True"
               AutomationProperties.Name="{loc:Loc Cancel}" />
       <Button x:Name="SaveTagRepairButton"
-              Content="{loc:Loc MetadataQualityChangeTags}"
               MinWidth="110"
               Margin="8,0,0,0"
               IsDefault="True"
               IsEnabled="{Binding CanSave}"
               Focusable="True"
               Click="SaveClicked"
-              AutomationProperties.Name="{loc:Loc MetadataQualityChangeTags}" />
+              AutomationProperties.Name="{Binding Content, RelativeSource={RelativeSource Self}}">
+        <Button.Style>
+          <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Content" Value="{loc:Loc MetadataQualityChangeTags}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsBulk}" Value="True">
+                <Setter Property="Content" Value="{Binding BulkSaveText}" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
     </StackPanel>
 
     <Grid>
+    <DockPanel Style="{StaticResource BulkTagOverview}">
+      <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+        <TextBlock Text="{Binding BulkContext}" FontWeight="SemiBold" TextWrapping="Wrap" />
+        <TextBlock Text="{loc:Loc MetadataQualityTagRepairBulkHelp}" Margin="0,5,0,0" TextWrapping="Wrap" />
+      </StackPanel>
+      <ListBox x:Name="TagPreviews"
+               ItemsSource="{Binding Previews}"
+               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+               ScrollViewer.VerticalScrollBarVisibility="Auto"
+               VirtualizingPanel.IsVirtualizing="True"
+               VirtualizingPanel.VirtualizationMode="Recycling"
+               HorizontalContentAlignment="Stretch"
+               Focusable="True"
+               AutomationProperties.Name="{loc:Loc MetadataQualityTagRepairBulkPreview}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Margin="8">
+              <TextBlock Text="{Binding BookTitle}" FontWeight="SemiBold" TextWrapping="Wrap" />
+              <Grid Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Margin="0,0,12,0">
+                  <TextBlock Text="{loc:Loc MetadataQualityCurrentTags}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                  <TextBlock Text="{Binding CurrentTagsText}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                  <TextBlock Text="{loc:Loc MetadataQualityNewTags}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                  <TextBlock TextWrapping="Wrap" Margin="0,4,0,0">
+                    <TextBlock.Style>
+                      <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="{Binding ProposedTagsText}" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding ProposedTagsText}" Value="">
+                            <Setter Property="Text" Value="{loc:Loc MetadataQualityTagRepairEmptyTags}" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </TextBlock.Style>
+                  </TextBlock>
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </DockPanel>
+    <Grid Style="{StaticResource SingleTagEditor}">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
@@ -93,6 +179,7 @@
                  TextWrapping="Wrap"
                  FontSize="12"
                  Foreground="{DynamicResource TextSecondaryBrush}" />
+    </Grid>
     </Grid>
   </DockPanel>
 </Window>

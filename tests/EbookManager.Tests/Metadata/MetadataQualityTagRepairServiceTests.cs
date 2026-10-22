@@ -10,6 +10,20 @@ namespace EbookManager.Tests.Metadata;
 public sealed class MetadataQualityTagRepairServiceTests
 {
     [Fact]
+    public async Task RepairAsync_does_not_overwrite_tags_changed_since_the_preview()
+    {
+        var current = CreateBook([" Nieuw "]);
+        var repository = new InMemoryBookRepository([current]);
+
+        var result = await CreateService(repository).RepairAsync(
+            current.Id, ["Oud"], default, expectedTags: [" Oud "]);
+
+        result.Status.Should().Be(MetadataQualityTagRepairStatus.Failed);
+        result.Book!.Metadata.Tags.Should().Equal(" Nieuw ");
+        repository.UpdateCalls.Should().Be(0);
+    }
+
+    [Fact]
     public void Normalize_splits_values_and_preserves_the_first_unique_spelling_and_order()
     {
         var normalized = MetadataQualityTagNormalizer.Normalize(

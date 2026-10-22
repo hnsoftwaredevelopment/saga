@@ -1,4 +1,15 @@
-# Milestone 43 implementatieplan: meerdere ontbrekende serienamen herstellen
+# Milestone 44 implementatieplan: bulk tags opschonen
+
+De gebruiker heeft opdracht gegeven deze slice uit te voeren. Specificatie: docs/superpowers/specs/2026-10-22-saga-milestone-44-bulk-tag-cleanup-design.md.
+
+1. Afzonderlijke previews met oorspronkelijke tags en eigen opgeschoonde tags; tests voor behoud en lege uitkomst.
+2. Dashboardselectie en bestaande service aansluiten; oorspronkelijke tags controleren en fouten per boek afhandelen. Hergebruik bestaande batchreconciliatie.
+3. Scrollbaar overzicht met expliciete bevestiging en zes vertalingen; gericht testcheckpoint.
+4. Volledige tests, Debug-build, eigen review, documentatie, Obsidian en gewone PR.
+
+Stap 2 volgt op 1; de interface volgt op het model; oplevering volgt op alle stappen. Grootste risico is taglijsten vermengen: aparte voorstellen en opslagtests voorkomen dat. Verouderde tags worden vóór schrijven vergeleken. Geen nieuwe opslagroute of dependency.
+
+## Afgerond plan Milestone 43
 
 ## Overzicht
 

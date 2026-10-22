@@ -8,6 +8,78 @@ namespace EbookManager.Tests.App.ViewModels;
 
 public sealed class MetadataQualityDashboardTagRepairTests
 {
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Bulk_cleanup_keeps_each_proposal_separate_and_cancel_writes_nothing(bool confirm)
+    {
+        var first = CreateBook([" Crime ", "crime"]);
+        var second = CreateBook(["History, Travel"]);
+        var service = new RecordingTagRepairService(
+            new MetadataQualityTagRepairResult(first.Id, MetadataQualityTagRepairStatus.Succeeded,
+                CopyWithTags(first, ["Crime"])),
+            new MetadataQualityTagRepairResult(second.Id, MetadataQualityTagRepairStatus.Succeeded,
+                CopyWithTags(second, ["History", "Travel"])));
+        var notifications = new List<IReadOnlyList<Book>>();
+        var dashboard = new MetadataQualityDashboardViewModel([first, second],
+            key => key == "MetadataQualityTagRepairBulkSucceeded" ? "{0} changed" : key,
+            tagRepairService: service,
+            showTagRepair: (repair, _) =>
+            {
+                repair.Previews.Should().HaveCount(2);
+                repair.Previews[0].Tags.Should().Equal("Crime");
+                repair.Previews[1].Tags.Should().Equal("History", "Travel");
+                return Task.FromResult(confirm);
+            },
+            booksRepaired: notifications.Add);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MessyTags);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+        dashboard.RepairMessyTagsCommand.CanExecute(null).Should().BeTrue();
+
+        await dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+
+        if (confirm)
+        {
+            service.Calls.Select(call => call.BookId).Should().Equal(first.Id, second.Id);
+            service.Calls[0].Tags.Should().Equal("Crime");
+            service.Calls[1].Tags.Should().Equal("History", "Travel");
+            service.Calls[0].Original.Should().Equal(first.Metadata.Tags!);
+            notifications.Should().ContainSingle().Which.Should().HaveCount(2);
+            dashboard.SelectedIssue.Rows.Should().BeEmpty();
+            dashboard.StatusMessage.Should().Be("2 changed");
+            dashboard.IsStatusMessageSuccess.Should().BeTrue();
+        }
+        else
+        {
+            service.Calls.Should().BeEmpty();
+            notifications.Should().BeEmpty();
+            dashboard.SelectedIssue.Rows.Should().HaveCount(2);
+        }
+    }
+
+    [Fact]
+    public async Task Bulk_cleanup_continues_after_an_exception_and_keeps_failed_books_selected()
+    {
+        var failed = CreateBook([" Bad "]);
+        var good = CreateBook([" Good "]);
+        var service = new RecordingTagRepairService(
+            new MetadataQualityTagRepairResult(good.Id, MetadataQualityTagRepairStatus.Succeeded,
+                CopyWithTags(good, ["Good"])));
+        service.ThrowFor = failed.Id;
+        var dashboard = new MetadataQualityDashboardViewModel([failed, good],
+            key => key == "MetadataQualityTagRepairBulkResult" ? "{0}:{1}:{2}:{3}:{4}" : key,
+            tagRepairService: service, showTagRepair: (_, _) => Task.FromResult(true));
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MessyTags);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+
+        dashboard.SelectedIssue.Rows.Should().ContainSingle(row => row.Id == failed.Id);
+        dashboard.SelectedBook!.Id.Should().Be(failed.Id);
+        dashboard.StatusMessage.Should().Be("1:0:0:0:1");
+        dashboard.IsStatusMessageSuccess.Should().BeFalse();
+    }
+
     [Fact]
     public void Tag_cleanup_is_enabled_only_for_a_selected_messy_tag_row()
     {
@@ -129,6 +201,58 @@ public sealed class MetadataQualityDashboardTagRepairTests
             tagRepairService: service,
             showTagRepair: (_, _) => Task.FromResult(true));
 
+    [Fact]
+    public async Task Bulk_cleanup_refreshes_changed_tags_and_reports_mixed_results()
+    {
+        var changed = CreateBook([" Old "]);
+        var warning = CreateBook([" Warning "]);
+        var stale = CreateBook([" Stale "]);
+        var gone = CreateBook([" Gone "]);
+        var current = CopyWithTags(changed, [" New "]);
+        var service = new RecordingTagRepairService(
+            new(changed.Id, MetadataQualityTagRepairStatus.Failed, current),
+            new(warning.Id, MetadataQualityTagRepairStatus.SavedWithWriteBackErrors, CopyWithTags(warning, ["Warning"])),
+            new(stale.Id, MetadataQualityTagRepairStatus.NotApplicable, CopyWithTags(stale, ["Stale"])),
+            new(gone.Id, MetadataQualityTagRepairStatus.NotFound));
+        MetadataQualityTagRepairViewModel? retry = null;
+        var dashboard = new MetadataQualityDashboardViewModel([changed, warning, stale, gone],
+            key => key == "MetadataQualityTagRepairBulkResult" ? "{0}:{1}:{2}:{3}:{4}" : key,
+            tagRepairService: service,
+            showTagRepair: (repair, _) => { retry = repair; return Task.FromResult(true); });
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MessyTags);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+
+        dashboard.StatusMessage.Should().Be("0:1:1:1:1");
+        dashboard.SelectedIssue.Rows.Should().ContainSingle(row => row.Id == changed.Id);
+        dashboard.SelectedBook!.Id.Should().Be(changed.Id);
+        await dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+        retry!.CurrentTagsText.Should().Be(" New ");
+    }
+
+    [Fact]
+    public async Task Cancellation_preserves_completed_results_and_does_not_start_remaining_books()
+    {
+        var first = CreateBook([" First "]);
+        var second = CreateBook([" Second "]);
+        var third = CreateBook([" Third "]);
+        var service = new RecordingTagRepairService(
+            new MetadataQualityTagRepairResult(first.Id, MetadataQualityTagRepairStatus.Succeeded, CopyWithTags(first, ["First"])));
+        service.CancelFor = second.Id;
+        var dashboard = new MetadataQualityDashboardViewModel([first, second, third], key => key,
+            tagRepairService: service, showTagRepair: (_, _) => Task.FromResult(true));
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MessyTags);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        var action = () => dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+        await action.Should().ThrowAsync<OperationCanceledException>();
+
+        service.Calls.Should().HaveCount(2);
+        dashboard.SelectedIssue.Rows.Select(row => row.Id).Should().BeEquivalentTo([second.Id, third.Id]);
+        dashboard.SelectedBookCount.Should().Be(2);
+    }
+
     private static Book CreateBook(IReadOnlyList<string> tags)
     {
         var now = DateTimeOffset.UtcNow;
@@ -159,25 +283,32 @@ public sealed class MetadataQualityDashboardTagRepairTests
             UpdatedUtc = DateTimeOffset.UtcNow
         };
 
-    private sealed class RecordingTagRepairService(
-        Book? repairedBook,
-        MetadataQualityTagRepairStatus status = MetadataQualityTagRepairStatus.Succeeded)
+    private sealed class RecordingTagRepairService(params MetadataQualityTagRepairResult[] results)
         : IMetadataQualityTagRepairService
     {
+        public RecordingTagRepairService(Book? repairedBook,
+            MetadataQualityTagRepairStatus status = MetadataQualityTagRepairStatus.Succeeded)
+            : this(new MetadataQualityTagRepairResult(repairedBook?.Id ?? Guid.Empty, status, repairedBook)) { }
+
+        public Guid? ThrowFor { get; set; }
+        public Guid? CancelFor { get; set; }
+        public List<(Guid BookId, IReadOnlyList<string> Tags, IReadOnlyList<string>? Original)> Calls { get; } = [];
         public Guid? BookId { get; private set; }
         public IReadOnlyList<string> Tags { get; private set; } = [];
 
         public Task<MetadataQualityTagRepairResult> RepairAsync(
             Guid bookId,
             IReadOnlyList<string> tags,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            IReadOnlyList<string>? expectedTags = null)
         {
             BookId = bookId;
             Tags = tags.ToArray();
-            return Task.FromResult(new MetadataQualityTagRepairResult(
-                bookId,
-                status,
-                repairedBook));
+            Calls.Add((bookId, tags.ToArray(), expectedTags));
+            if (CancelFor == bookId) { throw new OperationCanceledException(); }
+            if (ThrowFor == bookId) { throw new IOException("Unavailable"); }
+            var result = results.Single(item => item.BookId == bookId || item.BookId == Guid.Empty);
+            return Task.FromResult(result with { BookId = bookId });
         }
     }
 }
