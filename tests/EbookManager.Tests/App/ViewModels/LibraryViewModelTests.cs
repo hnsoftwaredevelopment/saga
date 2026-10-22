@@ -509,7 +509,7 @@ public sealed class LibraryViewModelTests
         var unknownLanguage = CreateBook("Dwaalspoor", ["Author"], language: "fictional", coverBytes: [1]);
         var missingCover = CreateBook("Zonder omslag", ["Author"], language: "en");
         var seriesNumberOnly = CreateBook("Serienummer", ["Author"], language: "en", seriesNumber: 2, coverBytes: [1]);
-        var swapped = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl", coverBytes: [1]);
+        var swapped = CreateBook("Duenas, Maria", ["De wereld vergeten"], language: "nl", coverBytes: [1]);
         var messyTags = CreateBook("Tags", ["Author"], language: "en", tags: ["thriller, crime"], coverBytes: [1]);
 
         var dashboard = new MetadataQualityDashboardViewModel(
@@ -527,7 +527,7 @@ public sealed class LibraryViewModelTests
     [Fact]
     public async Task Show_metadata_quality_dashboard_opens_dashboard_for_current_library()
     {
-        var book = CreateBook("Karin Slaughter", ["Triptiek"], language: "nl");
+        var book = CreateBook("Duenas, Maria", ["De wereld vergeten"], language: "nl");
         var interaction = new ScriptedUserInteractionService();
         var viewModel = CreateViewModel([book], interaction, currentLibrary: CreateActiveLibrary());
 
@@ -540,7 +540,7 @@ public sealed class LibraryViewModelTests
             .Single(issue => issue.Title == "MetadataQualityPossibleTitleAuthorSwap")
             .Rows
             .Should()
-            .ContainSingle(row => row.Title == "Karin Slaughter");
+            .ContainSingle(row => row.Title == "Duenas, Maria");
     }
 
     [Fact]
@@ -855,6 +855,34 @@ public sealed class LibraryViewModelTests
         updated.Authors.Should().Be("Jan Jansen");
         viewModel.AuthorFilters.Should().ContainSingle(filter => filter.Name == "Jan Jansen");
         viewModel.AuthorFilters.Should().NotContain(filter => filter.Name == "De verdwenen stad");
+    }
+
+    [Fact]
+    public async Task Metadata_quality_bulk_title_author_swap_refreshes_only_grid_selected_books_and_filters()
+    {
+        var first = CreateBook("Jan Jansen", ["De verdwenen stad"], language: "nl", coverBytes: [1]);
+        var second = CreateBook("Piet Peters", ["Het verloren boek"], language: "nl", coverBytes: [1]);
+        var uncheckedBook = CreateBook("Mark Visser", ["Een mooie dag"], language: "nl", coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualityTitleAuthorRepairResult = true
+        };
+        var viewModel = CreateViewModel([first, second, uncheckedBook], interaction, currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows.Where(row => row.Id != uncheckedBook.Id));
+
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+
+        viewModel.VisibleBooks.Single(row => row.Id == first.Id).Title.Should().Be("De verdwenen stad");
+        viewModel.VisibleBooks.Single(row => row.Id == second.Id).Authors.Should().Be("Piet Peters");
+        viewModel.VisibleBooks.Single(row => row.Id == uncheckedBook.Id).Title.Should().Be("Mark Visser");
+        viewModel.AuthorFilters.Should().Contain(filter => filter.Name == "Jan Jansen" && filter.Count == 1);
+        viewModel.AuthorFilters.Should().Contain(filter => filter.Name == "Piet Peters" && filter.Count == 1);
+        viewModel.AuthorFilters.Should().Contain(filter => filter.Name == "Een mooie dag" && filter.Count == 1);
+        dashboard.SelectedIssue.Rows.Should().ContainSingle(row => row.Id == uncheckedBook.Id);
     }
 
     [Fact]

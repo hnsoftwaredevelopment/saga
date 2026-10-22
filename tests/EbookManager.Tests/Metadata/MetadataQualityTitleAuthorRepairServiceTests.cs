@@ -9,10 +9,40 @@ namespace EbookManager.Tests.Metadata;
 
 public sealed class MetadataQualityTitleAuthorRepairServiceTests
 {
-    [Fact]
-    public async Task RepairAsync_swaps_only_title_and_the_single_author()
+    [Theory]
+    [InlineData("Piet Peters", "De verdwenen stad")]
+    [InlineData("Jan Jansen", "Een ander verhaal")]
+    public async Task RepairAsync_skips_changed_values_even_when_the_signal_still_applies(string title, string author)
     {
-        var original = CreateBook("Jan Jansen", ["De verdwenen stad"]);
+        var current = CreateBook(title, [author]);
+        var repository = new InMemoryBookRepository([current]);
+
+        var result = await CreateService(repository).RepairAsync(current.Id, default,
+            new MetadataQualityTitleAuthorSnapshot("Jan Jansen", ["De verdwenen stad"]));
+
+        result.Status.Should().Be(MetadataQualityTitleAuthorRepairStatus.NotApplicable);
+        result.Book.Should().BeSameAs(current);
+        repository.UpdateCalls.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task RepairAsync_skips_books_with_multiple_authors()
+    {
+        var current = CreateBook("Jan Jansen", ["De verdwenen stad", "Een tweede boek"]);
+        var repository = new InMemoryBookRepository([current]);
+
+        var result = await CreateService(repository).RepairAsync(current.Id, default);
+
+        result.Status.Should().Be(MetadataQualityTitleAuthorRepairStatus.NotApplicable);
+        repository.UpdateCalls.Should().Be(0);
+    }
+
+    [Theory]
+    [InlineData("Jan Jansen", "De verdwenen stad")]
+    [InlineData("Duenas, Maria", "De wereld vergeten")]
+    public async Task RepairAsync_swaps_only_title_and_the_single_author(string title, string author)
+    {
+        var original = CreateBook(title, [author]);
         var repository = new InMemoryBookRepository([original]);
         var service = CreateService(repository);
 
@@ -20,8 +50,8 @@ public sealed class MetadataQualityTitleAuthorRepairServiceTests
 
         var repaired = result;
         repaired.Status.Should().Be(MetadataQualityTitleAuthorRepairStatus.Succeeded);
-        repaired.Book!.Metadata.Title.Should().Be("De verdwenen stad");
-        repaired.Book.Metadata.Authors.Should().Equal("Jan Jansen");
+        repaired.Book!.Metadata.Title.Should().Be(author);
+        repaired.Book.Metadata.Authors.Should().Equal(title);
         repaired.Book.Metadata.Description.Should().Be(original.Metadata.Description);
         repaired.Book.Metadata.Language.Should().Be(original.Metadata.Language);
         repaired.Book.Metadata.Publisher.Should().Be(original.Metadata.Publisher);
@@ -53,7 +83,7 @@ public sealed class MetadataQualityTitleAuthorRepairServiceTests
     [Theory]
     [InlineData("")]
     [InlineData("Unknown")]
-    public async Task RepairAsync_rejects_an_unusable_author_even_when_the_signal_applies(string author)
+    public async Task RepairAsync_rejects_an_unusable_author(string author)
     {
         var current = CreateBook("Jan Jansen", [author]);
         var repository = new InMemoryBookRepository([current]);

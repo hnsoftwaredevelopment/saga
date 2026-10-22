@@ -1,4 +1,19 @@
-# Milestone 44 implementatieplan: bulk tags opschonen
+# Milestone 45 implementatieplan: bulk titel/auteur omwisselen
+
+Goedgekeurde scope en details: docs/superpowers/specs/2026-10-22-saga-milestone-45-bulk-title-author-swap-design.md.
+
+1. Gebruik de bestaande lijstselectie en snapshotcontrole; test dat alleen geselecteerde boeken worden verwerkt.
+2. Dashboard verwerkt geschikte geselecteerde regels; test annuleren, gedeeltelijke fouten, overgeslagen boeken en verversing.
+3. Korte Ja/Nee-bevestiging met aantal in zes talen; bestaand enkelvoudig venster behouden.
+4. Volledige tests, eigen review, checklist, Obsidian-spiegel, gewone PR en controles.
+
+Afhankelijkheden: model vóór dashboard/UI, alles vóór oplevering. De gebruiker bepaalt de selectie in de lijst; een tweede selectie is na gebruikerstest vervallen. Opslag vergelijkt actuele titel/auteur met de oorspronkelijke waarden. Andere metadata wordt door de bestaande service behouden. Geen databasewijziging of dependency.
+
+## Aanvulling binnen Milestone 45: minder onterechte omwisselmeldingen
+
+De gebruiker heeft expliciet gevraagd deze verbetering in dezelfde slice mee te nemen. Eerst de 32 correcte praktijkgevallen en de bevestigde echte omwisseling als regressietests opnemen, dan naamvormen ondersteunen en positieve boektitelaanwijzingen eisen. Daarna veilige opslag en dashboardregressies controleren, volledige tests en Debug-build uitvoeren, zelf reviewen en documentatie/Obsidian/PR bijwerken. De bulkactie blijft geaccepteerd; alleen de aanvullende detectie vraagt nieuwe handmatige controle. Geen metadata-, opslag-, UI- of dependencywijziging.
+
+## Afgerond plan Milestone 44
 
 De gebruiker heeft opdracht gegeven deze slice uit te voeren. Specificatie: docs/superpowers/specs/2026-10-22-saga-milestone-44-bulk-tag-cleanup-design.md.
 

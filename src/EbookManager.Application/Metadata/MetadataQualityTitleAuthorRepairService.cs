@@ -9,7 +9,8 @@ public interface IMetadataQualityTitleAuthorRepairService
 {
     Task<MetadataQualityTitleAuthorRepairResult> RepairAsync(
         Guid bookId,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken,
+        MetadataQualityTitleAuthorSnapshot? expected = null);
 }
 
 public sealed class MetadataQualityTitleAuthorRepairService(
@@ -21,7 +22,8 @@ public sealed class MetadataQualityTitleAuthorRepairService(
 
     public async Task<MetadataQualityTitleAuthorRepairResult> RepairAsync(
         Guid bookId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        MetadataQualityTitleAuthorSnapshot? expected = null)
     {
         ArgumentOutOfRangeException.ThrowIfEqual(bookId, Guid.Empty);
         cancellationToken.ThrowIfCancellationRequested();
@@ -32,7 +34,10 @@ public sealed class MetadataQualityTitleAuthorRepairService(
             return new(bookId, MetadataQualityTitleAuthorRepairStatus.NotFound);
         }
 
-        if (!CanRepair(currentBook))
+        if (!MetadataQualityTitleAuthorRepairRules.CanRepair(currentBook) ||
+            (expected is not null &&
+             (!string.Equals(currentBook.Metadata.Title, expected.Title, StringComparison.Ordinal) ||
+              !currentBook.Metadata.Authors.SequenceEqual(expected.Authors, StringComparer.Ordinal))))
         {
             return new(bookId, MetadataQualityTitleAuthorRepairStatus.NotApplicable, currentBook);
         }
@@ -73,14 +78,6 @@ public sealed class MetadataQualityTitleAuthorRepairService(
             saveResult.FileResults);
     }
 
-    private static bool CanRepair(Book book) =>
-        MetadataQualitySignalEvaluator.Applies(
-            book,
-            MetadataQualitySignalKeys.PossibleTitleAuthorSwap) &&
-        !string.IsNullOrWhiteSpace(book.Metadata.Title) &&
-        book.Metadata.Authors is [var author] &&
-        MetadataQualityAuthorRules.IsUsable(author);
-
     private static BookMetadata CopyMetadataWithSwappedTitleAndAuthor(
         BookMetadata metadata,
         string title,
@@ -97,6 +94,17 @@ public sealed class MetadataQualityTitleAuthorRepairService(
             metadata.SeriesNumber,
             metadata.Isbn,
             metadata.CoverBytes);
+}
+
+public sealed record MetadataQualityTitleAuthorSnapshot(string Title, IReadOnlyList<string> Authors);
+
+public static class MetadataQualityTitleAuthorRepairRules
+{
+    public static bool CanRepair(Book book) =>
+        MetadataQualitySignalEvaluator.Applies(book, MetadataQualitySignalKeys.PossibleTitleAuthorSwap) &&
+        !string.IsNullOrWhiteSpace(book.Metadata.Title) &&
+        book.Metadata.Authors is [var author] &&
+        MetadataQualityAuthorRules.IsUsable(author);
 }
 
 public sealed record MetadataQualityTitleAuthorRepairResult(

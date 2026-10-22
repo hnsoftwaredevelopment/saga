@@ -8,6 +8,48 @@ namespace EbookManager.Tests.App.ViewModels;
 
 public sealed class MetadataQualityDashboardTitleAuthorRepairTests
 {
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Bulk_swap_uses_all_books_selected_in_the_grid_after_confirmation(bool confirm)
+    {
+        var first = CreateBook("Jan Jansen", "De verdwenen stad");
+        var second = CreateBook("Piet Peters", "Het verloren boek");
+        var service = new RecordingRepairService(
+            new MetadataQualityTitleAuthorRepairResult(first.Id, MetadataQualityTitleAuthorRepairStatus.Succeeded, CreateRepairedBook(first)),
+            new(second.Id, MetadataQualityTitleAuthorRepairStatus.Succeeded, CreateRepairedBook(second)));
+        var notifications = new List<IReadOnlyList<Book>>();
+        var dashboard = new MetadataQualityDashboardViewModel([first, second],
+            key => key == "MetadataQualityTitleAuthorRepairBulkSucceeded" ? "{0} changed" : key,
+            titleAuthorRepairService: service,
+            showTitleAuthorRepair: (repair, _) =>
+            {
+                repair.Previews.Should().HaveCount(2);
+                repair.CanConfirm.Should().BeTrue();
+                return Task.FromResult(confirm);
+            }, booksRepaired: notifications.Add);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+        dashboard.RepairTitleAuthorCommand.CanExecute(null).Should().BeTrue();
+
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+
+        if (confirm)
+        {
+            service.Calls.Should().BeEquivalentTo([first.Id, second.Id]);
+            notifications.Should().ContainSingle();
+            dashboard.SelectedIssue.Rows.Should().BeEmpty();
+            dashboard.StatusMessage.Should().Be("2 changed");
+            dashboard.IsStatusMessageSuccess.Should().BeTrue();
+        }
+        else
+        {
+            service.Calls.Should().BeEmpty();
+            notifications.Should().BeEmpty();
+            dashboard.SelectedIssue.Rows.Should().HaveCount(2);
+        }
+    }
+
     [Fact]
     public void Swap_is_enabled_only_for_a_repairable_title_author_signal()
     {
@@ -24,13 +66,14 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
     }
 
     [Fact]
-    public void Swap_is_disabled_when_the_only_author_is_not_usable()
+    public void Missing_author_is_not_also_presented_as_a_possible_swap()
     {
         var book = CreateBook("Jan Jansen", "Unknown");
         var dashboard = CreateDashboard(book, new RecordingRepairService(book));
         dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
             issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
 
+        dashboard.SelectedIssue.Rows.Should().BeEmpty();
         dashboard.RepairTitleAuthorCommand.CanExecute(null).Should().BeFalse();
     }
 
@@ -121,6 +164,62 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
             titleAuthorRepairService: service,
             showTitleAuthorRepair: (_, _) => Task.FromResult(true));
 
+    [Fact]
+    public async Task Bulk_swap_reconciles_mixed_results_and_continues_after_individual_errors()
+    {
+        var failed = CreateBook("Jan Jansen", "De verdwenen stad");
+        var succeeded = CreateBook("Piet Peters", "Het verloren boek");
+        var warning = CreateBook("Kees Bakker", "De grote reis");
+        var changed = CreateBook("Mark Visser", "Een mooie dag");
+        var gone = CreateBook("Henk Bos", "Het verre land");
+        var current = CreateBook("Mark Visser", "Een ander verhaal") with { Id = changed.Id };
+        var service = new RecordingRepairService(
+            new(succeeded.Id, MetadataQualityTitleAuthorRepairStatus.Succeeded, CreateRepairedBook(succeeded)),
+            new(warning.Id, MetadataQualityTitleAuthorRepairStatus.SavedWithWriteBackErrors, CreateRepairedBook(warning)),
+            new(changed.Id, MetadataQualityTitleAuthorRepairStatus.NotApplicable, current),
+            new(gone.Id, MetadataQualityTitleAuthorRepairStatus.NotFound)) { ThrowFor = failed.Id };
+        var notifications = new List<IReadOnlyList<Book>>();
+        var dashboard = new MetadataQualityDashboardViewModel([failed, succeeded, warning, changed, gone],
+            key => key == "MetadataQualityTitleAuthorRepairBulkResult" ? "{0}:{1}:{2}:{3}:{4}" : key,
+            titleAuthorRepairService: service,
+            showTitleAuthorRepair: (repair, _) =>
+            {
+                return Task.FromResult(true);
+            }, booksRepaired: notifications.Add);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+
+        service.Calls.Should().HaveCount(5);
+        dashboard.StatusMessage.Should().Be("1:1:1:1:1");
+        dashboard.IsStatusMessageSuccess.Should().BeFalse();
+        notifications.Should().ContainSingle().Which.Should().HaveCount(3);
+        dashboard.SelectedIssue.Rows.Select(row => row.Id).Should().BeEquivalentTo([failed.Id, changed.Id]);
+        dashboard.SelectedBook!.Id.Should().Be(failed.Id);
+    }
+
+    [Fact]
+    public async Task Bulk_swap_keeps_completed_results_when_cancelled_during_processing()
+    {
+        var first = CreateBook("Jan Jansen", "De verdwenen stad");
+        var second = CreateBook("Piet Peters", "Het verloren boek");
+        var service = new RecordingRepairService(CreateRepairedBook(first)) { CancelFor = second.Id };
+        var dashboard = new MetadataQualityDashboardViewModel([first, second], key => key,
+            titleAuthorRepairService: service, showTitleAuthorRepair: (repair, _) =>
+            {
+                return Task.FromResult(true);
+            });
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        var action = () => dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+        await action.Should().ThrowAsync<OperationCanceledException>();
+
+        dashboard.SelectedIssue.Rows.Should().ContainSingle(row => row.Id == second.Id);
+        dashboard.SelectedBook!.Id.Should().Be(second.Id);
+    }
+
     private static Book CreateBook(string title, string author)
     {
         var now = DateTimeOffset.UtcNow;
@@ -144,22 +243,30 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
             UpdatedUtc = DateTimeOffset.UtcNow
         };
 
-    private sealed class RecordingRepairService(
-        Book repairedBook,
-        MetadataQualityTitleAuthorRepairStatus status = MetadataQualityTitleAuthorRepairStatus.Succeeded)
+    private sealed class RecordingRepairService(params MetadataQualityTitleAuthorRepairResult[] results)
         : IMetadataQualityTitleAuthorRepairService
     {
+        public RecordingRepairService(Book repairedBook,
+            MetadataQualityTitleAuthorRepairStatus status = MetadataQualityTitleAuthorRepairStatus.Succeeded)
+            : this(new MetadataQualityTitleAuthorRepairResult(repairedBook.Id, status, repairedBook)) { }
+
         public Guid? BookId { get; private set; }
+        public List<Guid> Calls { get; } = [];
+        public MetadataQualityTitleAuthorSnapshot? Expected { get; private set; }
+        public Guid? ThrowFor { get; set; }
+        public Guid? CancelFor { get; set; }
 
         public Task<MetadataQualityTitleAuthorRepairResult> RepairAsync(
             Guid bookId,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            MetadataQualityTitleAuthorSnapshot? expected = null)
         {
             BookId = bookId;
-            return Task.FromResult(new MetadataQualityTitleAuthorRepairResult(
-                repairedBook.Id,
-                status,
-                repairedBook));
+            Calls.Add(bookId);
+            Expected = expected;
+            if (ThrowFor == bookId) { throw new IOException("Unavailable"); }
+            if (CancelFor == bookId) { throw new OperationCanceledException(); }
+            return Task.FromResult(results.Single(item => item.BookId == bookId));
         }
     }
 }

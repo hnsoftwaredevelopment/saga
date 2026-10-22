@@ -510,7 +510,7 @@ public sealed class MetadataQualityDashboardViewModelTests
         var book = CreateBook("Jan Jansen", ["Unknown"], coverBytes: [1]);
         var repairedBook = book with
         {
-            Metadata = new BookMetadata("Jan Jansen", ["Boektitel"], Language: "nl", CoverBytes: [1])
+            Metadata = new BookMetadata("Jan Jansen", ["De verdwenen stad"], Language: "nl", CoverBytes: [1])
         };
         var dashboard = new MetadataQualityDashboardViewModel(
             [book],
@@ -522,7 +522,7 @@ public sealed class MetadataQualityDashboardViewModelTests
             authorRepairService: new RecordingAuthorRepairService(repairedBook),
             showAuthorRepair: (repair, _) =>
             {
-                repair.AuthorText = "Boektitel";
+                repair.AuthorText = "De verdwenen stad";
                 return Task.FromResult(true);
             });
 

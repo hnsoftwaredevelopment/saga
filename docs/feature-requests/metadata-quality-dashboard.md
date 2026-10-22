@@ -153,14 +153,24 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Handle results per book, continue after individual errors, refresh the library and category filters once, and retain failed rows for retry.
 - Reuse existing metadata persistence and localized result summaries in all six languages.
 
+## Milestone 45: Swap title and author for selected books
+
+- Use the existing quality-list selection directly and show one compact count confirmation, without a second list or checkboxes.
+- Confirming processes all suitable selected books; cancelling writes nothing.
+- Unsuitable books are skipped and counted in the confirmation. Single-book before/after confirmation remains available.
+- Compare the original full title and author list with current storage before swapping; skip changed or unavailable books safely.
+- Reuse the existing persistence service and batch reconciliation, continue after individual failures and refresh the library and author filters together.
+- Keep unselected books unchanged and failed rows selected; show localized result counts in all six languages.
+- Preserve detail-pane Save/Undo. At the user's request, also tighten swap detection within this slice: require independent title-like evidence in the author field and recognize initials, particles and surname-first notation. Preserve the confirmed Duenas swap while suppressing the 32 supplied correct examples; prefer fewer supported signals over ambiguous guesses.
+
 ## Follow-up ideas
 
 - Add a broader metadata lookup that proposes ISBN, authors, description, publisher and other fields separately, so the user decides which values to adopt. Evaluate BoekenBase as a Dutch source before implementation, including API access, terms and stability.
 - Improve large-library scrolling and filtering in a separate performance slice with measurable checks on a representative library.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
-- Tune heuristics after testing on real-world Calibre libraries.
+- Continue tuning heuristics after real-world use. The conservative title/author rules, supplied regression examples and deliberate limitations are recorded in [detection examples](title-author-swap-detection.md).
 
 ## Status
 
-Milestones 26 through 32 and 36 through 43 are implemented and accepted, including reversible quality decisions, individual repair, bulk author/language/series repair, and title/author swapping from details. Milestone 43 was merged on 22 October 2026. Milestone 44 is manually tested and accepted: it previews and cleans each selected book's own tags and reconciles results independently. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic remains intentionally uncertain, and false positives can be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.
+Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45's bulk action is manually tested and accepted: users select books in the quality list and confirm the title/author swap once. The additional conservative title/author detection is automatically tested and manually accepted. Duplicate-book conflicts correctly block a swap; showing the underlying failure reason rather than only a failure count is recorded as a follow-up. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic now requires stronger evidence and intentionally omits ambiguous cases; any remaining false positives can still be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.

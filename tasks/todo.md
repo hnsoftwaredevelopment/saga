@@ -1,4 +1,31 @@
-# Milestone 44 todo
+# Milestone 45 todo
+
+- [x] Scope goedgekeurd; bestaande code onderzocht; featurebranch gemaakt.
+- [x] Specificatie en implementatieplan vastgelegd.
+- [x] Bestaande lijstselectie en snapshotcontrole met tests; tweede selectie na gebruikerstest verwijderd.
+- [x] Dashboard en bibliotheekverversing met tests.
+- [x] Korte bevestiging met aantal en zes vertalingen.
+- [x] Volledige set na interfacecorrectie: 822 tests geslaagd, 0 overgeslagen. Eigen review uitgevoerd; de oude checkboxreview is door het verwijderen van dat overzicht niet meer van toepassing.
+- [x] Bijgewerkte Debug-build 2026.10.22.32 geplaatst na afsluiten Saga: 0 waarschuwingen, 0 fouten, gebouwd op 22 oktober 2026 om 11:54.
+- [x] Documentatie en checklist bijgewerkt en exact naar Obsidian gespiegeld.
+- [x] Gewone PR #46 geopend: https://github.com/hnsoftwaredevelopment/saga/pull/46.
+- [x] CodeQL en GitGuardian groen; oude CodeRabbit-checkboxbevinding vervallen door het verwijderen van het overzicht. Herreview beperkt door de limiet.
+- [x] De gebruiker heeft alle checklistcontroles uitgevoerd en de slice geaccepteerd.
+
+## Aanvulling Milestone 45: detectie aanscherpen
+
+- [x] Gebruiker vraagt de detectieverbetering binnen deze slice; scope en afweging vastgelegd.
+- [x] Eerst falende regressietests: 42 fouten met de oorspronkelijke herkenning.
+- [x] Alle 32 correcte praktijkgevallen worden niet meer gemeld; bevestigde Duenas-omwisseling blijft gedetecteerd en veilig herstelbaar.
+- [x] Naamvormen en boektitelaanwijzingen aangescherpt; geen netwerk, bibliotheekbrede zoekactie, gegevenswijziging of nieuwe dependency.
+- [x] Bestaande dashboardfixtures aangepast aan sterker onderbouwde omwisselingen; detailtests blijven ook niet-gedetecteerde gevallen afdekken.
+- [x] Volledige testset: 874 geslaagd, 0 fouten, 0 overgeslagen. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; geen open bevindingen.
+- [x] Na afsluiten Saga nieuwe Debug-build 2026.10.22.37 geplaatst op 22 oktober 2026 om 12:23 (Europe/Amsterdam); 0 waarschuwingen en fouten, precies één Saga.exe onder Builds/Debug.
+- [x] PR bijgewerkt; CodeQL, GitGuardian en CodeRabbit-status groen op code-/builddocumentatiecommit c4ba228, zonder mergeconflicten.
+- [x] Gebruiker heeft de aanvullende tests uitgevoerd en geaccepteerd; lijst is veel korter en realistischer. Omwisseling naar een bestaand boek wordt terecht geblokkeerd.
+- [ ] Vervolgverbetering buiten deze slice: toon bij een mislukte herstelactie ook de begrijpelijke oorzaak, bijvoorbeeld Boek bestaat al, in plaats van alleen Mislukt: 1.
+
+## Afgerond Milestone 44
 
 - [x] Opdracht en scope goedgekeurd; bestaande code en DoD onderzocht.
 - [x] Branch, specificatie en plan gemaakt.

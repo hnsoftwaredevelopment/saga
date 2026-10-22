@@ -695,7 +695,7 @@
   <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Intervertir</value></data>
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>Le titre et l'auteur n'ont pas pu etre intervertis. Verifiez le livre et reessayez.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>Le titre et l'auteur ont ete enregistres, mais certains fichiers de metadonnees ou ebooks n'ont pas pu etre mis a jour.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Le titre et l'auteur ne semblent plus intervertis. Saga a charge les donnees actuelles du livre.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Les données du livre ont changé ou ne peuvent pas être interverties en toute sécurité. Saga a chargé les données actuelles du livre.</value></data>
   <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Rechercher une couverture</value></data>
   <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Rechercher une couverture</value></data>
   <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga recherche en ligne à partir du titre, de l’auteur et de l’ISBN. Sélectionnez la couverture à utiliser.</value></data>
@@ -721,5 +721,9 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Aucune étiquette</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} livres modifiés</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Modifiés : {0}. Avertissements de fichier : {1}. Déjà résolus : {2}. Indisponibles : {3}. Échecs : {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} livres modifiés</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Modifiés : {0}. Avertissements de fichier : {1}. Ignorés : {2}. Indisponibles : {3}. Échecs : {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Intervertir le titre et l’auteur de {0} livres sélectionnés ?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} livres sélectionnés : {1} livres compatibles seront intervertis et {2} livres incompatibles seront ignorés. Continuer ?</value></data>
 </root>
 

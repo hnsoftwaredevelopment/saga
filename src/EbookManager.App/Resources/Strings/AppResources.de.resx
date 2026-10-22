@@ -695,7 +695,7 @@
   <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Tauschen</value></data>
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>Titel und Autor konnten nicht getauscht werden. Pruefen Sie das Buch und versuchen Sie es erneut.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>Titel und Autor wurden gespeichert, aber nicht jede zugehoerige Metadaten- oder E-Book-Datei konnte aktualisiert werden.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Titel und Autor scheinen nicht mehr vertauscht zu sein. Saga hat die aktuellen Buchdaten geladen.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>Die Buchdaten wurden geändert oder können nicht sicher getauscht werden. Saga hat die aktuellen Buchdaten geladen.</value></data>
   <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Cover suchen</value></data>
   <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Cover suchen</value></data>
   <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga sucht online anhand von Titel, Autor und ISBN. Wählen Sie den gewünschten Umschlag aus.</value></data>
@@ -721,5 +721,9 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Keine Schlagwörter</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} Bücher geändert</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Geändert: {0}. Dateiwarnungen: {1}. Bereits gelöst: {2}. Nicht verfügbar: {3}. Fehlgeschlagen: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} Bücher geändert</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Geändert: {0}. Dateiwarnungen: {1}. Übersprungen: {2}. Nicht verfügbar: {3}. Fehlgeschlagen: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Titel und Autor für {0} ausgewählte Bücher tauschen?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} Bücher ausgewählt: {1} geeignete Bücher werden getauscht, {2} ungeeignete Bücher werden übersprungen. Fortfahren?</value></data>
 </root>
 

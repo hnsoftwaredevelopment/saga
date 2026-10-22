@@ -415,7 +415,7 @@
   <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Swap</value></data>
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>The title and author could not be swapped. Check the book and try again.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>The title and author were saved, but not every related metadata or ebook file could be updated.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>The title and author no longer appear to be swapped. Saga refreshed the current book data.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>The book data changed or cannot be safely swapped. Saga refreshed the current book data.</value></data>
   <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Search for cover</value></data>
   <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Search for a cover</value></data>
   <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga searches online using the title, author and ISBN. Select the cover you want to use.</value></data>
@@ -441,5 +441,9 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>No tags</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} books changed</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Changed: {0}. File warnings: {1}. Already resolved: {2}. Unavailable: {3}. Failed: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} books changed</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Changed: {0}. File warnings: {1}. Skipped: {2}. Unavailable: {3}. Failed: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Swap the title and author for {0} selected books?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} books selected: {1} suitable books will be swapped and {2} unsuitable books will be skipped. Continue?</value></data>
 </root>
 

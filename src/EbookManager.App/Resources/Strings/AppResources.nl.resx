@@ -415,7 +415,7 @@
   <data name="MetadataQualityTitleAuthorRepairConfirm" xml:space="preserve"><value>Omwisselen</value></data>
   <data name="MetadataQualityTitleAuthorRepairFailed" xml:space="preserve"><value>De titel en auteur konden niet worden omgewisseld. Controleer het boek en probeer het opnieuw.</value></data>
   <data name="MetadataQualityTitleAuthorRepairWriteBackWarning" xml:space="preserve"><value>De titel en auteur zijn opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>De titel en auteur lijken bij dit boek niet meer omgewisseld. Saga heeft de actuele boekgegevens geladen.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairNotNeeded" xml:space="preserve"><value>De boekgegevens zijn gewijzigd of kunnen niet veilig worden omgewisseld. Saga heeft de actuele boekgegevens geladen.</value></data>
   <data name="MetadataQualitySearchCover" xml:space="preserve"><value>Omslag zoeken</value></data>
   <data name="MetadataQualityCoverSearchTitle" xml:space="preserve"><value>Omslag zoeken</value></data>
   <data name="MetadataQualityCoverSearchDescription" xml:space="preserve"><value>Saga zoekt online met de titel, auteur en het ISBN. Kies de omslag die je wilt gebruiken.</value></data>
@@ -441,5 +441,9 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Geen tags</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} boeken gewijzigd</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Gewijzigd: {0}. Bestandswaarschuwingen: {1}. Al opgelost: {2}. Niet beschikbaar: {3}. Mislukt: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} boeken gewijzigd</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Gewijzigd: {0}. Bestandswaarschuwingen: {1}. Overgeslagen: {2}. Niet beschikbaar: {3}. Mislukt: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Titel en auteur omwisselen voor {0} geselecteerde boeken?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} boeken geselecteerd: {1} geschikte boeken worden omgewisseld en {2} ongeschikte boeken worden overgeslagen. Doorgaan?</value></data>
 </root>
 

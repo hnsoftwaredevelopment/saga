@@ -447,7 +447,8 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         string bulkResultKey,
         string failedKey,
         string writeBackWarningKey,
-        string notNeededKey)
+        string notNeededKey,
+        bool isBulk = false)
     {
         var results = items
             .GroupBy(item => item.BookId)
@@ -516,7 +517,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
                 ? []
                 : [issue.Rows[Math.Min(firstSelectedIndex, issue.Rows.Count - 1)]]);
 
-        if (selectedRows.Count > 1)
+        if (selectedRows.Count > 1 || isBulk)
         {
             if (succeeded == selectedRows.Count &&
                 writeBackWarnings == 0 &&
@@ -684,68 +685,71 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private bool CanRepairTitleAuthor() =>
         titleAuthorRepairService is not null &&
         showTitleAuthorRepair is not null &&
-        SelectedBookCount == 1 &&
+        selectedBooks.Count > 0 &&
         SelectedIssue?.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap &&
-        SelectedBook is not null &&
-        SelectedIssue.Rows.Contains(SelectedBook) &&
-        books.TryGetValue(SelectedBook.Id, out var book) &&
-        !string.IsNullOrWhiteSpace(book.Metadata.Title) &&
-        book.Metadata.Authors is [var author] &&
-        MetadataQualityAuthorRules.IsUsable(author);
+        selectedBooks.All(row => SelectedIssue.Rows.Contains(row) && books.ContainsKey(row.Id)) &&
+        selectedBooks.Any(row => MetadataQualityTitleAuthorRepairRules.CanRepair(books[row.Id]));
 
     private async Task RepairTitleAuthorAsync(CancellationToken cancellationToken)
     {
-        var selectedBook = SelectedBook;
-        if (!CanRepairTitleAuthor() || selectedBook is null ||
-            titleAuthorRepairService is null || showTitleAuthorRepair is null ||
-            !books.TryGetValue(selectedBook.Id, out var book))
+        var issue = SelectedIssue;
+        if (!CanRepairTitleAuthor() || issue is null ||
+            titleAuthorRepairService is null || showTitleAuthorRepair is null)
         {
             return;
         }
 
-        var repair = new MetadataQualityTitleAuthorRepairViewModel(
-            book.Metadata.Title,
-            book.Metadata.Authors.Single());
-        if (!await showTitleAuthorRepair(repair, cancellationToken))
+        var selectedRows = selectedBooks.DistinctBy(row => row.Id).ToArray();
+        var contexts = selectedRows.Select(row => books[row.Id]).ToArray();
+        var singlePreview = contexts.Length == 1
+            ? new MetadataQualityTitleAuthorRepairRowViewModel(contexts[0]) : null;
+        var repair = singlePreview is not null
+            ? new MetadataQualityTitleAuthorRepairViewModel(singlePreview.CurrentTitle, singlePreview.CurrentAuthor)
+            : new MetadataQualityTitleAuthorRepairViewModel(contexts, localize);
+        if (!await showTitleAuthorRepair(repair, cancellationToken) || !repair.CanConfirm)
         {
             return;
         }
 
-        MetadataQualityTitleAuthorRepairResult result;
+        var proposals = singlePreview is not null
+            ? [singlePreview]
+            : repair.Previews.Where(row => row.CanRepair).ToArray();
+        var chosenIds = proposals.Select(row => row.BookId).ToHashSet();
+        var chosenRows = selectedRows.Where(row => chosenIds.Contains(row.Id)).ToArray();
+        var results = new List<MetadataQualityBatchRepairItem>();
         try
         {
-            result = await titleAuthorRepairService.RepairAsync(selectedBook.Id, cancellationToken);
+            foreach (var proposal in proposals)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    var result = await titleAuthorRepairService.RepairAsync(
+                        proposal.BookId, cancellationToken, proposal.Snapshot);
+                    results.Add(new MetadataQualityBatchRepairItem(result.BookId, result.Status switch
+                    {
+                        MetadataQualityTitleAuthorRepairStatus.Succeeded => MetadataQualityBatchRepairStatus.Succeeded,
+                        MetadataQualityTitleAuthorRepairStatus.SavedWithWriteBackErrors => MetadataQualityBatchRepairStatus.SavedWithWriteBackErrors,
+                        MetadataQualityTitleAuthorRepairStatus.NotApplicable => MetadataQualityBatchRepairStatus.NotApplicable,
+                        MetadataQualityTitleAuthorRepairStatus.NotFound => MetadataQualityBatchRepairStatus.NotFound,
+                        _ => MetadataQualityBatchRepairStatus.Failed
+                    }, result.Book));
+                }
+                catch (OperationCanceledException) { throw; }
+                catch (Exception)
+                {
+                    results.Add(new MetadataQualityBatchRepairItem(proposal.BookId,
+                        MetadataQualityBatchRepairStatus.Failed, null));
+                }
+            }
         }
-        catch (OperationCanceledException)
+        finally
         {
-            throw;
+            ReconcileBatchRepair(issue, chosenRows, results,
+                "MetadataQualityTitleAuthorRepairBulkSucceeded", "MetadataQualityTitleAuthorRepairBulkResult",
+                "MetadataQualityTitleAuthorRepairFailed", "MetadataQualityTitleAuthorRepairWriteBackWarning",
+                "MetadataQualityTitleAuthorRepairNotNeeded", isBulk: repair.IsBulk);
         }
-        catch (Exception)
-        {
-            StatusMessage = localize("MetadataQualityTitleAuthorRepairFailed");
-            return;
-        }
-
-        if (result.Book is { } repairedBook)
-        {
-            ReconcileBook(repairedBook);
-        }
-        else if (result.Status == MetadataQualityTitleAuthorRepairStatus.NotFound)
-        {
-            RemoveBook(selectedBook.Id);
-        }
-
-        StatusMessage = result.Status switch
-        {
-            MetadataQualityTitleAuthorRepairStatus.Succeeded => null,
-            MetadataQualityTitleAuthorRepairStatus.SavedWithWriteBackErrors =>
-                localize("MetadataQualityTitleAuthorRepairWriteBackWarning"),
-            MetadataQualityTitleAuthorRepairStatus.NotApplicable =>
-                localize("MetadataQualityTitleAuthorRepairNotNeeded"),
-            MetadataQualityTitleAuthorRepairStatus.NotFound =>
-                localize("MetadataQualityBookUnavailableMessage"),
-            _ => localize("MetadataQualityTitleAuthorRepairFailed")
-        };
     }
 
     private bool CanSearchCover() =>
