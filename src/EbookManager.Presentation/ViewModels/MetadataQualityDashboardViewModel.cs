@@ -495,6 +495,11 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
                     break;
                 default:
                     failedBookIds.Add(row.Id);
+                    if (result.Book is not null)
+                    {
+                        ReconcileBook(result.Book, notifyLibrary: false);
+                        reconciledBooks.Add(result.Book);
+                    }
                     break;
             }
         }
@@ -843,68 +848,67 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
     private bool CanRepairMessyTags() =>
         tagRepairService is not null &&
         showTagRepair is not null &&
-        SelectedBookCount == 1 &&
+        selectedBooks.Count > 0 &&
         SelectedIssue?.SignalKey == MetadataQualitySignalKeys.MessyTags &&
-        SelectedBook is not null &&
-        SelectedIssue.Rows.Contains(SelectedBook) &&
-        books.ContainsKey(SelectedBook.Id);
+        selectedBooks.All(row => SelectedIssue.Rows.Contains(row) && books.ContainsKey(row.Id));
 
     private async Task RepairMessyTagsAsync(CancellationToken cancellationToken)
     {
-        var selectedBook = SelectedBook;
-        if (!CanRepairMessyTags() || selectedBook is null ||
-            tagRepairService is null || showTagRepair is null ||
-            !books.TryGetValue(selectedBook.Id, out var book))
+        var issue = SelectedIssue;
+        if (!CanRepairMessyTags() || issue is null ||
+            tagRepairService is null || showTagRepair is null)
         {
             return;
         }
 
-        var repair = new MetadataQualityTagRepairViewModel(
-            book.Metadata.Title,
-            book.Metadata.Tags);
+        var selectedRows = selectedBooks.DistinctBy(row => row.Id).ToArray();
+        var contexts = selectedRows.Select(row => books[row.Id]).ToArray();
+        var repair = contexts.Length == 1
+            ? new MetadataQualityTagRepairViewModel(contexts[0].Metadata.Title, contexts[0].Metadata.Tags)
+            : new MetadataQualityTagRepairViewModel(
+                contexts.Select(book => (book.Id, book.Metadata.Title, book.Metadata.Tags)).ToArray(), localize);
         if (!await showTagRepair(repair, cancellationToken) || !repair.CanSave)
         {
             return;
         }
 
-        MetadataQualityTagRepairResult result;
+        var proposals = repair.IsBulk
+            ? repair.Previews
+            : [new MetadataQualityTagRepairPreview(contexts[0].Id, contexts[0].Metadata.Title,
+                contexts[0].Metadata.Tags?.ToArray() ?? [], repair.NormalizedTags)];
+        var results = new List<MetadataQualityBatchRepairItem>();
         try
         {
-            result = await tagRepairService.RepairAsync(
-                selectedBook.Id,
-                repair.NormalizedTags,
-                cancellationToken);
+            foreach (var proposal in proposals)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    var result = await tagRepairService.RepairAsync(
+                        proposal.BookId, proposal.Tags, cancellationToken, proposal.OriginalTags);
+                    results.Add(new MetadataQualityBatchRepairItem(result.BookId, result.Status switch
+                    {
+                        MetadataQualityTagRepairStatus.Succeeded => MetadataQualityBatchRepairStatus.Succeeded,
+                        MetadataQualityTagRepairStatus.SavedWithWriteBackErrors => MetadataQualityBatchRepairStatus.SavedWithWriteBackErrors,
+                        MetadataQualityTagRepairStatus.NotApplicable => MetadataQualityBatchRepairStatus.NotApplicable,
+                        MetadataQualityTagRepairStatus.NotFound => MetadataQualityBatchRepairStatus.NotFound,
+                        _ => MetadataQualityBatchRepairStatus.Failed
+                    }, result.Book));
+                }
+                catch (OperationCanceledException) { throw; }
+                catch (Exception)
+                {
+                    results.Add(new MetadataQualityBatchRepairItem(proposal.BookId, MetadataQualityBatchRepairStatus.Failed, null));
+                }
+            }
         }
-        catch (OperationCanceledException)
+        finally
         {
-            throw;
+            ReconcileBatchRepair(issue, selectedRows, results,
+                "MetadataQualityTagRepairBulkSucceeded", "MetadataQualityTagRepairBulkResult",
+                "MetadataQualityTagRepairFailed", "MetadataQualityTagRepairWriteBackWarning",
+                "MetadataQualityTagRepairNotNeeded");
         }
-        catch (Exception)
-        {
-            StatusMessage = localize("MetadataQualityTagRepairFailed");
-            return;
-        }
-
-        if (result.Book is { } repairedBook)
-        {
-            ReconcileBook(repairedBook);
-        }
-        else if (result.Status == MetadataQualityTagRepairStatus.NotFound)
-        {
-            RemoveBook(selectedBook.Id);
-        }
-
-        StatusMessage = result.Status switch
-        {
-            MetadataQualityTagRepairStatus.Succeeded => null,
-            MetadataQualityTagRepairStatus.SavedWithWriteBackErrors =>
-                localize("MetadataQualityTagRepairWriteBackWarning"),
-            MetadataQualityTagRepairStatus.NotApplicable =>
-                localize("MetadataQualityTagRepairNotNeeded"),
-            MetadataQualityTagRepairStatus.NotFound =>
-                localize("MetadataQualityBookUnavailableMessage"),
-            _ => localize("MetadataQualityTagRepairFailed")
-        };
     }
 
     private void ReconcileBook(Book book, bool notifyLibrary = true)

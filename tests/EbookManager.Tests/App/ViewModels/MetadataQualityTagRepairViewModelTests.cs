@@ -6,6 +6,25 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class MetadataQualityTagRepairViewModelTests
 {
     [Fact]
+    public void Bulk_preview_keeps_each_books_own_tags_and_supports_an_empty_result()
+    {
+        var first = Guid.NewGuid();
+        var second = Guid.NewGuid();
+        var viewModel = new MetadataQualityTagRepairViewModel(
+            [(first, "Thriller", new string[] { " Crime ", "crime" }),
+             (second, "Leeg", new string[] { " , " })],
+            key => key == "MetadataQualityTagRepairBulkContext" ? "{0} boeken" : key);
+
+        viewModel.IsBulk.Should().BeTrue();
+        viewModel.BulkContext.Should().Be("2 boeken");
+        viewModel.Previews.Should().HaveCount(2);
+        viewModel.Previews[0].BookId.Should().Be(first);
+        viewModel.Previews[0].Tags.Should().Equal("Crime");
+        viewModel.Previews[1].Tags.Should().BeEmpty();
+        viewModel.CanSave.Should().BeTrue();
+    }
+
+    [Fact]
     public void Constructor_shows_current_tags_and_builds_an_editable_clean_proposal()
     {
         var viewModel = new MetadataQualityTagRepairViewModel(
