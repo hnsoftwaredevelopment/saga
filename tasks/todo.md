@@ -21,7 +21,7 @@
 - [x] Gewone, niet-draft PR #44 geopend.
 - [x] GitHub-controles van PR #44 beoordeeld: CodeQL en GitGuardian groen; CodeRabbit heeft wegens de gratis limiet geen inhoudelijke review uitgevoerd.
 - [x] Alle handmatige controles voor bulk serieherstel door de gebruiker geaccepteerd.
-- [ ] De 3-pixel lagere positie van de Splash-subtitel visueel laten hercontroleren met build `2026.10.22.1`.
+- [ ] De 6-pixel lagere positie van de Splash-subtitel visueel laten hercontroleren met build `2026.10.22.4`.
 
 ## Buiten scope
 

@@ -2,7 +2,7 @@
 
 Gebruik de actuele Debug-build:
 
-`Builds\Debug\Saga.exe` — versie `2026.10.22.1`
+`Builds\Debug\Saga.exe` — versie `2026.10.22.4`
 
 ## Voorbereiding
 
