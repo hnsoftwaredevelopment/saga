@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EbookManager.Infrastructure.Persistence.Repositories;
 
-public sealed class EfAuthorProfileRepository(LibraryDbContextFactory factory, string libraryPath) : IAuthorProfileRepository
+public sealed partial class EfAuthorProfileRepository(LibraryDbContextFactory factory, string libraryPath) : IAuthorProfileRepository, IAuthorRenameRepository
 {
     public async Task<AuthorPage> SearchAsync(string query, int skip, int take, CancellationToken cancellationToken)
     {

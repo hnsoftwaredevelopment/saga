@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EbookManager.Tests.Infrastructure;
 
-public sealed class LibraryDbContextTests
+public sealed partial class LibraryDbContextTests
 {
     [Fact]
     public async Task Author_overview_counts_coauthors_and_lists_books_by_identity_not_partial_name()
