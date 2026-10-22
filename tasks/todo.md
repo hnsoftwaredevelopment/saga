@@ -1,4 +1,15 @@
-# Milestone 44 todo
+# Milestone 45 todo
+
+- [x] Scope goedgekeurd; bestaande code onderzocht; featurebranch gemaakt.
+- [x] Specificatie en implementatieplan vastgelegd.
+- [ ] Previewmodel, expliciete selectie en snapshotcontrole met tests.
+- [ ] Dashboard en bibliotheekverversing met tests.
+- [ ] Overzicht en zes vertalingen.
+- [ ] Gerichte en volledige tests, Debug-build en eigen review.
+- [ ] Documentatie, Obsidian, gewone PR en GitHub-controles.
+- [ ] Handmatige acceptatie door gebruiker.
+
+## Afgerond Milestone 44
 
 - [x] Opdracht en scope goedgekeurd; bestaande code en DoD onderzocht.
 - [x] Branch, specificatie en plan gemaakt.
