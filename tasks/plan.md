@@ -1,4 +1,15 @@
-# Milestone 46 voorbereiding: duidelijke herstelresultaten
+# Milestone 47: betrouwbaarheid Quality afronden
+
+De gebruiker heeft de drie concrete reviewbevindingen goedgekeurd. Scope: docs/superpowers/specs/2026-10-22-saga-milestone-47-quality-final-reliability-design.md. Branch vanaf actuele main ff97e5a; geen nieuwe kwaliteitsfunctionaliteit.
+
+1. Fout- en uitgestelde-selectietests voor terugzetten; gedeelde verwerking met snapshot, bezetstatus en finally. Bewaak retry, annulering en blokkering van een tweede opdracht.
+2. Eerst falende dashboardtest: Dit is correct ruimt oude hersteldetails op. Hergebruik ClearRepairFeedback na bevestiging en vóór opslag.
+3. Bind veilige foutmelding en CanRestoreAll in het venster, met layouttest en tekst in zes talen. Geen wijzigingen aan de bestaande bevestiging of opslaglaag.
+4. Volledige tests, Debug-build, eigen review, korte handmatige checklist en Markdown-spiegel. Gewone PR; handmatige acceptatie blijft open tot de gebruiker heeft getest.
+
+Stap 1 vormt de basis voor 3; stap 2 is een kleine onafhankelijke correctie. Na iedere geteste samenhangende wijziging committen. Risico is selectie die wijzigt tijdens await: de regressietest bewaart een andere latere selectie en vergelijkt UI met de repository. Geen echte bibliotheekwijzigingen nodig voor fouttests. Commando's en grenzen staan in de specificatie en project-DoD.
+
+## Afgerond: Milestone 46 voorbereiding en implementatie
 
 Status: specificatie en aanpak door gebruiker bevestigd; implementatie gestart. Specificatie: docs/superpowers/specs/2026-10-22-saga-milestone-46-repair-result-details-design.md. PR #46 is gemerged; branch codex/milestone-46-repair-result-details begint op actuele origin/main (6bee6f0). De lokale voorbereiding is behouden.
 
