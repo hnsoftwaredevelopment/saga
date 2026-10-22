@@ -1,5 +1,7 @@
 # Milestone 45: titel en auteur voor meerdere boeken omwisselen
 
+Testbuild: `Builds\Debug\Saga.exe`, versie `2026.10.22.32`, gebouwd op 22 oktober 2026 om 11:54.
+
 ## Voorbereiding
 
 - [ ] Maak zo nodig een back-up en noteer titel, auteur en overige metadata van testboeken.

@@ -6,7 +6,7 @@
 - [x] Dashboard en bibliotheekverversing met tests.
 - [x] Korte bevestiging met aantal en zes vertalingen.
 - [x] Volledige set na interfacecorrectie: 822 tests geslaagd, 0 overgeslagen. Eigen review uitgevoerd; de oude checkboxreview is door het verwijderen van dat overzicht niet meer van toepassing.
-- [ ] Bijgewerkte Debug-build plaatsen nadat Saga is afgesloten; de huidige app houdt de uitvoerbestanden bezet.
+- [x] Bijgewerkte Debug-build 2026.10.22.32 geplaatst na afsluiten Saga: 0 waarschuwingen, 0 fouten, gebouwd op 22 oktober 2026 om 11:54.
 - [x] Documentatie en checklist bijgewerkt en exact naar Obsidian gespiegeld.
 - [x] Gewone PR #46 geopend: https://github.com/hnsoftwaredevelopment/saga/pull/46.
 - [ ] GitHub-controles en externe review beoordelen.
