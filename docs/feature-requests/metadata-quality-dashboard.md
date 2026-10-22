@@ -179,7 +179,7 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Restoration uses the original selected-row snapshot; changing selection while awaiting storage does not remove the newly selected rows. Both restore actions are guarded while one is running.
 - Restore all retains the efficient single-reset list update. Cancellation releases the busy state without being reported as a storage failure; retry clears the previous error.
 - Confirmed This is correct actions clear prior repair details, including when marking itself fails. Cancelling a bulk confirmation remains unchanged.
-- No new quality signal, repair route, schema or dependency. Automated regression tests and a short manual checklist cover the closing round; manual acceptance is pending.
+- No new quality signal, repair route, schema or dependency. Automated regression tests and a short manual checklist cover the closing round. The user reports that the other manual checks work well; the repair-conflict scenario could not be reproduced manually and remains explicitly recorded as automatically covered.
 
 ## Follow-up ideas
 

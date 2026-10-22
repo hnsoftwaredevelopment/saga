@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 47's final quality reliability improvements are implemented and await manual acceptance: safe restoration errors, stable selection while saving and removal of old repair feedback after This is correct. Milestone 46 is manually accepted and merged: all six quality repair routes provide localized per-book error details without a noticeable slowdown reported by the user. Milestone 45's bulk title/author swap and conservative detection, and Milestone 44's per-book tag cleanup, are also accepted and merged.
+Milestone 47's final quality reliability improvements are manually checked and accepted, with the unreproduced conflict scenario covered by automated tests: safe restoration errors, stable selection while saving and removal of old repair feedback after This is correct. Milestone 46 is manually accepted and merged: all six quality repair routes provide localized per-book error details without a noticeable slowdown reported by the user. Milestone 45's bulk title/author swap and conservative detection, and Milestone 44's per-book tag cleanup, are also accepted and merged.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
