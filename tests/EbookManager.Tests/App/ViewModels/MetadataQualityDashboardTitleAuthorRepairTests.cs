@@ -8,6 +8,32 @@ namespace EbookManager.Tests.App.ViewModels;
 
 public sealed class MetadataQualityDashboardTitleAuthorRepairTests
 {
+    [Fact]
+    public async Task Swap_shows_a_safe_per_book_conflict_reason_and_clears_it_on_category_change()
+    {
+        var book = CreateBook("Duenas, Maria", "De wereld vergeten");
+        var result = new MetadataQualityTitleAuthorRepairResult(book.Id,
+            MetadataQualityTitleAuthorRepairStatus.Failed, book,
+            Message: "SQL secret C:\\private\\library.db",
+            FailureReason: MetadataQualityRepairFailureReason.BookAlreadyExists);
+        var dashboard = CreateDashboard(book, new RecordingRepairService(result));
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+
+        dashboard.HasRepairDetails.Should().BeTrue();
+        var detail = dashboard.RepairDetails.Should().ContainSingle().Subject;
+        detail.Title.Should().Be(book.Metadata.Title);
+        detail.Author.Should().Be("De wereld vergeten");
+        detail.Reason.Should().Be("MetadataQualityRepairReasonDuplicate");
+        dashboard.SelectedBookId.Should().Be(book.Id);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.MissingCover);
+        dashboard.HasRepairDetails.Should().BeFalse();
+        dashboard.RepairDetails.Should().BeEmpty();
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

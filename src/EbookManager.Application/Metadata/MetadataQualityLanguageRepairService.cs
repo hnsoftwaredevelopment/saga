@@ -118,7 +118,8 @@ public sealed record MetadataQualityLanguageRepairItemResult(
     MetadataQualityLanguageRepairStatus Status,
     Book? Book = null,
     string? Message = null,
-    IReadOnlyList<BookFileWriteBackResult>? FileResults = null);
+    IReadOnlyList<BookFileWriteBackResult>? FileResults = null,
+    MetadataQualityRepairFailureReason FailureReason = MetadataQualityRepairFailureReason.Unknown);
 
 public enum MetadataQualityLanguageRepairStatus
 {

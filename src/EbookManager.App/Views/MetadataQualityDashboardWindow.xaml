@@ -45,6 +45,40 @@
           </Style>
         </TextBlock.Style>
       </TextBlock>
+      <Expander x:Name="RepairResultDetails"
+                Header="{loc:Loc MetadataQualityRepairDetails}"
+                AutomationProperties.Name="{loc:Loc MetadataQualityRepairDetails}"
+                Focusable="True"
+                Margin="0,0,0,8">
+        <Expander.Style>
+          <Style TargetType="Expander">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding HasRepairDetails}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Expander.Style>
+        <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled" Focusable="True"
+                      AutomationProperties.Name="{loc:Loc MetadataQualityRepairDetails}">
+          <ItemsControl ItemsSource="{Binding RepairDetails}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Margin="8,6,8,6">
+                  <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Text="{Binding Author}" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Text="{Binding Reason}" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
+      </Expander>
       <WrapPanel x:Name="QualityActionsPanel"
                  HorizontalAlignment="Right">
         <Button Content="{loc:Loc Close}"
