@@ -153,7 +153,8 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
 
         public Task<MetadataQualityTitleAuthorRepairResult> RepairAsync(
             Guid bookId,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            MetadataQualityTitleAuthorSnapshot? expected = null)
         {
             BookId = bookId;
             return Task.FromResult(new MetadataQualityTitleAuthorRepairResult(
