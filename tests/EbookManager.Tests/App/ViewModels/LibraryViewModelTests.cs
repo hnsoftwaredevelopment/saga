@@ -20,6 +20,23 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class LibraryViewModelTests
 {
     [Fact]
+    public async Task External_author_rename_refreshes_rows_details_and_filters_without_reloading_every_book()
+    {
+        var original = CreateBook("Book", ["Original"]);
+        var repository = new StaticBookRepository([original]);
+        var viewModel = CreateViewModel([original], repository: repository);
+        await viewModel.RefreshAsync();
+        viewModel.SelectedBook = viewModel.VisibleBooks.Single();
+        await repository.UpdateAsync(CreateBook("Book", ["Renamed"], id: original.Id), default);
+
+        await viewModel.ReconcileExternalMetadataChangesAsync([original.Id]);
+
+        viewModel.VisibleBooks.Single().Authors.Should().Be("Renamed");
+        viewModel.Details.AuthorsText.Should().Be("Renamed");
+        viewModel.AuthorFilters.Should().ContainSingle().Which.Name.Should().Be("Renamed");
+    }
+
+    [Fact]
     public async Task Refresh_loads_books_and_search_filters_visible_books()
     {
         var first = CreateBook("The Hobbit", ["Tolkien"]);
