@@ -411,6 +411,9 @@ public sealed class MetadataQualityDashboardViewModelTests
         dashboard.SelectedBook!.Id.Should().Be(beta.Id);
         dashboard.StatusMessage.Should().Be("bulk:1:1:0:0:1");
         dashboard.IsStatusMessageSuccess.Should().BeFalse();
+        dashboard.RepairDetails.Select(detail => detail.Title).Should().BeEquivalentTo(["Beta", "Gamma"]);
+        dashboard.RepairDetails.Select(detail => detail.Reason).Should().BeEquivalentTo(
+            ["MetadataQualityRepairReasonFailed", "MetadataQualityRepairReasonFileWarning"]);
     }
 
     [Fact]

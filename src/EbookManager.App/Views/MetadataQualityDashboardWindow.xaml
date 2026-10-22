@@ -45,6 +45,43 @@
           </Style>
         </TextBlock.Style>
       </TextBlock>
+      <Expander x:Name="RepairResultDetails"
+                Header="{loc:Loc MetadataQualityRepairDetails}"
+                AutomationProperties.Name="{loc:Loc MetadataQualityRepairDetails}"
+                Focusable="True"
+                Margin="0,0,0,8">
+        <Expander.Style>
+          <Style TargetType="Expander">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding HasRepairDetails}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Expander.Style>
+        <ListBox ItemsSource="{Binding RepairDetails}" MaxHeight="160"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.CanContentScroll="True"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 HorizontalContentAlignment="Stretch" BorderThickness="0" Focusable="True"
+                 AutomationProperties.Name="{loc:Loc MetadataQualityRepairDetails}">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Margin="8,6,8,6">
+                  <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Text="{Binding Author}" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextSecondaryBrush}" />
+                  <TextBlock Text="{Binding Reason}" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+      </Expander>
       <WrapPanel x:Name="QualityActionsPanel"
                  HorizontalAlignment="Right">
         <Button Content="{loc:Loc Close}"

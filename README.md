@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 45's bulk action is manually tested and accepted: select books in the quality list, choose title/author swap and confirm the count once. The list selection is used directly; changed book data is protected before saving. Milestone 44 is manually tested, accepted and merged, including per-book bulk tag cleanup. This slice also tightens swap detection using the user's regression examples; the user has completed and accepted the additional manual tests.
+Milestone 46 is manually tested and accepted: all six quality repair routes now provide expandable, localized per-book error and warning details, including duplicate-book conflicts, while preserving the short success feedback. The user confirms clear error explanations and no noticeable slowdown. Milestone 45 is manually accepted and merged, including bulk title/author swap and more conservative swap detection. Milestone 44's per-book bulk tag cleanup is also accepted and merged.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -81,7 +81,7 @@ Milestone 45's bulk action is manually tested and accepted: select books in the 
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 45 checklist](docs/manual-tests/milestone-45-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 46 checklist](docs/manual-tests/milestone-46-checklist.md).
 
 ## Prerequisites
 
@@ -202,6 +202,9 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-41-checklist.md](docs/manual-tests/milestone-41-checklist.md)
 - [docs/manual-tests/milestone-42-checklist.md](docs/manual-tests/milestone-42-checklist.md)
 - [docs/manual-tests/milestone-43-checklist.md](docs/manual-tests/milestone-43-checklist.md)
+- [docs/manual-tests/milestone-44-checklist.md](docs/manual-tests/milestone-44-checklist.md)
+- [docs/manual-tests/milestone-45-checklist.md](docs/manual-tests/milestone-45-checklist.md)
+- [docs/manual-tests/milestone-46-checklist.md](docs/manual-tests/milestone-46-checklist.md)
 
 ## Later-Version Candidates
 

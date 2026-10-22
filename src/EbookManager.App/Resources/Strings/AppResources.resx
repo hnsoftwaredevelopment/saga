@@ -445,5 +445,12 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Changed: {0}. File warnings: {1}. Skipped: {2}. Unavailable: {3}. Failed: {4}.</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Swap the title and author for {0} selected books?</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} books selected: {1} suitable books will be swapped and {2} unsuitable books will be skipped. Continue?</value></data>
+  <data name="MetadataQualityRepairDetails" xml:space="preserve"><value>Repair details</value></data>
+  <data name="MetadataQualityRepairReasonDuplicate" xml:space="preserve"><value>This book already exists with this title and author.</value></data>
+  <data name="MetadataQualityRepairReasonChanged" xml:space="preserve"><value>The book's metadata changed or this repair is no longer needed.</value></data>
+  <data name="MetadataQualityRepairReasonUnavailable" xml:space="preserve"><value>This book is no longer available in the library.</value></data>
+  <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>Saved in the library, but not all book files could be updated.</value></data>
+  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>The repair could not be completed. Check the current book details before trying again.</value></data>
+  <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>The cover could not be downloaded or processed. Try again or choose another cover.</value></data>
 </root>
 

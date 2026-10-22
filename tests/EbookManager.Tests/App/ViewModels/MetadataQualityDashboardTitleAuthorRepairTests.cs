@@ -8,6 +8,94 @@ namespace EbookManager.Tests.App.ViewModels;
 
 public sealed class MetadataQualityDashboardTitleAuthorRepairTests
 {
+    [Fact]
+    public async Task A_later_success_replaces_old_failure_details_and_cancel_preserves_them()
+    {
+        var book = CreateBook("Jan Jansen", "De verdwenen stad");
+        var service = new MutableRepairService(book);
+        var confirm = true;
+        var dashboard = new MetadataQualityDashboardViewModel([book], key => key,
+            titleAuthorRepairService: service, showTitleAuthorRepair: (_, _) => Task.FromResult(confirm));
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+        dashboard.RepairDetails.Should().ContainSingle().Which.Reason.Should().Be("MetadataQualityRepairReasonFailed");
+
+        confirm = false;
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+        dashboard.RepairDetails.Should().ContainSingle();
+        service.Calls.Should().Be(1);
+
+        confirm = true;
+        service.Succeed = true;
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+        dashboard.RepairDetails.Should().BeEmpty();
+        dashboard.HasRepairDetails.Should().BeFalse();
+        dashboard.StatusMessage.Should().BeNull();
+    }
+
+    private sealed class MutableRepairService(Book book) : IMetadataQualityTitleAuthorRepairService
+    {
+        public TaskCompletionSource<MetadataQualityTitleAuthorRepairResult>? Completion { get; set; }
+        public bool Succeed { get; set; }
+        public int Calls { get; private set; }
+        public Task<MetadataQualityTitleAuthorRepairResult> RepairAsync(Guid bookId,
+            CancellationToken cancellationToken, MetadataQualityTitleAuthorSnapshot? expected = null)
+        {
+            Calls++;
+            if (Completion is not null) { return Completion.Task; }
+            return Task.FromResult(new MetadataQualityTitleAuthorRepairResult(bookId,
+                Succeed ? MetadataQualityTitleAuthorRepairStatus.Succeeded : MetadataQualityTitleAuthorRepairStatus.Failed,
+                Succeed ? CreateRepairedBook(book) : book, Message: "SQL C:\\private\\data.db"));
+        }
+    }
+
+    [Fact]
+    public async Task Completion_of_an_old_category_does_not_show_errors_in_the_new_category()
+    {
+        var book = CreateBook("Jan Jansen", "De verdwenen stad");
+        var completion = new TaskCompletionSource<MetadataQualityTitleAuthorRepairResult>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        var service = new MutableRepairService(book) { Completion = completion };
+        var dashboard = CreateDashboard(book, service);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+        var action = dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+        service.Calls.Should().Be(1);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.MissingCover);
+        completion.SetResult(new(book.Id, MetadataQualityTitleAuthorRepairStatus.Failed, book));
+        await action;
+        dashboard.RepairDetails.Should().BeEmpty();
+        dashboard.StatusMessage.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Swap_shows_a_safe_per_book_conflict_reason_and_clears_it_on_category_change()
+    {
+        var book = CreateBook("Duenas, Maria", "De wereld vergeten");
+        var result = new MetadataQualityTitleAuthorRepairResult(book.Id,
+            MetadataQualityTitleAuthorRepairStatus.Failed, book,
+            Message: "SQL secret C:\\private\\library.db",
+            FailureReason: MetadataQualityRepairFailureReason.BookAlreadyExists);
+        var dashboard = CreateDashboard(book, new RecordingRepairService(result));
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
+
+        await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
+
+        dashboard.HasRepairDetails.Should().BeTrue();
+        var detail = dashboard.RepairDetails.Should().ContainSingle().Subject;
+        detail.Title.Should().Be(book.Metadata.Title);
+        detail.Author.Should().Be("De wereld vergeten");
+        detail.Reason.Should().Be("MetadataQualityRepairReasonDuplicate");
+        dashboard.SelectedBookId.Should().Be(book.Id);
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.MissingCover);
+        dashboard.HasRepairDetails.Should().BeFalse();
+        dashboard.RepairDetails.Should().BeEmpty();
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
@@ -153,6 +241,12 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
         await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
 
         dashboard.StatusMessage.Should().Be($"localized:{messageKey}");
+        var expectedReason = messageKey.EndsWith("WriteBackWarning", StringComparison.Ordinal)
+            ? "MetadataQualityRepairReasonFileWarning"
+            : messageKey.EndsWith("NotNeeded", StringComparison.Ordinal)
+                ? "MetadataQualityRepairReasonChanged" : "MetadataQualityRepairReasonFailed";
+        dashboard.RepairDetails.Should().ContainSingle().Which.Reason
+            .Should().Be($"localized:{expectedReason}");
     }
 
     private static MetadataQualityDashboardViewModel CreateDashboard(
@@ -193,6 +287,10 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
 
         service.Calls.Should().HaveCount(5);
         dashboard.StatusMessage.Should().Be("1:1:1:1:1");
+        dashboard.RepairDetails.Should().HaveCount(4);
+        dashboard.RepairDetails.Select(detail => detail.Reason).Should().BeEquivalentTo(
+            ["MetadataQualityRepairReasonFailed", "MetadataQualityRepairReasonFileWarning",
+             "MetadataQualityRepairReasonChanged", "MetadataQualityRepairReasonUnavailable"]);
         dashboard.IsStatusMessageSuccess.Should().BeFalse();
         notifications.Should().ContainSingle().Which.Should().HaveCount(3);
         dashboard.SelectedIssue.Rows.Select(row => row.Id).Should().BeEquivalentTo([failed.Id, changed.Id]);

@@ -725,5 +725,12 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Geändert: {0}. Dateiwarnungen: {1}. Übersprungen: {2}. Nicht verfügbar: {3}. Fehlgeschlagen: {4}.</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Titel und Autor für {0} ausgewählte Bücher tauschen?</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} Bücher ausgewählt: {1} geeignete Bücher werden getauscht, {2} ungeeignete Bücher werden übersprungen. Fortfahren?</value></data>
+  <data name="MetadataQualityRepairDetails" xml:space="preserve"><value>Details zur Korrektur</value></data>
+  <data name="MetadataQualityRepairReasonDuplicate" xml:space="preserve"><value>Dieses Buch ist mit diesem Titel und Autor bereits vorhanden.</value></data>
+  <data name="MetadataQualityRepairReasonChanged" xml:space="preserve"><value>Die Buchdaten wurden geändert oder diese Korrektur ist nicht mehr erforderlich.</value></data>
+  <data name="MetadataQualityRepairReasonUnavailable" xml:space="preserve"><value>Dieses Buch ist in der Bibliothek nicht mehr verfügbar.</value></data>
+  <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>In der Bibliothek gespeichert, aber nicht alle Buchdateien konnten aktualisiert werden.</value></data>
+  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Die Korrektur konnte nicht abgeschlossen werden. Prüfen Sie die aktuellen Buchdaten, bevor Sie es erneut versuchen.</value></data>
+  <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>Das Cover konnte nicht heruntergeladen oder verarbeitet werden. Versuchen Sie es erneut oder wählen Sie ein anderes Cover.</value></data>
 </root>
 

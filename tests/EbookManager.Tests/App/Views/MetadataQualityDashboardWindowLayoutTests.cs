@@ -6,6 +6,28 @@ namespace EbookManager.Tests.App.Views;
 public sealed class MetadataQualityDashboardWindowLayoutTests
 {
     [Fact]
+    public void Repair_details_are_bounded_accessible_and_only_visible_when_present()
+    {
+        var document = XDocument.Load(Path.Combine(AppContext.BaseDirectory,
+            "TestAssets", "MetadataQualityDashboardWindow.xaml"));
+        XNamespace ui = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+        var details = document.Descendants(ui + "Expander")
+            .Single(element => (string?)element.Attribute(x + "Name") == "RepairResultDetails");
+        RequiredAttribute(details, "Header").Should().Be("{loc:Loc MetadataQualityRepairDetails}");
+        RequiredAttribute(details, "Focusable").Should().Be("True");
+        RequiredAttribute(details, "AutomationProperties.Name").Should().Be("{loc:Loc MetadataQualityRepairDetails}");
+        details.Descendants(ui + "DataTrigger").Should().Contain(trigger =>
+            (string?)trigger.Attribute("Binding") == "{Binding HasRepairDetails}");
+        var scroll = details.Descendants(ui + "ListBox").Single();
+        RequiredAttribute(scroll, "MaxHeight").Should().Be("160");
+        RequiredAttribute(scroll, "ScrollViewer.VerticalScrollBarVisibility").Should().Be("Auto");
+        RequiredAttribute(scroll, "VirtualizingPanel.IsVirtualizing").Should().Be("True");
+        scroll.Attribute("ItemsSource")!.Value
+            .Should().Be("{Binding RepairDetails}");
+    }
+
+    [Fact]
     public void StatusMessage_uses_success_colour_only_for_successful_results()
     {
         var document = XDocument.Load(

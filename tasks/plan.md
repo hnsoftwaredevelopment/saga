@@ -1,4 +1,31 @@
-# Milestone 45 implementatieplan: bulk titel/auteur omwisselen
+# Milestone 46 voorbereiding: duidelijke herstelresultaten
+
+Status: specificatie en aanpak door gebruiker bevestigd; implementatie gestart. Specificatie: docs/superpowers/specs/2026-10-22-saga-milestone-46-repair-result-details-design.md. PR #46 is gemerged; branch codex/milestone-46-repair-result-details begint op actuele origin/main (6bee6f0). De lokale voorbereiding is behouden.
+
+## Implementatievolgorde en checkpoints
+
+1. **Bewijs de conflictreden bij titel/auteur.** Voeg een kleine gedeelde, getypeerde reden toe aan de bestaande reparatieresultaten en behoud BookSaveStatus.Conflict. Acceptatie: een dubbel boek blijft geblokkeerd, de reden is structureel beschikbaar en overige metadata verandert niet. Eerst rood/groen testen. Verwacht: gedeeld Application-contract, titel/auteurservice en servicetests (3 bestanden).
+2. **Bouw gedeelde resultaatfeedback.** Voeg een gericht Presentation-model/helper toe en verbind de titel/auteurroute met de bestaande reconciliatie. Acceptatie: per boek een reden, aantallen consistent, successen behouden, mislukte regels geselecteerd; geen technische exceptiontekst als UI-uitleg. Verificatie: feedback- en dashboardtests, inclusief gemengd resultaat, annulering en verouderde waarden. Circa 4 bestanden: helper/model, dashboard en bijbehorende tests.
+3. **Maak details zichtbaar.** Voeg begrensde uitklapbare resultaatdetails toe bij de bestaande dashboardmelding. Acceptatie: korte groene succesroute blijft, details zijn met toetsenbord bereikbaar en lange teksten nemen niet de hele boekenlijst over. Verificatie: WPF-layouttests en Nederlandse/Engelse resource- en placeholdertests. Circa 5 bestanden: view, layouttest, twee resources en lokalisatietest.
+
+Checkpoint na 1–3: titel/auteurconflict is end-to-end begrijpelijk zonder opslaggedrag te wijzigen; gerichte tests en Debug-build schoon. Algemene feedback blijft los van het grote dashboardviewmodel; geen zes parallelle formatteerders.
+
+4. **Sluit auteur en taal aan.** Gebruik dezelfde redenstructuur in beide services. Acceptatie: één/bulk gebruikt dezelfde feedback en een algemene onverwachte fout blijft eerlijk algemeen. Verificatie: service- en dashboardtests per route; circa 4 bestanden per klein increment, zo nodig service- en dashboardaansluiting apart.
+5. **Sluit serie en tags aan.** Behoud onderscheid tussen niet meer toepasselijk, inmiddels gewijzigd, conflict en bestandwaarschuwing. Acceptatie: geen nieuwere gegevens overschrijven; rest van de selectie wordt verwerkt. Verificatie: service- en dashboardtests per route; opnieuw increments van hoogstens circa 5 bestanden.
+6. **Sluit omslag aan.** Verbind de bestaande enkelvoudige download-/opslaanroute met dezelfde feedback. Acceptatie: onderscheid download-/verwerkingsfout versus opgeslagen bibliotheekwijziging met bestandswaarschuwing; geen nieuwe bulk- of zoekfunctie. Verificatie: omslagservice-, dashboard- en feedbacktests, inclusief bekende status en algemene fallback; circa 4–5 bestanden.
+
+Checkpoint na 4–6: alle zes routes gedragen zich herkenbaar; oude feedback wordt niet aan een nieuwe categorie/actie toegeschreven. Successen, selecties, tellingen en bibliotheekupdates blijven correct. Geen opslag-, duplicaat-, heuristiek- of databasewijziging buiten de minimale redenoverdracht.
+
+7. **Rond talen af in kleine stappen.** Eerst Duits/Frans, dan Spaans/Italiaans, met dezelfde resourcekeys en placeholders als Nederlands/Engels. Acceptatie: alle zes talen bevatten begrijpelijke, veilige uitleg. Verificatie: lokalisatietests; per stap 2 resourcebestanden plus test.
+8. **Verifieer en lever op.** Volledige suite, schone Debug-build, eigen vijfassige review, README/featurestatus/checklist en Obsidian-spiegels. Gewone niet-draft PR met buildversie en tijd; alleen de gebruiker mergt. Handmatige acceptatie volgens docs/manual-tests/milestone-46-checklist.md. CodeRabbit-limieten worden niet als vervanging van de eigen review gebruikt.
+
+## Afhankelijkheden, risico's en grenzen
+
+Stap 1 gaat vóór feedback en UI; stappen 4–6 hergebruiken dezelfde feedback; stap 8 volgt op alles. Geen agentdelegatie of parallelle wijzigingen nodig. Beschikbare redenen en veilige onbekend-fallback eerst testen, zodat er geen schijnzekerheid uit exceptionteksten ontstaat. Ondersteun SavedWithWriteBackErrors expliciet: opgeslagen metadata mag niet als geheel mislukt worden beschreven. Behoud huidige snapshotcontrole en batchreconciliatie.
+
+Commando's en project-DoD staan in de specificatie en docs/definition-of-done.md. De implementatie is in geteste increments uitgevoerd. Resultaatverwerking staat in een gerichte partial Results naast het bestaande dashboard, zodat alle routes dezelfde redenopbouw en reconciliatie gebruiken. Tijdens de eigen review zijn late categoriewissels en onverwachte leesfouten bij auteur/serie met eerst falende regressietests afgevangen; de detailijst is gevirtualiseerd. Definitieve test-/buildgegevens staan in tasks/todo.md en de handmatige checklist.
+
+## Historie: Milestone 45 implementatieplan, bulk titel/auteur omwisselen
 
 Goedgekeurde scope en details: docs/superpowers/specs/2026-10-22-saga-milestone-45-bulk-title-author-swap-design.md.
 

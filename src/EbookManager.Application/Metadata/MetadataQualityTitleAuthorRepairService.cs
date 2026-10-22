@@ -75,7 +75,10 @@ public sealed class MetadataQualityTitleAuthorRepairService(
             status,
             reloadedBook,
             saveResult.Message,
-            saveResult.FileResults);
+            saveResult.FileResults,
+            saveResult.Status == BookSaveStatus.Conflict
+                ? MetadataQualityRepairFailureReason.BookAlreadyExists
+                : MetadataQualityRepairFailureReason.Unknown);
     }
 
     private static BookMetadata CopyMetadataWithSwappedTitleAndAuthor(
@@ -112,7 +115,8 @@ public sealed record MetadataQualityTitleAuthorRepairResult(
     MetadataQualityTitleAuthorRepairStatus Status,
     Book? Book = null,
     string? Message = null,
-    IReadOnlyList<BookFileWriteBackResult>? FileResults = null);
+    IReadOnlyList<BookFileWriteBackResult>? FileResults = null,
+    MetadataQualityRepairFailureReason FailureReason = MetadataQualityRepairFailureReason.Unknown);
 
 public enum MetadataQualityTitleAuthorRepairStatus
 {

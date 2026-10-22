@@ -38,47 +38,61 @@ public sealed class MetadataQualitySeriesRepairService(
         var results = new List<MetadataQualitySeriesRepairItemResult>(distinctBookIds.Length);
         foreach (var bookId in distinctBookIds)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var currentBook = await bookRepository.GetAsync(bookId, cancellationToken);
-            if (currentBook is null)
+            try
             {
-                results.Add(new(bookId, MetadataQualitySeriesRepairStatus.NotFound));
-                continue;
-            }
+                cancellationToken.ThrowIfCancellationRequested();
+                var currentBook = await bookRepository.GetAsync(bookId, cancellationToken);
+                if (currentBook is null)
+                {
+                    results.Add(new(bookId, MetadataQualitySeriesRepairStatus.NotFound));
+                    continue;
+                }
 
-            if (!MetadataQualitySignalEvaluator.Applies(
-                    currentBook,
-                    MetadataQualitySignalKeys.SeriesNumberWithoutSeries))
-            {
-                results.Add(new(bookId, MetadataQualitySeriesRepairStatus.NotApplicable, currentBook));
-                continue;
-            }
+                if (!MetadataQualitySignalEvaluator.Applies(
+                        currentBook,
+                        MetadataQualitySignalKeys.SeriesNumberWithoutSeries))
+                {
+                    results.Add(new(bookId, MetadataQualitySeriesRepairStatus.NotApplicable, currentBook));
+                    continue;
+                }
 
-            var updatedBook = currentBook with
+                var updatedBook = currentBook with
+                {
+                    Metadata = CopyMetadataWithSeries(currentBook.Metadata, normalizedSeries),
+                    UpdatedUtc = DateTimeOffset.UtcNow
+                };
+                var saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
+                var reloadedBook = await bookRepository.GetAsync(bookId, cancellationToken);
+                var databaseWasUpdated = reloadedBook?.Metadata.Series == normalizedSeries;
+                var hasFileWriteBackError = saveResult.FileResults.Any(file =>
+                    file.Result.Status == MetadataWriteBackStatus.Failed);
+                var status = saveResult.Status switch
+                {
+                    BookSaveStatus.Succeeded when hasFileWriteBackError =>
+                        MetadataQualitySeriesRepairStatus.SavedWithWriteBackErrors,
+                    BookSaveStatus.Succeeded => MetadataQualitySeriesRepairStatus.Succeeded,
+                    BookSaveStatus.Failed when databaseWasUpdated =>
+                        MetadataQualitySeriesRepairStatus.SavedWithWriteBackErrors,
+                    _ => MetadataQualitySeriesRepairStatus.Failed
+                };
+                results.Add(new(
+                    bookId,
+                    status,
+                    reloadedBook,
+                    saveResult.Message,
+                    saveResult.FileResults,
+                    saveResult.Status == BookSaveStatus.Conflict
+                        ? MetadataQualityRepairFailureReason.BookAlreadyExists
+                        : MetadataQualityRepairFailureReason.Unknown));
+            }
+            catch (OperationCanceledException)
             {
-                Metadata = CopyMetadataWithSeries(currentBook.Metadata, normalizedSeries),
-                UpdatedUtc = DateTimeOffset.UtcNow
-            };
-            var saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
-            var reloadedBook = await bookRepository.GetAsync(bookId, cancellationToken);
-            var databaseWasUpdated = reloadedBook?.Metadata.Series == normalizedSeries;
-            var hasFileWriteBackError = saveResult.FileResults.Any(file =>
-                file.Result.Status == MetadataWriteBackStatus.Failed);
-            var status = saveResult.Status switch
+                throw;
+            }
+            catch (Exception exception)
             {
-                BookSaveStatus.Succeeded when hasFileWriteBackError =>
-                    MetadataQualitySeriesRepairStatus.SavedWithWriteBackErrors,
-                BookSaveStatus.Succeeded => MetadataQualitySeriesRepairStatus.Succeeded,
-                BookSaveStatus.Failed when databaseWasUpdated =>
-                    MetadataQualitySeriesRepairStatus.SavedWithWriteBackErrors,
-                _ => MetadataQualitySeriesRepairStatus.Failed
-            };
-            results.Add(new(
-                bookId,
-                status,
-                reloadedBook,
-                saveResult.Message,
-                saveResult.FileResults));
+                results.Add(new(bookId, MetadataQualitySeriesRepairStatus.Failed, Message: exception.Message));
+            }
         }
 
         return new MetadataQualitySeriesRepairBatchResult(results.AsReadOnly());
@@ -107,7 +121,8 @@ public sealed record MetadataQualitySeriesRepairItemResult(
     MetadataQualitySeriesRepairStatus Status,
     Book? Book = null,
     string? Message = null,
-    IReadOnlyList<BookFileWriteBackResult>? FileResults = null);
+    IReadOnlyList<BookFileWriteBackResult>? FileResults = null,
+    MetadataQualityRepairFailureReason FailureReason = MetadataQualityRepairFailureReason.Unknown);
 
 public enum MetadataQualitySeriesRepairStatus
 {

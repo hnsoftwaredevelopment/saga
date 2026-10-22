@@ -10,6 +10,34 @@ namespace EbookManager.Tests.Metadata;
 public sealed class MetadataQualitySeriesRepairServiceTests
 {
     [Fact]
+    public async Task Unexpected_read_failure_does_not_discard_other_book_results()
+    {
+        var first = CreateBook(series: null, seriesNumber: 1);
+        var failed = CreateBook(series: null, seriesNumber: 1);
+        var last = CreateBook(series: null, seriesNumber: 1);
+        var repository = new InMemoryBookRepository([first, failed, last]);
+        repository.FailingReadBookIds.Add(failed.Id);
+        var result = await CreateService(repository).RepairAsync([first.Id, failed.Id, last.Id], "Nieuw", default);
+        result.Items.Select(item => item.Status).Should().Equal(
+            MetadataQualitySeriesRepairStatus.Succeeded,
+            MetadataQualitySeriesRepairStatus.Failed,
+            MetadataQualitySeriesRepairStatus.Succeeded);
+        result.Items[1].FailureReason.Should().Be(MetadataQualityRepairFailureReason.Unknown);
+    }
+
+    [Fact]
+    public async Task Repair_preserves_a_typed_duplicate_reason_without_writing()
+    {
+        var book = CreateBook(series: null, seriesNumber: 1);
+        var repository = new InMemoryBookRepository([book]) { ThrowConflict = true };
+        var result = await CreateService(repository).RepairAsync([book.Id], "Serie", default);
+        var item = result.Items.Should().ContainSingle().Subject;
+        item.Status.Should().Be(MetadataQualitySeriesRepairStatus.Failed);
+        item.FailureReason.Should().Be(MetadataQualityRepairFailureReason.BookAlreadyExists);
+        item.Book!.Metadata.Should().Be(book.Metadata);
+    }
+
+    [Fact]
     public async Task RepairAsync_changes_only_series_and_preserves_the_existing_series_number()
     {
         var original = CreateBook(series: null, seriesNumber: 3);
@@ -133,15 +161,20 @@ public sealed class MetadataQualitySeriesRepairServiceTests
     {
         private readonly Dictionary<Guid, Book> books = seed.ToDictionary(book => book.Id);
 
+        public bool ThrowConflict { get; init; }
+        public HashSet<Guid> FailingReadBookIds { get; } = [];
         public int UpdateCalls { get; private set; }
         public bool ThrowWhenListingFiles { get; init; }
 
         public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<Book>>(books.Values.ToArray());
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken) =>
-            Task.FromResult(books.GetValueOrDefault(id));
+            FailingReadBookIds.Contains(id)
+                ? throw new IOException("Read failed.")
+                : Task.FromResult(books.GetValueOrDefault(id));
         public Task UpdateAsync(Book book, CancellationToken cancellationToken)
         {
+            if (ThrowConflict) { throw new BookConflictException(); }
             UpdateCalls++;
             books[book.Id] = book;
             return Task.CompletedTask;

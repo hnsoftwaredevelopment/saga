@@ -725,5 +725,12 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Modificados: {0}. Avisos de archivo: {1}. Omitidos: {2}. No disponibles: {3}. Fallidos: {4}.</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>¿Intercambiar el título y el autor de {0} libros seleccionados?</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} libros seleccionados: se intercambiarán {1} libros compatibles y se omitirán {2} libros no compatibles. ¿Continuar?</value></data>
+  <data name="MetadataQualityRepairDetails" xml:space="preserve"><value>Detalles de la corrección</value></data>
+  <data name="MetadataQualityRepairReasonDuplicate" xml:space="preserve"><value>Este libro ya existe con este título y autor.</value></data>
+  <data name="MetadataQualityRepairReasonChanged" xml:space="preserve"><value>Los datos del libro han cambiado o esta corrección ya no es necesaria.</value></data>
+  <data name="MetadataQualityRepairReasonUnavailable" xml:space="preserve"><value>Este libro ya no está disponible en la biblioteca.</value></data>
+  <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>Guardado en la biblioteca, pero no se pudieron actualizar todos los archivos del libro.</value></data>
+  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>No se pudo completar la corrección. Comprueba los datos actuales del libro antes de intentarlo de nuevo.</value></data>
+  <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>No se pudo descargar o procesar la portada. Inténtalo de nuevo o elige otra portada.</value></data>
 </root>
 

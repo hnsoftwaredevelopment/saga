@@ -1,4 +1,23 @@
-# Milestone 45 todo
+# Milestone 46: resultaatdetails bij kwaliteitsherstel
+
+- [x] Gebruiker keurt richting goed voor alle kwaliteitsherstelpagina's; alleen voorbereiding gevraagd tijdens review huidige PR.
+- [x] Zes routes, huidige resultaatmodellen, BookService.Conflict en verlies van redenen in dashboard geïnventariseerd.
+- [x] Conceptspec, plan en handmatige checklist vastgelegd; geen productcode, build of huidige PR gewijzigd.
+- [x] Concrete specificatie en aanpak door gebruiker bevestigd.
+- [x] PR #46 door gebruiker gemerged; actuele origin/main opgehaald en nieuwe codex/-branch vanaf 6bee6f0 gemaakt. Lokale voorbereidingsbestanden behouden.
+- [x] Titel/auteurconflict eerst met falende test bewezen; minimale getypeerde reden doorgegeven zonder duplicaatbescherming te wijzigen.
+- [x] Gedeelde feedbackopbouw en begrensde, gevirtualiseerde details toegevoegd; succesroute en batchreconciliatie behouden.
+- [x] Auteur en taal aangesloten met gerichte tests voor één/bulk en foutreden.
+- [x] Serie en tags aangesloten met gerichte tests voor stale data, overslaan en bestandswaarschuwingen.
+- [x] Omslagdownload en -herstel op dezelfde feedback aangesloten; geen nieuwe bulk- of zoekfunctie.
+- [x] Begrijpelijke vertalingen en resourcecontroles voor alle zes talen afgerond.
+- [x] Volledige suite: 882 tests geslaagd, geen fouten of overgeslagen tests. Debug-build met 0 waarschuwingen/fouten; precies één Saga.exe onder Builds/Debug, versie 2026.10.22.56, 22 oktober 2026 om 13:25 (Europe/Amsterdam). Eigen vijfassige review uitgevoerd; geen open bevindingen. Randgevallen zijn testgestuurd gecorrigeerd.
+- [x] Documentatie exact naar Obsidian gespiegeld en hashes gelijk. Gewone niet-draft PR #47 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/47; mergeable, GitGuardian groen bij opening.
+- [x] CodeQL, GitGuardian en CodeRabbit-status groen op df358ce; PR mergeable en geen inline reviewbevindingen aanwezig bij acceptatiecontrole.
+- [x] CodeRabbit-bevinding buiten de diff alsnog beoordeeld en opgelost: README verwijst nu naar de actuele checklist van Milestone 46; de checklistindex bevat ook Milestones 44–46. Commitbereik/optionele commitknoppen zijn geen inhoudelijke commitbevinding. Algemene docstringwaarschuwing niet blind toegepast conform project-DoD.
+- [x] Gebruiker heeft alles getest en geaccepteerd: foutredenen duidelijk, werking goed en geen merkbare vertraging ten opzichte van eerdere versies.
+
+## Historie: Milestone 45 todo
 
 - [x] Scope goedgekeurd; bestaande code onderzocht; featurebranch gemaakt.
 - [x] Specificatie en implementatieplan vastgelegd.
