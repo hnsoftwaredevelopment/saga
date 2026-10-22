@@ -25,6 +25,14 @@ public sealed class SplashLayoutTests
         textBlocks.Should().OnlyContain(text =>
             (string?)text.Attribute("VerticalAlignment") == "Center");
         textBlocks.Should().OnlyContain(text => HasNoVerticalMargin(text));
+
+        var subtitle = textBlocks.Single(text =>
+            (string?)text.Attribute(xaml + "Name") == "SubtitleText");
+        var subtitleOffset = subtitle
+            .Element(presentation + "TextBlock.RenderTransform")?
+            .Element(presentation + "TranslateTransform");
+        subtitleOffset.Should().NotBeNull();
+        ((string?)subtitleOffset!.Attribute("Y")).Should().Be("3");
     }
 
     private static bool HasNoVerticalMargin(XElement element)

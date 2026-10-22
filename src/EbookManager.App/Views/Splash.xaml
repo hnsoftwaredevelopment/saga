@@ -46,7 +46,11 @@
                            Foreground="DarkOrange"
                            FontFamily="{StaticResource BrandFontMedium}"
                            Cursor="None"
-                           IsEnabled="False"/>
+                           IsEnabled="False">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform Y="3"/>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
             </Grid>
 
             <StackPanel Orientation="Horizontal">
