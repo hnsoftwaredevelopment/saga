@@ -10,6 +10,22 @@ namespace EbookManager.Tests.Metadata;
 public sealed class MetadataQualityAuthorRepairServiceTests
 {
     [Fact]
+    public async Task Unexpected_read_failure_does_not_discard_other_book_results()
+    {
+        var first = CreateBook("Boek", ["Unknown"]);
+        var failed = CreateBook("Boek", ["Unknown"]);
+        var last = CreateBook("Boek", ["Unknown"]);
+        var repository = new InMemoryBookRepository([first, failed, last]);
+        repository.FailingReadBookIds.Add(failed.Id);
+        var result = await CreateService(repository).RepairAsync([first.Id, failed.Id, last.Id], "Nieuw", default);
+        result.Items.Select(item => item.Status).Should().Equal(
+            MetadataQualityAuthorRepairStatus.Succeeded,
+            MetadataQualityAuthorRepairStatus.Failed,
+            MetadataQualityAuthorRepairStatus.Succeeded);
+        result.Items[1].FailureReason.Should().Be(MetadataQualityRepairFailureReason.Unknown);
+    }
+
+    [Fact]
     public async Task RepairAsync_changes_only_author_and_updated_timestamp_then_returns_reloaded_book()
     {
         var original = CreateBook("Boek", ["Unknown"]);
@@ -177,6 +193,7 @@ public sealed class MetadataQualityAuthorRepairServiceTests
         private readonly Dictionary<Guid, Book> books = seed.ToDictionary(book => book.Id);
 
         public int GetCalls { get; private set; }
+        public HashSet<Guid> FailingReadBookIds { get; } = [];
         public int UpdateCalls { get; private set; }
         public HashSet<Guid> ConflictingBookIds { get; } = [];
         public bool ThrowWhenListingFiles { get; init; }
@@ -186,6 +203,7 @@ public sealed class MetadataQualityAuthorRepairServiceTests
 
         public Task<Book?> GetAsync(Guid id, CancellationToken cancellationToken)
         {
+            if (FailingReadBookIds.Contains(id)) { throw new IOException("Read failed."); }
             GetCalls++;
             return Task.FromResult(books.GetValueOrDefault(id));
         }

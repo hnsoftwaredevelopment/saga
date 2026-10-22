@@ -60,11 +60,15 @@
             </Style.Triggers>
           </Style>
         </Expander.Style>
-        <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto"
-                      HorizontalScrollBarVisibility="Disabled" Focusable="True"
-                      AutomationProperties.Name="{loc:Loc MetadataQualityRepairDetails}">
-          <ItemsControl ItemsSource="{Binding RepairDetails}">
-            <ItemsControl.ItemTemplate>
+        <ListBox ItemsSource="{Binding RepairDetails}" MaxHeight="160"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.CanContentScroll="True"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 HorizontalContentAlignment="Stretch" BorderThickness="0" Focusable="True"
+                 AutomationProperties.Name="{loc:Loc MetadataQualityRepairDetails}">
+            <ListBox.ItemTemplate>
               <DataTemplate>
                 <StackPanel Margin="8,6,8,6">
                   <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"
@@ -75,9 +79,8 @@
                              Foreground="{DynamicResource TextPrimaryBrush}" />
                 </StackPanel>
               </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </ScrollViewer>
+            </ListBox.ItemTemplate>
+        </ListBox>
       </Expander>
       <WrapPanel x:Name="QualityActionsPanel"
                  HorizontalAlignment="Right">

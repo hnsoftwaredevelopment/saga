@@ -94,6 +94,8 @@ public sealed class MetadataQualityDashboardLanguageRepairTests
 
         dashboard.SelectedIssue.Rows.Should().ContainSingle();
         dashboard.StatusMessage.Should().Be("localized:MetadataQualityLanguageRepairFailed");
+        dashboard.RepairDetails.Should().ContainSingle().Which.Reason
+            .Should().Be("localized:MetadataQualityRepairReasonFailed");
     }
 
     [Fact]
@@ -118,6 +120,8 @@ public sealed class MetadataQualityDashboardLanguageRepairTests
 
         dashboard.SelectedIssue.Rows.Should().BeEmpty();
         dashboard.StatusMessage.Should().Be("localized:MetadataQualityLanguageRepairWriteBackWarning");
+        dashboard.RepairDetails.Should().ContainSingle().Which.Reason
+            .Should().Be("localized:MetadataQualityRepairReasonFileWarning");
     }
 
     [Fact]
@@ -142,6 +146,8 @@ public sealed class MetadataQualityDashboardLanguageRepairTests
 
         dashboard.SelectedIssue.Rows.Should().BeEmpty();
         dashboard.StatusMessage.Should().Be("localized:MetadataQualityLanguageRepairNotNeeded");
+        dashboard.RepairDetails.Should().ContainSingle().Which.Reason
+            .Should().Be("localized:MetadataQualityRepairReasonChanged");
     }
 
     private static Task<bool> SelectDutchLanguage(

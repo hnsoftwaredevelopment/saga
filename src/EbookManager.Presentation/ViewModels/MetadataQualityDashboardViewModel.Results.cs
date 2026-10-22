@@ -59,14 +59,18 @@ public sealed partial class MetadataQualityDashboardViewModel
         string notNeededKey,
         bool isBulk = false)
     {
-        ClearRepairFeedback();
+        var showFeedback = ReferenceEquals(SelectedIssue, issue);
+        if (showFeedback)
+        {
+            ClearRepairFeedback();
+        }
         var results = items
             .GroupBy(item => item.BookId)
             .ToDictionary(group => group.Key, group => group.Last());
         foreach (var row in selectedRows)
         {
             var item = results.GetValueOrDefault(row.Id);
-            if (item?.Status != MetadataQualityBatchRepairStatus.Succeeded)
+            if (showFeedback && item?.Status != MetadataQualityBatchRepairStatus.Succeeded)
             {
                 AddRepairDetail(row, item?.Status ?? MetadataQualityBatchRepairStatus.Failed,
                     item?.FailureReason ?? MetadataQualityRepairFailureReason.Unknown);
@@ -128,6 +132,11 @@ public sealed partial class MetadataQualityDashboardViewModel
         if (reconciledBooks.Count > 0)
         {
             booksRepaired?.Invoke(reconciledBooks);
+        }
+
+        if (!showFeedback)
+        {
+            return;
         }
 
         var failedRows = issue.Rows.Where(row => failedBookIds.Contains(row.Id)).ToArray();

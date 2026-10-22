@@ -367,6 +367,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            if (!ReferenceEquals(SelectedIssue, issue)) { return; }
             SetRepairFailureDetails(selectedRows);
             StatusMessage = localize("MetadataQualityAuthorRepairFailed");
             return;
@@ -428,6 +429,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            if (!ReferenceEquals(SelectedIssue, issue)) { return; }
             SetRepairFailureDetails(selectedRows);
             StatusMessage = localize("MetadataQualityLanguageRepairFailed");
             return;
@@ -473,6 +475,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             .ToArray();
         if (bookContexts.Length != selectedRows.Length)
         {
+            if (!ReferenceEquals(SelectedIssue, issue)) { return; }
             SetRepairFailureDetails(selectedRows);
             StatusMessage = localize("MetadataQualitySeriesRepairFailed");
             return;
@@ -503,6 +506,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            if (!ReferenceEquals(SelectedIssue, issue)) { return; }
             SetRepairFailureDetails(selectedRows);
             StatusMessage = localize("MetadataQualitySeriesRepairFailed");
             return;
@@ -637,6 +641,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            if (SelectedIssue?.SignalKey != MetadataQualitySignalKeys.MissingCover) { return; }
             SetRepairFailureDetails([selectedBook], "MetadataQualityRepairReasonDownload");
             StatusMessage = localize("MetadataQualityCoverDownloadFailed");
             return;
@@ -645,6 +650,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         if (downloadResult.Status != BookCoverDownloadStatus.Succeeded ||
             downloadResult.Bytes is not { Length: > 0 } coverBytes)
         {
+            if (SelectedIssue?.SignalKey != MetadataQualitySignalKeys.MissingCover) { return; }
             SetRepairFailureDetails([selectedBook], "MetadataQualityRepairReasonDownload");
             StatusMessage = localize("MetadataQualityCoverDownloadFailed");
             return;
@@ -664,6 +670,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            if (SelectedIssue?.SignalKey != MetadataQualitySignalKeys.MissingCover) { return; }
             SetRepairFailureDetails([selectedBook]);
             StatusMessage = localize("MetadataQualityCoverRepairFailed");
             return;
@@ -678,6 +685,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             RemoveBook(selectedBook.Id);
         }
 
+        if (SelectedIssue?.SignalKey != MetadataQualitySignalKeys.MissingCover) { return; }
         if (repairResult.Status != MetadataQualityCoverRepairStatus.Succeeded)
         {
             AddRepairDetail(selectedBook, repairResult.Status switch

@@ -111,9 +111,9 @@ public sealed class MetadataQualityTagRepairService(
             reloadedBook,
             saveResult.Message,
             saveResult.FileResults,
-                saveResult.Status == BookSaveStatus.Conflict
-                    ? MetadataQualityRepairFailureReason.BookAlreadyExists
-                    : MetadataQualityRepairFailureReason.Unknown);
+            saveResult.Status == BookSaveStatus.Conflict
+                ? MetadataQualityRepairFailureReason.BookAlreadyExists
+                : MetadataQualityRepairFailureReason.Unknown);
     }
 
     private static bool NullableSequenceEqual(

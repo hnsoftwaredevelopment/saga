@@ -730,7 +730,7 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="MetadataQualityRepairReasonChanged" xml:space="preserve"><value>Die Buchdaten wurden geändert oder diese Korrektur ist nicht mehr erforderlich.</value></data>
   <data name="MetadataQualityRepairReasonUnavailable" xml:space="preserve"><value>Dieses Buch ist in der Bibliothek nicht mehr verfügbar.</value></data>
   <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>In der Bibliothek gespeichert, aber nicht alle Buchdateien konnten aktualisiert werden.</value></data>
-  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Die Änderung konnte nicht gespeichert werden. Versuchen Sie es erneut und prüfen Sie, ob die Bibliothek verfügbar ist.</value></data>
+  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Die Korrektur konnte nicht abgeschlossen werden. Prüfen Sie die aktuellen Buchdaten, bevor Sie es erneut versuchen.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>Das Cover konnte nicht heruntergeladen oder verarbeitet werden. Versuchen Sie es erneut oder wählen Sie ein anderes Cover.</value></data>
 </root>
 

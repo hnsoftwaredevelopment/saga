@@ -19,10 +19,11 @@ public sealed class MetadataQualityDashboardWindowLayoutTests
         RequiredAttribute(details, "AutomationProperties.Name").Should().Be("{loc:Loc MetadataQualityRepairDetails}");
         details.Descendants(ui + "DataTrigger").Should().Contain(trigger =>
             (string?)trigger.Attribute("Binding") == "{Binding HasRepairDetails}");
-        var scroll = details.Descendants(ui + "ScrollViewer").Single();
+        var scroll = details.Descendants(ui + "ListBox").Single();
         RequiredAttribute(scroll, "MaxHeight").Should().Be("160");
-        RequiredAttribute(scroll, "VerticalScrollBarVisibility").Should().Be("Auto");
-        details.Descendants(ui + "ItemsControl").Single().Attribute("ItemsSource")!.Value
+        RequiredAttribute(scroll, "ScrollViewer.VerticalScrollBarVisibility").Should().Be("Auto");
+        RequiredAttribute(scroll, "VirtualizingPanel.IsVirtualizing").Should().Be("True");
+        scroll.Attribute("ItemsSource")!.Value
             .Should().Be("{Binding RepairDetails}");
     }
 

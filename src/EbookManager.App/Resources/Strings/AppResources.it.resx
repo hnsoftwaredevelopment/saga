@@ -730,7 +730,7 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="MetadataQualityRepairReasonChanged" xml:space="preserve"><value>I dati del libro sono cambiati oppure questa correzione non è più necessaria.</value></data>
   <data name="MetadataQualityRepairReasonUnavailable" xml:space="preserve"><value>Questo libro non è più disponibile nella biblioteca.</value></data>
   <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>Salvato nella biblioteca, ma non è stato possibile aggiornare tutti i file del libro.</value></data>
-  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Impossibile salvare la modifica. Riprova e verifica che la biblioteca sia disponibile.</value></data>
+  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Impossibile completare la correzione. Controlla i dati attuali del libro prima di riprovare.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>Impossibile scaricare o elaborare la copertina. Riprova oppure scegli un’altra copertina.</value></data>
 </root>
 

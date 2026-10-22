@@ -112,9 +112,9 @@ public sealed class MetadataQualityCoverRepairService(
             reloadedBook,
             CombineMessages(saveResult.Message, cleanupMessage),
             saveResult.FileResults,
-                saveResult.Status == BookSaveStatus.Conflict
-                    ? MetadataQualityRepairFailureReason.BookAlreadyExists
-                    : MetadataQualityRepairFailureReason.Unknown);
+            saveResult.Status == BookSaveStatus.Conflict
+                ? MetadataQualityRepairFailureReason.BookAlreadyExists
+                : MetadataQualityRepairFailureReason.Unknown);
     }
 
     private static BookMetadata CopyMetadataWithCover(BookMetadata metadata, byte[] coverBytes) =>

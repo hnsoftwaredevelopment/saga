@@ -43,54 +43,65 @@ public sealed class MetadataQualityAuthorRepairService(
         var results = new List<MetadataQualityAuthorRepairItemResult>(distinctBookIds.Length);
         foreach (var bookId in distinctBookIds)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var currentBook = await bookRepository.GetAsync(bookId, cancellationToken);
-            if (currentBook is null)
+            try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+                var currentBook = await bookRepository.GetAsync(bookId, cancellationToken);
+                if (currentBook is null)
+                {
+                    results.Add(new MetadataQualityAuthorRepairItemResult(
+                        bookId,
+                        MetadataQualityAuthorRepairStatus.NotFound));
+                    continue;
+                }
+
+                if (currentBook.Metadata.Authors.Any(MetadataQualityAuthorRules.IsUsable))
+                {
+                    results.Add(new MetadataQualityAuthorRepairItemResult(
+                        bookId,
+                        MetadataQualityAuthorRepairStatus.NotApplicable,
+                        currentBook));
+                    continue;
+                }
+
+                var updatedBook = currentBook with
+                {
+                    Metadata = CopyMetadataWithAuthor(currentBook.Metadata, normalizedAuthor),
+                    UpdatedUtc = DateTimeOffset.UtcNow
+                };
+                var saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
+                var reloadedBook = await bookRepository.GetAsync(bookId, cancellationToken);
+                var databaseWasUpdated = reloadedBook?.Metadata.Authors is [var storedAuthor] &&
+                    storedAuthor.Equals(normalizedAuthor, StringComparison.Ordinal);
+                var hasFileWriteBackError = saveResult.FileResults.Any(file =>
+                    file.Result.Status == MetadataWriteBackStatus.Failed);
+                var status = saveResult.Status switch
+                {
+                    BookSaveStatus.Succeeded when hasFileWriteBackError =>
+                        MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors,
+                    BookSaveStatus.Succeeded => MetadataQualityAuthorRepairStatus.Succeeded,
+                    BookSaveStatus.Failed when databaseWasUpdated =>
+                        MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors,
+                    _ => MetadataQualityAuthorRepairStatus.Failed
+                };
                 results.Add(new MetadataQualityAuthorRepairItemResult(
                     bookId,
-                    MetadataQualityAuthorRepairStatus.NotFound));
-                continue;
+                    status,
+                    reloadedBook,
+                    saveResult.Message,
+                    saveResult.FileResults,
+                    saveResult.Status == BookSaveStatus.Conflict
+                        ? MetadataQualityRepairFailureReason.BookAlreadyExists
+                        : MetadataQualityRepairFailureReason.Unknown));
             }
-
-            if (currentBook.Metadata.Authors.Any(MetadataQualityAuthorRules.IsUsable))
+            catch (OperationCanceledException)
             {
-                results.Add(new MetadataQualityAuthorRepairItemResult(
-                    bookId,
-                    MetadataQualityAuthorRepairStatus.NotApplicable,
-                    currentBook));
-                continue;
+                throw;
             }
-
-            var updatedBook = currentBook with
+            catch (Exception exception)
             {
-                Metadata = CopyMetadataWithAuthor(currentBook.Metadata, normalizedAuthor),
-                UpdatedUtc = DateTimeOffset.UtcNow
-            };
-            var saveResult = await bookService.SaveAsync(updatedBook, cancellationToken);
-            var reloadedBook = await bookRepository.GetAsync(bookId, cancellationToken);
-            var databaseWasUpdated = reloadedBook?.Metadata.Authors is [var storedAuthor] &&
-                storedAuthor.Equals(normalizedAuthor, StringComparison.Ordinal);
-            var hasFileWriteBackError = saveResult.FileResults.Any(file =>
-                file.Result.Status == MetadataWriteBackStatus.Failed);
-            var status = saveResult.Status switch
-            {
-                BookSaveStatus.Succeeded when hasFileWriteBackError =>
-                    MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors,
-                BookSaveStatus.Succeeded => MetadataQualityAuthorRepairStatus.Succeeded,
-                BookSaveStatus.Failed when databaseWasUpdated =>
-                    MetadataQualityAuthorRepairStatus.SavedWithWriteBackErrors,
-                _ => MetadataQualityAuthorRepairStatus.Failed
-            };
-            results.Add(new MetadataQualityAuthorRepairItemResult(
-                bookId,
-                status,
-                reloadedBook,
-                saveResult.Message,
-                saveResult.FileResults,
-                saveResult.Status == BookSaveStatus.Conflict
-                    ? MetadataQualityRepairFailureReason.BookAlreadyExists
-                    : MetadataQualityRepairFailureReason.Unknown));
+                results.Add(new(bookId, MetadataQualityAuthorRepairStatus.Failed, Message: exception.Message));
+            }
         }
 
         return new MetadataQualityAuthorRepairBatchResult(results.AsReadOnly());

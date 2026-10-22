@@ -730,7 +730,7 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="MetadataQualityRepairReasonChanged" xml:space="preserve"><value>Los datos del libro han cambiado o esta corrección ya no es necesaria.</value></data>
   <data name="MetadataQualityRepairReasonUnavailable" xml:space="preserve"><value>Este libro ya no está disponible en la biblioteca.</value></data>
   <data name="MetadataQualityRepairReasonFileWarning" xml:space="preserve"><value>Guardado en la biblioteca, pero no se pudieron actualizar todos los archivos del libro.</value></data>
-  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>No se pudo guardar el cambio. Inténtalo de nuevo y comprueba que la biblioteca esté disponible.</value></data>
+  <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>No se pudo completar la corrección. Comprueba los datos actuales del libro antes de intentarlo de nuevo.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>No se pudo descargar o procesar la portada. Inténtalo de nuevo o elige otra portada.</value></data>
 </root>
 
