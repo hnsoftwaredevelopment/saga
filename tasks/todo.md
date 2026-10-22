@@ -12,7 +12,8 @@
 - [x] Omslagdownload en -herstel op dezelfde feedback aangesloten; geen nieuwe bulk- of zoekfunctie.
 - [x] Begrijpelijke vertalingen en resourcecontroles voor alle zes talen afgerond.
 - [x] Volledige suite: 882 tests geslaagd, geen fouten of overgeslagen tests. Debug-build met 0 waarschuwingen/fouten; precies één Saga.exe onder Builds/Debug, versie 2026.10.22.56, 22 oktober 2026 om 13:25 (Europe/Amsterdam). Eigen vijfassige review uitgevoerd; geen open bevindingen. Randgevallen zijn testgestuurd gecorrigeerd.
-- [ ] Documentatie en Obsidian exact spiegelen; normale PR en beschikbare controles beoordelen.
+- [x] Documentatie exact naar Obsidian gespiegeld en hashes gelijk. Gewone niet-draft PR #47 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/47; mergeable, GitGuardian groen bij opening.
+- [ ] Laatste CodeQL-/CodeRabbit-controles afronden en eventuele inhoudelijke bevindingen beoordelen; bij opening nog lopend.
 - [ ] Handmatige controle met actuele build door gebruiker; niet reproduceerbare foutpaden apart verantwoorden.
 
 ## Historie: Milestone 45 todo
