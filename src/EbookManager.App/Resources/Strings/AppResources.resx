@@ -480,5 +480,20 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Profile saved, but the previous photo could not be cleaned up.</value></data>
   <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>Could not open the website in your browser.</value></data>
   <data name="AuthorPhotoFilter" xml:space="preserve"><value>Photos (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
+  <data name="AuthorRename" xml:space="preserve"><value>Rename author</value></data>
+  <data name="AuthorRenameOriginal" xml:space="preserve"><value>Current name</value></data>
+  <data name="AuthorRenameNew" xml:space="preserve"><value>New name</value></data>
+  <data name="AuthorRenameExplanation" xml:space="preserve"><value>This renames the author for all {0} linked books. Other authors and profile details are kept.</value></data>
+  <data name="AuthorRenameWorking" xml:space="preserve"><value>Renaming author and updating metadata files…</value></data>
+  <data name="AuthorRenameSaved" xml:space="preserve"><value>Author renamed for {0} books.</value></data>
+  <data name="AuthorRenameSavedWithWarnings" xml:space="preserve"><value>Author renamed for {0} books. Metadata files could not be updated for {1} books; see details.</value></data>
+  <data name="AuthorRenameNameExists" xml:space="preserve"><value>This author name already exists. Nothing has changed. Use book details to assign books to that existing author.</value></data>
+  <data name="AuthorRenameInvalid" xml:space="preserve"><value>Enter a valid author name, not Unknown.</value></data>
+  <data name="AuthorRenameConflict" xml:space="preserve"><value>The author or linked books changed. Nothing was renamed. Select the author again and confirm the current book count.</value></data>
+  <data name="AuthorRenameDuplicateBook" xml:space="preserve"><value>This rename would create duplicate books. Nothing has changed.</value></data>
+  <data name="AuthorRenameUnchanged" xml:space="preserve"><value>The author name is unchanged.</value></data>
+  <data name="AuthorRenameFailed" xml:space="preserve"><value>The author could not be renamed. Reload the author details before trying again.</value></data>
+  <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Books whose metadata files could not be updated</value></data>
+  <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>The author was renamed, but the book list could not be refreshed. Refresh the library.</value></data>
 </root>
 

@@ -111,6 +111,16 @@ public partial class AuthorManagementWindow : Window
     }
 
     private async void SaveClicked(object sender, RoutedEventArgs e) => await viewModel.SaveAsync();
+    private async void RenameClicked(object sender, RoutedEventArgs e)
+    {
+        if (!viewModel.CanRename || !await ResolvePendingChangesAsync()) return;
+        var preview = await viewModel.PreviewRenameAsync();
+        if (preview is null) return;
+        var edit = new AuthorRenameDialogViewModel(preview, Text);
+        var dialog = new AuthorRenameWindow(edit) { Owner = this };
+        if (dialog.ShowDialog() == true && await viewModel.RenameAsync(preview, edit.NewName))
+            SearchBox.Text = "";
+    }
     private void DiscardClicked(object sender, RoutedEventArgs e) => viewModel.DiscardChanges();
     private void CloseClicked(object sender, RoutedEventArgs e) => Close();
     private async void MoreAuthorsClicked(object sender, RoutedEventArgs e) => await viewModel.SearchAsync(SearchBox.Text, append: true);

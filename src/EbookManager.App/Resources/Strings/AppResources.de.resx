@@ -760,5 +760,20 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Profil gespeichert, das bisherige Foto konnte jedoch nicht entfernt werden.</value></data>
   <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>Die Website konnte nicht im Browser geöffnet werden.</value></data>
   <data name="AuthorPhotoFilter" xml:space="preserve"><value>Fotos (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
+  <data name="AuthorRename" xml:space="preserve"><value>Autor umbenennen</value></data>
+  <data name="AuthorRenameOriginal" xml:space="preserve"><value>Bisheriger Name</value></data>
+  <data name="AuthorRenameNew" xml:space="preserve"><value>Neuer Name</value></data>
+  <data name="AuthorRenameExplanation" xml:space="preserve"><value>Der Autor wird für alle {0} verknüpften Bücher umbenannt. Andere Autoren und Profildaten bleiben erhalten.</value></data>
+  <data name="AuthorRenameWorking" xml:space="preserve"><value>Autor wird umbenannt und Metadatendateien werden aktualisiert…</value></data>
+  <data name="AuthorRenameSaved" xml:space="preserve"><value>Autor für {0} Bücher umbenannt.</value></data>
+  <data name="AuthorRenameSavedWithWarnings" xml:space="preserve"><value>Autor für {0} Bücher umbenannt. Metadatendateien konnten für {1} Bücher nicht aktualisiert werden; siehe Details.</value></data>
+  <data name="AuthorRenameNameExists" xml:space="preserve"><value>Dieser Autorenname existiert bereits. Es wurde nichts geändert. Ordnen Sie Bücher in den Buchdetails dem vorhandenen Autor zu.</value></data>
+  <data name="AuthorRenameInvalid" xml:space="preserve"><value>Geben Sie einen gültigen Autorennamen ein, nicht Unknown.</value></data>
+  <data name="AuthorRenameConflict" xml:space="preserve"><value>Der Autor oder die verknüpften Bücher wurden geändert. Nichts wurde umbenannt. Wählen Sie den Autor erneut und bestätigen Sie die aktuelle Buchanzahl.</value></data>
+  <data name="AuthorRenameDuplicateBook" xml:space="preserve"><value>Diese Umbenennung würde doppelte Bücher erzeugen. Es wurde nichts geändert.</value></data>
+  <data name="AuthorRenameUnchanged" xml:space="preserve"><value>Der Autorenname ist unverändert.</value></data>
+  <data name="AuthorRenameFailed" xml:space="preserve"><value>Der Autor konnte nicht umbenannt werden. Laden Sie die Autordaten vor einem erneuten Versuch neu.</value></data>
+  <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Bücher mit nicht aktualisierten Metadatendateien</value></data>
+  <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>Der Autor wurde umbenannt, die Buchliste konnte jedoch nicht aktualisiert werden. Aktualisieren Sie die Bibliothek.</value></data>
 </root>
 

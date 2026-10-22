@@ -760,5 +760,20 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Perfil guardado, pero no se pudo eliminar la foto anterior.</value></data>
   <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>No se pudo abrir el sitio en el navegador.</value></data>
   <data name="AuthorPhotoFilter" xml:space="preserve"><value>Fotos (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
+  <data name="AuthorRename" xml:space="preserve"><value>Renombrar autor</value></data>
+  <data name="AuthorRenameOriginal" xml:space="preserve"><value>Nombre actual</value></data>
+  <data name="AuthorRenameNew" xml:space="preserve"><value>Nuevo nombre</value></data>
+  <data name="AuthorRenameExplanation" xml:space="preserve"><value>Se renombrará el autor en los {0} libros vinculados. Se conservan los demás autores y los datos del perfil.</value></data>
+  <data name="AuthorRenameWorking" xml:space="preserve"><value>Renombrando autor y actualizando archivos de metadatos…</value></data>
+  <data name="AuthorRenameSaved" xml:space="preserve"><value>Autor renombrado en {0} libros.</value></data>
+  <data name="AuthorRenameSavedWithWarnings" xml:space="preserve"><value>Autor renombrado en {0} libros. No se pudieron actualizar los archivos de metadatos de {1} libros; consulta los detalles.</value></data>
+  <data name="AuthorRenameNameExists" xml:space="preserve"><value>Este nombre de autor ya existe. No se ha cambiado nada. Usa los detalles del libro para asignarlo al autor existente.</value></data>
+  <data name="AuthorRenameInvalid" xml:space="preserve"><value>Introduce un nombre de autor válido, no Unknown.</value></data>
+  <data name="AuthorRenameConflict" xml:space="preserve"><value>El autor o los libros vinculados han cambiado. No se ha renombrado nada. Vuelve a seleccionar el autor y confirma el número actual de libros.</value></data>
+  <data name="AuthorRenameDuplicateBook" xml:space="preserve"><value>Este cambio crearía libros duplicados. No se ha cambiado nada.</value></data>
+  <data name="AuthorRenameUnchanged" xml:space="preserve"><value>El nombre del autor no ha cambiado.</value></data>
+  <data name="AuthorRenameFailed" xml:space="preserve"><value>No se pudo renombrar el autor. Recarga sus datos antes de intentarlo de nuevo.</value></data>
+  <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Libros cuyos archivos de metadatos no se pudieron actualizar</value></data>
+  <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>El autor se ha renombrado, pero no se pudo actualizar la lista de libros. Actualiza la biblioteca.</value></data>
 </root>
 

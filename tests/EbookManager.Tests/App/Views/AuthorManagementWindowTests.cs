@@ -6,11 +6,26 @@ namespace EbookManager.Tests.App.Views;
 public sealed class AuthorManagementWindowTests
 {
     [Fact]
+    public void Profile_scrolls_in_a_small_work_area_while_the_books_keep_a_bounded_viewport()
+    {
+        var document = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "AuthorManagementWindow.xaml"));
+        XNamespace p = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        XNamespace x = "http://schemas.microsoft.com/winfx/2006/xaml";
+        double.Parse(document.Root!.Attribute("MinHeight")!.Value).Should().BeLessThanOrEqualTo(520);
+        var scroll = document.Descendants(p + "ScrollViewer").Single(element => (string?)element.Attribute(x + "Name") == "ProfileScrollViewer");
+        scroll.Attribute("VerticalScrollBarVisibility")!.Value.Should().Be("Auto");
+        var books = scroll.Descendants(p + "DataGrid").Single();
+        double.Parse(books.Attribute("Height")!.Value).Should().BeInRange(100, 300);
+        books.Attribute("EnableRowVirtualization")!.Value.Should().Be("True");
+    }
+
+    [Fact]
     public void Window_has_virtualized_authors_visible_splitter_and_readonly_book_list()
     {
         var document = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "AuthorManagementWindow.xaml"));
         XNamespace p = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
-        var authors = document.Descendants(p + "ListBox").Single();
+        XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
+        var authors = document.Descendants(p + "ListBox").Single(element => (string?)element.Attribute(xaml + "Name") == "AuthorsList");
         authors.Attribute("VirtualizingPanel.VirtualizationMode")!.Value.Should().Be("Recycling");
         authors.Attribute("IsEnabled")!.Value.Should().Be("{Binding CanBrowse}");
         document.Descendants(p + "GridSplitter").Single().Attribute("Style")!.Value

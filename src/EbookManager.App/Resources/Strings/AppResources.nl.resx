@@ -480,5 +480,20 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Profiel opgeslagen, maar de vorige foto kon niet worden opgeruimd.</value></data>
   <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>De website kon niet in je browser worden geopend.</value></data>
   <data name="AuthorPhotoFilter" xml:space="preserve"><value>Foto's (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
+  <data name="AuthorRename" xml:space="preserve"><value>Auteur hernoemen</value></data>
+  <data name="AuthorRenameOriginal" xml:space="preserve"><value>Huidige naam</value></data>
+  <data name="AuthorRenameNew" xml:space="preserve"><value>Nieuwe naam</value></data>
+  <data name="AuthorRenameExplanation" xml:space="preserve"><value>Hiermee hernoem je de auteur voor alle {0} gekoppelde boeken. Andere auteurs en profielgegevens blijven behouden.</value></data>
+  <data name="AuthorRenameWorking" xml:space="preserve"><value>Auteur hernoemen en metadatabestanden bijwerken…</value></data>
+  <data name="AuthorRenameSaved" xml:space="preserve"><value>Auteur hernoemd voor {0} boeken.</value></data>
+  <data name="AuthorRenameSavedWithWarnings" xml:space="preserve"><value>Auteur hernoemd voor {0} boeken. Bij {1} boeken konden metadatabestanden niet worden bijgewerkt; zie de details.</value></data>
+  <data name="AuthorRenameNameExists" xml:space="preserve"><value>Deze auteursnaam bestaat al. Er is niets gewijzigd. Wijzig de auteur per boek via de boekdetails als je boeken aan deze bestaande auteur wilt koppelen.</value></data>
+  <data name="AuthorRenameInvalid" xml:space="preserve"><value>Vul een geldige auteursnaam in, niet Unknown.</value></data>
+  <data name="AuthorRenameConflict" xml:space="preserve"><value>De auteur of gekoppelde boeken zijn ondertussen gewijzigd. Er is niets hernoemd. Selecteer de auteur opnieuw en bevestig het actuele aantal boeken.</value></data>
+  <data name="AuthorRenameDuplicateBook" xml:space="preserve"><value>Deze hernoeming zou dubbele boeken veroorzaken. Er is niets gewijzigd.</value></data>
+  <data name="AuthorRenameUnchanged" xml:space="preserve"><value>De auteursnaam is ongewijzigd.</value></data>
+  <data name="AuthorRenameFailed" xml:space="preserve"><value>De auteur kon niet worden hernoemd. Laad de auteursgegevens opnieuw voordat je het nogmaals probeert.</value></data>
+  <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Boeken waarvan metadatabestanden niet konden worden bijgewerkt</value></data>
+  <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>De auteur is hernoemd, maar de boekenlijst kon niet worden ververst. Vernieuw de bibliotheek.</value></data>
 </root>
 
