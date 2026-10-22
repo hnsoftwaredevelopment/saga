@@ -1,4 +1,15 @@
-# Milestone 43 todo
+# Milestone 44 todo
+
+- [x] Opdracht en scope goedgekeurd; bestaande code en DoD onderzocht.
+- [x] Branch, specificatie en plan gemaakt.
+- [ ] Afzonderlijke previews en veilige opslag testgestuurd implementeren.
+- [ ] Meervoudige selectie, resultaatverwerking en bibliotheekverversing.
+- [ ] Scrollbaar overzicht en zes vertalingen.
+- [ ] Gerichte en volledige tests, Debug-build en eigen review.
+- [ ] Documentatie, Obsidian-spiegel en gewone PR met controles.
+- [ ] Handmatige acceptatie door gebruiker.
+
+## Afgerond Milestone 43
 
 - [x] PR #43 als gemerged vastgesteld en lokale `main` bijgewerkt.
 - [x] Branch `codex/milestone-43-bulk-series-repair` vanaf actuele `main` gemaakt.
