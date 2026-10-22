@@ -20,7 +20,7 @@
 - [x] Naamvormen en boektitelaanwijzingen aangescherpt; geen netwerk, bibliotheekbrede zoekactie, gegevenswijziging of nieuwe dependency.
 - [x] Bestaande dashboardfixtures aangepast aan sterker onderbouwde omwisselingen; detailtests blijven ook niet-gedetecteerde gevallen afdekken.
 - [x] Volledige testset: 874 geslaagd, 0 fouten, 0 overgeslagen. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; geen open bevindingen.
-- [ ] Nieuwe Debug-build plaatsen nadat Saga is afgesloten; versie en tijd vastleggen.
+- [x] Na afsluiten Saga nieuwe Debug-build 2026.10.22.37 geplaatst op 22 oktober 2026 om 12:23 (Europe/Amsterdam); 0 waarschuwingen en fouten, precies één Saga.exe onder Builds/Debug.
 - [ ] PR bijwerken en nieuwe GitHub-controles beoordelen.
 - [ ] Korte aanvullende handmatige hercontrole van de detectie door gebruiker.
 

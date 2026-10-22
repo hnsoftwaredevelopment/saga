@@ -36,7 +36,7 @@ De gebruiker heeft bevestigd dat alle bovenstaande checklistcontroles zijn uitge
 
 ## Aanvulling: terughoudender omwisselherkenning
 
-Deze aanvullende wijziging is nog niet handmatig geaccepteerd. Gebruik de nieuwe build die bij de oplevering wordt vermeld.
+Deze aanvullende wijziging is nog niet handmatig geaccepteerd. Testbuild: `Builds\Debug\Saga.exe`, versie `2026.10.22.37`, gebouwd op 22 oktober 2026 om 12:23 (Europe/Amsterdam). De eerder geaccepteerde bulkcontroles hierboven zijn met versie 32 uitgevoerd.
 
 - [ ] Open opnieuw Quality / Mogelijk omgewisselde auteur/titel: de lijst is kleiner; onder meer Dossier Gifmoord / Ed van Eeden en Dokter Finley Assistent / A.J. Cronin worden niet meer onterecht gemeld.
 - [ ] Indien nog aanwezig en niet eerder als correct gemarkeerd: Duenas, Maria / De wereld vergeten blijft zichtbaar. Eerder herstelde of uitgesloten boeken hoeven niet terug te komen.
