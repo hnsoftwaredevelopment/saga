@@ -19,9 +19,9 @@
 - [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.32`.
 - [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; één onvertaalde legacy-route verwijderd en opnieuw volledig geverifieerd.
 - [x] Gewone, niet-draft PR #44 geopend.
-- [x] GitHub-controles van PR #44 beoordeeld: CodeQL en GitGuardian groen; CodeRabbit heeft wegens de gratis limiet geen inhoudelijke review uitgevoerd.
+- [x] GitHub-controles van PR #44 beoordeeld: CodeQL en GitGuardian groen; CodeRabbit vond in de volledige review geen inhoudelijke opmerkingen. De definitieve één-pixelcorrectie is aanvullend zelf beoordeeld doordat de herreview tegen de uurgrens liep.
 - [x] Alle handmatige controles voor bulk serieherstel door de gebruiker geaccepteerd.
-- [ ] De 6-pixel lagere positie van de Splash-subtitel visueel laten hercontroleren met build `2026.10.22.4`.
+- [x] De definitieve 7-pixel lagere positie van de Splash-subtitel is door de gebruiker visueel goedgekeurd en vastgelegd in build `2026.10.22.6`.
 
 ## Buiten scope
 

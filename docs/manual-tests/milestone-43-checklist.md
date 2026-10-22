@@ -2,7 +2,7 @@
 
 Gebruik de actuele Debug-build:
 
-`Builds\Debug\Saga.exe` — versie `2026.10.22.4`
+`Builds\Debug\Saga.exe` — versie `2026.10.22.6`
 
 ## Voorbereiding
 
@@ -12,7 +12,7 @@ Gebruik de actuele Debug-build:
 
 ## Splash-scherm
 
-- [ ] Start Saga en controleer dat `Saga` en de subtitel visueel netjes rond dezelfde verticale middenlijn staan.
+- [x] Start Saga en controleer dat `Saga` en de subtitel visueel netjes rond dezelfde verticale middenlijn staan. ✅ 2026-10-22
 - [x] Controleer dat de onderlinge uitlijning natuurlijk oogt en niet door een opvallende lege ruimte of afkapping wordt verstoord. ✅ 2026-10-21
 
 ## Selectie en bulkcontext
@@ -54,5 +54,5 @@ Gebruik de actuele Debug-build:
 
 ## Resultaat
 
-- [ ] Het serieherstel is volledig geslaagd; alleen de aangepaste positie van de subtitel wacht nog op visuele hercontrole.
+- [x] Het serieherstel en de definitieve Splash-uitlijning zijn volledig geslaagd. ✅ 2026-10-22
 - [x] De oorspronkelijke afwijking en de gekozen correctie zijn vastgelegd. ✅ 2026-10-22

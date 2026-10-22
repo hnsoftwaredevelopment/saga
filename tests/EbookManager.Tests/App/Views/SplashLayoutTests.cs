@@ -32,7 +32,7 @@ public sealed class SplashLayoutTests
             .Element(presentation + "TextBlock.RenderTransform")?
             .Element(presentation + "TranslateTransform");
         subtitleOffset.Should().NotBeNull();
-        ((string?)subtitleOffset!.Attribute("Y")).Should().Be("6");
+        ((string?)subtitleOffset!.Attribute("Y")).Should().Be("7");
     }
 
     private static bool HasNoVerticalMargin(XElement element)
