@@ -759,6 +759,49 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_bulk_series_repair_refreshes_all_books_and_preserves_series_numbers()
+    {
+        var first = CreateBook(
+            "Eerste deel",
+            ["Auteur"],
+            language: "nl",
+            seriesNumber: 1,
+            coverBytes: [1]);
+        var second = CreateBook(
+            "Tweede deel",
+            ["Auteur"],
+            language: "nl",
+            seriesNumber: 7.5m,
+            coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataQualitySeriesRepairResult = true,
+            MetadataQualitySeriesRepairSeries = "Saga"
+        };
+        var viewModel = CreateViewModel(
+            [first, second],
+            interaction,
+            currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue =>
+            issue.SignalKey == MetadataQualitySignalKeys.SeriesNumberWithoutSeries);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairMissingSeriesCommand.ExecuteAsync(null);
+
+        interaction.MetadataQualitySeriesRepair.Should().NotBeNull();
+        interaction.MetadataQualitySeriesRepair!.AffectedBookCount.Should().Be(2);
+        viewModel.VisibleBooks.Single(row => row.Id == first.Id).Series.Should().Be("Saga");
+        viewModel.VisibleBooks.Single(row => row.Id == first.Id).SeriesNumber.Should().Be(1);
+        viewModel.VisibleBooks.Single(row => row.Id == second.Id).Series.Should().Be("Saga");
+        viewModel.VisibleBooks.Single(row => row.Id == second.Id).SeriesNumber.Should().Be(7.5m);
+        viewModel.SeriesFilters.Single(filter => filter.Name == "Saga").Count.Should().Be(2);
+        dashboard.SelectedIssue.Rows.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Metadata_quality_title_author_repair_updates_the_active_library_and_author_filters()
     {
         var swapped = CreateBook(

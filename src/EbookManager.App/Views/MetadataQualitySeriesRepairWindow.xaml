@@ -32,26 +32,32 @@
               Focusable="True"
               AutomationProperties.Name="{loc:Loc Cancel}" />
       <Button x:Name="SaveSeriesRepairButton"
-              Content="{loc:Loc Save}"
+              Content="{Binding SaveButtonText}"
               MinWidth="90"
               Margin="8,0,0,0"
               IsDefault="True"
               IsEnabled="{Binding CanSave}"
               Focusable="True"
               Click="SaveClicked"
-              AutomationProperties.Name="{loc:Loc MetadataQualitySeriesRepairSave}" />
+              AutomationProperties.Name="{Binding SaveButtonText}" />
     </StackPanel>
 
     <StackPanel>
-      <TextBlock Text="{loc:Loc Title}" FontWeight="SemiBold" />
-      <TextBlock Text="{Binding BookTitle}"
+      <TextBlock x:Name="BookContextLabel"
+                 Text="{Binding ContextLabel}"
+                 FontWeight="SemiBold" />
+      <TextBlock x:Name="BookContextText"
+                 Text="{Binding ContextText}"
                  Margin="0,4,0,12"
                  TextWrapping="Wrap"
                  Foreground="{DynamicResource TextSecondaryBrush}" />
-      <TextBlock Text="{loc:Loc SeriesNumber}" FontWeight="SemiBold" />
+      <TextBlock x:Name="SeriesNumberLabel"
+                 Text="{Binding SeriesNumberLabel}"
+                 FontWeight="SemiBold" />
       <TextBlock x:Name="SeriesNumberValue"
-                 Text="{Binding SeriesNumber}"
+                 Text="{Binding SeriesNumberText}"
                  Margin="0,4,0,12"
+                 TextWrapping="Wrap"
                  Foreground="{DynamicResource TextSecondaryBrush}" />
       <TextBlock Text="{loc:Loc Series}" FontWeight="SemiBold" />
       <TextBox x:Name="SeriesInput"

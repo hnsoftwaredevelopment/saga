@@ -1,30 +1,34 @@
-# Milestone 42 todo
+# Milestone 43 todo
 
-- [x] PR #42 als gemerged vastgesteld en lokale `main` bijgewerkt.
-- [x] Branch `codex/milestone-42-details-swap-title-author` vanaf actuele `main` gemaakt.
-- [x] Bestaande detailknop, command, pictogram, staged opslagroute en tests geïnventariseerd.
-- [x] Vastgesteld dat de functie al aanwezig is en niet opnieuw gebouwd moet worden.
-- [x] Specificatie, aannames, grenzen en acceptatiecriteria vastgelegd.
-- [x] Specificatie door gebruiker goedgekeurd.
-- [x] Implementatieplan en volgorde door gebruiker bevestigd.
-- [x] Opslag- en puntkommarandgeval met een karakterisatietest vastgelegd; de bestaande implementatie was direct groen.
-- [x] Bibliotheekregel, zoeken, selectie en auteursfilters met een integratietest vastgelegd; de bestaande implementatie was direct groen.
-- [x] XAML-command, pictogram, toetsenbordtoegang en zes talen met karakterisatietests gecontroleerd.
-- [x] Geen productcode aangepast omdat de tests geen functioneel of interfacegat aantonen.
+- [x] PR #43 als gemerged vastgesteld en lokale `main` bijgewerkt.
+- [x] Branch `codex/milestone-43-bulk-series-repair` vanaf actuele `main` gemaakt.
+- [x] Lokale Splash-wijziging van de gebruiker behouden.
+- [x] Bestaand enkelvoudig serieherstel, batchservice en bulkpatronen geïnventariseerd.
+- [x] Scope voor bulk serieherstel en robuuste Splash-uitlijning door gebruiker goedgekeurd.
+- [x] Volledige specificatie, aannames, grenzen en acceptatiecriteria vastgelegd.
+- [x] Implementatieplan en taakvolgorde vastgelegd.
+- [x] Volledige specificatie en plan door gebruiker bevestigd; oorspronkelijke Splash-margecorrectie mag door de Grid-variant worden vervangen.
+- [x] Splash-layout eerst rood en daarna groen getest en afzonderlijk gecommit.
+- [x] Serieviewmodel en venster voor één en meerdere boeken testgestuurd uitgebreid.
+- [x] Bulkselectie en generieke resultaatreconciliatie testgestuurd aangesloten.
+- [x] Meerdere serienummers, stale series en bibliotheek-/filterverversing bewezen.
+- [x] Nieuwe teksten in zes talen toegevoegd en getest.
+- [x] Gericht checkpoint uitgevoerd: 32 tests geslaagd, geen fouten of overgeslagen tests; increments afzonderlijk gecommit.
 - [x] README, featurestatus en handmatige checklist bijgewerkt en met gelijke hashes naar Obsidian gespiegeld.
-- [x] Gerichte testcheckpoint uitgevoerd: 43 tests geslaagd, geen fouten of overgeslagen tests; increments afzonderlijk gecommit.
-- [x] Volledige testset met .NET 10 uitgevoerd: 797 tests geslaagd, geen fouten of overgeslagen tests.
-- [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.23`.
-- [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; geen bevindingen.
-- [x] Gewone, niet-draft PR #43 geopend.
-- [x] GitHub-controles voor PR #43 beoordeeld: CodeQL en GitGuardian zijn groen; de runner-migratiemelding is alleen informatief.
-- [x] Handmatige acceptatiechecklist uitgevoerd; titel en auteur wisselen werkt volledig zoals verwacht.
+- [x] Volledige testset met .NET 10 uitgevoerd: 805 tests geslaagd, geen fouten of overgeslagen tests.
+- [x] Schone Debug-build gecontroleerd: 0 waarschuwingen, 0 fouten, `Builds/Debug/Saga.exe` versie `2026.10.21.32`.
+- [x] Branchdiff zelf beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; één onvertaalde legacy-route verwijderd en opnieuw volledig geverifieerd.
+- [x] Gewone, niet-draft PR #44 geopend.
+- [x] GitHub-controles van PR #44 beoordeeld: CodeQL en GitGuardian groen; CodeRabbit vond in de volledige review geen inhoudelijke opmerkingen. De definitieve één-pixelcorrectie is aanvullend zelf beoordeeld doordat de herreview tegen de uurgrens liep.
+- [x] Alle handmatige controles voor bulk serieherstel door de gebruiker geaccepteerd.
+- [x] De definitieve 7-pixel lagere positie van de Splash-subtitel is door de gebruiker visueel goedgekeurd en vastgelegd in build `2026.10.22.6`.
 
 ## Buiten scope
 
-- Een tweede omwisselknop of nieuwe opslagroute.
-- Een extra bevestigingsvenster of automatisch opslaan.
-- Wijzigingen aan de Quality Page-heuristiek.
-- Nieuwe bulkfunctionaliteit; de algemene metadata-multibewerking ondersteunt omwisselen al.
-- Online metadata zoeken of andere boekvelden aanpassen.
+- Serienummers wijzigen, gelijkmaken, hernummeren of automatisch afleiden.
+- Verschillende serienaamwaarden binnen één bulkactie.
+- Bulkherstel voor tags, omslagen of titel/auteur.
+- Selectie over meerdere kwaliteitscategorieën.
+- Quality Page-heuristieken aanpassen.
+- Online metadata zoeken of BoekenBase-integratie.
 - Database-, sidecar- of ebookmetadataformaatwijzigingen.

@@ -398,6 +398,12 @@
   <data name="MetadataQualitySeriesRepairInput" xml:space="preserve"><value>Serienaam</value></data>
   <data name="MetadataQualitySeriesRepairHelp" xml:space="preserve"><value>Suggesties komen uit de actieve bibliotheek. Je kunt ook een nieuwe serienaam invoeren.</value></data>
   <data name="MetadataQualitySeriesRepairSave" xml:space="preserve"><value>Serie opslaan</value></data>
+  <data name="MetadataQualitySeriesRepairBulkBookContext" xml:space="preserve"><value>{0} geselecteerde boeken</value></data>
+  <data name="MetadataQualitySeriesRepairBulkSeriesNumbersLabel" xml:space="preserve"><value>Serienummers</value></data>
+  <data name="MetadataQualitySeriesRepairBulkSeriesNumbersHelp" xml:space="preserve"><value>Ieder boek behoudt zijn huidige serienummer.</value></data>
+  <data name="MetadataQualitySeriesRepairBulkSave" xml:space="preserve"><value>Serie wijzigen voor {0} boeken</value></data>
+  <data name="MetadataQualitySeriesRepairBulkSucceeded" xml:space="preserve"><value>{0} boeken gewijzigd</value></data>
+  <data name="MetadataQualitySeriesRepairBulkResult" xml:space="preserve"><value>Gewijzigd: {0}. Bestandswaarschuwingen: {1}. Al opgelost: {2}. Niet beschikbaar: {3}. Mislukt: {4}.</value></data>
   <data name="MetadataQualitySeriesRepairFailed" xml:space="preserve"><value>De serie kon niet worden opgeslagen. Controleer het boek en probeer het opnieuw.</value></data>
   <data name="MetadataQualitySeriesRepairWriteBackWarning" xml:space="preserve"><value>De serie is opgeslagen, maar niet ieder bijbehorend metadata- of ebookbestand kon worden bijgewerkt.</value></data>
   <data name="MetadataQualitySeriesRepairNotNeeded" xml:space="preserve"><value>Bij dit boek ontbreekt de serienaam niet meer. Saga heeft de actuele boekgegevens geladen.</value></data>

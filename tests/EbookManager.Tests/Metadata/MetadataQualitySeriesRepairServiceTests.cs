@@ -29,6 +29,24 @@ public sealed class MetadataQualitySeriesRepairServiceTests
         repaired.Book.UpdatedUtc.Should().BeAfter(original.UpdatedUtc);
     }
 
+    [Fact]
+    public async Task RepairAsync_changes_multiple_books_and_preserves_each_series_number()
+    {
+        var first = CreateBook(series: null, seriesNumber: 1);
+        var second = CreateBook(series: null, seriesNumber: 7.5m);
+        var repository = new InMemoryBookRepository([first, second]);
+        var service = CreateService(repository);
+
+        var result = await service.RepairAsync([first.Id, second.Id], "Saga", default);
+
+        result.Items.Should().HaveCount(2)
+            .And.OnlyContain(item => item.Status == MetadataQualitySeriesRepairStatus.Succeeded);
+        result.Items.Single(item => item.BookId == first.Id).Book!.Metadata.SeriesNumber.Should().Be(1);
+        result.Items.Single(item => item.BookId == second.Id).Book!.Metadata.SeriesNumber.Should().Be(7.5m);
+        result.Items.Should().OnlyContain(item => item.Book!.Metadata.Series == "Saga");
+        repository.UpdateCalls.Should().Be(2);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("   ")]

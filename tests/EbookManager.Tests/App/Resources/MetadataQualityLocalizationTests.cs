@@ -61,6 +61,12 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualitySeriesRepairInput",
         "MetadataQualitySeriesRepairHelp",
         "MetadataQualitySeriesRepairSave",
+        "MetadataQualitySeriesRepairBulkBookContext",
+        "MetadataQualitySeriesRepairBulkSeriesNumbersLabel",
+        "MetadataQualitySeriesRepairBulkSeriesNumbersHelp",
+        "MetadataQualitySeriesRepairBulkSave",
+        "MetadataQualitySeriesRepairBulkSucceeded",
+        "MetadataQualitySeriesRepairBulkResult",
         "MetadataQualitySeriesRepairFailed",
         "MetadataQualitySeriesRepairWriteBackWarning",
         "MetadataQualitySeriesRepairNotNeeded",
@@ -123,10 +129,14 @@ public sealed class MetadataQualityLocalizationTests
         values["MetadataQualityLanguageRepairBulkBookContext"].Should().Contain("{0}");
         values["MetadataQualityLanguageRepairBulkSave"].Should().Contain("{0}");
         values["MetadataQualityLanguageRepairBulkSucceeded"].Should().Contain("{0}");
+        values["MetadataQualitySeriesRepairBulkBookContext"].Should().Contain("{0}");
+        values["MetadataQualitySeriesRepairBulkSave"].Should().Contain("{0}");
+        values["MetadataQualitySeriesRepairBulkSucceeded"].Should().Contain("{0}");
         foreach (var placeholder in Enumerable.Range(0, 5).Select(index => $"{{{index}}}"))
         {
             values["MetadataQualityAuthorRepairBulkResult"].Should().Contain(placeholder);
             values["MetadataQualityLanguageRepairBulkResult"].Should().Contain(placeholder);
+            values["MetadataQualitySeriesRepairBulkResult"].Should().Contain(placeholder);
         }
     }
 

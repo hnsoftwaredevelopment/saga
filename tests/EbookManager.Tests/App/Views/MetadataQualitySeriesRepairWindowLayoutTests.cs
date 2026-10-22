@@ -13,9 +13,21 @@ public sealed class MetadataQualitySeriesRepairWindowLayoutTests
         XNamespace presentation = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
 
+        var contextLabel = document.Descendants(presentation + "TextBlock")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "BookContextLabel");
+        RequiredAttribute(contextLabel, "Text").Should().Be("{Binding ContextLabel}");
+        var contextText = document.Descendants(presentation + "TextBlock")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "BookContextText");
+        RequiredAttribute(contextText, "Text").Should().Be("{Binding ContextText}");
+        RequiredAttribute(contextText, "TextWrapping").Should().Be("Wrap");
+
+        var seriesNumberLabel = document.Descendants(presentation + "TextBlock")
+            .Single(element => (string?)element.Attribute(xaml + "Name") == "SeriesNumberLabel");
+        RequiredAttribute(seriesNumberLabel, "Text").Should().Be("{Binding SeriesNumberLabel}");
         var seriesNumber = document.Descendants(presentation + "TextBlock")
             .Single(element => (string?)element.Attribute(xaml + "Name") == "SeriesNumberValue");
-        RequiredAttribute(seriesNumber, "Text").Should().Be("{Binding SeriesNumber}");
+        RequiredAttribute(seriesNumber, "Text").Should().Be("{Binding SeriesNumberText}");
+        RequiredAttribute(seriesNumber, "TextWrapping").Should().Be("Wrap");
 
         var input = document.Descendants(presentation + "TextBox")
             .Single(element => (string?)element.Attribute(xaml + "Name") == "SeriesInput");
@@ -37,6 +49,8 @@ public sealed class MetadataQualitySeriesRepairWindowLayoutTests
             .Should().Be("SeriesSuggestionsMouseLeftButtonUp");
 
         var save = Button(document, xaml, "SaveSeriesRepairButton");
+        RequiredAttribute(save, "Content").Should().Be("{Binding SaveButtonText}");
+        RequiredAttribute(save, "AutomationProperties.Name").Should().Be("{Binding SaveButtonText}");
         RequiredAttribute(save, "IsDefault").Should().Be("True");
         RequiredAttribute(save, "IsEnabled").Should().Be("{Binding CanSave}");
         RequiredAttribute(save, "Click").Should().Be("SaveClicked");

@@ -1,166 +1,134 @@
-# Milestone 42 implementatieplan: detailactie titel en auteur omwisselen verifiëren
+# Milestone 43 implementatieplan: meerdere ontbrekende serienamen herstellen
 
 ## Overzicht
 
-Milestone 42 bouwt geen tweede omwisselfunctie, maar rondt de bestaande detailactie aantoonbaar af. De kernroute bestaat al in `BookDetailsView` en `BookDetailsViewModel`. De uitvoering concentreert zich daarom op ontbrekend testbewijs voor opslaan, bibliotheekverversing, filters, toegankelijkheid en lokalisatie. Alleen een door een falende test aangetoond functioneel gat wordt met een minimale codewijziging hersteld.
+Milestone 43 breidt het bestaande enkelvoudige serieherstel uit naar één of meerdere geselecteerde boeken. De bestaande service kan al een verzameling boek-id’s veilig verwerken; de belangrijkste wijzigingen liggen daarom in bulkselectie, dialoogcontext, hergebruik van generieke batchreconciliatie, lokalisatie en testbewijs. De afgesproken Splash-uitlijning wordt vooraf als een afzonderlijke kleine UI-commit uitgevoerd.
 
 ## Architectuurbeslissingen
 
-- `BookDetailsViewModel.SwapTitleAndAuthorsCommand` blijft de enige detailactie voor het staged omwisselen.
-- `SaveCommand`, `BookService` en het bestaande `BookSaved`-event blijven de opslag- en verversingsroute.
-- `UndoCommand` blijft de veilige terugweg vóór opslag; er komt geen extra bevestigingsvenster.
-- De bestaande knoppositie, het pijlenpictogram en de gelokaliseerde tooltip blijven behouden wanneer de verificatie slaagt.
-- Een titel die scheidingstekens bevat blijft na omwisselen één auteur; de bestaande `singleAuthorText`-route bewaakt dit.
-- De Quality Page-heuristiek en algemene multibewerking blijven buiten scope.
+- `MetadataQualitySeriesRepairService` blijft de enige opslagroute voor serieherstel.
+- `ReconcileBatchRepair` verwerkt ook serieresultaten; er komt geen derde vrijwel gelijke resultaatverwerker.
+- `MetadataQualitySeriesRepairViewModel` krijgt dezelfde één-/meerdere-boekencontext als de auteur- en taalvensters.
+- Bestaande serienummers worden uitsluitend als context getoond en nooit gewijzigd.
+- De Splash gebruikt een Grid met twee automatische kolommen en gecentreerde kinderen; optische positionering gebeurt alleen op de container.
+- Geen databasewijziging, dependency of nieuwe opslagroute.
 
-## Afhankelijkheden
+## Taak 1: robuuste Splash-uitlijning
 
-```text
-Bestaand detailgedrag inventariseren
-        │
-        ├── Opslagroute en randgevallen bewijzen
-        │          │
-        │          └── Bibliotheekregel en auteursfilters bewijzen
-        │
-        └── XAML, pictogram, toegankelijkheid en lokalisatie bewijzen
-                         │
-                         └── Documentatie, acceptatiebuild en review
-```
-
-## Taak 1: staged omwisselen en opslaan volledig bewijzen
-
-**Beschrijving:** Voeg eerst falende tests toe die de bestaande gebruikersroute als één geheel beschrijven: omwisselen, staged toestand, opslaan en behoud van overige metadata. Leg ook het randgeval vast waarin de voormalige titel een puntkomma bevat en toch één auteur moet blijven.
+**Beschrijving:** Vervang de horizontale titel-StackPanel door een Grid dat titel en subtitel onafhankelijk van lettergrootte en DPI verticaal centreert. Behoud de bestaande uitstraling en algemene positie.
 
 **Acceptatiecriteria:**
-- [x] De knop verwisselt de huidige titel en auteurs zonder onmiddellijk naar de repository te schrijven.
-- [x] `Ongedaan maken` herstelt de oorspronkelijke waarden vóór opslag.
-- [x] `Opslaan` schrijft de verwisselde waarden via de bestaande opslagroute en laat overige metadata intact.
-- [x] Een voormalige titel met een puntkomma wordt als precies één auteur opgeslagen.
+- [x] Titel en subtitel staan in afzonderlijke automatische Grid-kolommen.
+- [x] Beide teksten gebruiken `VerticalAlignment="Center"`.
+- [x] De kinderen hebben geen verticale correctiemarges; alleen de titelgroep bepaalt haar schermpositie.
 
-**Verificatie:** De karakterisatietest was direct groen omdat de bestaande productcode al aan de specificatie voldeed. De nieuwe `BookDetailsViewModelTests` leggen dit gedrag nu vast; er was geen productcodewijziging nodig.
-
-**Afhankelijkheden:** Geen.
+**Verificatie:** Eerst een falende statische Splash-layouttest, daarna gerichte groene test en Debug-build.
 
 **Waarschijnlijk geraakte bestanden:**
-- `tests/EbookManager.Tests/App/ViewModels/BookDetailsViewModelTests.cs`
-- zo nodig `src/EbookManager.Presentation/ViewModels/BookDetailsViewModel.cs`
+- `src/EbookManager.App/Views/Splash.xaml`
+- nieuwe of bestaande layouttest onder `tests/EbookManager.Tests/App/Views`.
 
 **Omvang:** Klein.
 
-## Taak 2: bibliotheekverversing en filters bewijzen
+## Taak 2: serievenster geschikt maken voor één of meerdere boeken
 
-**Beschrijving:** Bewijs op `LibraryViewModel`-niveau dat een vanuit details opgeslagen omwisseling de zichtbare rij, actieve zoekresultaten, selectie en auteursfilters bijwerkt zonder herstart.
+**Beschrijving:** Breid het serieviewmodel en venster uit met context voor één titel/serienummer of een bulkselectie. Behoud de snelle bestaande suggestielijst en vrije invoer.
 
 **Acceptatiecriteria:**
-- [x] De zichtbare boekregel toont na opslaan de nieuwe titel en auteur.
-- [x] Het oude auteursfilter verdwijnt wanneer het niet meer gebruikt wordt en het nieuwe filter verschijnt met het juiste aantal.
-- [x] Een actief zoekfilter wordt opnieuw toegepast op de gewijzigde metadata.
-- [x] De detailselectie blijft op het opgeslagen boek staan wanneer het nog in de actieve weergave past.
+- [x] Eén boek toont ongewijzigd titel en serienummer.
+- [x] Meerdere boeken tonen het aantal, de behoudmelding en een bevestigingsknop met het aantal.
+- [x] Bekende series en vrije invoer werken even vlot als bij één boek.
+- [x] Alle nieuwe teksten bestaan in zes talen en kunnen omlopen.
 
-**Verificatie:** De integratietest was direct groen omdat de bestaande verversingsroute al correct werkte. De nieuwe gerichte `LibraryViewModelTests` beschermen dit gedrag tegen regressie.
-
-**Afhankelijkheden:** Taak 1.
+**Verificatie:** Rode en groene viewmodel-, layout- en lokalisatietests.
 
 **Waarschijnlijk geraakte bestanden:**
-- `tests/EbookManager.Tests/App/ViewModels/LibraryViewModelTests.cs`
-- zo nodig `src/EbookManager.Presentation/ViewModels/LibraryViewModel.cs`
+- `src/EbookManager.Presentation/ViewModels/MetadataQualitySeriesRepairViewModel.cs`
+- `src/EbookManager.App/Views/MetadataQualitySeriesRepairWindow.xaml`
+- `src/EbookManager.App/Resources/Strings/AppResources*.resx`
+- bijbehorende tests.
 
-**Omvang:** Klein tot middelgroot.
+**Omvang:** Middelgroot; zes resources vormen één mechanische set.
 
 ## Checkpoint na taken 1-2
 
-- [x] De volledige opslagroute is door waarneembare toestand bewezen.
-- [x] Geen tweede opslag- of verversingsroute is toegevoegd.
-- [x] Gerichte detail- en bibliotheektests zijn groen.
+- [x] Splash-layouttest en serievenstertests zijn groen.
+- [x] Enkelvoudige seriecontext is niet gewijzigd.
+- [x] Geen productlogica of opslagroute is gedupliceerd.
 
-## Taak 3: knop, pictogram, toetsenbordtoegang en zes talen bewijzen
+## Taak 3: bulkselectie en resultaatverwerking aansluiten
 
-**Beschrijving:** Vul statische WPF-layout- en lokalisatietests aan voor de bestaande omwisselknop. De test controleert commandbinding, pictogram, tooltip en toegankelijke naam zonder de huidige schermindeling onnodig te wijzigen.
-
-**Acceptatiecriteria:**
-- [x] De knop is aan `SwapTitleAndAuthorsCommand` gebonden en gebruikt het bestaande `SwapTitleAuthorIconGeometry`.
-- [x] De knop blijft een echte WPF-`Button` en is daardoor met Tab, Enter en Spatie bedienbaar.
-- [x] Tooltip en `AutomationProperties.Name` gebruiken dezelfde gelokaliseerde sleutel.
-- [x] De lokalisatiesleutel bevat een niet-lege, geldige tekst in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
-
-**Verificatie:** De nieuwe karakterisatietests waren direct groen omdat de bestaande XAML en resources al aan de specificatie voldeden. De layout- en lokalisatietests beschermen dit voortaan expliciet.
-
-**Afhankelijkheden:** Geen; uitvoering volgt na het eerste checkpoint om commits klein te houden.
-
-**Waarschijnlijk geraakte bestanden:**
-- `tests/EbookManager.Tests/App/Views/BookDetailsViewLayoutTests.cs`
-- relevante lokalisatietest onder `tests/EbookManager.Tests/App/Resources`.
-- alleen bij een bewezen fout `src/EbookManager.App/Views/BookDetailsView.xaml` of `src/EbookManager.App/Resources/Strings/AppResources*.resx`.
-
-**Omvang:** Klein; eventuele resourcewijzigingen vormen één mechanische set.
-
-## Taak 4: status en handmatige acceptatie voorbereiden
-
-**Beschrijving:** Werk de actuele projectstatus bij, leg de bestaande detailactie vast en maak een compacte handmatige checklist voor herkenbaarheid, staged gedrag, opslaan, ongedaan maken en bibliotheekverversing.
+**Beschrijving:** Maak `Serie wijzigen` beschikbaar voor iedere geldige selectie binnen de seriecategorie en verwerk de bestaande servicebatch via de generieke reconciliatie.
 
 **Acceptatiecriteria:**
-- [x] README vermeldt Milestone 41 als geaccepteerd en verwijst naar de actuele Milestone 42-checklist.
-- [x] De kwaliteitsdocumentatie noemt de geverifieerde detailactie zonder de heuristiek als nauwkeuriger voor te stellen.
-- [x] De checklist behandelt muis, toetsenbord, meerdere auteurs, puntkomma in titel, opslaan, ongedaan maken, filters en herstart.
-- [x] Alle gewijzigde Markdown is met gelijke hashes naar Obsidian gespiegeld.
+- [x] Eén of meerdere geselecteerde serierijen activeren de actie.
+- [x] Annuleren schrijft niets; bevestigen stuurt alle unieke geselecteerde ids en één serienaam.
+- [x] Succes, write-backwaarschuwing, verouderd, verwijderd en mislukt worden per boek correct verwerkt.
+- [x] Volledig mislukte boeken blijven zichtbaar en geselecteerd; volledig succes geeft een korte groene melding.
 
-**Verificatie:** `git diff --check`, linkcontrole door inspectie en hashvergelijking met de Obsidian-spiegel.
-
-**Afhankelijkheden:** Taken 1-3.
+**Verificatie:** Eerst falende dashboardtests voor beschikbaarheid, annuleren, succes en gemengde resultaten; daarna groen met minimale productcode.
 
 **Waarschijnlijk geraakte bestanden:**
-- `README.md`
-- `docs/feature-requests/metadata-quality-dashboard.md`
-- `docs/manual-tests/milestone-42-checklist.md`
-- `tasks/plan.md`
-- `tasks/todo.md`
+- `src/EbookManager.Presentation/ViewModels/MetadataQualityDashboardViewModel.cs`
+- `tests/EbookManager.Tests/App/ViewModels/MetadataQualityDashboardSeriesRepairTests.cs`
+- lokalisatieresources en tests.
 
-**Omvang:** Middelgroot, hoofdzakelijk documentatie.
+**Omvang:** Middelgroot.
+
+## Taak 4: gegevensbehoud en bibliotheekverversing bewijzen
+
+**Beschrijving:** Bewijs dat verschillende serienummers behouden blijven, inmiddels ingevulde series niet worden overschreven en de hoofdbibliotheek plus seriefilters éénmaal verversen.
+
+**Acceptatiecriteria:**
+- [x] Meerdere boeken krijgen dezelfde serie en behouden ieder hun oorspronkelijke serienummer.
+- [x] Een inmiddels geldige serienaam levert `NotApplicable` op zonder write.
+- [x] De bibliotheekregels en seriefilters tonen direct de actuele waarden.
+- [x] Overige metadata blijft intact.
+
+**Verificatie:** Gerichte service- en LibraryViewModel-tests, gevolgd door een gericht checkpoint.
+
+**Waarschijnlijk geraakte bestanden:**
+- `tests/EbookManager.Tests/Metadata/MetadataQualitySeriesRepairServiceTests.cs`
+- `tests/EbookManager.Tests/App/ViewModels/LibraryViewModelTests.cs`
+- alleen bij bewezen gebrek minimale productcode.
+
+**Omvang:** Klein tot middelgroot.
 
 ## Checkpoint na taken 3-4
 
-- [x] Alle gerichte tests zijn groen.
-- [x] De interface volgt de bestaande vormgeving en toegankelijkheidspatronen.
-- [x] De acceptatiechecklist en projectstatus zijn actueel en gespiegeld.
+- [x] Alle gerichte bulkserietests zijn groen.
+- [x] Enkelvoudig herstel en bestaande bulkacties blijven groen.
+- [x] Opslag, dashboard en bibliotheek tonen dezelfde toestand.
 
-## Taak 5: Definition of Done en oplevering
+## Taak 5: documentatie, build en oplevering
 
-**Beschrijving:** Voer de projectbrede kwaliteitsbar uit en lever een gewone, niet-draft PR op voor handmatige acceptatie.
+**Beschrijving:** Werk status en checklist bij, spiegel Markdown, voer de volledige Definition of Done uit en open een gewone niet-draft PR.
 
 **Acceptatiecriteria:**
-- [x] Volledige testset is groen zonder overgeslagen tests.
-- [x] Schone Debug-build slaagt zonder waarschuwingen of fouten en alleen `Builds/Debug` bevat de actuele build.
-- [x] De complete diff is beoordeeld op correctheid, eenvoud, architectuur, beveiliging en prestaties; er zijn geen bevindingen.
-- [x] De branch bevat uitsluitend Milestone 42 en PR #43 is geen draft.
+- [x] README en quality-roadmap beschrijven Milestone 43 zonder vervolgwensen als gerealiseerd te presenteren.
+- [x] De handmatige checklist behandelt Splash, selectie, suggesties, verschillende nummers, annuleren, resultaten, filters en herstart.
+- [x] Volledige tests en schone Debug-build slagen zonder waarschuwingen of overgeslagen tests.
+- [x] De complete diff is zelf beoordeeld en de branch bevat alleen Milestone 43.
+- [x] Alle gewijzigde Markdown heeft gelijke hashes in de Obsidian-spiegel.
 
-**Verificatie:** Volledige tests, clean/build, `git diff --check`, eigen codereview, GitHub-controles en daarna de handmatige checklist.
+**Verificatie:** Volledige tests, clean/build, `git diff --check`, hashcontrole, eigen codereview en GitHub-controles in PR #44.
 
-**Afhankelijkheden:** Taken 1-4.
-
-**Waarschijnlijk geraakte bestanden:** Geen nieuwe; verificatie en eventuele kleine correcties blijven binnen de voorgaande taakgrenzen.
-
-**Omvang:** Klein.
+**Omvang:** Middelgroot, hoofdzakelijk verificatie en documentatie.
 
 ## Risico's en maatregelen
 
 | Risico | Impact | Maatregel |
 |---|---|---|
-| Bestaande functie dubbel implementeren | Middel | Eerst bestaande route testen; alleen aangetoonde gaten wijzigen |
-| Een titel met puntkomma wordt meerdere auteurs | Hoog | Expliciete opslagtest voor één voormalige titel met scheidingsteken |
-| Opslag ververst rij maar niet auteursfilters of zoeken | Hoog | Integratietest op `LibraryViewModel` met waarneembare filters en zichtbare rijen |
-| Knop is visueel aanwezig maar onvoldoende toegankelijk | Middel | XAML-test voor echte `Button`, command, tooltip en automation name |
-| Documentatie suggereert dat de heuristiek alle gevallen vindt | Laag | Detailactie beschrijven als handmatige aanvulling, niet als heuristiekverbetering |
-| Bestaande gebruikersaanpassingen aan detailscherm raken verloren | Hoog | Layout niet herschrijven; huidige plaatsing en stijl behouden |
-
-## Open vragen
-
-Er zijn geen blokkerende open vragen. De goedgekeurde specificatie bepaalt dat de bestaande staged workflow, knoppositie en het pictogram behouden blijven.
+| Verschillende serienummers worden gelijkgetrokken | Hoog | Service- en acceptatietest met afwijkende nummers; serie-index nooit als input meegeven |
+| Inmiddels ingevulde serie wordt overschreven | Hoog | Bestaande `Applies`-controle per boek behouden en expliciet testen |
+| Derde batchverwerker wijkt af van auteur/taal | Middel | Seriestatus naar bestaande `MetadataQualityBatchRepairItem` mappen |
+| Bulkvenster verliest snel typen of suggestiekeuze | Middel | Bestaande inputevents behouden en regressietests plus handmatige controle |
+| Splash verschuift bij DPI of vertaling | Laag | Layoutuitlijning in Grid; geen verticale kindmarges |
+| Langere vertalingen worden afgekapt | Middel | Tekst laten omlopen en layouttest uitbreiden |
 
 ## Goedkeuringscheckpoint
 
-- [x] Specificatie en afbakening door gebruiker goedgekeurd.
-- [x] Implementatieplan en taakvolgorde door gebruiker goedgekeurd.
+- [x] Hoofdfunctionaliteit en robuuste Splash-aanpak door gebruiker goedgekeurd.
+- [x] Volledige specificatie en implementatieplan door gebruiker bevestigd.
 - [x] Implementatie testgestuurd en incrementeel afgerond.
-- [x] Definition of Done afgerond: tests, build, documentatiespiegel, eigen codereview, GitHub-controles en handmatige acceptatie zijn gereed.
-- [x] Gewone, niet-draft PR #43 geopend.
-- [x] PR #43 handmatig geaccepteerd.
+- [x] Definition of Done en gewone PR afgerond; alle automatische en handmatige controles zijn geslaagd.
