@@ -21,8 +21,9 @@
 - [x] Bestaande dashboardfixtures aangepast aan sterker onderbouwde omwisselingen; detailtests blijven ook niet-gedetecteerde gevallen afdekken.
 - [x] Volledige testset: 874 geslaagd, 0 fouten, 0 overgeslagen. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; geen open bevindingen.
 - [x] Na afsluiten Saga nieuwe Debug-build 2026.10.22.37 geplaatst op 22 oktober 2026 om 12:23 (Europe/Amsterdam); 0 waarschuwingen en fouten, precies één Saga.exe onder Builds/Debug.
-- [ ] PR bijwerken en nieuwe GitHub-controles beoordelen.
-- [ ] Korte aanvullende handmatige hercontrole van de detectie door gebruiker.
+- [x] PR bijgewerkt; CodeQL, GitGuardian en CodeRabbit-status groen op code-/builddocumentatiecommit c4ba228, zonder mergeconflicten.
+- [x] Gebruiker heeft de aanvullende tests uitgevoerd en geaccepteerd; lijst is veel korter en realistischer. Omwisseling naar een bestaand boek wordt terecht geblokkeerd.
+- [ ] Vervolgverbetering buiten deze slice: toon bij een mislukte herstelactie ook de begrijpelijke oorzaak, bijvoorbeeld Boek bestaat al, in plaats van alleen Mislukt: 1.
 
 ## Afgerond Milestone 44
 
