@@ -6,7 +6,8 @@ using EbookManager.Domain.Authors;
 namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class AuthorManagementViewModel(
-    IAuthorProfileRepository repository, IAuthorPhotoStore photos, Func<string, string> localize) : ObservableObject, IDisposable
+    IAuthorProfileRepository repository, IAuthorPhotoStore photos, Func<string, string> localize,
+    IAuthorRenameService? renameService = null) : ObservableObject, IDisposable
 {
     private readonly CancellationTokenSource lifetime = new();
     private readonly AuthorProfileService service = new(repository, photos);
@@ -35,6 +36,7 @@ public sealed partial class AuthorManagementViewModel(
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(CanOpenWebsite))]
     [NotifyPropertyChangedFor(nameof(CanRemovePhoto))]
+    [NotifyPropertyChangedFor(nameof(CanRename))]
     private bool isBusy;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
@@ -62,6 +64,7 @@ public sealed partial class AuthorManagementViewModel(
         OnPropertyChanged(nameof(CanSave));
         OnPropertyChanged(nameof(CanOpenWebsite));
         OnPropertyChanged(nameof(CanRemovePhoto));
+        OnPropertyChanged(nameof(CanRename));
     }
 
     public async Task SearchAsync(string query, bool append = false)
@@ -85,7 +88,7 @@ public sealed partial class AuthorManagementViewModel(
 
     public async Task SelectAsync(AuthorSummary author)
     {
-        if (disposed || HasChanges) return;
+        if (disposed || HasChanges || renaming) return;
         var version = ++selectionVersion;
         IsBusy = true;
         original = null;

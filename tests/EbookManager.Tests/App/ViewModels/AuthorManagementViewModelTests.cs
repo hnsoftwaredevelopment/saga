@@ -6,7 +6,7 @@ using FluentAssertions;
 
 namespace EbookManager.Tests.App.ViewModels;
 
-public sealed class AuthorManagementViewModelTests
+public sealed partial class AuthorManagementViewModelTests
 {
     [Fact]
     public async Task Failed_selection_never_leaves_another_authors_profile_editable()
