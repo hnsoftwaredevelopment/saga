@@ -9,8 +9,8 @@
 - [x] Bijgewerkte Debug-build 2026.10.22.32 geplaatst na afsluiten Saga: 0 waarschuwingen, 0 fouten, gebouwd op 22 oktober 2026 om 11:54.
 - [x] Documentatie en checklist bijgewerkt en exact naar Obsidian gespiegeld.
 - [x] Gewone PR #46 geopend: https://github.com/hnsoftwaredevelopment/saga/pull/46.
-- [ ] GitHub-controles en externe review beoordelen.
-- [ ] Handmatige acceptatie door gebruiker.
+- [x] CodeQL en GitGuardian groen; oude CodeRabbit-checkboxbevinding vervallen door het verwijderen van het overzicht. Herreview beperkt door de limiet.
+- [x] De gebruiker heeft alle checklistcontroles uitgevoerd en de slice geaccepteerd.
 
 ## Afgerond Milestone 44
 

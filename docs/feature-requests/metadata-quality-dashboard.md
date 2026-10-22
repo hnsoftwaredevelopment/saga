@@ -169,8 +169,8 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Improve large-library scrolling and filtering in a separate performance slice with measurable checks on a representative library.
 - Add export or filtered worklists for large cleanup sessions.
 - Make checks configurable in settings.
-- Tune heuristics after testing on real-world Calibre libraries.
+- Tune heuristics after testing on real-world Calibre libraries. The user's title/author false positives and proposed follow-up are recorded in [detection examples](title-author-swap-detection.md).
 
 ## Status
 
-Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45 is ready for manual acceptance: users select books in the quality list and confirm the title/author swap once. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic remains intentionally uncertain, and false positives can be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.
+Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45 is manually tested and accepted: users select books in the quality list and confirm the title/author swap once. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic remains intentionally uncertain, and false positives can be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.

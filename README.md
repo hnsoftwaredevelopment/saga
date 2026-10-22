@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 45 is ready for manual testing: select books in the quality list, choose title/author swap and confirm the count once. The list selection is used directly; changed book data is protected before saving. Milestone 44 is manually tested, accepted and merged, including per-book bulk tag cleanup.
+Milestone 45 is manually tested and accepted: select books in the quality list, choose title/author swap and confirm the count once. The list selection is used directly; changed book data is protected before saving. Milestone 44 is manually tested, accepted and merged, including per-book bulk tag cleanup.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
