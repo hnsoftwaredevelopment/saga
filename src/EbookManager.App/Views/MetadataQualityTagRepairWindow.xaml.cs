@@ -14,6 +14,14 @@ public partial class MetadataQualityTagRepairWindow : Window
 
     private void TagsInputLoaded(object sender, RoutedEventArgs e)
     {
+        if (DataContext is MetadataQualityTagRepairViewModel { IsBulk: true })
+        {
+            TagPreviews.SelectedIndex = 0;
+            TagPreviews.Focus();
+            Keyboard.Focus(TagPreviews);
+            return;
+        }
+
         TagsInput.Focus();
         Keyboard.Focus(TagsInput);
         TagsInput.CaretIndex = TagsInput.Text.Length;

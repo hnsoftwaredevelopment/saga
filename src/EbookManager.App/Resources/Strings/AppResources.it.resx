@@ -714,5 +714,12 @@
 {0}
 
 Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato relativo al file o a OneDrive e riavvia Saga.</value></data>
+  <data name="MetadataQualityTagRepairBulkContext" xml:space="preserve"><value>{0} libri selezionati</value></data>
+  <data name="MetadataQualityTagRepairBulkSave" xml:space="preserve"><value>Pulisci le etichette di {0} libri</value></data>
+  <data name="MetadataQualityTagRepairBulkHelp" xml:space="preserve"><value>Controlla la proposta per ogni libro. Ogni libro conserva le proprie etichette ripulite. Conferma per applicare tutte le proposte.</value></data>
+  <data name="MetadataQualityTagRepairBulkPreview" xml:space="preserve"><value>Proposte di pulizia delle etichette</value></data>
+  <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Nessuna etichetta</value></data>
+  <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} libri modificati</value></data>
+  <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Modificati: {0}. Avvisi sui file: {1}. Già risolti: {2}. Non disponibili: {3}. Non riusciti: {4}.</value></data>
 </root>
 

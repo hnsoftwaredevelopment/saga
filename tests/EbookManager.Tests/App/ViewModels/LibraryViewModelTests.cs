@@ -802,6 +802,29 @@ public sealed class LibraryViewModelTests
     }
 
     [Fact]
+    public async Task Metadata_quality_bulk_tag_cleanup_refreshes_each_books_own_tags_and_filters()
+    {
+        var first = CreateBook("Crime book", ["Auteur"], language: "nl", tags: [" Crime ", "crime"], coverBytes: [1]);
+        var second = CreateBook("History book", ["Auteur"], language: "nl", tags: ["History, Travel"], coverBytes: [1]);
+        var interaction = new ScriptedUserInteractionService { MetadataQualityTagRepairResult = true };
+        var viewModel = CreateViewModel([first, second], interaction, currentLibrary: CreateActiveLibrary());
+        await viewModel.RefreshAsync();
+        await viewModel.ShowMetadataQualityDashboardCommand.ExecuteAsync(null);
+        var dashboard = interaction.MetadataQualityDashboard!;
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MessyTags);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+
+        viewModel.VisibleBooks.Single(row => row.Id == first.Id).Tags.Should().Be("Crime");
+        viewModel.VisibleBooks.Single(row => row.Id == second.Id).Tags.Should().Be("History, Travel");
+        viewModel.CategoryFilters.Single(filter => filter.Name == "Crime").Count.Should().Be(1);
+        viewModel.CategoryFilters.Single(filter => filter.Name == "History").Count.Should().Be(1);
+        viewModel.CategoryFilters.Single(filter => filter.Name == "Travel").Count.Should().Be(1);
+        dashboard.SelectedIssue.Rows.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Metadata_quality_title_author_repair_updates_the_active_library_and_author_filters()
     {
         var swapped = CreateBook(

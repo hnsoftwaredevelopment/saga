@@ -434,5 +434,12 @@
 {0}
 
 Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of OneDrive-probleem op en start Saga opnieuw.</value></data>
+  <data name="MetadataQualityTagRepairBulkContext" xml:space="preserve"><value>{0} geselecteerde boeken</value></data>
+  <data name="MetadataQualityTagRepairBulkSave" xml:space="preserve"><value>Tags opschonen voor {0} boeken</value></data>
+  <data name="MetadataQualityTagRepairBulkHelp" xml:space="preserve"><value>Controleer het voorstel per boek. Ieder boek behoudt zijn eigen opgeschoonde tags. Bevestig om alle voorstellen toe te passen.</value></data>
+  <data name="MetadataQualityTagRepairBulkPreview" xml:space="preserve"><value>Voorstellen voor tags opschonen</value></data>
+  <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Geen tags</value></data>
+  <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} boeken gewijzigd</value></data>
+  <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Gewijzigd: {0}. Bestandswaarschuwingen: {1}. Al opgelost: {2}. Niet beschikbaar: {3}. Mislukt: {4}.</value></data>
 </root>
 

@@ -201,6 +201,58 @@ public sealed class MetadataQualityDashboardTagRepairTests
             tagRepairService: service,
             showTagRepair: (_, _) => Task.FromResult(true));
 
+    [Fact]
+    public async Task Bulk_cleanup_refreshes_changed_tags_and_reports_mixed_results()
+    {
+        var changed = CreateBook([" Old "]);
+        var warning = CreateBook([" Warning "]);
+        var stale = CreateBook([" Stale "]);
+        var gone = CreateBook([" Gone "]);
+        var current = CopyWithTags(changed, [" New "]);
+        var service = new RecordingTagRepairService(
+            new(changed.Id, MetadataQualityTagRepairStatus.Failed, current),
+            new(warning.Id, MetadataQualityTagRepairStatus.SavedWithWriteBackErrors, CopyWithTags(warning, ["Warning"])),
+            new(stale.Id, MetadataQualityTagRepairStatus.NotApplicable, CopyWithTags(stale, ["Stale"])),
+            new(gone.Id, MetadataQualityTagRepairStatus.NotFound));
+        MetadataQualityTagRepairViewModel? retry = null;
+        var dashboard = new MetadataQualityDashboardViewModel([changed, warning, stale, gone],
+            key => key == "MetadataQualityTagRepairBulkResult" ? "{0}:{1}:{2}:{3}:{4}" : key,
+            tagRepairService: service,
+            showTagRepair: (repair, _) => { retry = repair; return Task.FromResult(true); });
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MessyTags);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        await dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+
+        dashboard.StatusMessage.Should().Be("0:1:1:1:1");
+        dashboard.SelectedIssue.Rows.Should().ContainSingle(row => row.Id == changed.Id);
+        dashboard.SelectedBook!.Id.Should().Be(changed.Id);
+        await dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+        retry!.CurrentTagsText.Should().Be(" New ");
+    }
+
+    [Fact]
+    public async Task Cancellation_preserves_completed_results_and_does_not_start_remaining_books()
+    {
+        var first = CreateBook([" First "]);
+        var second = CreateBook([" Second "]);
+        var third = CreateBook([" Third "]);
+        var service = new RecordingTagRepairService(
+            new MetadataQualityTagRepairResult(first.Id, MetadataQualityTagRepairStatus.Succeeded, CopyWithTags(first, ["First"])));
+        service.CancelFor = second.Id;
+        var dashboard = new MetadataQualityDashboardViewModel([first, second, third], key => key,
+            tagRepairService: service, showTagRepair: (_, _) => Task.FromResult(true));
+        dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.MessyTags);
+        dashboard.SetSelectedBooks(dashboard.SelectedIssue.Rows);
+
+        var action = () => dashboard.RepairMessyTagsCommand.ExecuteAsync(null);
+        await action.Should().ThrowAsync<OperationCanceledException>();
+
+        service.Calls.Should().HaveCount(2);
+        dashboard.SelectedIssue.Rows.Select(row => row.Id).Should().BeEquivalentTo([second.Id, third.Id]);
+        dashboard.SelectedBookCount.Should().Be(2);
+    }
+
     private static Book CreateBook(IReadOnlyList<string> tags)
     {
         var now = DateTimeOffset.UtcNow;
@@ -239,6 +291,7 @@ public sealed class MetadataQualityDashboardTagRepairTests
             : this(new MetadataQualityTagRepairResult(repairedBook?.Id ?? Guid.Empty, status, repairedBook)) { }
 
         public Guid? ThrowFor { get; set; }
+        public Guid? CancelFor { get; set; }
         public List<(Guid BookId, IReadOnlyList<string> Tags, IReadOnlyList<string>? Original)> Calls { get; } = [];
         public Guid? BookId { get; private set; }
         public IReadOnlyList<string> Tags { get; private set; } = [];
@@ -252,6 +305,7 @@ public sealed class MetadataQualityDashboardTagRepairTests
             BookId = bookId;
             Tags = tags.ToArray();
             Calls.Add((bookId, tags.ToArray(), expectedTags));
+            if (CancelFor == bookId) { throw new OperationCanceledException(); }
             if (ThrowFor == bookId) { throw new IOException("Unavailable"); }
             var result = results.Single(item => item.BookId == bookId || item.BookId == Guid.Empty);
             return Task.FromResult(result with { BookId = bookId });

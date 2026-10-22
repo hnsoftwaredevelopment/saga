@@ -434,5 +434,12 @@
 {0}
 
 No conflicting data was overwritten. Resolve the reported file or OneDrive problem and start Saga again.</value></data>
+  <data name="MetadataQualityTagRepairBulkContext" xml:space="preserve"><value>{0} selected books</value></data>
+  <data name="MetadataQualityTagRepairBulkSave" xml:space="preserve"><value>Clean tags for {0} books</value></data>
+  <data name="MetadataQualityTagRepairBulkHelp" xml:space="preserve"><value>Review the proposal for each book. Each book keeps its own cleaned tags. Confirm to apply all proposals.</value></data>
+  <data name="MetadataQualityTagRepairBulkPreview" xml:space="preserve"><value>Tag cleanup proposals</value></data>
+  <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>No tags</value></data>
+  <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} books changed</value></data>
+  <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Changed: {0}. File warnings: {1}. Already resolved: {2}. Unavailable: {3}. Failed: {4}.</value></data>
 </root>
 
