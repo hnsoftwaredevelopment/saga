@@ -48,7 +48,7 @@
                            Cursor="None"
                            IsEnabled="False">
                     <TextBlock.RenderTransform>
-                        <TranslateTransform Y="3"/>
+                        <TranslateTransform Y="6"/>
                     </TextBlock.RenderTransform>
                 </TextBlock>
             </Grid>
