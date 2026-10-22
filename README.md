@@ -4,6 +4,8 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
+Milestone 48 adds library-local author management: searchable authors and their books, manually maintained biography and website, and portable author photos. Author names and book metadata remain unchanged. Profiles survive removal of the last linked book. User acceptance of this slice is still pending.
+
 Milestone 47's final quality reliability improvements are manually checked and accepted, with the unreproduced conflict scenario covered by automated tests: safe restoration errors, stable selection while saving and removal of old repair feedback after This is correct. Milestone 46 is manually accepted and merged: all six quality repair routes provide localized per-book error details without a noticeable slowdown reported by the user. Milestone 45's bulk title/author swap and conservative detection, and Milestone 44's per-book tag cleanup, are also accepted and merged.
 
 - portable local ebook libraries with `library.db`
@@ -81,7 +83,7 @@ Milestone 47's final quality reliability improvements are manually checked and a
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 47 checklist](docs/manual-tests/milestone-47-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
 
 ## Prerequisites
 
@@ -206,6 +208,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-45-checklist.md](docs/manual-tests/milestone-45-checklist.md)
 - [docs/manual-tests/milestone-46-checklist.md](docs/manual-tests/milestone-46-checklist.md)
 - [docs/manual-tests/milestone-47-checklist.md](docs/manual-tests/milestone-47-checklist.md)
+- [docs/manual-tests/milestone-48-checklist.md](docs/manual-tests/milestone-48-checklist.md)
 
 ## Later-Version Candidates
 

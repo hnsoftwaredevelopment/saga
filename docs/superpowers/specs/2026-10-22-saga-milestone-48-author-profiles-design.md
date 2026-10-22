@@ -2,7 +2,7 @@
 
 ## Status en doel
 
-Voorbereiding op verzoek van de gebruiker; nog geen productcode, migratie of nieuwe build. De richting is akkoord: een doorzoekbaar auteursbeheer met foto, optionele website, korte biografie en boeken van de auteur. Onderstaande concrete opslag- en gedragskeuzes zijn een voorstel ter bevestiging vóór implementatie.
+Specificatie en technische keuzes zijn door de gebruiker bevestigd; implementatie op codex/milestone-48-author-profiles vanaf actuele main 1de190f. Een doorzoekbaar auteursbeheer met foto, optionele website, korte biografie en boeken van de auteur is gebouwd. Handmatige gebruikersacceptatie staat nog open. Opslagbesluit: docs/decisions/001-author-profile-storage.md.
 
 ## Eerste slice
 
@@ -55,7 +55,15 @@ Eerst falende tests voor migratie/behoud van bestaande gegevens, profielopslag e
 - Build: `dotnet build src/EbookManager.App/EbookManager.App.csproj -c Debug --no-restore`.
 - Diffcontrole: `git diff --check`.
 
-Aanvullende foto-, migratie-, layout- en lokalisatietests expliciet uitvoeren: het Author-filter dekt niet automatisch alles. Nieuwe handmatige checklist bij implementatie, met datum en buildversie. Volg docs/definition-of-done.md; eigen code-review vóór een gewone niet-draft PR. Alleen de gebruiker mergt. Deze voorbereiding claimt geen uitgevoerde tests of handmatige acceptatie.
+Aanvullende foto-, migratie-, layout- en lokalisatietests expliciet uitvoeren: het Author-filter dekt niet automatisch alles. Handmatige checklist: docs/manual-tests/milestone-48-checklist.md. Volg docs/definition-of-done.md; eigen code-review vóór een gewone niet-draft PR. Alleen de gebruiker mergt. Handmatige acceptatie wordt niet vooraf afgevinkt.
+
+## Implementatie en review
+
+De auteurrepository geeft geprojecteerde pagina's van maximaal 200 regels aan het scherm, met tellingen in de database. Foto's worden alleen voor de geselecteerde auteur geladen. Een modal venster bindt alle acties aan de geopende bibliotheek; de hoofdpagina kan daardoor niet tussendoor naar een andere bibliotheek schakelen. Het eigen viewmodel beheert concept, status, paginering en verouderde selectieresultaten. De fotokeuze verwerkt JPEG/PNG buiten de UI-thread, controleert afmetingen en encodeert een begrensde JPEG zonder de oorspronkelijke bestandsverwijzing te bewaren.
+
+Eigen review omvat correctheid, eenvoud, architectuur, veiligheid en prestaties. Extra regressiedekking voor een mislukte selectie die anders een oud profiel bewerkbaar liet, en voor databasefouten vóór/na commit: geen verwezen foto verwijderen. Als ook herlezen mislukt, blijven bestanden bewust behouden. De splitter heeft in dit venster een lokale, thema-afhankelijke zichtbare greep. Geen nieuwe dependency, online bron, boekmetadatawijziging of bestaande opslagconversie.
+
+Een tijdelijke WPF-rendercontrole met fictieve auteurs bevestigt de indeling, zichtbare splitter en minimale titelkolombreedte. De echte beeldverwerking is daarbij gecontroleerd met PNG-naar-JPEG en een ongeldig afbeeldingsbestand. Dit vervangt niet de handmatige test op de gebruikersbibliotheek; de actuele test-/buildgegevens staan in de checklist.
 
 ## Buiten scope en grenzen
 

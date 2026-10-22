@@ -1,6 +1,6 @@
 # Milestone 48: voorbereiding auteursbeheer
 
-Status: richting goedgekeurd; concrete specificatie en technische keuzes ter bevestiging, nog geen implementatie. Specificatie: docs/superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md. PR #48 is volgens de gebruiker gemerged. Maak bij implementatie een nieuwe codex/-branch vanaf gecontroleerde actuele main; gebruik niet opnieuw de oude Quality-branch.
+Status: specificatie en technische keuzes door de gebruiker bevestigd; geïmplementeerd op codex/milestone-48-author-profiles vanaf actuele main 1de190f na merge van PR #48. Specificatie: docs/superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md. De oorspronkelijke voorbereiding is behouden. Handmatige gebruikersacceptatie staat nog open.
 
 1. Bevestig scope, optionele profielvelden, behoud zonder boeken en fotogrenzen; leg daarna het opslagbesluit vast. Eerst migratie- en repositorytests voor bestaande auteurs en behoud van verrijkte auteurs. Kleine increments: entity/configuratie/migratie/snapshot/test, daarna beide orphan-routes en regressietests.
 2. Implementeer gerichte profielcontracten en opslagservice met eerst falende tests voor identiteit, validatie, conflict en retry. Circa 3–5 bestanden per increment. Geen boekmetadata wijzigen.

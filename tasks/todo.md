@@ -4,11 +4,11 @@
 - [x] Bestaande Authors/BookAuthors, profielwens, foto-opslag en beide orphan-opruimroutes onderzocht.
 - [x] Conceptspecificatie en geordende technische aanpak vastgelegd; geen productcode, migratie of build gewijzigd.
 - [x] Concrete scope en technische keuzes door gebruiker bevestigd.
-- [ ] Actuele main controleren, nieuwe codex/-branch en geaccepteerd opslagbesluit vastleggen.
-- [ ] Additieve profielvelden, migratie en behoud zonder boeken testgestuurd invoeren.
-- [ ] Profielservice, validatie, veilige foto-opslag en fout-/conflictgedrag testen.
-- [ ] Doorzoekbaar auteursvenster, boekenlijst, websiteactie en zes talen opleveren.
-- [ ] Volledige tests, Debug-build, eigen review, README, handmatige checklist en Obsidian-spiegel.
+- [x] Actuele main 1de190f gecontroleerd, codex/milestone-48-author-profiles gemaakt en geaccepteerd opslagbesluit vastgelegd.
+- [x] Additieve profielvelden, migratie en behoud zonder boeken testgestuurd ingevoerd; beide orphan-routes afgedekt.
+- [x] Profielservice, validatie, veilige foto-opslag en fout-/conflictgedrag getest, inclusief onzeker commitresultaat en annulering.
+- [x] Doorzoekbaar auteursvenster, gepagineerde boekenlijst, websiteactie en zes talen gebouwd; WPF-render en echte beeldverwerking gecontroleerd met fictieve gegevens.
+- [x] Volledige testset: 911 geslaagd, 0 mislukt of overgeslagen; Debug-build 2026.10.22.88, 22 oktober 2026 om 15:38 (Europe/Amsterdam), 0 waarschuwingen/fouten, precies één Saga.exe onder Builds/Debug. Eigen vijfassige review, README en checklist afgerond; Markdown exact naar Obsidian gespiegeld en hashes gecontroleerd.
 - [ ] Gewone PR en handmatige gebruikersacceptatie.
 
 ## Historie: Milestone 47 betrouwbaarheid Quality afronden

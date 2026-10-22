@@ -2,11 +2,11 @@
 
 ## Status
 
-First slice in specification/preparation for Milestone 48; not implemented yet. See [the proposed design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md).
+First slice implemented for Milestone 48; user acceptance pending. See [the design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md) and [manual checklist](../manual-tests/milestone-48-checklist.md).
 
 ## Context
 
-Saga already stores authors and book-author links as library database entities. They do not yet have user-maintained profiles. Reuse those identities to add richer writer information without changing book metadata. Existing orphan-author cleanup must preserve authors with profile content.
+Saga stores authors and book-author links as library database entities. Milestone 48 reuses those identities for user-maintained profiles without changing book metadata. Orphan-author cleanup preserves authors with profile content.
 
 ## Goals
 
@@ -36,4 +36,4 @@ Saga already stores authors and book-author links as library database entities. 
 
 ## Candidate Milestone
 
-Milestone 48 follows the accepted Quality reliability slice. Implementation starts after confirmation of the concrete proposed scope and storage choices. Online lookup, aliases and author normalization remain future work.
+Milestone 48 follows the accepted Quality reliability slice. Scope and storage choices were confirmed before implementation. Online lookup, aliases and author normalization remain future work.
