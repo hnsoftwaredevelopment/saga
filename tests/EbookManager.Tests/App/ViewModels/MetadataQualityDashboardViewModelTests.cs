@@ -9,6 +9,40 @@ namespace EbookManager.Tests.App.ViewModels;
 
 public sealed class MetadataQualityDashboardViewModelTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Mark_correct_replaces_old_repair_details_even_when_marking_fails(bool failMark)
+    {
+        var book = CreateBook("Book", ["Unknown"], coverBytes: [1]);
+        var dashboard = new MetadataQualityDashboardViewModel([book], key => key,
+            repository: new RecordingMetadataQualityExclusionRepository(
+                failMark ? new IOException("Storage unavailable") : null),
+            authorRepairService: new RecordingAuthorRepairService(book, MetadataQualityAuthorRepairStatus.Failed),
+            showAuthorRepair: (repair, _) =>
+            {
+                repair.AuthorText = "Auteur";
+                return Task.FromResult(true);
+            });
+        await dashboard.RepairMissingAuthorCommand.ExecuteAsync(null);
+        dashboard.RepairDetails.Should().NotBeEmpty();
+
+        await dashboard.MarkSelectedIssueCorrectCommand.ExecuteAsync(null);
+
+        dashboard.RepairDetails.Should().BeEmpty();
+        dashboard.HasRepairDetails.Should().BeFalse();
+        if (failMark)
+        {
+            dashboard.StatusMessage.Should().Be("MetadataQualityMarkCorrectFailed");
+            dashboard.SelectedIssue!.Rows.Should().ContainSingle();
+        }
+        else
+        {
+            dashboard.StatusMessage.Should().BeNull();
+            dashboard.SelectedIssue!.Rows.Should().BeEmpty();
+        }
+    }
+
     [Fact]
     public void Constructor_selects_first_book_of_first_non_empty_issue()
     {

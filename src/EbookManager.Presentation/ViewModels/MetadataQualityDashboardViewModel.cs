@@ -291,6 +291,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
+        ClearRepairFeedback();
         var keys = rows
             .Select(row => new MetadataQualityExclusionKey(row.Id, issue.SignalKey))
             .ToArray();
