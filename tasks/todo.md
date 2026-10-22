@@ -8,8 +8,8 @@
 - [x] Gerichte controles: 200 tests; volledige set: 813 tests, geen fouten of overgeslagen tests. Debug-build 2026.10.22.15: 0 waarschuwingen en fouten. Eigen review uitgevoerd.
 - [x] Documentatie en checklist bijgewerkt; Obsidian-spiegel gecontroleerd gelijk.
 - [x] Gewone PR #45 geopend, zonder mergeconflicten: https://github.com/hnsoftwaredevelopment/saga/pull/45.
-- [ ] GitHub-controles en externe review beoordelen.
-- [ ] Handmatige acceptatie door gebruiker.
+- [x] GitHub-controles groen; twee kleine CodeRabbit-opmerkingen over Duitse en Italiaanse terminologie gecontroleerd en opgelost.
+- [x] De gebruiker heeft alle checklistcontroles uitgevoerd en de slice volledig geaccepteerd.
 
 ## Afgerond Milestone 43
 

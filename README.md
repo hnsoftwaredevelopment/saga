@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 44 is ready for acceptance testing: select multiple books with messy tags, review the current and cleaned tags for each book, and confirm once. Each book keeps its own tags; changed data is protected and failures remain available for retry. Milestone 43 was accepted and merged on 22 October 2026, including bulk series repair and the final Splash alignment.
+Milestone 44 is manually tested and accepted: select multiple books with messy tags, review the current and cleaned tags for each book, and confirm once. Each book keeps its own tags; changed data is protected and failures remain available for retry. Milestone 43 was accepted and merged on 22 October 2026, including bulk series repair and the final Splash alignment.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
