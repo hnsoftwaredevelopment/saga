@@ -116,6 +116,7 @@ public sealed class MetadataQualityTitleAuthorRepairServiceTests
         var result = await service.RepairAsync(original.Id, default);
 
         result.Status.Should().Be(MetadataQualityTitleAuthorRepairStatus.Failed);
+        result.FailureReason.Should().Be(MetadataQualityRepairFailureReason.BookAlreadyExists);
         (await repository.GetAsync(original.Id, default))!.Metadata.Should().Be(original.Metadata);
     }
 
