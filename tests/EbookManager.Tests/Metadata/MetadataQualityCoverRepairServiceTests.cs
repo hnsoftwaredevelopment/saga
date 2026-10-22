@@ -153,6 +153,7 @@ public sealed class MetadataQualityCoverRepairServiceTests
         var result = await service.RepairAsync(original.Id, [1, 2, 3], CancellationToken.None);
 
         result.Status.Should().Be(MetadataQualityCoverRepairStatus.Failed);
+        result.FailureReason.Should().Be(MetadataQualityRepairFailureReason.BookAlreadyExists);
         coverStore.DeleteCalls.Should().Be(1);
         (await repository.GetAsync(original.Id, CancellationToken.None))!.Metadata.CoverBytes.Should().BeNull();
     }

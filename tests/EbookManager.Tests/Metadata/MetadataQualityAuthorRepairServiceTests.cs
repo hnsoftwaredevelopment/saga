@@ -113,6 +113,8 @@ public sealed class MetadataQualityAuthorRepairServiceTests
 
         result.Items.Single(item => item.BookId == conflicting.Id).Status
             .Should().Be(MetadataQualityAuthorRepairStatus.Failed);
+        result.Items.Single(item => item.BookId == conflicting.Id).FailureReason
+            .Should().Be(MetadataQualityRepairFailureReason.BookAlreadyExists);
         result.Items.Single(item => item.BookId == successful.Id).Status
             .Should().Be(MetadataQualityAuthorRepairStatus.Succeeded);
     }

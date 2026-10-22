@@ -77,7 +77,10 @@ public sealed class MetadataQualityLanguageRepairService(
                     status,
                     reloadedBook,
                     saveResult.Message,
-                    saveResult.FileResults));
+                    saveResult.FileResults,
+                saveResult.Status == BookSaveStatus.Conflict
+                    ? MetadataQualityRepairFailureReason.BookAlreadyExists
+                    : MetadataQualityRepairFailureReason.Unknown));
             }
             catch (OperationCanceledException)
             {

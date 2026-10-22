@@ -10,6 +10,18 @@ namespace EbookManager.Tests.Metadata;
 public sealed class MetadataQualityLanguageRepairServiceTests
 {
     [Fact]
+    public async Task Repair_preserves_a_typed_duplicate_reason_without_writing()
+    {
+        var book = CreateBook(language: null);
+        var repository = new InMemoryBookRepository(book) { ThrowConflict = true };
+        var result = await CreateService(repository).RepairAsync([book.Id], "nl", default);
+        var item = result.Items.Should().ContainSingle().Subject;
+        item.Status.Should().Be(MetadataQualityLanguageRepairStatus.Failed);
+        item.FailureReason.Should().Be(MetadataQualityRepairFailureReason.BookAlreadyExists);
+        item.Book!.Metadata.Should().Be(book.Metadata);
+    }
+
+    [Fact]
     public async Task RepairAsync_normalizes_and_changes_only_the_unknown_language()
     {
         var original = CreateBook(language: null);
@@ -109,6 +121,7 @@ public sealed class MetadataQualityLanguageRepairServiceTests
     {
         private readonly Dictionary<Guid, Book> books = seed.ToDictionary(book => book.Id);
 
+        public bool ThrowConflict { get; init; }
         public int UpdateCalls { get; private set; }
         public HashSet<Guid> FailingReadBookIds { get; } = [];
 
@@ -127,6 +140,7 @@ public sealed class MetadataQualityLanguageRepairServiceTests
 
         public Task UpdateAsync(Book updatedBook, CancellationToken cancellationToken)
         {
+            if (ThrowConflict) { throw new BookConflictException(); }
             UpdateCalls++;
             books[updatedBook.Id] = updatedBook;
             return Task.CompletedTask;

@@ -78,7 +78,10 @@ public sealed class MetadataQualitySeriesRepairService(
                 status,
                 reloadedBook,
                 saveResult.Message,
-                saveResult.FileResults));
+                saveResult.FileResults,
+                saveResult.Status == BookSaveStatus.Conflict
+                    ? MetadataQualityRepairFailureReason.BookAlreadyExists
+                    : MetadataQualityRepairFailureReason.Unknown));
         }
 
         return new MetadataQualitySeriesRepairBatchResult(results.AsReadOnly());

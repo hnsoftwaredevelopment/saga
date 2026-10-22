@@ -179,6 +179,12 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
         await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
 
         dashboard.StatusMessage.Should().Be($"localized:{messageKey}");
+        var expectedReason = messageKey.EndsWith("WriteBackWarning", StringComparison.Ordinal)
+            ? "MetadataQualityRepairReasonFileWarning"
+            : messageKey.EndsWith("NotNeeded", StringComparison.Ordinal)
+                ? "MetadataQualityRepairReasonChanged" : "MetadataQualityRepairReasonFailed";
+        dashboard.RepairDetails.Should().ContainSingle().Which.Reason
+            .Should().Be($"localized:{expectedReason}");
     }
 
     private static MetadataQualityDashboardViewModel CreateDashboard(

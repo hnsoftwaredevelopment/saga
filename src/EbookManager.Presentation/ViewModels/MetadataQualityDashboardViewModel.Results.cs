@@ -38,6 +38,16 @@ public sealed partial class MetadataQualityDashboardViewModel
         OnPropertyChanged(nameof(HasRepairDetails));
     }
 
+    private void SetRepairFailureDetails(IEnumerable<MetadataQualityBookRowViewModel> rows,
+        string? reasonKey = null)
+    {
+        ClearRepairFeedback();
+        foreach (var row in rows)
+        {
+            AddRepairDetail(row, MetadataQualityBatchRepairStatus.Failed, reasonKey: reasonKey);
+        }
+    }
+
     private void ReconcileBatchRepair(
         MetadataQualityIssueViewModel issue,
         IReadOnlyList<MetadataQualityBookRowViewModel> selectedRows,
@@ -50,9 +60,12 @@ public sealed partial class MetadataQualityDashboardViewModel
         bool isBulk = false)
     {
         ClearRepairFeedback();
+        var results = items
+            .GroupBy(item => item.BookId)
+            .ToDictionary(group => group.Key, group => group.Last());
         foreach (var row in selectedRows)
         {
-            var item = items.LastOrDefault(item => item.BookId == row.Id);
+            var item = results.GetValueOrDefault(row.Id);
             if (item?.Status != MetadataQualityBatchRepairStatus.Succeeded)
             {
                 AddRepairDetail(row, item?.Status ?? MetadataQualityBatchRepairStatus.Failed,
@@ -60,9 +73,6 @@ public sealed partial class MetadataQualityDashboardViewModel
             }
         }
 
-        var results = items
-            .GroupBy(item => item.BookId)
-            .ToDictionary(group => group.Key, group => group.Last());
         var firstSelectedIndex = selectedRows
             .Select(issue.Rows.IndexOf)
             .Where(index => index >= 0)

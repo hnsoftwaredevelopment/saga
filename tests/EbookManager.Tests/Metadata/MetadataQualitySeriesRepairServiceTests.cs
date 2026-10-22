@@ -10,6 +10,18 @@ namespace EbookManager.Tests.Metadata;
 public sealed class MetadataQualitySeriesRepairServiceTests
 {
     [Fact]
+    public async Task Repair_preserves_a_typed_duplicate_reason_without_writing()
+    {
+        var book = CreateBook(series: null, seriesNumber: 1);
+        var repository = new InMemoryBookRepository([book]) { ThrowConflict = true };
+        var result = await CreateService(repository).RepairAsync([book.Id], "Serie", default);
+        var item = result.Items.Should().ContainSingle().Subject;
+        item.Status.Should().Be(MetadataQualitySeriesRepairStatus.Failed);
+        item.FailureReason.Should().Be(MetadataQualityRepairFailureReason.BookAlreadyExists);
+        item.Book!.Metadata.Should().Be(book.Metadata);
+    }
+
+    [Fact]
     public async Task RepairAsync_changes_only_series_and_preserves_the_existing_series_number()
     {
         var original = CreateBook(series: null, seriesNumber: 3);
@@ -133,6 +145,7 @@ public sealed class MetadataQualitySeriesRepairServiceTests
     {
         private readonly Dictionary<Guid, Book> books = seed.ToDictionary(book => book.Id);
 
+        public bool ThrowConflict { get; init; }
         public int UpdateCalls { get; private set; }
         public bool ThrowWhenListingFiles { get; init; }
 
@@ -142,6 +155,7 @@ public sealed class MetadataQualitySeriesRepairServiceTests
             Task.FromResult(books.GetValueOrDefault(id));
         public Task UpdateAsync(Book book, CancellationToken cancellationToken)
         {
+            if (ThrowConflict) { throw new BookConflictException(); }
             UpdateCalls++;
             books[book.Id] = book;
             return Task.CompletedTask;

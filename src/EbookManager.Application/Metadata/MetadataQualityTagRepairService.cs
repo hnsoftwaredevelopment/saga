@@ -78,7 +78,8 @@ public sealed class MetadataQualityTagRepairService(
 
         if (expectedTags is not null && !NullableSequenceEqual(currentBook.Metadata.Tags, expectedTags))
         {
-            return new(bookId, MetadataQualityTagRepairStatus.Failed, currentBook);
+            return new(bookId, MetadataQualityTagRepairStatus.Failed, currentBook,
+                FailureReason: MetadataQualityRepairFailureReason.MetadataChanged);
         }
 
         var normalizedTags = MetadataQualityTagNormalizer.Normalize(tags);
@@ -109,7 +110,10 @@ public sealed class MetadataQualityTagRepairService(
             status,
             reloadedBook,
             saveResult.Message,
-            saveResult.FileResults);
+            saveResult.FileResults,
+                saveResult.Status == BookSaveStatus.Conflict
+                    ? MetadataQualityRepairFailureReason.BookAlreadyExists
+                    : MetadataQualityRepairFailureReason.Unknown);
     }
 
     private static bool NullableSequenceEqual(

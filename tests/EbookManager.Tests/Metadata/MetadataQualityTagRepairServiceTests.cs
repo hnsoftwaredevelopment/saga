@@ -19,6 +19,7 @@ public sealed class MetadataQualityTagRepairServiceTests
             current.Id, ["Oud"], default, expectedTags: [" Oud "]);
 
         result.Status.Should().Be(MetadataQualityTagRepairStatus.Failed);
+        result.FailureReason.Should().Be(MetadataQualityRepairFailureReason.MetadataChanged);
         result.Book!.Metadata.Tags.Should().Equal(" Nieuw ");
         repository.UpdateCalls.Should().Be(0);
     }

@@ -352,6 +352,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
+        ClearRepairFeedback();
         MetadataQualityAuthorRepairBatchResult batch;
         try
         {
@@ -366,6 +367,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            SetRepairFailureDetails(selectedRows);
             StatusMessage = localize("MetadataQualityAuthorRepairFailed");
             return;
         }
@@ -411,6 +413,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
+        ClearRepairFeedback();
         MetadataQualityLanguageRepairBatchResult batch;
         try
         {
@@ -425,6 +428,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            SetRepairFailureDetails(selectedRows);
             StatusMessage = localize("MetadataQualityLanguageRepairFailed");
             return;
         }
@@ -469,6 +473,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             .ToArray();
         if (bookContexts.Length != selectedRows.Length)
         {
+            SetRepairFailureDetails(selectedRows);
             StatusMessage = localize("MetadataQualitySeriesRepairFailed");
             return;
         }
@@ -483,6 +488,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
+        ClearRepairFeedback();
         MetadataQualitySeriesRepairBatchResult batch;
         try
         {
@@ -497,6 +503,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            SetRepairFailureDetails(selectedRows);
             StatusMessage = localize("MetadataQualitySeriesRepairFailed");
             return;
         }
@@ -546,6 +553,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             : repair.Previews.Where(row => row.CanRepair).ToArray();
         var chosenIds = proposals.Select(row => row.BookId).ToHashSet();
         var chosenRows = selectedRows.Where(row => chosenIds.Contains(row.Id)).ToArray();
+        ClearRepairFeedback();
         var results = new List<MetadataQualityBatchRepairItem>();
         try
         {
@@ -615,6 +623,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             return;
         }
 
+        ClearRepairFeedback();
         BookCoverDownloadResult downloadResult;
         try
         {
@@ -628,6 +637,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            SetRepairFailureDetails([selectedBook], "MetadataQualityRepairReasonDownload");
             StatusMessage = localize("MetadataQualityCoverDownloadFailed");
             return;
         }
@@ -635,6 +645,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         if (downloadResult.Status != BookCoverDownloadStatus.Succeeded ||
             downloadResult.Bytes is not { Length: > 0 } coverBytes)
         {
+            SetRepairFailureDetails([selectedBook], "MetadataQualityRepairReasonDownload");
             StatusMessage = localize("MetadataQualityCoverDownloadFailed");
             return;
         }
@@ -653,6 +664,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         }
         catch (Exception)
         {
+            SetRepairFailureDetails([selectedBook]);
             StatusMessage = localize("MetadataQualityCoverRepairFailed");
             return;
         }
@@ -664,6 +676,17 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
         else if (repairResult.Status == MetadataQualityCoverRepairStatus.NotFound)
         {
             RemoveBook(selectedBook.Id);
+        }
+
+        if (repairResult.Status != MetadataQualityCoverRepairStatus.Succeeded)
+        {
+            AddRepairDetail(selectedBook, repairResult.Status switch
+            {
+                MetadataQualityCoverRepairStatus.SavedWithWriteBackErrors => MetadataQualityBatchRepairStatus.SavedWithWriteBackErrors,
+                MetadataQualityCoverRepairStatus.NotFound => MetadataQualityBatchRepairStatus.NotFound,
+                MetadataQualityCoverRepairStatus.NotApplicable => MetadataQualityBatchRepairStatus.NotApplicable,
+                _ => MetadataQualityBatchRepairStatus.Failed
+            }, repairResult.FailureReason);
         }
 
         StatusMessage = repairResult.Status switch
@@ -710,6 +733,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
             ? repair.Previews
             : [new MetadataQualityTagRepairPreview(contexts[0].Id, contexts[0].Metadata.Title,
                 contexts[0].Metadata.Tags?.ToArray() ?? [], repair.NormalizedTags)];
+        ClearRepairFeedback();
         var results = new List<MetadataQualityBatchRepairItem>();
         try
         {
