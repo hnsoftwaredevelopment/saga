@@ -14,6 +14,7 @@
 - [x] Volledige suite: 882 tests geslaagd, geen fouten of overgeslagen tests. Debug-build met 0 waarschuwingen/fouten; precies één Saga.exe onder Builds/Debug, versie 2026.10.22.56, 22 oktober 2026 om 13:25 (Europe/Amsterdam). Eigen vijfassige review uitgevoerd; geen open bevindingen. Randgevallen zijn testgestuurd gecorrigeerd.
 - [x] Documentatie exact naar Obsidian gespiegeld en hashes gelijk. Gewone niet-draft PR #47 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/47; mergeable, GitGuardian groen bij opening.
 - [x] CodeQL, GitGuardian en CodeRabbit-status groen op df358ce; PR mergeable en geen inline reviewbevindingen aanwezig bij acceptatiecontrole.
+- [x] CodeRabbit-bevinding buiten de diff alsnog beoordeeld en opgelost: README verwijst nu naar de actuele checklist van Milestone 46; de checklistindex bevat ook Milestones 44–46. Commitbereik/optionele commitknoppen zijn geen inhoudelijke commitbevinding. Algemene docstringwaarschuwing niet blind toegepast conform project-DoD.
 - [x] Gebruiker heeft alles getest en geaccepteerd: foutredenen duidelijk, werking goed en geen merkbare vertraging ten opzichte van eerdere versies.
 
 ## Historie: Milestone 45 todo

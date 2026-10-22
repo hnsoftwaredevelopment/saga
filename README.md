@@ -81,7 +81,7 @@ Milestone 46 is manually tested and accepted: all six quality repair routes now 
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The manual acceptance steps for the current slice are in [Milestone 45 checklist](docs/manual-tests/milestone-45-checklist.md).
+The manual acceptance steps for the current slice are in [Milestone 46 checklist](docs/manual-tests/milestone-46-checklist.md).
 
 ## Prerequisites
 
@@ -202,6 +202,9 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-41-checklist.md](docs/manual-tests/milestone-41-checklist.md)
 - [docs/manual-tests/milestone-42-checklist.md](docs/manual-tests/milestone-42-checklist.md)
 - [docs/manual-tests/milestone-43-checklist.md](docs/manual-tests/milestone-43-checklist.md)
+- [docs/manual-tests/milestone-44-checklist.md](docs/manual-tests/milestone-44-checklist.md)
+- [docs/manual-tests/milestone-45-checklist.md](docs/manual-tests/milestone-45-checklist.md)
+- [docs/manual-tests/milestone-46-checklist.md](docs/manual-tests/milestone-46-checklist.md)
 
 ## Later-Version Candidates
 
