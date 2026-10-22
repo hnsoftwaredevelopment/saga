@@ -280,6 +280,18 @@ public sealed class UserInteractionService(
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        if (repair.IsBulk)
+        {
+            if (!repair.CanConfirm) { return Task.FromResult(false); }
+            var result = System.Windows.MessageBox.Show(
+                repair.BulkConfirmationMessage,
+                EbookManager.App.Localization.LocalizedStrings.Current["MetadataQualityTitleAuthorRepairTitle"],
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Question,
+                System.Windows.MessageBoxResult.No);
+            return Task.FromResult(result == System.Windows.MessageBoxResult.Yes);
+        }
+
         var window = new MetadataQualityTitleAuthorRepairWindow(repair);
         if (System.Windows.Application.Current?.MainWindow is { } owner)
         {

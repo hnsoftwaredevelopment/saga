@@ -153,14 +153,14 @@ Saga should give users a fast overview of metadata problems in the active librar
 - Handle results per book, continue after individual errors, refresh the library and category filters once, and retain failed rows for retry.
 - Reuse existing metadata persistence and localized result summaries in all six languages.
 
-## Milestone 45: Explicitly choose title/author swaps in bulk
+## Milestone 45: Swap title and author for selected books
 
-- Multiple selected quality rows open a virtualized, scrollable before/after preview.
-- Every checkbox starts unchecked. Only explicitly checked, repairable books are processed after confirmation.
-- Books with multiple or unusable authors cannot be checked. Single-book confirmation remains available.
+- Use the existing quality-list selection directly and show one compact count confirmation, without a second list or checkboxes.
+- Confirming processes all suitable selected books; cancelling writes nothing.
+- Unsuitable books are skipped and counted in the confirmation. Single-book before/after confirmation remains available.
 - Compare the original full title and author list with current storage before swapping; skip changed or unavailable books safely.
 - Reuse the existing persistence service and batch reconciliation, continue after individual failures and refresh the library and author filters together.
-- Keep unchecked rows visible and failed rows selected; show localized result counts in all six languages.
+- Keep unselected books unchanged and failed rows selected; show localized result counts in all six languages.
 - Keep the heuristic and detail-pane Save/Undo workflow unchanged.
 
 ## Follow-up ideas
@@ -173,4 +173,4 @@ Saga should give users a fast overview of metadata problems in the active librar
 
 ## Status
 
-Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45 is ready for manual acceptance: users explicitly check which per-book title/author proposals to apply. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic remains intentionally uncertain, and false positives can be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.
+Milestones 26 through 32 and 36 through 44 are implemented and accepted, including individual repairs, bulk author/language/series/tag repair and title/author swapping from details. Milestone 44 was merged on 22 October 2026. Milestone 45 is ready for manual acceptance: users select books in the quality list and confirm the title/author swap once. Cover search uses Google Books and Open Library with a generated fallback; its expanded real-world acceptance remains open. The title/author heuristic remains intentionally uncertain, and false positives can be dismissed with `This is correct`. Online metadata lookup, other bulk repairs, export, configurable checks and heuristic tuning remain follow-up work.

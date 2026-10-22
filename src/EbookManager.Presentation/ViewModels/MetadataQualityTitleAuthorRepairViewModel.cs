@@ -1,13 +1,11 @@
 using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Globalization;
 
 namespace EbookManager.Presentation.ViewModels;
 
-public sealed class MetadataQualityTitleAuthorRepairViewModel : ObservableObject
+public sealed class MetadataQualityTitleAuthorRepairViewModel
 {
-    private readonly Func<string, string>? localize;
     public MetadataQualityTitleAuthorRepairViewModel(string currentTitle, string currentAuthor)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(currentTitle);
@@ -29,34 +27,21 @@ public sealed class MetadataQualityTitleAuthorRepairViewModel : ObservableObject
             throw new ArgumentException("At least two distinct books are required.", nameof(books));
         }
 
-        this.localize = localize;
         CurrentTitle = string.Empty;
         CurrentAuthor = string.Empty;
         Previews = books.Select(book => new MetadataQualityTitleAuthorRepairRowViewModel(book)).ToArray();
-        foreach (var preview in Previews)
-        {
-            preview.PropertyChanged += (_, args) =>
-            {
-                if (args.PropertyName == nameof(preview.IsSelected))
-                {
-                    OnPropertyChanged(nameof(SelectedCount));
-                    OnPropertyChanged(nameof(CanConfirm));
-                    OnPropertyChanged(nameof(BulkConfirmText));
-                }
-            };
-        }
-
-        BulkContext = string.Format(CultureInfo.CurrentCulture,
-            localize("MetadataQualityTitleAuthorRepairBulkContext"), books.Count);
+        BulkConfirmationMessage = string.Format(CultureInfo.CurrentCulture,
+            localize(EligibleCount == books.Count
+                ? "MetadataQualityTitleAuthorRepairBulkConfirmationMessage"
+                : "MetadataQualityTitleAuthorRepairBulkConfirmationSkipped"),
+            books.Count, EligibleCount, books.Count - EligibleCount);
     }
 
     public IReadOnlyList<MetadataQualityTitleAuthorRepairRowViewModel> Previews { get; } = [];
     public bool IsBulk => Previews.Count > 1;
-    public int SelectedCount => Previews.Count(row => row.CanRepair && row.IsSelected);
-    public bool CanConfirm => !IsBulk || SelectedCount > 0;
-    public string? BulkContext { get; }
-    public string? BulkConfirmText => localize is null ? null : string.Format(CultureInfo.CurrentCulture,
-        localize("MetadataQualityTitleAuthorRepairBulkConfirm"), SelectedCount);
+    public int EligibleCount => Previews.Count(row => row.CanRepair);
+    public bool CanConfirm => !IsBulk || EligibleCount > 0;
+    public string? BulkConfirmationMessage { get; }
 
     public string CurrentTitle { get; }
     public string CurrentAuthor { get; }
@@ -64,11 +49,8 @@ public sealed class MetadataQualityTitleAuthorRepairViewModel : ObservableObject
     public string NewAuthor => CurrentTitle;
 }
 
-public sealed partial class MetadataQualityTitleAuthorRepairRowViewModel : ObservableObject
+public sealed class MetadataQualityTitleAuthorRepairRowViewModel
 {
-    [ObservableProperty]
-    private bool isSelected;
-
     public MetadataQualityTitleAuthorRepairRowViewModel(Book book)
     {
         BookId = book.Id;

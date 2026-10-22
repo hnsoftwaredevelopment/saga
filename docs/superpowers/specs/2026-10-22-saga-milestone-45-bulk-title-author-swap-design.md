@@ -1,37 +1,29 @@
 # Milestone 45: titel en auteur in bulk omwisselen
 
-## Doel en autorisatie
+## Doel en bijgestelde werkwijze
 
-De gebruiker heeft bulk titel/auteur omwisselen met een controleoverzicht en expliciete keuze per boek goedgekeurd en opdracht gegeven te starten. De bestaande heuristiek geeft veel onterechte kandidaten; een melding op zichzelf geeft dus nooit toestemming om te schrijven.
+De gebruiker kiest de boeken in de kwaliteitslijst en vraagt titel/auteur omwisselen. Na gebruikerstest is de tweede selectie met vinkjes vervallen: de bestaande selectie geeft de bedoeling al aan. Saga toont alleen een korte bevestiging met het aantal boeken.
 
-## Gebruikersgedrag
+## Gedrag en acceptatie
 
-- Meerdere geselecteerde regels bij Mogelijk omgewisselde auteur/titel openen één scrollbaar controleoverzicht.
-- Per boek staan huidige titel/auteur en voorgestelde titel/auteur. Alle vinkjes beginnen uit.
-- Alleen expliciet aangevinkte, herstelbare boeken worden na bevestiging verwerkt. Zonder vinkjes is bevestigen uitgeschakeld. Annuleren schrijft niets.
-- Boeken met meerdere auteurs, onbruikbare auteur of lege titel kunnen niet worden aangevinkt. Ze blijven ongewijzigd.
-- Eén geselecteerd boek behoudt de bestaande enkelvoudige bevestiging.
-- Tijdens opslag worden de huidige titel en volledige auteurslijst vergeleken met de oorspronkelijke preview. Gewijzigde of verdwenen boeken worden overgeslagen zonder verouderde waarden toe te passen.
-- De bestaande service wisselt alleen titel en de enkele auteur om, behoudt overige metadata en gebruikt SQLite, sidecar en ebook-write-back.
-- Resultaten worden per gekozen boek verwerkt; een fout onderbreekt de overige boeken niet. Niet aangevinkte regels blijven zichtbaar. Mislukte boeken blijven geselecteerd. Bibliotheek en auteursfilters verversen gezamenlijk.
-- Korte groene succesmelding bij volledig succes; aantallen bij fouten, waarschuwingen en overgeslagen boeken.
-- Toetsenbordbediening, tekstomloop, virtualisatie en alle zes talen horen bij de slice.
+- Meerdere geselecteerde regels bij Mogelijk omgewisselde auteur/titel krijgen een korte Ja/Nee-bevestiging, zonder extra overzicht of vinkjes.
+- Bevestigen verwerkt alle geschikte boeken uit de selectie; Nee of Escape schrijft niets.
+- Ongeschikte boeken blijven ongewijzigd; indien aanwezig noemt de bevestiging het aantal geschikte en overgeslagen boeken.
+- Eén geselecteerd boek behoudt de bestaande enkelvoudige vóór/na-bevestiging.
+- Titel en volledige auteurslijst worden vóór opslag vergeleken met de oorspronkelijke waarden. Gewijzigde en verdwenen boeken worden veilig overgeslagen.
+- De bestaande service behoudt overige metadata en gebruikt SQLite, sidecar en ebook-write-back.
+- Een fout onderbreekt andere boeken niet. Mislukte boeken blijven geselecteerd; bibliotheek en auteursfilters verversen samen.
+- Korte groene melding bij volledig succes; aantallen bij waarschuwingen, overgeslagen en mislukte boeken.
+- De bevestiging is gelokaliseerd in zes talen en gebruikt bestaande toetsenbordbediening.
 
-## Structuur en conventies
+## Techniek en controles
 
-Application bevat gedeelde herstelbaarheidsregels, snapshotcontrole en opslagservice. Presentation bevat de afzonderlijk aanvinkbare previews en dashboardcoördinatie. App bevat WPF en resources. Tests volgen de bestaande xUnit/FluentAssertions-structuur onder tests/EbookManager.Tests.
+Application bevat gedeelde herstelbaarheidsregels, snapshots en opslag. Presentation verwerkt de lijstselectie en batchresultaten. UserInteractionService toont de standaardbevestiging; het enkelvoudige WPF-venster blijft behouden. De bestaande xUnit/FluentAssertions-tests bewijzen selectie, annuleren, snapshots, fouten en gegevensbehoud.
 
-Voorbeeld: `Jan Jansen / De verdwenen stad` wordt alleen na aanvinken `De verdwenen stad / Jan Jansen`. Een tweede, niet aangevinkt boek verandert niet.
-
-## Implementatieplan en verificatie
-
-1. Previewmodel en servicecontrole met tests voor standaard uitgevinkte selectie, ongeldige rijen, snapshots en gegevensbehoud.
-2. Dashboard: alleen gekozen ids verwerken, fouten isoleren en bestaande batchreconciliatie hergebruiken; tests voor annuleren, gemengde resultaten en bibliotheekverversing.
-3. WPF-overzicht en zes vertalingen; gerichte controles en app-build.
-4. Volledige tests, eigen review, documentatie, Obsidian, gewone PR en GitHub-controles. Handmatige checklist vóór merge.
+Voorbeeld: selecteer twee verkeerd geïmporteerde boeken, kies omwisselen en bevestig één keer. Beide worden verwerkt; een derde, niet geselecteerd boek verandert niet.
 
 Commando's: `dotnet test EbookManager.sln -c Debug --no-restore`, `dotnet build src/EbookManager.App/EbookManager.App.csproj -c Debug --no-restore`, `git diff --check`.
 
 ## Grenzen
 
-Geen heuristiekaanpassing, automatisch aanvinken, bulkbewerking vanuit details, nieuwe dependency of schemawijziging. Altijd gegevensbehoud, bestaande opslagroute, tests en Markdown-spiegel controleren. Nooit geheimen, bibliotheken of builds committen. Alleen de gebruiker mergt.
+De onnauwkeurige heuristiek is een afzonderlijk vervolgonderwerp. Geen wijziging aan de detailactie, schema of dependencies. Altijd gegevensbehoud, tests en Markdown-spiegel controleren. Alleen de gebruiker mergt. Handmatige acceptatie gebeurt met de bijgewerkte checklist.

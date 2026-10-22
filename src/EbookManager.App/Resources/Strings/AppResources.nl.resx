@@ -441,13 +441,9 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Geen tags</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} boeken gewijzigd</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Gewijzigd: {0}. Bestandswaarschuwingen: {1}. Al opgelost: {2}. Niet beschikbaar: {3}. Mislukt: {4}.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkContext" xml:space="preserve"><value>{0} boeken controleren</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkConfirm" xml:space="preserve"><value>{0} aangevinkte boeken omwisselen</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkHelp" xml:space="preserve"><value>Controleer ieder voorstel en vink alleen de boeken aan die je wilt wijzigen. Er wordt niets automatisch aangevinkt.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkPreview" xml:space="preserve"><value>Voorstellen voor titel en auteur omwisselen</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkChoose" xml:space="preserve"><value>Dit boek omwisselen</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkUnavailable" xml:space="preserve"><value>Dit boek kan niet veilig worden omgewisseld. Een titel en precies één bruikbare auteur zijn nodig.</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} boeken gewijzigd</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Gewijzigd: {0}. Bestandswaarschuwingen: {1}. Overgeslagen: {2}. Niet beschikbaar: {3}. Mislukt: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Titel en auteur omwisselen voor {0} geselecteerde boeken?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} boeken geselecteerd: {1} geschikte boeken worden omgewisseld en {2} ongeschikte boeken worden overgeslagen. Doorgaan?</value></data>
 </root>
 

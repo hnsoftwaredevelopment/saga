@@ -441,13 +441,9 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>No tags</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} books changed</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Changed: {0}. File warnings: {1}. Already resolved: {2}. Unavailable: {3}. Failed: {4}.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkContext" xml:space="preserve"><value>{0} books to review</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkConfirm" xml:space="preserve"><value>Swap {0} checked books</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkHelp" xml:space="preserve"><value>Review each proposal and check only the books you want to change. Nothing is checked automatically.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkPreview" xml:space="preserve"><value>Title and author swap proposals</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkChoose" xml:space="preserve"><value>Swap this book</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkUnavailable" xml:space="preserve"><value>This book cannot be swapped safely. It needs a title and exactly one usable author.</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} books changed</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Changed: {0}. File warnings: {1}. Skipped: {2}. Unavailable: {3}. Failed: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Swap the title and author for {0} selected books?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} books selected: {1} suitable books will be swapped and {2} unsuitable books will be skipped. Continue?</value></data>
 </root>
 

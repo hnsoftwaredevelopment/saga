@@ -9,14 +9,15 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class MetadataQualityDashboardTitleAuthorRepairTests
 {
     [Theory]
-    [InlineData(true, true)]
-    [InlineData(false, true)]
-    [InlineData(true, false)]
-    public async Task Bulk_swap_writes_only_checked_books_after_confirmation(bool confirm, bool select)
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Bulk_swap_uses_all_books_selected_in_the_grid_after_confirmation(bool confirm)
     {
         var first = CreateBook("Jan Jansen", "De verdwenen stad");
         var second = CreateBook("Piet Peters", "Het verloren boek");
-        var service = new RecordingRepairService(CreateRepairedBook(first));
+        var service = new RecordingRepairService(
+            new MetadataQualityTitleAuthorRepairResult(first.Id, MetadataQualityTitleAuthorRepairStatus.Succeeded, CreateRepairedBook(first)),
+            new(second.Id, MetadataQualityTitleAuthorRepairStatus.Succeeded, CreateRepairedBook(second)));
         var notifications = new List<IReadOnlyList<Book>>();
         var dashboard = new MetadataQualityDashboardViewModel([first, second],
             key => key == "MetadataQualityTitleAuthorRepairBulkSucceeded" ? "{0} changed" : key,
@@ -24,9 +25,7 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
             showTitleAuthorRepair: (repair, _) =>
             {
                 repair.Previews.Should().HaveCount(2);
-                repair.Previews.Should().OnlyContain(row => !row.IsSelected);
-                repair.CanConfirm.Should().BeFalse();
-                if (select) { repair.Previews.Single(row => row.BookId == first.Id).IsSelected = true; }
+                repair.CanConfirm.Should().BeTrue();
                 return Task.FromResult(confirm);
             }, booksRepaired: notifications.Add);
         dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
@@ -35,14 +34,12 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
 
         await dashboard.RepairTitleAuthorCommand.ExecuteAsync(null);
 
-        if (confirm && select)
+        if (confirm)
         {
-            service.Calls.Should().ContainSingle().Which.Should().Be(first.Id);
-            service.Expected!.Title.Should().Be(first.Metadata.Title);
-            service.Expected.Authors.Should().Equal(first.Metadata.Authors);
+            service.Calls.Should().BeEquivalentTo([first.Id, second.Id]);
             notifications.Should().ContainSingle();
-            dashboard.SelectedIssue.Rows.Should().ContainSingle(row => row.Id == second.Id);
-            dashboard.StatusMessage.Should().Be("1 changed");
+            dashboard.SelectedIssue.Rows.Should().BeEmpty();
+            dashboard.StatusMessage.Should().Be("2 changed");
             dashboard.IsStatusMessageSuccess.Should().BeTrue();
         }
         else
@@ -186,7 +183,6 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
             titleAuthorRepairService: service,
             showTitleAuthorRepair: (repair, _) =>
             {
-                foreach (var row in repair.Previews) { row.IsSelected = true; }
                 return Task.FromResult(true);
             }, booksRepaired: notifications.Add);
         dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);
@@ -211,7 +207,6 @@ public sealed class MetadataQualityDashboardTitleAuthorRepairTests
         var dashboard = new MetadataQualityDashboardViewModel([first, second], key => key,
             titleAuthorRepairService: service, showTitleAuthorRepair: (repair, _) =>
             {
-                foreach (var row in repair.Previews) { row.IsSelected = true; }
                 return Task.FromResult(true);
             });
         dashboard.SelectedIssue = dashboard.Issues.Single(issue => issue.SignalKey == MetadataQualitySignalKeys.PossibleTitleAuthorSwap);

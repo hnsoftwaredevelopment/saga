@@ -79,12 +79,8 @@ public sealed class MetadataQualityLocalizationTests
         "MetadataQualityTitleAuthorRepairFailed",
         "MetadataQualityTitleAuthorRepairWriteBackWarning",
         "MetadataQualityTitleAuthorRepairNotNeeded",
-        "MetadataQualityTitleAuthorRepairBulkContext",
-        "MetadataQualityTitleAuthorRepairBulkConfirm",
-        "MetadataQualityTitleAuthorRepairBulkHelp",
-        "MetadataQualityTitleAuthorRepairBulkPreview",
-        "MetadataQualityTitleAuthorRepairBulkChoose",
-        "MetadataQualityTitleAuthorRepairBulkUnavailable",
+        "MetadataQualityTitleAuthorRepairBulkConfirmationMessage",
+        "MetadataQualityTitleAuthorRepairBulkConfirmationSkipped",
         "MetadataQualityTitleAuthorRepairBulkSucceeded",
         "MetadataQualityTitleAuthorRepairBulkResult",
         "MetadataQualitySearchCover",
@@ -150,8 +146,8 @@ public sealed class MetadataQualityLocalizationTests
         values["MetadataQualityTagRepairBulkContext"].Should().Contain("{0}");
         values["MetadataQualityTagRepairBulkSave"].Should().Contain("{0}");
         values["MetadataQualityTagRepairBulkSucceeded"].Should().Contain("{0}");
-        values["MetadataQualityTitleAuthorRepairBulkContext"].Should().Contain("{0}");
-        values["MetadataQualityTitleAuthorRepairBulkConfirm"].Should().Contain("{0}");
+        values["MetadataQualityTitleAuthorRepairBulkConfirmationMessage"].Should().Contain("{0}");
+        values["MetadataQualityTitleAuthorRepairBulkConfirmationSkipped"].Should().Contain("{0}").And.Contain("{1}").And.Contain("{2}");
         values["MetadataQualityTitleAuthorRepairBulkSucceeded"].Should().Contain("{0}");
         foreach (var placeholder in Enumerable.Range(0, 5).Select(index => $"{{{index}}}"))
         {

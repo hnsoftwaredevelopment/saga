@@ -721,13 +721,9 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Keine Schlagwörter</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} Bücher geändert</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Geändert: {0}. Dateiwarnungen: {1}. Bereits gelöst: {2}. Nicht verfügbar: {3}. Fehlgeschlagen: {4}.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkContext" xml:space="preserve"><value>{0} Bücher prüfen</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkConfirm" xml:space="preserve"><value>{0} angekreuzte Bücher tauschen</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkHelp" xml:space="preserve"><value>Prüfen Sie jeden Vorschlag und kreuzen Sie nur die Bücher an, die Sie ändern möchten. Nichts wird automatisch angekreuzt.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkPreview" xml:space="preserve"><value>Vorschläge zum Tauschen von Titel und Autor</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkChoose" xml:space="preserve"><value>Dieses Buch tauschen</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkUnavailable" xml:space="preserve"><value>Dieses Buch kann nicht sicher getauscht werden. Ein Titel und genau ein verwendbarer Autor sind erforderlich.</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} Bücher geändert</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Geändert: {0}. Dateiwarnungen: {1}. Übersprungen: {2}. Nicht verfügbar: {3}. Fehlgeschlagen: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Titel und Autor für {0} ausgewählte Bücher tauschen?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} Bücher ausgewählt: {1} geeignete Bücher werden getauscht, {2} ungeeignete Bücher werden übersprungen. Fortfahren?</value></data>
 </root>
 

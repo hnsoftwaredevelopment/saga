@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 45 is ready for manual testing: review title/author swap proposals for multiple books and explicitly check only the books to change. Nothing is checked automatically; changed book data is protected before saving. Milestone 44 is manually tested, accepted and merged, including per-book bulk tag cleanup.
+Milestone 45 is ready for manual testing: select books in the quality list, choose title/author swap and confirm the count once. The list selection is used directly; changed book data is protected before saving. Milestone 44 is manually tested, accepted and merged, including per-book bulk tag cleanup.
 
 - portable local ebook libraries with `library.db`
 - import pipeline with duplicate detection
@@ -64,7 +64,7 @@ Milestone 45 is ready for manual testing: review title/author swap proposals for
 - direct missing-series repair with live suggestions while preserving the existing series number
 - bulk missing-series repair that applies one chosen series name while preserving each selected book's own series number
 - confirmed title-and-author swap repair with a clear before-and-after preview
-- bulk title-and-author swap with an initially unchecked per-book preview, explicit opt-in and protection against changed title/author values
+- bulk title-and-author swap using the quality-list selection, one compact confirmation and protection against changed title/author values
 - detail-pane title-and-author swap for any editable book, with staged Save and Undo behavior and immediate library refresh after saving
 - editable messy-tag repair with a one-tag-per-line proposal, deduplication, whitespace cleanup, and support for an empty final tag list
 - bulk messy-tag cleanup with a per-book before/after preview, preservation of each book's own tags, and immediate library and category-filter refresh

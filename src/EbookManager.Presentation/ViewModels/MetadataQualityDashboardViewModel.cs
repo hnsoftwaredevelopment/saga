@@ -713,7 +713,7 @@ public sealed partial class MetadataQualityDashboardViewModel : ObservableObject
 
         var proposals = singlePreview is not null
             ? [singlePreview]
-            : repair.Previews.Where(row => row.CanRepair && row.IsSelected).ToArray();
+            : repair.Previews.Where(row => row.CanRepair).ToArray();
         var chosenIds = proposals.Select(row => row.BookId).ToHashSet();
         var chosenRows = selectedRows.Where(row => chosenIds.Contains(row.Id)).ToArray();
         var results = new List<MetadataQualityBatchRepairItem>();

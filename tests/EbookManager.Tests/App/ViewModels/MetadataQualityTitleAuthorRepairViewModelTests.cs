@@ -7,31 +7,22 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class MetadataQualityTitleAuthorRepairViewModelTests
 {
     [Fact]
-    public void Bulk_preview_requires_an_explicit_choice_and_rejects_multiple_authors()
+    public void Bulk_confirmation_uses_the_existing_selection_and_skips_multiple_authors()
     {
         var now = DateTimeOffset.UtcNow;
         var first = new Book(Guid.NewGuid(), new BookMetadata("Jan Jansen", ["De verdwenen stad"]),
             ReadingStatus.Unread, null, now, now);
         var second = first with { Id = Guid.NewGuid(), Metadata = new BookMetadata("Piet Peters", ["Een boek", "Een ander"]) };
-        var repair = new MetadataQualityTitleAuthorRepairViewModel([first, second], key => key);
-        var notifications = new List<string?>();
-        repair.PropertyChanged += (_, args) => notifications.Add(args.PropertyName);
+        var repair = new MetadataQualityTitleAuthorRepairViewModel([first, second],
+            key => key == "MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" ? "{0}:{1}:{2}" : key);
 
         repair.IsBulk.Should().BeTrue();
-        repair.SelectedCount.Should().Be(0);
-        repair.CanConfirm.Should().BeFalse();
+        repair.CanConfirm.Should().BeTrue();
         repair.Previews[0].NewTitle.Should().Be("De verdwenen stad");
         repair.Previews[0].NewAuthor.Should().Be("Jan Jansen");
         repair.Previews[1].CanRepair.Should().BeFalse();
-        repair.Previews[1].IsSelected = true;
-        repair.CanConfirm.Should().BeFalse();
-
-        repair.Previews[0].IsSelected = true;
-        repair.SelectedCount.Should().Be(1);
-        repair.CanConfirm.Should().BeTrue();
-        notifications.Should().Contain(nameof(repair.CanConfirm));
-        repair.Previews[0].IsSelected = false;
-        repair.CanConfirm.Should().BeFalse();
+        repair.EligibleCount.Should().Be(1);
+        repair.BulkConfirmationMessage.Should().Be("2:1:1");
     }
 
     [Fact]

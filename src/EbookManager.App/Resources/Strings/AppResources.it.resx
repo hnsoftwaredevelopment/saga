@@ -721,13 +721,9 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Nessun tag</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} libri modificati</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Modificati: {0}. Avvisi sui file: {1}. Già risolti: {2}. Non disponibili: {3}. Non riusciti: {4}.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkContext" xml:space="preserve"><value>{0} libri da controllare</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkConfirm" xml:space="preserve"><value>Scambia {0} libri selezionati</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkHelp" xml:space="preserve"><value>Controlla ogni proposta e spunta solo i libri da modificare. Nessun libro viene spuntato automaticamente.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkPreview" xml:space="preserve"><value>Proposte di scambio di titolo e autore</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkChoose" xml:space="preserve"><value>Scambia questo libro</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkUnavailable" xml:space="preserve"><value>Questo libro non può essere scambiato in sicurezza. Sono necessari un titolo ed esattamente un autore valido.</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} libri modificati</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Modificati: {0}. Avvisi sui file: {1}. Ignorati: {2}. Non disponibili: {3}. Non riusciti: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>Scambiare titolo e autore di {0} libri selezionati?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} libri selezionati: verranno scambiati {1} libri compatibili e ignorati {2} libri non compatibili. Continuare?</value></data>
 </root>
 

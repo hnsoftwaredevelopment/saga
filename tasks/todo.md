@@ -2,10 +2,11 @@
 
 - [x] Scope goedgekeurd; bestaande code onderzocht; featurebranch gemaakt.
 - [x] Specificatie en implementatieplan vastgelegd.
-- [x] Previewmodel, expliciete selectie en snapshotcontrole met tests.
+- [x] Bestaande lijstselectie en snapshotcontrole met tests; tweede selectie na gebruikerstest verwijderd.
 - [x] Dashboard en bibliotheekverversing met tests.
-- [x] Overzicht en zes vertalingen.
-- [x] Volledige set: 823 tests geslaagd, 0 overgeslagen. App-build: 0 waarschuwingen en fouten. Eigen review op correctheid, eenvoud, architectuur, beveiliging en prestaties uitgevoerd. Build 2026.10.22.24.
+- [x] Korte bevestiging met aantal en zes vertalingen.
+- [x] Volledige set na interfacecorrectie: 822 tests geslaagd, 0 overgeslagen. Eigen review uitgevoerd; de oude checkboxreview is door het verwijderen van dat overzicht niet meer van toepassing.
+- [ ] Bijgewerkte Debug-build plaatsen nadat Saga is afgesloten; de huidige app houdt de uitvoerbestanden bezet.
 - [x] Documentatie en checklist bijgewerkt en exact naar Obsidian gespiegeld.
 - [x] Gewone PR #46 geopend: https://github.com/hnsoftwaredevelopment/saga/pull/46.
 - [ ] GitHub-controles en externe review beoordelen.

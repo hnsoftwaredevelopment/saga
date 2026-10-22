@@ -9,30 +9,8 @@ public partial class MetadataQualityTitleAuthorRepairWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
-        if (viewModel.IsBulk)
-        {
-            Width = 760;
-            Height = 600;
-        }
-        Loaded += (_, _) =>
-        {
-            if (viewModel.IsBulk)
-            {
-                SwapPreviews.SelectedIndex = 0;
-                SwapPreviews.Focus();
-            }
-            else
-            {
-                ConfirmTitleAuthorRepairButton.Focus();
-            }
-        };
+        Loaded += (_, _) => ConfirmTitleAuthorRepairButton.Focus();
     }
 
-    private void ConfirmClicked(object sender, RoutedEventArgs e)
-    {
-        if (DataContext is MetadataQualityTitleAuthorRepairViewModel { CanConfirm: true })
-        {
-            DialogResult = true;
-        }
-    }
+    private void ConfirmClicked(object sender, RoutedEventArgs e) => DialogResult = true;
 }

@@ -721,13 +721,9 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="MetadataQualityTagRepairEmptyTags" xml:space="preserve"><value>Sin etiquetas</value></data>
   <data name="MetadataQualityTagRepairBulkSucceeded" xml:space="preserve"><value>{0} libros modificados</value></data>
   <data name="MetadataQualityTagRepairBulkResult" xml:space="preserve"><value>Modificados: {0}. Avisos de archivo: {1}. Ya resueltos: {2}. No disponibles: {3}. Fallidos: {4}.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkContext" xml:space="preserve"><value>{0} libros para revisar</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkConfirm" xml:space="preserve"><value>Intercambiar {0} libros marcados</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkHelp" xml:space="preserve"><value>Revise cada propuesta y marque solo los libros que desea modificar. Ninguno se marca automáticamente.</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkPreview" xml:space="preserve"><value>Propuestas de intercambio de título y autor</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkChoose" xml:space="preserve"><value>Intercambiar este libro</value></data>
-  <data name="MetadataQualityTitleAuthorRepairBulkUnavailable" xml:space="preserve"><value>Este libro no se puede intercambiar de forma segura. Necesita un título y exactamente un autor válido.</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkSucceeded" xml:space="preserve"><value>{0} libros modificados</value></data>
   <data name="MetadataQualityTitleAuthorRepairBulkResult" xml:space="preserve"><value>Modificados: {0}. Avisos de archivo: {1}. Omitidos: {2}. No disponibles: {3}. Fallidos: {4}.</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationMessage" xml:space="preserve"><value>¿Intercambiar el título y el autor de {0} libros seleccionados?</value></data>
+  <data name="MetadataQualityTitleAuthorRepairBulkConfirmationSkipped" xml:space="preserve"><value>{0} libros seleccionados: se intercambiarán {1} libros compatibles y se omitirán {2} libros no compatibles. ¿Continuar?</value></data>
 </root>
 

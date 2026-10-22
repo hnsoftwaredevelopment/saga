@@ -2,12 +2,12 @@
 
 Goedgekeurde scope en details: docs/superpowers/specs/2026-10-22-saga-milestone-45-bulk-title-author-swap-design.md.
 
-1. Aanvinkbare previews en snapshotcontrole; test standaard niets gekozen en behoud van gewijzigde boeken.
-2. Dashboard verwerkt alleen aangevinkte regels; test annuleren, gedeeltelijke fouten, overgeslagen boeken en verversing.
-3. Scrollbaar WPF-overzicht en zes vertalingen; app-build en gericht checkpoint.
+1. Gebruik de bestaande lijstselectie en snapshotcontrole; test dat alleen geselecteerde boeken worden verwerkt.
+2. Dashboard verwerkt geschikte geselecteerde regels; test annuleren, gedeeltelijke fouten, overgeslagen boeken en verversing.
+3. Korte Ja/Nee-bevestiging met aantal in zes talen; bestaand enkelvoudig venster behouden.
 4. Volledige tests, eigen review, checklist, Obsidian-spiegel, gewone PR en controles.
 
-Afhankelijkheden: model vóór dashboard/UI, alles vóór oplevering. Grootste risico is een onterechte kandidaat wijzigen: vinkjes beginnen uit en opslag vergelijkt de huidige waarden met de preview. Andere metadata wordt door de bestaande service behouden. Geen databasewijziging of dependency.
+Afhankelijkheden: model vóór dashboard/UI, alles vóór oplevering. De gebruiker bepaalt de selectie in de lijst; een tweede selectie is na gebruikerstest vervallen. Opslag vergelijkt actuele titel/auteur met de oorspronkelijke waarden. Andere metadata wordt door de bestaande service behouden. Geen databasewijziging of dependency.
 
 ## Afgerond plan Milestone 44
 
