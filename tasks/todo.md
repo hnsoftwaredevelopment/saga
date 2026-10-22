@@ -1,4 +1,17 @@
-# Milestone 47: betrouwbaarheid Quality afronden
+# Milestone 48: auteursbeheer voorbereiden
+
+- [x] Gebruiker kiest auteursbeheer met foto en optionele website; voorbereiding akkoord.
+- [x] Bestaande Authors/BookAuthors, profielwens, foto-opslag en beide orphan-opruimroutes onderzocht.
+- [x] Conceptspecificatie en geordende technische aanpak vastgelegd; geen productcode, migratie of build gewijzigd.
+- [x] Concrete scope en technische keuzes door gebruiker bevestigd.
+- [ ] Actuele main controleren, nieuwe codex/-branch en geaccepteerd opslagbesluit vastleggen.
+- [ ] Additieve profielvelden, migratie en behoud zonder boeken testgestuurd invoeren.
+- [ ] Profielservice, validatie, veilige foto-opslag en fout-/conflictgedrag testen.
+- [ ] Doorzoekbaar auteursvenster, boekenlijst, websiteactie en zes talen opleveren.
+- [ ] Volledige tests, Debug-build, eigen review, README, handmatige checklist en Obsidian-spiegel.
+- [ ] Gewone PR en handmatige gebruikersacceptatie.
+
+## Historie: Milestone 47 betrouwbaarheid Quality afronden
 
 - [x] Gebruiker geeft opdracht voor de drie reviewbevindingen; branch vanaf actuele main ff97e5a gemaakt.
 - [x] Afgesproken scope en aanpak vastgelegd; eerst falende tests voor foutstatus, oude details, UI-binding en vertalingen.

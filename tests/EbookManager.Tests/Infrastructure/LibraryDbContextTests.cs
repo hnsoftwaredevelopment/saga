@@ -12,11 +12,87 @@ using EbookManager.Tests.TestSupport;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace EbookManager.Tests.Infrastructure;
 
 public sealed class LibraryDbContextTests
 {
+    [Fact]
+    public async Task Author_profile_survives_deleting_last_book_and_is_reused_on_import()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        var book = CreateBook("Profile book", ["Profile Author"]);
+        await repository.AddAsync(book, CreateFile(book.Id, Hash('A')), default);
+        Guid authorId;
+        await using (var context = factory.Create(library.DirectoryPath))
+        {
+            authorId = await context.Authors.Select(x => x.Id).SingleAsync();
+            await context.Database.ExecuteSqlRawAsync(
+                "UPDATE Authors SET Biography = 'A saved biography', WebsiteUrl = 'https://example.org' WHERE Id = {0}", authorId);
+        }
+
+        await repository.DeleteAsync(book.Id, default);
+        await using (var context = factory.Create(library.DirectoryPath))
+        {
+            (await context.Authors.SingleAsync()).Id.Should().Be(authorId);
+        }
+
+        var replacement = CreateBook("Another book", ["Profile Author"]);
+        await repository.AddAsync(replacement, CreateFile(replacement.Id, Hash('B')), default);
+        await using var verification = factory.Create(library.DirectoryPath);
+        (await verification.Authors.SingleAsync()).Id.Should().Be(authorId);
+        (await verification.BookAuthors.SingleAsync()).AuthorId.Should().Be(authorId);
+    }
+
+    [Fact]
+    public async Task Author_profile_migration_preserves_existing_author_identity_and_name()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = new LibraryDbContextFactory();
+        var authorId = Guid.NewGuid();
+        await using var context = factory.Create(library.DirectoryPath);
+        var migrator = context.GetService<Microsoft.EntityFrameworkCore.Migrations.IMigrator>();
+        await migrator.MigrateAsync("20260827150943_AddMetadataQualityExclusions");
+        await context.Database.ExecuteSqlRawAsync(
+            "INSERT INTO Authors (Id, Name, NormalizedName) VALUES ({0}, 'Original Author', 'ORIGINAL AUTHOR')", authorId);
+
+        await context.Database.MigrateAsync();
+
+        var author = await context.Authors.SingleAsync();
+        author.Id.Should().Be(authorId);
+        author.Name.Should().Be("Original Author");
+        await context.Database.ExecuteSqlRawAsync(
+            "UPDATE Authors SET Biography = NULL, WebsiteUrl = NULL, PhotoRelativePath = NULL");
+    }
+
+    [Fact]
+    public async Task Author_photo_profile_survives_changing_the_last_books_author()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var repository = new EfBookRepository(factory, library.DirectoryPath);
+        var book = CreateBook("Profile book", ["Original Author"]);
+        await repository.AddAsync(book, CreateFile(book.Id), default);
+        Guid authorId;
+        await using (var context = factory.Create(library.DirectoryPath))
+        {
+            var author = await context.Authors.SingleAsync();
+            authorId = author.Id;
+            author.PhotoRelativePath = "authors/ab/portrait.jpg";
+            await context.SaveChangesAsync();
+        }
+
+        await repository.UpdateAsync(book with { Metadata = new BookMetadata(book.Metadata.Title, ["New Author"]) }, default);
+
+        await using var verification = factory.Create(library.DirectoryPath);
+        (await verification.Authors.SingleAsync(x => x.Id == authorId)).PhotoRelativePath
+            .Should().Be("authors/ab/portrait.jpg");
+        (await repository.GetAsync(book.Id, default))!.Metadata.Authors.Should().Equal("New Author");
+    }
+
     [Fact]
     public async Task Migration_and_repository_round_trip_full_metadata_to_library_database()
     {

@@ -1007,7 +1007,7 @@ public sealed class EfBookRepository(
         CancellationToken cancellationToken)
     {
         var authors = await context.Authors
-            .Where(x => !x.BookAuthors.Any())
+            .Where(x => !x.BookAuthors.Any() && x.Biography == null && x.WebsiteUrl == null && x.PhotoRelativePath == null)
             .ToListAsync(cancellationToken);
         var tags = await context.Tags
             .Where(x => !x.BookTags.Any())
@@ -1026,7 +1026,8 @@ public sealed class EfBookRepository(
         {
             var ids = batch;
             var authors = await context.Authors
-                .Where(x => ids.Contains(x.Id) && !x.BookAuthors.Any())
+                .Where(x => ids.Contains(x.Id) && !x.BookAuthors.Any() &&
+                    x.Biography == null && x.WebsiteUrl == null && x.PhotoRelativePath == null)
                 .ToListAsync(cancellationToken);
             context.Authors.RemoveRange(authors);
         }

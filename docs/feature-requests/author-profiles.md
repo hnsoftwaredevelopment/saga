@@ -2,20 +2,22 @@
 
 ## Status
 
-Deferred future feature.
+First slice in specification/preparation for Milestone 48; not implemented yet. See [the proposed design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md).
 
 ## Context
 
-Saga currently stores authors as book metadata. A future author-management milestone should make authors first-class library entities so users can keep richer information about writers and clean up aliases or spelling variants more comfortably.
+Saga already stores authors and book-author links as library database entities. They do not yet have user-maintained profiles. Reuse those identities to add richer writer information without changing book metadata. Existing orphan-author cleanup must preserve authors with profile content.
 
 ## Goals
 
 - Add an author profile screen.
-- Store display name, photo, description or biography, birth date, and optional death date.
-- Support author aliases, pseudonyms, and alternate spellings.
+- First slice: show the existing name and store an optional photo, website URL and short biography.
+- First slice: searchable authors and their books in the active library; library-local, portable photos and explicit save/cancel behavior.
+- Later: editable names, birth date and optional death date.
+- Later: support author aliases, pseudonyms, and alternate spellings.
 - Show all books by the author in the active library.
-- Include books stored under linked aliases when showing an author's books.
-- Help users clean up metadata by linking, renaming, or merging author variants.
+- Later: include books stored under linked aliases when showing an author's books.
+- Later: help users clean up metadata by linking, renaming, or merging author variants.
 
 ## Initial Ideas
 
@@ -29,9 +31,9 @@ Saga currently stores authors as book metadata. A future author-management miles
 
 - Online author lookup.
 - Automatic alias detection beyond suggestions.
-- Cross-library or cloud-synced author profiles.
+- Cross-library profile sharing or a dedicated cloud-sync service; existing library-folder synchronization is unchanged.
 - Writing author profile data back into ebook files.
 
 ## Candidate Milestone
 
-After custom metadata, Calibre custom-column import, and the first metadata-management workflows are stable.
+Milestone 48 follows the accepted Quality reliability slice. Implementation starts after confirmation of the concrete proposed scope and storage choices. Online lookup, aliases and author normalization remain future work.

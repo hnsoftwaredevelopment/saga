@@ -1,4 +1,17 @@
-# Milestone 47: betrouwbaarheid Quality afronden
+# Milestone 48: voorbereiding auteursbeheer
+
+Status: richting goedgekeurd; concrete specificatie en technische keuzes ter bevestiging, nog geen implementatie. Specificatie: docs/superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md. PR #48 is volgens de gebruiker gemerged. Maak bij implementatie een nieuwe codex/-branch vanaf gecontroleerde actuele main; gebruik niet opnieuw de oude Quality-branch.
+
+1. Bevestig scope, optionele profielvelden, behoud zonder boeken en fotogrenzen; leg daarna het opslagbesluit vast. Eerst migratie- en repositorytests voor bestaande auteurs en behoud van verrijkte auteurs. Kleine increments: entity/configuratie/migratie/snapshot/test, daarna beide orphan-routes en regressietests.
+2. Implementeer gerichte profielcontracten en opslagservice met eerst falende tests voor identiteit, validatie, conflict en retry. Circa 3–5 bestanden per increment. Geen boekmetadata wijzigen.
+3. Bouw beheerde foto-opslag met apart geteste padveiligheid en validatie; daarna coördinatie met databaseopslag. Unieke nieuwe bestanden, oude foto pas na commit opruimen. Test fout en annuleren vóór aansluiting op de interface.
+4. Voeg afzonderlijk auteursviewmodel toe: doorzoeken, aantallen, selectie, boeken, concept en navigatiebewaking. Tests voor late resultaten, bibliotheekwissel en lege lijst; laad geen foto's voor de hele lijst.
+5. Sluit WPF-venster, bestandskiezer, gecontroleerde browseractie en navigatie aan. Deel op in venster/layout, interacties en vertalingen zodat ieder increment controleerbaar blijft. Zes talen en toetsenbord-/splittercontrole.
+6. Volledige tests, Debug-build onder Builds/Debug, eigen review op correctheid/architectuur/eenvoud/veiligheid/prestaties, handmatige checklist en README bijwerken, Markdown spiegelen. Gewone PR; gebruikersacceptatie blijft open tot de nieuwe build is getest.
+
+Afhankelijkheden: 1 vóór 2; 2 en 3 vóór opslag-UI; 4 vóór 5; 6 na alles. Checkpoint na 1: bestaande bibliotheek ongewijzigd leesbaar en profiel verdwijnt niet bij laatste boek. Na 3: fouten behouden oude gegevens en foto. Na 5: volledige profielroute zonder online dienst. Grootste risico's zijn orphan-opruiming, database/bestand-atomiciteit en traag laden; specifieke tests en begrensde verwerking staan in de spec. Geen agents of parallelle wijzigingen nodig.
+
+## Historie: Milestone 47 betrouwbaarheid Quality afronden
 
 De gebruiker heeft de drie concrete reviewbevindingen goedgekeurd. Scope: docs/superpowers/specs/2026-10-22-saga-milestone-47-quality-final-reliability-design.md. Branch vanaf actuele main ff97e5a; geen nieuwe kwaliteitsfunctionaliteit.
 
