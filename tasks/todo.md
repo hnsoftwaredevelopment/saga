@@ -1,4 +1,17 @@
-# Milestone 49: meervoudige metadatawijzigingen
+# Milestone 50: series beheren
+
+- [x] Gebruiker vindt seriesbeheer de gewenste volgende stap: zoeken, aantallen, boeken op serienummer en veilig hernoemen zonder samenvoegen.
+- [x] PR #50 geverifieerd gemerged naar main f8ad6fa; laatste annuleercontrole geaccepteerd. Nieuwe codex/milestone-50-series-management gestart vanaf bijgewerkte main; geen bestaande wijzigingen aanwezig.
+- [x] Bestaand Series/SeriesNumber-model, seriefiltervergelijking, lichte projecties, auteursbeheer en hoofdschermreconciliatie onderzocht; concrete spec, featurebeschrijving en geordend plan voorbereid.
+- [ ] Concrete keuzes bevestigd: bestaande naamgroepering, numerieke volgorde met ontbrekende nummers onderaan, alleen hernoemen en geen conversie.
+- [ ] Lichte namen-/boekenprojecties met numerieke paginering in echte SQLite-tests bewijzen.
+- [ ] Transactioneel hernoemen, bron-/doelconflicten en behoud van alle overige metadata testgestuurd bouwen.
+- [ ] Bestandssynchronisatie en eerlijke resultaatgrenzen na commit aansluiten.
+- [ ] Viewmodel, venster, bevestiging, zoek-/selectiebewaking en zes talen bouwen.
+- [ ] Volledige suite, verse Debug-build, eigen review, checklist en exacte Markdown-spiegels.
+- [ ] Gewone PR en handmatige gebruikersacceptatie op de nieuwe build.
+
+## Historie: Milestone 49 meervoudige metadatawijzigingen
 
 - [x] Gebruiker accepteert laatste PR #49-tests en meldt merge; GitHub bevestigt MERGED, main 96fe288 opgehaald en nieuwe codex/-branch gemaakt.
 - [x] Richting akkoord: korte succesmelding, begrijpelijke per-boekfouten, successen behouden, mislukte selectie beschikbaar voor een volgende bewuste poging.
@@ -17,7 +30,7 @@
 - [x] Gebruiker accepteert ook alle vier aanvullende invoercontroles; eigen checklistvinkjes behouden.
 - [x] Alle vijf CodeRabbit-voorstellen gecontroleerd, goedgekeurd en verwerkt: beschikbaarheidsnotificaties, behoud van feedback bij annuleren, fase-afhankelijke foutmelding, begrensde testwachttijd en expliciet controleren dat technische fouttekst niet wordt getoond. Drie eerst falende regressietests plus aanvullende test voor onverwachte batchfout na eerdere commit.
 - [x] Reviewverificatie: 959 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.37 op 24 oktober om 14:21 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen vijfassige review; geen nieuwe interface, afhankelijkheid, schemawijziging, vertaling of opslaggedrag.
-- [ ] Alleen annuleren met een bestaande resultaatmelding nog handmatig bevestigen volgens de laatste checklistsectie; alle eerdere acceptatie blijft geldig.
+- [x] Gebruiker bevestigt dat resultaatmelding blijft staan na annuleren en heeft PR #50 gemerged; Milestone 49 volledig geaccepteerd.
 
 ## Historie: auteursbeheer hernoemen
 
