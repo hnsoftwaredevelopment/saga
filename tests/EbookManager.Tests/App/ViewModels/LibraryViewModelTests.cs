@@ -17,7 +17,7 @@ using System.Globalization;
 
 namespace EbookManager.Tests.App.ViewModels;
 
-public sealed class LibraryViewModelTests
+public sealed partial class LibraryViewModelTests
 {
     [Fact]
     public async Task External_metadata_refresh_batches_reads_and_preserves_loaded_blob_covers()

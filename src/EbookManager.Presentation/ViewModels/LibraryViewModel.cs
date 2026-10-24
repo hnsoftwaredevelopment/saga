@@ -238,7 +238,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     public int SelectedBookCount => SelectedBooks.Count;
 
-    public bool CanMultiEditSelectedBooks => SelectedBooks.Count > 0;
+    public bool CanMultiEditSelectedBooks => SelectedBooks.Count > 0 && !multiEditActive && !IsCleaningMetadata;
 
     public string MetadataMultiEditMenuHeader =>
         $"{localize("MetadataMultiEditTitle")} ({SelectedBookCount})";
@@ -357,8 +357,8 @@ public sealed partial class LibraryViewModel : ObservableObject
     public IAsyncRelayCommand RefreshCommand => refreshCommand ??= new AsyncRelayCommand(RefreshAsync);
     public IAsyncRelayCommand AddBooksCommand => addBooksCommand ??= new AsyncRelayCommand(AddBooksAsync);
     public IAsyncRelayCommand ScanFolderCommand => scanFolderCommand ??= new AsyncRelayCommand(ScanFolderAsync);
-    public IAsyncRelayCommand CreateLibraryCommand => createLibraryCommand ??= new AsyncRelayCommand(CreateLibraryAsync);
-    public IAsyncRelayCommand OpenLibraryCommand => openLibraryCommand ??= new AsyncRelayCommand(OpenLibraryAsync);
+    public IAsyncRelayCommand CreateLibraryCommand => createLibraryCommand ??= new AsyncRelayCommand(CreateLibraryAsync, () => !multiEditActive);
+    public IAsyncRelayCommand OpenLibraryCommand => openLibraryCommand ??= new AsyncRelayCommand(OpenLibraryAsync, () => !multiEditActive);
     public IRelayCommand CancelImportCommand => cancelImportCommand ??= new RelayCommand(() => importAgent?.CancelActiveJob());
     public IAsyncRelayCommand ShowImportDetailsCommand => showImportDetailsCommand ??= new AsyncRelayCommand(ShowImportDetailsAsync);
     public IAsyncRelayCommand ShowImportHistoryCommand => showImportHistoryCommand ??= new AsyncRelayCommand(ShowImportHistoryAsync);
@@ -899,6 +899,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private async Task CreateLibraryAsync(CancellationToken cancellationToken)
     {
+        if (multiEditActive) return;
         if (libraryService is null || currentLibrary is null || databaseInitializer is null)
         {
             return;
@@ -927,6 +928,7 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private async Task OpenLibraryAsync(CancellationToken cancellationToken)
     {
+        if (multiEditActive) return;
         if (libraryService is null || currentLibrary is null || databaseInitializer is null)
         {
             return;
@@ -1139,6 +1141,7 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
+        multiEditSelectionVersion++;
         SelectedBooks.Clear();
         foreach (var row in rows)
         {
@@ -3597,58 +3600,6 @@ public sealed partial class LibraryViewModel : ObservableObject
             metadata.Isbn,
             metadata.CoverBytes);
 
-    private static IReadOnlyList<string> SplitRequiredList(string? value) =>
-        SplitList(value, distinct: true);
-
-    private static IReadOnlyList<string>? SplitNullableList(string? value)
-    {
-        var values = SplitList(value, distinct: true);
-        return values.Count == 0 ? null : values;
-    }
-
-    private static IReadOnlyList<string>? ApplyTagAction(
-        IReadOnlyList<string>? currentTags,
-        MetadataMultiEditTagAction action,
-        string? tagsText)
-    {
-        var editedTags = SplitList(tagsText, distinct: true);
-        return action switch
-        {
-            MetadataMultiEditTagAction.Add => AddTags(currentTags, editedTags),
-            MetadataMultiEditTagAction.Remove => RemoveTags(currentTags, editedTags),
-            _ => editedTags.Count == 0 ? null : editedTags
-        };
-    }
-
-    private static IReadOnlyList<string>? AddTags(
-        IReadOnlyList<string>? currentTags,
-        IReadOnlyList<string> tagsToAdd)
-    {
-        var tags = (currentTags ?? []).ToList();
-        foreach (var tag in tagsToAdd)
-        {
-            if (!tags.Contains(tag, StringComparer.OrdinalIgnoreCase))
-            {
-                tags.Add(tag);
-            }
-        }
-
-        return tags.Count == 0 ? null : tags;
-    }
-
-    private static IReadOnlyList<string>? RemoveTags(
-        IReadOnlyList<string>? currentTags,
-        IReadOnlyList<string> tagsToRemove)
-    {
-        if (currentTags is null || currentTags.Count == 0)
-        {
-            return null;
-        }
-
-        var removeSet = tagsToRemove.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var tags = currentTags.Where(tag => !removeSet.Contains(tag)).ToArray();
-        return tags.Length == 0 ? null : tags;
-    }
 
     private static IReadOnlyList<string> SplitList(string? value, bool distinct = false) =>
         CustomMetadataValueParser.SplitList(value, distinct);

@@ -1,153 +1,123 @@
+using System.Collections.ObjectModel;
 using System.Globalization;
+using EbookManager.Application.Metadata;
 using EbookManager.Domain.Books;
 using EbookManager.Domain.CustomMetadata;
 
 namespace EbookManager.Presentation.ViewModels;
 
+public sealed record MetadataMultiEditDetail(string Title, string Authors, string Reason);
+
 public sealed partial class LibraryViewModel
 {
+    private bool multiEditActive;
+    private long multiEditSelectionVersion;
+    private string? multiEditMessage;
+    private bool multiEditIsError;
+    public string? MultiEditMessage { get => multiEditMessage; private set => SetProperty(ref multiEditMessage, value); }
+    public bool MultiEditIsError { get => multiEditIsError; private set => SetProperty(ref multiEditIsError, value); }
+    public ObservableCollection<MetadataMultiEditDetail> MultiEditDetails { get; } = [];
+    public bool HasMultiEditDetails => MultiEditDetails.Count > 0;
+
     private async Task ShowMetadataMultiEditAsync(CancellationToken cancellationToken)
     {
-        var selectedIds = SelectedBooks.Select(row => row.Id).ToArray();
-        if (selectedIds.Length == 0)
-        {
-            return;
-        }
-
-        var edit = new MetadataMultiEditViewModel(selectedIds.Length, customMetadataFieldDefinitions);
-        var result = await userInteraction.ShowMetadataMultiEditAsync(edit, cancellationToken);
-        if (result is null)
-        {
-            return;
-        }
-
-        await ApplyMetadataMultiEditAsync(selectedIds, result, cancellationToken);
-    }
-
-    private async Task ApplyMetadataMultiEditAsync(
-        IReadOnlyCollection<Guid> selectedIds,
-        MetadataMultiEditResult result,
-        CancellationToken cancellationToken)
-    {
-        IsCleaningMetadata = true;
-        MetadataCleanupStatusText = "Updating metadata...";
-        await Task.Yield();
+        if (multiEditActive || IsCleaningMetadata) return;
+        var selectedIds = SelectedBooks.Select(row => row.Id).Distinct().ToArray();
+        if (selectedIds.Length == 0) return;
+        var libraryPath = CurrentLibraryPath;
+        var selection = multiEditSelectionVersion;
+        var labels = SelectedBooks.ToDictionary(row => row.Id, row => (row.Title, row.Authors));
+        multiEditActive = true;
+        NotifyMultiEditAvailability();
+        MultiEditDetails.Clear();
+        OnPropertyChanged(nameof(HasMultiEditDetails));
+        MultiEditMessage = null;
         try
         {
-            var persistedBooks = new List<Book>();
-            var customChanges = TryCreateCustomMetadataMultiEditChanges(result);
-            if (customChanges is null)
+            var edit = new MetadataMultiEditViewModel(selectedIds.Length, customMetadataFieldDefinitions);
+            var result = await userInteraction.ShowMetadataMultiEditAsync(edit, cancellationToken);
+            if (result is null || libraryPath != CurrentLibraryPath) return;
+            var custom = TryCreateCustomMetadataMultiEditChanges(result);
+            if (custom is null)
             {
-                await userInteraction.ShowMessageAsync(
-                    localize("MetadataMultiEditTitle"),
-                    MetadataCleanupStatusText,
-                    cancellationToken);
+                MultiEditIsError = true;
+                MultiEditMessage = MetadataCleanupStatusText;
+                await userInteraction.ShowMessageAsync(localize("MetadataMultiEditTitle"), MetadataCleanupStatusText, cancellationToken);
                 return;
             }
-
-            var customMetadataChanged = false;
-            var skippedBookCount = 0;
-            foreach (var bookId in selectedIds)
+            IsCleaningMetadata = true;
+            MetadataCleanupStatusText = localize("MultiEditWorking");
+            var names = (result.CustomFields ?? []).ToDictionary(field => field.FieldId, field => field.Name);
+            var request = new MetadataMultiEditRequest(result.UpdateAuthors, result.AuthorsText, result.UpdateSeries,
+                result.SeriesText, result.UpdateTags, result.TagsText, result.UpdateLanguage, result.LanguageText,
+                result.UpdateStatus, result.Status, result.SwapTitleAndAuthors,
+                result.TagAction switch { MetadataMultiEditTagAction.Add => MultiEditTagAction.Add, MetadataMultiEditTagAction.Remove => MultiEditTagAction.Remove, _ => MultiEditTagAction.Replace },
+                custom.Select(change => new MultiEditCustomChange(change.FieldId, names[change.FieldId], change.Value)).ToArray());
+            var service = new MetadataMultiEditService(bookRepository, bookService, customMetadataRepository);
+            var results = await Task.Run(() => service.ApplyAsync(selectedIds, request, cancellationToken), CancellationToken.None);
+            if (libraryPath != CurrentLibraryPath) return;
+            var keepSelection = selection == multiEditSelectionVersion;
+            var persisted = results.Where(item => item.Book is not null).Select(item => item.Book!).ToArray();
+            if (custom.Count > 0)
             {
-                var fullBook = await bookRepository.GetAsync(bookId, cancellationToken);
-                if (fullBook is not null)
+                await RefreshCustomMetadataValuesForBooksAsync(selectedIds, CancellationToken.None);
+                if (SelectedBook is { } selected && selectedIds.Contains(selected.Id))
+                    await Details.LoadCustomMetadataValuesAsync(selected.Id, CancellationToken.None);
+            }
+            if (libraryPath != CurrentLibraryPath) return;
+            ApplyPersistedMetadataChanges(persisted);
+            if (keepSelection)
+            {
+                var failed = results.Where(item => item.Status is MultiEditStatus.Failed or MultiEditStatus.Partial or MultiEditStatus.NotProcessed)
+                    .Select(item => item.BookId).ToHashSet();
+                SetSelectedBooks(VisibleBooks.Where(row => failed.Contains(row.Id)));
+            }
+            foreach (var item in results.Where(item => item.Status is not (MultiEditStatus.Updated or MultiEditStatus.Unchanged)))
+            {
+                var label = labels.GetValueOrDefault(item.BookId);
+                var key = item.Status switch
                 {
-                    var updatedBook = ApplyMetadataMultiEdit(fullBook, result);
-                    if (updatedBook != fullBook)
+                    MultiEditStatus.NotFound => "MultiEditUnavailable",
+                    MultiEditStatus.NotProcessed => "MultiEditNotProcessed",
+                    MultiEditStatus.FileWarning => "MultiEditFileWarning",
+                    MultiEditStatus.Partial => "MultiEditPartial",
+                    _ => item.Failure switch
                     {
-                        try
-                        {
-                            await bookRepository.UpdateAsync(updatedBook, cancellationToken);
-                            persistedBooks.Add(updatedBook);
-                        }
-                        catch (BookConflictException)
-                        {
-                            // Keep conflicting books unchanged; later slices can expose skipped books in the dialog.
-                            skippedBookCount++;
-                        }
+                        MultiEditFailure.Duplicate => "MultiEditDuplicate",
+                        MultiEditFailure.Read => "MultiEditReadFailed",
+                        MultiEditFailure.Custom or MultiEditFailure.CustomUnavailable => "MultiEditCustomFailed",
+                        _ => "MultiEditSaveFailed"
                     }
-
-                    if (customChanges.Count > 0 &&
-                        customMetadataRepository is not null &&
-                        await ApplyCustomMetadataMultiEditAsync(bookId, customChanges, cancellationToken))
-                    {
-                        customMetadataChanged = true;
-                    }
-                }
+                };
+                var reason = localize(item.Failure == MultiEditFailure.Uncertain ? "MultiEditUncertain" : key);
+                if (item.CustomFields is { Count: > 0 }) reason += " " + string.Join(", ", item.CustomFields);
+                if (item.HasFileWarning) reason += " " + localize("MultiEditFileWarning");
+                MultiEditDetails.Add(new(label.Title ?? item.Book?.Metadata.Title ?? "", label.Authors ?? "", reason));
             }
-
-            if (customMetadataChanged)
-            {
-                await RefreshCustomMetadataValuesForBooksAsync(selectedIds, cancellationToken);
-                if (SelectedBook is { } selectedBook &&
-                    selectedIds.Contains(selectedBook.Id))
-                {
-                    await Details.LoadCustomMetadataValuesAsync(selectedBook.Id, cancellationToken);
-                }
-            }
-
-            if (persistedBooks.Count > 0)
-            {
-                ApplyPersistedMetadataChanges(persistedBooks, refreshDisplay: !customMetadataChanged);
-            }
-
-            if (customMetadataChanged)
-            {
-                RefreshFacetFilters();
-                ApplyFilter();
-            }
-
-            if (skippedBookCount > 0)
-            {
-                await userInteraction.ShowMessageAsync(
-                    localize("MetadataMultiEditTitle"),
-                    string.Format(
-                        CultureInfo.CurrentCulture,
-                        localize("MetadataMultiEditSkippedConflicts"),
-                        skippedBookCount),
-                    cancellationToken);
-            }
+            OnPropertyChanged(nameof(HasMultiEditDetails));
+            MultiEditIsError = MultiEditDetails.Count > 0;
+            var updated = results.Count(item => item.Status == MultiEditStatus.Updated);
+            var unchanged = results.Count(item => item.Status == MultiEditStatus.Unchanged);
+            MultiEditMessage = MultiEditIsError
+                ? string.Format(CultureInfo.CurrentCulture, localize("MultiEditResult"), updated, unchanged, MultiEditDetails.Count)
+                : string.Format(CultureInfo.CurrentCulture, localize(unchanged == 0 ? "MultiEditSaved" : "MultiEditSavedUnchanged"), updated, unchanged);
         }
+        catch (OperationCanceledException) { MultiEditIsError = true; MultiEditMessage = localize("MultiEditNotProcessed"); }
+        catch (Exception) { MultiEditIsError = true; MultiEditMessage = localize("MultiEditSaveFailed"); }
         finally
         {
             IsCleaningMetadata = false;
+            multiEditActive = false;
+            NotifyMultiEditAvailability();
         }
     }
 
-    private static Book ApplyMetadataMultiEdit(Book book, MetadataMultiEditResult result)
+    private void NotifyMultiEditAvailability()
     {
-        var metadata = book.Metadata;
-        var title = metadata.Title;
-        var authors = result.UpdateAuthors ? SplitRequiredList(result.AuthorsText) : metadata.Authors;
-        if (result.SwapTitleAndAuthors)
-        {
-            title = string.Join(", ", metadata.Authors).Trim();
-            authors = [metadata.Title.Trim()];
-        }
-
-        var tags = result.UpdateTags ? ApplyTagAction(metadata.Tags, result.TagAction, result.TagsText) : metadata.Tags;
-        var series = result.UpdateSeries ? NormalizeBlank(result.SeriesText) : metadata.Series;
-        var seriesNumber = result.UpdateSeries && series is null ? null : metadata.SeriesNumber;
-        var language = result.UpdateLanguage ? NormalizeBlank(result.LanguageText) : metadata.Language;
-        var readingStatus = result.UpdateStatus ? result.Status : book.ReadingStatus;
-
-        if (title == metadata.Title &&
-            authors.SequenceEqual(metadata.Authors) &&
-            NullableSequenceEqual(tags, metadata.Tags) &&
-            series == metadata.Series &&
-            seriesNumber == metadata.SeriesNumber &&
-            language == metadata.Language &&
-            readingStatus == book.ReadingStatus)
-        {
-            return book;
-        }
-
-        return book with
-        {
-            Metadata = CopyMetadata(metadata, title, authors, tags, series, language, seriesNumber),
-            ReadingStatus = readingStatus,
-            UpdatedUtc = DateTimeOffset.UtcNow
-        };
+        OnPropertyChanged(nameof(CanMultiEditSelectedBooks));
+        showMetadataMultiEditCommand?.NotifyCanExecuteChanged();
+        createLibraryCommand?.NotifyCanExecuteChanged();
+        openLibraryCommand?.NotifyCanExecuteChanged();
     }
 
     private IReadOnlyList<CustomMetadataValueChange>? TryCreateCustomMetadataMultiEditChanges(
@@ -175,32 +145,6 @@ public sealed partial class LibraryViewModel
                 : exception.Message;
             return null;
         }
-    }
-
-    private async Task<bool> ApplyCustomMetadataMultiEditAsync(
-        Guid bookId,
-        IReadOnlyList<CustomMetadataValueChange> changes,
-        CancellationToken cancellationToken)
-    {
-        if (customMetadataRepository is null || changes.Count == 0)
-        {
-            return false;
-        }
-
-        foreach (var change in changes)
-        {
-            if (change.Value is null)
-            {
-                await customMetadataRepository.DeleteValueAsync(bookId, change.FieldId, cancellationToken);
-                continue;
-            }
-
-            await customMetadataRepository.SetValueAsync(
-                change.Value with { BookId = bookId, UpdatedUtc = DateTimeOffset.UtcNow },
-                cancellationToken);
-        }
-
-        return true;
     }
 
 }
