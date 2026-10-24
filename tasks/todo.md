@@ -9,8 +9,8 @@
 - [x] Bestaande bestandssynchronisatie na commit aangesloten: echte metadata.json, bestandswaarschuwingen en afmaken van alle boeken bij annulering ná commit getest; geen nieuwe writer of folderverplaatsingen.
 - [x] Afzonderlijk viewmodel, werkbalkactie, modaal venster/bevestiging en zes talen gebouwd. Nieuwe zoeknaam/selectie, tweede opdracht blokkeren, late resultaten en aparte foutmelding ná commit afgedekt. WPF-render op 1040×650 en 800×480 gecontroleerd; splittercontrast gecorrigeerd.
 - [x] Volledige suite: 980 geslaagd, 0 mislukt/overgeslagen. Debug-build 2026.10.24.52 op 24 oktober 15:01 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe in Builds/Debug. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; README, featurestatus, ontwerp en nieuwe checklist bijgewerkt.
-- [ ] Alle nieuwe/gewijzigde Markdown exact naar Obsidian spiegelen en hashes controleren; gewone PR openen en koppelen.
-- [ ] Gewone PR en handmatige gebruikersacceptatie op de nieuwe build.
+- [x] Alle acht nieuwe/gewijzigde project-Markdown-bestanden exact naar Obsidian gespiegeld met gelijke SHA256-hashes. Gewone niet-draft PR #51 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/51. Mergeable; CodeQL is bij opening nog bezig.
+- [ ] Handmatige gebruikersacceptatie op de nieuwe build volgens docs/manual-tests/milestone-50-checklist.md; alleen de gebruiker mergt.
 
 ## Historie: Milestone 49 meervoudige metadatawijzigingen
 
