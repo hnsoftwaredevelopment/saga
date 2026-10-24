@@ -20,6 +20,42 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed class LibraryViewModelTests
 {
     [Fact]
+    public async Task External_metadata_refresh_batches_reads_and_preserves_loaded_blob_covers()
+    {
+        var original = CreateBook("Book", ["Original"], coverBytes: [1, 2, 3]);
+        var other = CreateBook("Other", ["Original"], coverBytes: [4, 5, 6]);
+        var repository = new MetadataSnapshotRepository([original, other]);
+        var viewModel = CreateViewModel([original, other], repository: repository);
+        await viewModel.RefreshAsync();
+        viewModel.SelectedBook = viewModel.VisibleBooks.Single(row => row.Id == original.Id);
+        await WaitUntilAsync(() => viewModel.Details.CoverBytes is { Length: 3 });
+        await repository.UpdateAsync(CreateBook("Book", ["Renamed"], id: original.Id, coverBytes: [1, 2, 3]), default);
+        await repository.UpdateAsync(CreateBook("Other", ["Renamed"], id: other.Id, coverBytes: [4, 5, 6]), default);
+        var readsBefore = repository.GetCalls;
+
+        await viewModel.ReconcileExternalMetadataChangesAsync([original.Id, other.Id, Guid.NewGuid(), original.Id]);
+
+        repository.SnapshotCalls.Should().Be(1);
+        repository.GetCalls.Should().Be(readsBefore + 1, "only the selected details book is reloaded after replacing rows");
+        viewModel.VisibleBooks.Should().HaveCount(2);
+        viewModel.VisibleBooks.Should().OnlyContain(row => row.Authors == "Renamed");
+        viewModel.Details.CoverBytes.Should().Equal(1, 2, 3);
+        viewModel.VisibleBooks.Single(row => row.Id == other.Id).Book.Metadata.CoverBytes.Should().Equal(4, 5, 6);
+    }
+
+    private sealed class MetadataSnapshotRepository(IReadOnlyList<Book> initialBooks)
+        : StaticBookRepository(initialBooks), IBookMetadataSnapshotRepository
+    {
+        public int SnapshotCalls;
+        public Task<IReadOnlyList<Book>> ListMetadataAsync(IReadOnlyCollection<Guid> ids, CancellationToken token)
+        {
+            SnapshotCalls++;
+            return Task.FromResult<IReadOnlyList<Book>>(Books.Where(book => ids.Contains(book.Id))
+                .Select(book => book with { Metadata = new BookMetadata(book.Metadata.Title, book.Metadata.Authors) }).ToArray());
+        }
+    }
+
+    [Fact]
     public async Task External_author_rename_refreshes_rows_details_and_filters_without_reloading_every_book()
     {
         var original = CreateBook("Book", ["Original"]);
