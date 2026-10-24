@@ -48,14 +48,16 @@ public sealed class MetadataMultiEditService(IBookRepository repository, BookSer
                 changed = true;
             }
             catch (BookConflictException) { return new(id, MultiEditStatus.Failed, current, MultiEditFailure.Duplicate); }
-            catch (Exception)
+            catch (Exception exception)
             {
                 // A provider may throw after commit: inspect persisted state, never replay the operation.
                 try
                 {
                     stored = await repository.GetAsync(id, CancellationToken.None);
                     if (stored?.Metadata != proposed.Metadata || stored.ReadingStatus != proposed.ReadingStatus)
-                        return new(id, MultiEditStatus.Failed, stored, MultiEditFailure.Save);
+                        return exception is OperationCanceledException
+                            ? new(id, MultiEditStatus.NotProcessed, stored, MultiEditFailure.Cancelled)
+                            : new(id, MultiEditStatus.Failed, stored, MultiEditFailure.Save);
                     changed = true;
                 }
                 catch (Exception) { return new(id, MultiEditStatus.Partial, Failure: MultiEditFailure.Uncertain); }
@@ -65,24 +67,27 @@ public sealed class MetadataMultiEditService(IBookRepository repository, BookSer
         var customUncertain = false;
         if (changes.Count > 0)
         {
+            IReadOnlyList<CustomMetadataValue>? values = null;
+            try { values = await customRepository!.GetValuesAsync(id, CancellationToken.None); }
+            catch (Exception) { customFailed.AddRange(changes.Select(change => change.Name)); }
             foreach (var change in changes)
             {
+                if (values is null) break;
                 try
                 {
-                    var values = await customRepository!.GetValuesAsync(id, CancellationToken.None);
                     var previous = values.SingleOrDefault(value => value.FieldId == change.FieldId);
                     if (SameValue(previous, change.Value)) continue;
                     try
                     {
-                        if (change.Value is null) await customRepository.DeleteValueAsync(id, change.FieldId, CancellationToken.None);
-                        else await customRepository.SetValueAsync(change.Value with { BookId = id, UpdatedUtc = DateTimeOffset.UtcNow }, CancellationToken.None);
+                        if (change.Value is null) await customRepository!.DeleteValueAsync(id, change.FieldId, CancellationToken.None);
+                        else await customRepository!.SetValueAsync(change.Value with { BookId = id, UpdatedUtc = DateTimeOffset.UtcNow }, CancellationToken.None);
                         changed = true;
                     }
                     catch (Exception)
                     {
                         try
                         {
-                            var actual = (await customRepository.GetValuesAsync(id, CancellationToken.None)).SingleOrDefault(value => value.FieldId == change.FieldId);
+                            var actual = (await customRepository!.GetValuesAsync(id, CancellationToken.None)).SingleOrDefault(value => value.FieldId == change.FieldId);
                             if (!SameValue(actual, previous)) changed = true;
                             if (!SameValue(actual, change.Value)) customFailed.Add(change.Name);
                         }
@@ -101,6 +106,16 @@ public sealed class MetadataMultiEditService(IBookRepository repository, BookSer
                 fileWarning = saved.Status != BookSaveStatus.Succeeded || saved.FileResults.Any(file => file.Result.Status == MetadataWriteBackStatus.Failed);
             }
             catch (Exception) { fileWarning = true; }
+        }
+        if (changed && standardChanged)
+        {
+            // Return actual stored values, not merely the submitted proposal.
+            try
+            {
+                stored = await repository.GetAsync(id, CancellationToken.None);
+                if (stored is null) return new(id, MultiEditStatus.NotFound);
+            }
+            catch (Exception) { return new(id, MultiEditStatus.Partial, Failure: MultiEditFailure.Uncertain, HasFileWarning: fileWarning); }
         }
         if (customFailed.Count > 0)
             return new(id, changed || customUncertain ? MultiEditStatus.Partial : MultiEditStatus.Failed, stored,
