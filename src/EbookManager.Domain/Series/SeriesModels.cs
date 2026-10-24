@@ -10,3 +10,8 @@ public sealed record SeriesSummary(string Name, int BookCount);
 public sealed record SeriesPage(IReadOnlyList<SeriesSummary> Series, int TotalCount);
 public sealed record SeriesBook(Guid Id, string Title, string Authors, decimal? Number);
 public sealed record SeriesBookPage(IReadOnlyList<SeriesBook> Books, int TotalCount);
+
+public sealed record SeriesSourceBook(Guid Id, string StoredName, string Title);
+public sealed record SeriesRenamePreview(string Name, IReadOnlyList<SeriesSourceBook> Books);
+public enum SeriesRenameStatus { Renamed, Unchanged, InvalidName, NameExists, Conflict }
+public sealed record SeriesRenameResult(SeriesRenameStatus Status, string Name, IReadOnlyList<SeriesSourceBook> Books);
