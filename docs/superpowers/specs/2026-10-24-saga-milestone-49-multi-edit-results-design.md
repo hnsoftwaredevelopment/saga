@@ -2,7 +2,7 @@
 
 ## Status en doel
 
-De gebruiker keurt de richting goed na merge en acceptatie van PR #49 (auteursbeheer). Dit document specificeert de voorgestelde uitwerking ter bevestiging; nog geen productcode gewijzigd. Basis: main 96fe288, branch codex/milestone-49-multi-edit-results. Geen nieuwe testbuild voor deze voorbereiding.
+De gebruiker heeft richting en concrete uitwerking bevestigd na merge en acceptatie van PR #49 (auteursbeheer). Geïmplementeerd vanaf main 96fe288 op codex/milestone-49-multi-edit-results. Handmatige acceptatie blijft open volgens de afzonderlijke checklist. Test-/buildgegevens staan in tasks/todo.md en de checklist.
 
 Doel: vanuit de gewone boekenlijst meerdere boeken bewerken en precies weten welke wijzigingen gelukt zijn, welke niet en waarom. De bestaande velden en het bestaande invulvenster blijven behouden. Geen nieuwe online bron, auteurs samenvoegen, e-readerfunctie, batchhistorie, undo of extra selectie-/previewvenster.
 
@@ -55,4 +55,8 @@ Stijlvoorbeeld uit bestaande code: `await bookService.SaveAsync(updatedBook, can
 
 Altijd: behoud van opgeslagen gegevens en gebruikerswijzigingen, eerst falende tests, veilige redenen, actuele resultaten en eerlijke fasegrenzen. Eerst afstemmen: schemawijzigingen, nieuwe dependencies, undo/historie, automatische retries, extra invoer-/previewvensters, bredere wijzigingen aan generieke opslagcontracten. Nooit: auteurs samenvoegen, bestandswaarschuwing als volledige mislukking tonen, een oude swapopdracht automatisch herhalen, echte bibliotheek beschadigen voor een fouttest, zelf mergen.
 
-De richting is akkoord; bevestiging van deze concrete uitwerking en de omgang met deels opgeslagen/custom wijzigingen gaat vooraf aan implementatie.
+De richting en concrete uitwerking, inclusief deels opgeslagen/custom wijzigingen, zijn bevestigd en uitgevoerd. De eerste extractie hield alle negen bestaande bulk-tests groen; een nieuwe eerst falende test reproduceerde dat een algemene opslagfout de volgende boeken afbrak. Applicatieverwerking heeft geen Presentation-/WPF-afhankelijkheid. Om de commitgrens zeker te kennen zonder het gedeelde BookSaveResult-contract te wijzigen, gebruikt de lokale orkestratie eerst repository.UpdateAsync en daarna BookService.SynchronizeStoredMetadataAsync, hetzelfde expliciete fasepatroon als auteurshernoemen. Bij een onzekere opslag wordt de database opnieuw gelezen; nooit de oude opdracht opnieuw uitvoeren.
+
+De actieve boekverwerking wordt na een commit niet onderbroken door annulering: synchronisatie en resultaatcontrole worden voltooid, volgende boeken krijgen Niet verwerkt. Een eerst falende annuleringstest bewaakt annulering vóór databasecommit. Custom waarden worden één keer per boek vooraf gelezen en na een onzekere schrijffout opnieuw gecontroleerd. Lezen van werkelijk opgeslagen standaardmetadata voorkomt dat slechts het ingediende voorstel wordt teruggegeven. Beperkte fase-/reconciliatiecorrecties raken geen generieke opslagcontracten, schema's of dependencies.
+
+De UI bewaart een selectieversie, blokkeert tweede bulkopdrachten en bibliotheekwissel tijdens verwerken, ruimt feedback bij bibliotheekwissel op en ververst één keer. De bestaande details worden tijdens reconciliatie niet onnodig opnieuw gelezen; daadwerkelijk opgeslagen boeken en omslagen zijn al beschikbaar. Een mislukte custom-herlaadactie wordt apart gemeld en verbergt geen opgeslagen standaardwijzigingen. Tests gebruiken tijdelijke SQLite-bibliotheken, gecontroleerde fouten vóór/na commit en echte metadata.json-sidecars. De nieuwe WPF-feedback is met fictieve gegevens gerenderd en visueel gecontroleerd; handmatige gebruikersacceptatie is niet vooraf afgevinkt.

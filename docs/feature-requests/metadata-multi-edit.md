@@ -34,14 +34,16 @@ Milestone 24 expands tag maintenance in the same multi-edit workflow:
 
 ## Deferred Follow-Up Candidates
 
-### Milestone 49 preparation
+### Milestone 49: reliable outcomes
 
-Direction approved; concrete scope awaiting confirmation. Improve per-book outcomes, localized success/error feedback, committed-data/file-warning distinctions and selection after partial success. Preserve existing input fields and custom metadata support; do not automatically replay title/author swaps. See [the proposed design](../superpowers/specs/2026-10-24-saga-milestone-49-multi-edit-results-design.md). No implementation or new build yet.
+Implemented after scope approval; user acceptance pending. Per-book outcomes distinguish success, unchanged data, failure, partial storage, unavailable books and file warnings. Successfully stored values are preserved and reconciled once. Failed/partially saved visible books remain selected unless the user made a newer selection. Generic failures no longer abort subsequent books. Custom fields retain independent storage with honest partial results and field names. Database updates use the existing BookService stored-metadata synchronization route; no new format writer or save-result contract.
+
+Feedback is a short green summary or a compact summary with expandable, bounded, virtualized attention details, localized in six languages. Existing input fields and custom metadata support are preserved. No automatic replay of title/author swaps, new retry button, history or undo. See [the design](../superpowers/specs/2026-10-24-saga-milestone-49-multi-edit-results-design.md) and [manual checklist](../manual-tests/milestone-49-checklist.md).
 
 - Add the same multi-selection workflow to Bookshelf tiles.
 - Add advanced tag modes: split tags and merge tags.
 - Add a preview screen for title/author swaps before applying large batches.
 - Add a preview screen for large batches before applying changes.
 - Add undo/history for batch metadata edits.
-- Add conflict reporting that lists skipped books when duplicate title/author rules prevent an update.
+- Conflict reporting for skipped books is implemented in Milestone 49.
 - Add richer validation feedback inside the dialog instead of using only the busy/status feedback path.

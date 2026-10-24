@@ -1,6 +1,6 @@
-# Milestone 49: meervoudige metadatawijzigingen, voorbereiding
+# Milestone 49: meervoudige metadatawijzigingen
 
-Richting akkoord; concrete specificatie ter bevestiging: docs/superpowers/specs/2026-10-24-saga-milestone-49-multi-edit-results-design.md. PR #49 is geverifieerd gemerged; laatste gebruikersnacontroles zijn akkoord. Nieuwe branch codex/milestone-49-multi-edit-results vanaf actuele main 96fe288. Alleen documentatievoorbereiding, geen nieuwe productcode/build.
+Status: richting en concrete specificatie bevestigd; implementatie in geteste increments uitgevoerd. Specificatie: docs/superpowers/specs/2026-10-24-saga-milestone-49-multi-edit-results-design.md. PR #49 is gemerged en geaccepteerd; nieuwe branch vanaf actuele main 96fe288. Per-boekresultaten, eerlijke opslagfases, custom deelresultaten, selectie en zes talen zijn aangesloten. Eigen review en WPF-rendercontrole uitgevoerd; actuele verificatie in tasks/todo.md. Handmatige acceptatie van deze nieuwe slice staat open. De onderstaande stappen blijven als uitvoeringshistorie behouden.
 
 1. **Maak de bestaande bulksemantiek afzonderlijk testbaar.** Verplaats alleen bulklogica naar gerichte partial/gerichte opdrachtmapping; expliciet Application-contract zonder Presentation-afhankelijkheid. Acceptatie: bestaande velden, tagmodi, custom parsing en swapgedrag onveranderd. Test: bestaande MultiEdit-tests plus regressies voor opdrachtmapping. Circa 3–5 bestanden per increment.
 2. **Bewijs resultaten en opslagfase.** Eerst falende tests voor gemengd succes/conflict, ontbrekend boek, algemene fout en geen wijziging. Gebruik BookService en controleer opgeslagen toestand; bestandwaarschuwingen onderscheiden van niet-opgeslagen wijzigingen. Acceptatie: volgende boek wordt verwerkt en successen blijven behouden. Service/resultaat/tests in kleine increments van circa 3–5 bestanden.
@@ -12,7 +12,7 @@ Checkpoint na 1–3: alle bestaande semantiek blijft, batchuitkomsten zijn betro
 5. **Toon begrijpelijke feedback.** Korte groene succesroute; compact resultaat met uitklapbare, begrensde/gevirtualiseerde fout-/waarschuwingsdetails. Geen extra selectie-/previewvenster. Tests voor layout, aantallen en oude feedback verwijderen. Zes talen in kleine vertaalincrements. Circa 3–5 bestanden per increment.
 6. **Verifieer en lever op.** Volledige tests, schone Debug-build, eigen vijfassige review, README/featurestatus/checklist en gecontroleerde Markdown-spiegels. Normale PR na bevestigde scope; gebruikersacceptatie pas na nieuwe buildtest. Gericht handmatig: alles goed, conflict naast succes, volgende poging en annuleren; moeilijke fouten automatisch in tijdelijke bibliotheek.
 
-Afhankelijkheden: 1 vóór 2; 2 vóór 3; 2–3 vóór 4–5; 6 na alles. Risico's zijn faseverlies na commit, custom gedeeltelijke opslag en niet-idempotent omwisselen. Mitigatie: expliciete per-boekuitkomsten, herlezen, selectie-/retrygrenzen en eerst falende tests. Geen parallelle agents of nieuwe dependencies nodig. De specskill houdt implementatie tegen totdat de gebruiker de concrete uitwerking bevestigt.
+Afhankelijkheden: 1 vóór 2; 2 vóór 3; 2–3 vóór 4–5; 6 na alles. Risico's zijn faseverlies na commit, custom gedeeltelijke opslag en niet-idempotent omwisselen. Mitigatie: expliciete per-boekuitkomsten, herlezen, selectie-/retrygrenzen en eerst falende tests. Geen parallelle agents of nieuwe dependencies nodig. De specificatiegate is door gebruikersakkoord gepasseerd.
 
 ## Historie: auteursbeheer hernoemen
 

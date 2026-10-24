@@ -4,6 +4,8 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
+Milestone 49 improves multi-book metadata editing from the library list: concise success feedback, localized per-book failure and file-warning details, preservation of completed updates, and selection of failed/partially updated visible books for a deliberate next attempt. Existing fields and the input dialog remain unchanged; title/author swaps are never automatically replayed. User acceptance is pending.
+
 Milestone 48 adds library-local author management: searchable authors and their books, manually maintained biography and website, and portable author photos. Explicit author renaming updates all linked books while preserving the author identity and profile. An existing destination name is blocked, never merged; book details still assign authors per book. Profiles survive removal of the last linked book. The user accepted profiles, renaming, the supplied author icon and window resizing, including an author with 318 books. Review follow-ups retain the renamed author in search results and refresh affected books in bounded batches while preserving loaded covers.
 
 Milestone 47's final quality reliability improvements are manually checked and accepted, with the unreproduced conflict scenario covered by automated tests: safe restoration errors, stable selection while saving and removal of old repair feedback after This is correct. Milestone 46 is manually accepted and merged: all six quality repair routes provide localized per-book error details without a noticeable slowdown reported by the user. Milestone 45's bulk title/author swap and conservative detection, and Milestone 44's per-book tag cleanup, are also accepted and merged.
@@ -83,7 +85,7 @@ Milestone 47's final quality reliability improvements are manually checked and a
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The current follow-up is in the [author rename checklist](docs/manual-tests/author-rename-checklist.md); the accepted original checks remain in the [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
+The current manual acceptance steps are in the [Milestone 49 checklist](docs/manual-tests/milestone-49-checklist.md). Accepted author-management checks remain in the [author rename checklist](docs/manual-tests/author-rename-checklist.md) and [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
 
 ## Prerequisites
 
