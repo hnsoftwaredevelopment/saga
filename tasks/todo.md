@@ -10,7 +10,9 @@
 - [x] Afzonderlijk viewmodel, werkbalkactie, modaal venster/bevestiging en zes talen gebouwd. Nieuwe zoeknaam/selectie, tweede opdracht blokkeren, late resultaten en aparte foutmelding ná commit afgedekt. WPF-render op 1040×650 en 800×480 gecontroleerd; splittercontrast gecorrigeerd.
 - [x] Volledige suite: 980 geslaagd, 0 mislukt/overgeslagen. Debug-build 2026.10.24.52 op 24 oktober 15:01 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe in Builds/Debug. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; README, featurestatus, ontwerp en nieuwe checklist bijgewerkt.
 - [x] Alle acht nieuwe/gewijzigde project-Markdown-bestanden exact naar Obsidian gespiegeld met gelijke SHA256-hashes. Gewone niet-draft PR #51 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/51. Mergeable; CodeQL is bij opening nog bezig.
-- [ ] Handmatige gebruikersacceptatie op de nieuwe build volgens docs/manual-tests/milestone-50-checklist.md; alleen de gebruiker mergt.
+- [x] Gebruiker heeft de hoofdroute afgevinkt; eigen vinkjes behouden. De ene CodeRabbit-codebevinding is geldig: IsBusy schakelt lijst/knop uit en verliest focus. Echt WPF-venster eerst falend getest, daarna focus bewaren/herstellen met actieve-venster-, zichtbaarheids-, opdrachtversie- en nieuwere-focusbewaking; dialoog en aanroepende knop behouden focus. Algemene docstring-drempel is geen aanvullende projecteis.
+- [x] Aanvullende verificatie: 980 gewone tests en vijf interactieve WPF-focusscenario's groen, inclusief eerst falende regressie voor vertraagd herstel dat een nieuwere focuskeuze overschrijft. Debug-build 2026.10.24.61 van 24 oktober 15:35, 0 waarschuwingen/fouten en één Saga.exe. Eigen vijfassige review; opslag, schema en overige schermen ongewijzigd. Los WPF-testprogramma zonder nieuwe pakketten, bewust buiten de gewone suite wegens vereiste interactieve desktop.
+- [ ] Alleen de gerichte handmatige toetsenbordhercontrole op build 2026.10.24.61 volgens docs/manual-tests/milestone-50-checklist.md; alleen de gebruiker mergt.
 
 ## Historie: Milestone 49 meervoudige metadatawijzigingen
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Milestone 50 is gebouwd op de goedgekeurde [specificatie](../superpowers/specs/2026-10-24-saga-milestone-50-series-management-design.md), vanaf geaccepteerde en gemergede PR #50. Beschikbaar via **Series beheren** in de hoofdwerkbalk. 980 geautomatiseerde tests slagen; Debug-build 2026.10.24.52 staat klaar. De [handmatige checklist](../manual-tests/milestone-50-checklist.md) wacht op gebruikersacceptatie.
+Milestone 50 is gebouwd op de goedgekeurde [specificatie](../superpowers/specs/2026-10-24-saga-milestone-50-series-management-design.md), vanaf geaccepteerde en gemergede PR #50. Beschikbaar via **Series beheren** in de hoofdwerkbalk. De gebruiker heeft de hoofdroute afgevinkt. Debug-build 2026.10.24.61 herstelt de resterende toetsenbordfocus bij laden en hernoemen, zonder een nieuwere focuskeuze of het hernoemvenster te verstoren. 980 geautomatiseerde tests en vijf interactieve WPF-focusscenario's slagen. Alleen de gerichte toetsenbordhercontrole in de [handmatige checklist](../manual-tests/milestone-50-checklist.md) staat open.
 
 ## Eerste slice
 
