@@ -78,8 +78,7 @@
         <CheckBox Content="{loc:Loc Tags}"
                   IsChecked="{Binding UpdateTags}"
                   Margin="0,0,0,4" />
-        <Grid Margin="22,0,0,12"
-              IsEnabled="{Binding UpdateTags}">
+        <Grid Margin="22,0,0,12">
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />

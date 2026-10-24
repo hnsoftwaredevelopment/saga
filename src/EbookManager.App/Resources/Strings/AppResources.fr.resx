@@ -582,7 +582,7 @@
   <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Modification multiple des métadonnées</value></data>
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Modifier les métadonnées des livres sélectionnés</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Livres sélectionnés</value></data>
-  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Cochez uniquement les champs à modifier. Les champs cochés et vides seront effacés.</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Saisir un auteur, une série, des étiquettes ou une langue coche le champ ; effacer le texte le décoche. Pour supprimer les valeurs enregistrées, cochez manuellement un champ vide (étiquettes : Remplacer).</value></data>
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Inverser le titre et les auteurs</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Utilisez ceci lorsque les livres importés ont le titre et l'auteur inversés.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Utilisez des points-virgules pour séparer plusieurs valeurs.</value></data>

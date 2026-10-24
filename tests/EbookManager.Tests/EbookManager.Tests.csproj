@@ -38,6 +38,7 @@
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\AuthorManagementWindow.xaml"
           Link="TestAssets\AuthorManagementWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\MetadataMultiEditWindow.xaml" Link="TestAssets\MetadataMultiEditWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\MetadataMultiEditFeedbackView.xaml" Link="TestAssets\MetadataMultiEditFeedbackView.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\MainWindow.xaml"
           Link="TestAssets\MainWindow.xaml"

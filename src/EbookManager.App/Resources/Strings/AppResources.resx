@@ -302,7 +302,7 @@
   <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Multi-edit metadata</value></data>
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Edit metadata for the selected books</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Selected books</value></data>
-  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Check only the fields you want to change. Checked empty fields will be cleared.</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Typing in authors, series, tags or language selects that field; clearing the text deselects it. To clear stored values, manually select an empty field (tags: Replace).</value></data>
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Swap title and authors</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Use this when imported books have title and author metadata reversed.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Use semicolons to separate multiple values.</value></data>

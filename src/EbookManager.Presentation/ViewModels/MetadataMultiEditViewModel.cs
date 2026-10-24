@@ -104,6 +104,14 @@ public sealed partial class MetadataMultiEditViewModel : ObservableObject
 
     public bool CanEditAuthors => !SwapTitleAndAuthors;
 
+    partial void OnAuthorsTextChanged(string value)
+    {
+        if (CanEditAuthors) UpdateAuthors = !string.IsNullOrWhiteSpace(value);
+    }
+    partial void OnSeriesTextChanged(string value) => UpdateSeries = !string.IsNullOrWhiteSpace(value);
+    partial void OnTagsTextChanged(string value) => UpdateTags = !string.IsNullOrWhiteSpace(value);
+    partial void OnLanguageTextChanged(string value) => UpdateLanguage = !string.IsNullOrWhiteSpace(value);
+
     partial void OnUpdateAuthorsChanged(bool value) => OnChangeSelectionChanged();
     partial void OnSwapTitleAndAuthorsChanged(bool value)
     {

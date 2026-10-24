@@ -302,7 +302,7 @@
   <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Metadata in meerdere boeken bewerken</value></data>
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Bewerk metadata voor de geselecteerde boeken</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Geselecteerde boeken</value></data>
-  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Vink alleen de velden aan die u wilt wijzigen. Aangevinkte lege velden worden leeggemaakt.</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Tekst invoeren bij auteur, serie, tags of taal vinkt het veld aan; wissen vinkt het uit. Vink een leeg veld zelf aan om opgeslagen waarden te wissen (tags: Vervangen).</value></data>
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Titel en auteur omwisselen</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Gebruik dit wanneer geimporteerde boeken titel en auteur omgedraaid hebben.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Gebruik puntkomma's om meerdere waarden te scheiden.</value></data>

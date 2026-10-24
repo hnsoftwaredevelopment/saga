@@ -6,6 +6,15 @@ namespace EbookManager.Tests.App.Views;
 public sealed class MetadataMultiEditFeedbackTests
 {
     [Fact]
+    public void Tags_can_be_edited_before_selecting_the_update_checkbox()
+    {
+        var document = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataMultiEditWindow.xaml"));
+        XNamespace p = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        var tags = document.Descendants(p + "TextBox").Single(element => (string?)element.Attribute("Text") == "{Binding TagsText, UpdateSourceTrigger=PropertyChanged}");
+        tags.AncestorsAndSelf().Should().NotContain(element => (string?)element.Attribute("IsEnabled") == "{Binding UpdateTags}");
+    }
+
+    [Fact]
     public void MultiEdit_feedback_is_bounded_virtualized_and_keyboard_expandable()
     {
         var document = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "MetadataMultiEditFeedbackView.xaml"));
