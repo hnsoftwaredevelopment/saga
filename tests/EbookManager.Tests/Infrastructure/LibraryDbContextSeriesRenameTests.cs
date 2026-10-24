@@ -9,6 +9,57 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Fact]
+    public async Task Series_rename_preserves_all_scalar_metadata_and_related_records()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var books = new EfBookRepository(factory, library.DirectoryPath);
+        var book = CreateBook("Book", ["Primary", "Coauthor"], ["Tag one", "Tag two"], new DateOnly(2020, 1, 2), coverBytes: [1, 2, 3]);
+        await books.AddAsync(book, CreateFile(book.Id), default);
+        await using var context = factory.Create(library.DirectoryPath);
+        var entity = await context.Books.SingleAsync();
+        context.CustomMetadataValues.Add(new CustomMetadataValueEntity
+        {
+            BookId = entity.Id, TextValue = "Preserve me", Field = new CustomMetadataFieldEntity
+            { Id = Guid.NewGuid(), Key = "notes", Name = "Notes", NormalizedName = "notes" }
+        });
+        await context.SaveChangesAsync();
+        var scalars = context.Entry(entity).Properties.Where(property => property.Metadata.Name is not ("Series" or "UpdatedUtc"))
+            .ToDictionary(property => property.Metadata.Name, property => property.CurrentValue);
+        var authorIds = await context.BookAuthors.OrderBy(link => link.Order).Select(link => new { link.AuthorId, link.Order }).ToArrayAsync();
+        var tagIds = await context.BookTags.Select(link => link.TagId).ToArrayAsync();
+        var file = await context.BookFiles.AsNoTracking().SingleAsync();
+        var repository = new EfSeriesRepository(factory, library.DirectoryPath);
+        (await repository.RenameAsync(await repository.PreviewRenameAsync("Series", default), "Renamed", default)).Status.Should().Be(SeriesRenameStatus.Renamed);
+        await context.Entry(entity).ReloadAsync();
+        context.Entry(entity).Properties.Where(property => property.Metadata.Name is not ("Series" or "UpdatedUtc"))
+            .ToDictionary(property => property.Metadata.Name, property => property.CurrentValue).Should().BeEquivalentTo(scalars);
+        (await context.BookAuthors.OrderBy(link => link.Order).Select(link => new { link.AuthorId, link.Order }).ToArrayAsync()).Should().BeEquivalentTo(authorIds, options => options.WithStrictOrdering());
+        (await context.BookTags.Select(link => link.TagId).ToArrayAsync()).Should().BeEquivalentTo(tagIds);
+        (await context.BookFiles.AsNoTracking().SingleAsync()).Should().BeEquivalentTo(file);
+        (await context.CustomMetadataValues.AsNoTracking().SingleAsync()).TextValue.Should().Be("Preserve me");
+    }
+
+    [Fact]
+    public async Task Series_rename_rejects_added_books_and_cancellation_without_changes()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        await using var context = factory.Create(library.DirectoryPath);
+        context.Books.Add(new BookEntity { Id = Guid.NewGuid(), Title = "One", NormalizedTitle = "one", DuplicateKey = "one", Series = "Old" });
+        await context.SaveChangesAsync();
+        var repository = new EfSeriesRepository(factory, library.DirectoryPath);
+        var preview = await repository.PreviewRenameAsync("Old", default);
+        context.Books.Add(new BookEntity { Id = Guid.NewGuid(), Title = "Two", NormalizedTitle = "two", DuplicateKey = "two", Series = "Old" });
+        await context.SaveChangesAsync();
+        (await repository.RenameAsync(preview, "New", default)).Status.Should().Be(SeriesRenameStatus.Conflict);
+        using var cancelled = new CancellationTokenSource();
+        cancelled.Cancel();
+        await FluentActions.Awaiting(() => repository.RenameAsync(preview, "New", cancelled.Token)).Should().ThrowAsync<OperationCanceledException>();
+        (await context.Books.CountAsync(book => book.Series == "Old")).Should().Be(2);
+    }
+
+    [Fact]
     public async Task Series_rename_preserves_metadata_and_changes_all_pages_atomically()
     {
         using var library = new TemporaryLibrary();

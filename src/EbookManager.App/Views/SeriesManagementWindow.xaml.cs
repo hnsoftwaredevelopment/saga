@@ -17,6 +17,7 @@ public partial class SeriesManagementWindow : Window
     {
         this.viewModel = viewModel;
         InitializeComponent();
+        Language = System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag);
         DataContext = viewModel;
         Loaded += async (_, _) => { SearchBox.Focus(); await viewModel.SearchAsync(""); };
         viewModel.PropertyChanged += ViewModelChanged;

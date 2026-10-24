@@ -81,6 +81,20 @@ public sealed class SeriesManagementViewModelTests
         vm.CanSave.Should().Be(expected);
     }
 
+    [Fact]
+    public async Task Failure_showing_result_after_commit_keeps_changed_ids_and_does_not_claim_rollback()
+    {
+        var repository = new SeriesFake();
+        using var vm = new SeriesManagementViewModel(repository, repository,
+            key => key == "SeriesRenameSavedWithWarnings" ? "{invalid format" : key);
+        await vm.SelectAsync(new("Old", 2));
+        var preview = (await vm.PreviewRenameAsync())!;
+        (await vm.RenameAsync(preview, "New")).Should().BeTrue();
+        vm.StatusMessage.Should().Be("SeriesRenameRefreshFailed");
+        vm.Name.Should().Be("New");
+        vm.ChangedBookIds.Should().BeEquivalentTo(preview.Books.Select(book => book.Id));
+    }
+
     private sealed class SeriesFake : ISeriesRepository, ISeriesRenameService
     {
         private readonly SeriesSourceBook[] source = [new(Guid.NewGuid(), "Old", "One"), new(Guid.NewGuid(), "Old", "Two")];

@@ -122,10 +122,12 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
         IsSearching = false;
         Warnings = [];
         SetStatus("SeriesRenameWorking", false);
+        var committed = false;
         try
         {
             var result = await Task.Run(() => renameService.RenameAsync(preview, newName, lifetime.Token), lifetime.Token);
-            if (result.Change.Status == SeriesRenameStatus.Renamed) changedBookIds.UnionWith(result.Change.Books.Select(book => book.Id));
+            committed = result.Change.Status == SeriesRenameStatus.Renamed;
+            if (committed) changedBookIds.UnionWith(result.Change.Books.Select(book => book.Id));
             if (disposed) return false;
             if (result.Change.Status != SeriesRenameStatus.Renamed)
             {
@@ -149,7 +151,11 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
             return true;
         }
         catch (OperationCanceledException) { return false; }
-        catch (Exception) { if (!disposed) SetStatus("SeriesRenameFailed", true); return false; }
+        catch (Exception)
+        {
+            if (!disposed) SetStatus(committed ? "SeriesRenameRefreshFailed" : "SeriesRenameFailed", true);
+            return committed;
+        }
         finally { if (!disposed) IsBusy = false; }
     }
 

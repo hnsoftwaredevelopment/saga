@@ -4,6 +4,9 @@
         xmlns:loc="clr-namespace:EbookManager.App.Localization"
         Title="{loc:Loc SeriesManagementTitle}" Width="1080" Height="700" MinWidth="820" MinHeight="520"
         WindowStartupLocation="CenterOwner" Background="{DynamicResource AppBackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}">
+  <Window.Resources>
+    <SolidColorBrush x:Key="BorderBrush" Color="{DynamicResource TextSecondaryColor}" />
+  </Window.Resources>
   <DockPanel Margin="18">
     <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
       <TextBlock Text="{loc:Loc SeriesManagementTitle}" FontSize="22" FontWeight="SemiBold" />
@@ -45,7 +48,7 @@
           <TextBlock Margin="0,0,0,8"><Run Text="{Binding TotalBooks, Mode=OneWay}" /><Run Text=" · " /><Run Text="{loc:Loc SeriesBooks}" /></TextBlock>
           <DataGrid Height="250" ItemsSource="{Binding Books}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True" HeadersVisibility="Column" AutomationProperties.Name="{loc:Loc SeriesBooks}">
             <DataGrid.Columns>
-              <DataGridTextColumn Header="{loc:Loc SeriesNumber}" Binding="{Binding Number}" Width="70" />
+              <DataGridTextColumn Header="{loc:Loc SeriesNumber}" Binding="{Binding Number}" Width="90" />
               <DataGridTextColumn Header="{loc:Loc Title}" Binding="{Binding Title}" Width="*" MinWidth="150" />
               <DataGridTextColumn Header="{loc:Loc Authors}" Binding="{Binding Authors}" Width="180" />
             </DataGrid.Columns>
