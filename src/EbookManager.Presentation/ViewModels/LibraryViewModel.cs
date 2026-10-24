@@ -626,7 +626,10 @@ public sealed partial class LibraryViewModel : ObservableObject
             return;
         }
 
+        // Batch results already contain full stored books; do not retry failed reads while restoring rows.
+        if (reconcilingMultiEdit && Details.BookId == value.Id) return;
         Details.Load(value.Book, CurrentLibraryPath);
+        if (reconcilingMultiEdit) return;
         var fullBook = await bookRepository.GetAsync(value.Id, CancellationToken.None);
         if (version == selectionVersion && fullBook is not null)
         {
@@ -3704,6 +3707,12 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void RefreshLibraryDisplay()
     {
+        if (multiEditResultLibraryPath != currentLibrary?.Current?.DirectoryPath)
+        {
+            MultiEditMessage = null;
+            MultiEditDetails.Clear();
+            OnPropertyChanged(nameof(HasMultiEditDetails));
+        }
         CurrentLibraryName = currentLibrary?.Current?.Name;
         CurrentLibraryPath = currentLibrary?.Current?.DirectoryPath;
     }

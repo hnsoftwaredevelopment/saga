@@ -495,5 +495,20 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="AuthorRenameFailed" xml:space="preserve"><value>The author could not be renamed. Reload the author details before trying again.</value></data>
   <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Books whose metadata files could not be updated</value></data>
   <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>The author was renamed, but the book list could not be refreshed. Refresh the library.</value></data>
+  <data name="MultiEditWorking" xml:space="preserve"><value>Updating selected books…</value></data>
+  <data name="MultiEditSaved" xml:space="preserve"><value>{0} books updated.</value></data>
+  <data name="MultiEditSavedUnchanged" xml:space="preserve"><value>{0} books updated; {1} unchanged.</value></data>
+  <data name="MultiEditResult" xml:space="preserve"><value>{0} completed; {1} unchanged; {2} need attention.</value></data>
+  <data name="MultiEditDetailsHeader" xml:space="preserve"><value>Details</value></data>
+  <data name="MultiEditUnavailable" xml:space="preserve"><value>Book is no longer available.</value></data>
+  <data name="MultiEditNotProcessed" xml:space="preserve"><value>Not processed. Earlier changes were kept.</value></data>
+  <data name="MultiEditFileWarning" xml:space="preserve"><value>Library updated; file update was incomplete.</value></data>
+  <data name="MultiEditPartial" xml:space="preserve"><value>Partly updated. Check the fields before applying changes again.</value></data>
+  <data name="MultiEditDuplicate" xml:space="preserve"><value>Book already exists with this title and author.</value></data>
+  <data name="MultiEditReadFailed" xml:space="preserve"><value>Could not read this book.</value></data>
+  <data name="MultiEditCustomFailed" xml:space="preserve"><value>Custom fields could not be updated.</value></data>
+  <data name="MultiEditSaveFailed" xml:space="preserve"><value>Changes could not be saved.</value></data>
+  <data name="MultiEditUncertain" xml:space="preserve"><value>Storage could not be confirmed. Check this book before trying again.</value></data>
+  <data name="MultiEditRefreshFailed" xml:space="preserve"><value>Saved values could not be reloaded. Reopen the book to check its current data.</value></data>
 </root>
 

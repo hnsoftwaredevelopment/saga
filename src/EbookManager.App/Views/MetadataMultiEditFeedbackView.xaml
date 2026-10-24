@@ -1,0 +1,40 @@
+<UserControl x:Class="EbookManager.App.Views.MetadataMultiEditFeedbackView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:loc="clr-namespace:EbookManager.App.Localization">
+  <UserControl.Style>
+    <Style TargetType="UserControl">
+      <Setter Property="Visibility" Value="Visible" />
+      <Style.Triggers><DataTrigger Binding="{Binding MultiEditMessage}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers>
+    </Style>
+  </UserControl.Style>
+  <Border Background="{DynamicResource PanelBackgroundBrush}" Padding="16,8">
+    <StackPanel>
+      <TextBlock Text="{Binding MultiEditMessage}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite">
+        <TextBlock.Style><Style TargetType="TextBlock">
+          <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}" />
+          <Style.Triggers><DataTrigger Binding="{Binding MultiEditIsError}" Value="True"><Setter Property="Foreground" Value="{DynamicResource DangerBrush}" /></DataTrigger></Style.Triggers>
+        </Style></TextBlock.Style>
+      </TextBlock>
+      <Expander Header="{loc:Loc MultiEditDetailsHeader}" AutomationProperties.Name="{loc:Loc MultiEditDetailsHeader}">
+        <Expander.Style><Style TargetType="Expander">
+          <Setter Property="Visibility" Value="Collapsed" />
+          <Style.Triggers><DataTrigger Binding="{Binding HasMultiEditDetails}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers>
+        </Style></Expander.Style>
+        <ListBox ItemsSource="{Binding MultiEditDetails}" MaxHeight="160" BorderThickness="0"
+          ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"
+          ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+          AutomationProperties.Name="{loc:Loc MultiEditDetailsHeader}">
+          <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="HorizontalContentAlignment" Value="Stretch" /></Style></ListBox.ItemContainerStyle>
+          <ListBox.ItemTemplate><DataTemplate>
+            <StackPanel Margin="0,4">
+              <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip="{Binding Title}" />
+              <TextBlock Text="{Binding Authors}" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding Reason}" TextWrapping="Wrap" Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+          </DataTemplate></ListBox.ItemTemplate>
+        </ListBox>
+      </Expander>
+    </StackPanel>
+  </Border>
+</UserControl>

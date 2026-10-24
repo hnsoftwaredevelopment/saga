@@ -775,5 +775,20 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="AuthorRenameFailed" xml:space="preserve"><value>Impossible de renommer l'auteur. Rechargez ses données avant de réessayer.</value></data>
   <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Livres dont les fichiers de métadonnées n'ont pas été mis à jour</value></data>
   <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>L'auteur a été renommé, mais la liste des livres n'a pas pu être actualisée. Actualisez la bibliothèque.</value></data>
+  <data name="MultiEditWorking" xml:space="preserve"><value>Mise à jour des livres sélectionnés…</value></data>
+  <data name="MultiEditSaved" xml:space="preserve"><value>{0} livres mis à jour.</value></data>
+  <data name="MultiEditSavedUnchanged" xml:space="preserve"><value>{0} livres mis à jour ; {1} inchangés.</value></data>
+  <data name="MultiEditResult" xml:space="preserve"><value>{0} terminés ; {1} inchangés ; {2} à vérifier.</value></data>
+  <data name="MultiEditDetailsHeader" xml:space="preserve"><value>Détails</value></data>
+  <data name="MultiEditUnavailable" xml:space="preserve"><value>Ce livre n’est plus disponible.</value></data>
+  <data name="MultiEditNotProcessed" xml:space="preserve"><value>Non traité. Les modifications précédentes sont conservées.</value></data>
+  <data name="MultiEditFileWarning" xml:space="preserve"><value>Bibliothèque mise à jour ; fichier partiellement mis à jour.</value></data>
+  <data name="MultiEditPartial" xml:space="preserve"><value>Partiellement mis à jour. Vérifiez les champs avant de réappliquer les modifications.</value></data>
+  <data name="MultiEditDuplicate" xml:space="preserve"><value>Un livre avec ce titre et cet auteur existe déjà.</value></data>
+  <data name="MultiEditReadFailed" xml:space="preserve"><value>Impossible de lire ce livre.</value></data>
+  <data name="MultiEditCustomFailed" xml:space="preserve"><value>Impossible de mettre à jour les champs personnalisés.</value></data>
+  <data name="MultiEditSaveFailed" xml:space="preserve"><value>Impossible d’enregistrer les modifications.</value></data>
+  <data name="MultiEditUncertain" xml:space="preserve"><value>Enregistrement non confirmé. Vérifiez ce livre avant de réessayer.</value></data>
+  <data name="MultiEditRefreshFailed" xml:space="preserve"><value>Impossible de recharger les valeurs enregistrées. Rouvrez le livre pour vérifier ses données actuelles.</value></data>
 </root>
 

@@ -775,5 +775,20 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="AuthorRenameFailed" xml:space="preserve"><value>Der Autor konnte nicht umbenannt werden. Laden Sie die Autordaten vor einem erneuten Versuch neu.</value></data>
   <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Bücher mit nicht aktualisierten Metadatendateien</value></data>
   <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>Der Autor wurde umbenannt, die Buchliste konnte jedoch nicht aktualisiert werden. Aktualisieren Sie die Bibliothek.</value></data>
+  <data name="MultiEditWorking" xml:space="preserve"><value>Ausgewählte Bücher werden aktualisiert…</value></data>
+  <data name="MultiEditSaved" xml:space="preserve"><value>{0} Bücher aktualisiert.</value></data>
+  <data name="MultiEditSavedUnchanged" xml:space="preserve"><value>{0} Bücher aktualisiert; {1} unverändert.</value></data>
+  <data name="MultiEditResult" xml:space="preserve"><value>{0} abgeschlossen; {1} unverändert; {2} benötigen Aufmerksamkeit.</value></data>
+  <data name="MultiEditDetailsHeader" xml:space="preserve"><value>Details</value></data>
+  <data name="MultiEditUnavailable" xml:space="preserve"><value>Das Buch ist nicht mehr verfügbar.</value></data>
+  <data name="MultiEditNotProcessed" xml:space="preserve"><value>Nicht verarbeitet. Frühere Änderungen wurden beibehalten.</value></data>
+  <data name="MultiEditFileWarning" xml:space="preserve"><value>Bibliothek aktualisiert; Datei nicht vollständig aktualisiert.</value></data>
+  <data name="MultiEditPartial" xml:space="preserve"><value>Teilweise aktualisiert. Prüfen Sie die Felder vor dem erneuten Anwenden.</value></data>
+  <data name="MultiEditDuplicate" xml:space="preserve"><value>Ein Buch mit diesem Titel und Autor ist bereits vorhanden.</value></data>
+  <data name="MultiEditReadFailed" xml:space="preserve"><value>Dieses Buch konnte nicht gelesen werden.</value></data>
+  <data name="MultiEditCustomFailed" xml:space="preserve"><value>Benutzerdefinierte Felder konnten nicht aktualisiert werden.</value></data>
+  <data name="MultiEditSaveFailed" xml:space="preserve"><value>Änderungen konnten nicht gespeichert werden.</value></data>
+  <data name="MultiEditUncertain" xml:space="preserve"><value>Speicherung nicht bestätigt. Prüfen Sie das Buch vor einem erneuten Versuch.</value></data>
+  <data name="MultiEditRefreshFailed" xml:space="preserve"><value>Gespeicherte Werte konnten nicht neu geladen werden. Öffnen Sie das Buch erneut, um die aktuellen Daten zu prüfen.</value></data>
 </root>
 
