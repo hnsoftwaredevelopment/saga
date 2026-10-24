@@ -302,7 +302,7 @@
   <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Metadata in meerdere boeken bewerken</value></data>
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Bewerk metadata voor de geselecteerde boeken</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Geselecteerde boeken</value></data>
-  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Vink alleen de velden aan die u wilt wijzigen. Aangevinkte lege velden worden leeggemaakt.</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Tekst invoeren bij auteur, serie, tags of taal vinkt het veld aan; wissen vinkt het uit. Vink een leeg veld zelf aan om opgeslagen waarden te wissen (tags: Vervangen).</value></data>
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Titel en auteur omwisselen</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Gebruik dit wanneer geimporteerde boeken titel en auteur omgedraaid hebben.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Gebruik puntkomma's om meerdere waarden te scheiden.</value></data>
@@ -495,5 +495,20 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="AuthorRenameFailed" xml:space="preserve"><value>De auteur kon niet worden hernoemd. Laad de auteursgegevens opnieuw voordat je het nogmaals probeert.</value></data>
   <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Boeken waarvan metadatabestanden niet konden worden bijgewerkt</value></data>
   <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>De auteur is hernoemd, maar de boekenlijst kon niet worden ververst. Vernieuw de bibliotheek.</value></data>
+  <data name="MultiEditWorking" xml:space="preserve"><value>Geselecteerde boeken bijwerken…</value></data>
+  <data name="MultiEditSaved" xml:space="preserve"><value>{0} boeken bijgewerkt.</value></data>
+  <data name="MultiEditSavedUnchanged" xml:space="preserve"><value>{0} boeken bijgewerkt; {1} ongewijzigd.</value></data>
+  <data name="MultiEditResult" xml:space="preserve"><value>{0} volledig geslaagd; {1} ongewijzigd; {2} vragen aandacht.</value></data>
+  <data name="MultiEditDetailsHeader" xml:space="preserve"><value>Details</value></data>
+  <data name="MultiEditUnavailable" xml:space="preserve"><value>Boek is niet meer beschikbaar.</value></data>
+  <data name="MultiEditNotProcessed" xml:space="preserve"><value>Niet verwerkt. Eerdere wijzigingen zijn behouden.</value></data>
+  <data name="MultiEditFileWarning" xml:space="preserve"><value>Bibliotheek bijgewerkt; bestand niet volledig bijgewerkt.</value></data>
+  <data name="MultiEditPartial" xml:space="preserve"><value>Deels bijgewerkt. Controleer de velden vóór opnieuw toepassen.</value></data>
+  <data name="MultiEditDuplicate" xml:space="preserve"><value>Boek bestaat al met deze titel en auteur.</value></data>
+  <data name="MultiEditReadFailed" xml:space="preserve"><value>Dit boek kon niet worden gelezen.</value></data>
+  <data name="MultiEditCustomFailed" xml:space="preserve"><value>Aangepaste velden konden niet worden bijgewerkt.</value></data>
+  <data name="MultiEditSaveFailed" xml:space="preserve"><value>Wijzigingen konden niet worden opgeslagen.</value></data>
+  <data name="MultiEditUncertain" xml:space="preserve"><value>Opslag kon niet worden bevestigd. Controleer dit boek vóór een nieuwe poging.</value></data>
+  <data name="MultiEditRefreshFailed" xml:space="preserve"><value>Opgeslagen waarden konden niet worden herladen. Open het boek opnieuw om de actuele gegevens te controleren.</value></data>
 </root>
 

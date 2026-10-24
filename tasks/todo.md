@@ -1,4 +1,25 @@
-# Vervolg auteursbeheer: hernoemen
+# Milestone 49: meervoudige metadatawijzigingen
+
+- [x] Gebruiker accepteert laatste PR #49-tests en meldt merge; GitHub bevestigt MERGED, main 96fe288 opgehaald en nieuwe codex/-branch gemaakt.
+- [x] Richting akkoord: korte succesmelding, begrijpelijke per-boekfouten, successen behouden, mislukte selectie beschikbaar voor een volgende bewuste poging.
+- [x] Bestaande bulkroute, custom opslag, BookService en Quality-resultaatverwerking onderzocht; concrete specificatie en geordend plan vastgelegd.
+- [x] Concrete uitwerking bevestigd, inclusief deels opgeslagen/custom wijzigingen en geen automatische herhaling van een oude swapopdracht.
+- [x] Bestaande bulksemantiek naar gerichte partial verplaatst; negen bestaande tests groen. Logica hoort nu bij een gerichte Application-opdracht en transformatie, zonder WPF-/Presentation-afhankelijkheid.
+- [x] Getypeerde resultaten en veilige standaard-/bestandsverwerking aangesloten; eerst falende regressie voor algemene opslagfout, behoud van succes en mislukte selectie. Tijdelijke SQLite-tests voor conflict, ontbrekend boek, echte metadata.json en bestandsfout na commit.
+- [x] Custom deelresultaten en foutgrenzen: custom-only/ongewijzigd, behoud van eerder opgeslagen velden, veilige veldnamen bij fouten en geen stil succes zonder custom-opslag. Fout ná commit en ontbrekende bevestiging afgedekt; swap nooit herhaald.
+- [x] Eenmalige reconciliatie, selectieversie, tweede opdracht blokkeren, bibliotheekwissel blokkeren, oude feedback opruimen en resultaatfeedback in zes talen. Begrensde/gevirtualiseerde details en visuele WPF-controle met fictieve gegevens.
+- [x] Zes talen en volledige testset: 949 geslaagd, 0 mislukt/overgeslagen. Definitieve Debug-build 2026.10.24.29 op 24 oktober om 13:31 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds/Debug. Tijdelijke bestandsvergrendeling opgelost na afsluiten Saga; daarna opnieuw schoon gebouwd.
+- [x] Eigen vijfassige review, echte metadata.json-controle, fout vóór/na commit, annulering, selectie en WPF-render met fictieve gegevens. Geen nieuw schema, afhankelijkheid, generiek opslagcontract of online bron. Een themapadprobleem in het tijdelijke preview-harnas is daar geïsoleerd; geen afzonderlijke product-themafout vastgesteld.
+- [x] README, featurestatus, ontwerp en handmatige checklist bijgewerkt; alle gewijzigde Markdown exact naar Obsidian gespiegeld met gelijke SHA256-hashes. Gewone niet-draft PR #50 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/50. Mergeable; GitGuardian groen bij opening, CodeQL en CodeRabbit nog bezig.
+- [x] Gebruiker heeft alle oorspronkelijke tests op build 2026.10.24.29 uitgevoerd en geaccepteerd; eigen checklistvinkjes behouden.
+- [x] Aanvullende invoerverbetering goedgekeurd en testgestuurd gebouwd: auteur/serie/tags/taal direct typen met automatisch aanvinken; wissen vinkt uit; handmatig leeg aanvinken en gevuld uitsluiten blijven mogelijk. Tags-container niet langer geblokkeerd. Swap, tagmodi, custom en leesstatus ongewijzigd; uitleg in zes talen.
+- [x] Aanvullende verificatie: 955 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.33 op 24 oktober om 13:52 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; geen opslag- of contractwijziging.
+- [x] Gebruiker accepteert ook alle vier aanvullende invoercontroles; eigen checklistvinkjes behouden.
+- [x] Alle vijf CodeRabbit-voorstellen gecontroleerd, goedgekeurd en verwerkt: beschikbaarheidsnotificaties, behoud van feedback bij annuleren, fase-afhankelijke foutmelding, begrensde testwachttijd en expliciet controleren dat technische fouttekst niet wordt getoond. Drie eerst falende regressietests plus aanvullende test voor onverwachte batchfout na eerdere commit.
+- [x] Reviewverificatie: 959 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.37 op 24 oktober om 14:21 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen vijfassige review; geen nieuwe interface, afhankelijkheid, schemawijziging, vertaling of opslaggedrag.
+- [ ] Alleen annuleren met een bestaande resultaatmelding nog handmatig bevestigen volgens de laatste checklistsectie; alle eerdere acceptatie blijft geldig.
+
+## Historie: auteursbeheer hernoemen
 
 - [x] Gebruiker bevestigt: hernoemen werkt voor de bestaande auteur en alle gekoppelde boeken; boekdetails blijven alleen de auteur van dat boek wijzigen.
 - [x] Gebruiker kiest expliciet geen samenvoegen bij een bestaande doelnaam; dan verwijzen naar aanpassen via boekdetails. Twee personen met dezelfde naam onderscheiden valt buiten scope.
@@ -14,7 +35,7 @@
 - [x] Gebruiker accepteert de volledige slice: ook auteur met 318 boeken, behoud van andere auteurs, weigeren van onbruikbare foto's met behoud van oude foto en venster verkleinen/vergroten met alle knoppen bereikbaar.
 - [x] CodeRabbit-vervolgopmerkingen inhoudelijk bevestigd en op verzoek verwerkt: nieuwe auteursnaam als zoekterm behouden; metadata in begrensde groepen lezen met één context, zonder lijst-omslagblobs en met behoud van reeds geladen omslagen. Eerst falende regressietests en echte SQLite-test over 501 boeken; ontbrekende en dubbele ID's afgedekt.
 - [x] Verificatie reviewcorrecties op 24 oktober: 936 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.7 om 12:50 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen vijfassige review uitgevoerd; geen nieuwe afhankelijkheid, schemawijziging, layout of vertalingen.
-- [ ] Alleen de twee nieuwe reviewcorrecties gericht handmatig controleren volgens docs/manual-tests/author-rename-checklist.md; oorspronkelijke slice is al geaccepteerd.
+- [x] Laatste reviewcorrecties handmatig door gebruiker geaccepteerd; PR #49 gemerged naar main 96fe288.
 
 ## Historie: Milestone 48 auteursbeheer voorbereiden
 

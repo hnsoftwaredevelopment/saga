@@ -17,7 +17,7 @@ using System.Globalization;
 
 namespace EbookManager.Tests.App.ViewModels;
 
-public sealed class LibraryViewModelTests
+public sealed partial class LibraryViewModelTests
 {
     [Fact]
     public async Task External_metadata_refresh_batches_reads_and_preserves_loaded_blob_covers()
@@ -4880,7 +4880,7 @@ public sealed class LibraryViewModelTests
         public bool ConfirmQualityIssuesCorrectResult { get; init; }
         public int? ConfirmQualityIssuesCorrectAffectedCount { get; private set; }
         public Guid? SelectedImportRunId { get; init; }
-        public MetadataMultiEditResult? MetadataMultiEditResult { get; init; }
+        public MetadataMultiEditResult? MetadataMultiEditResult { get; set; }
         public Guid? MetadataQualityDashboardResult { get; init; }
         public bool MetadataQualityAuthorRepairResult { get; init; }
         public string? MetadataQualityAuthorRepairAuthor { get; init; }

@@ -34,10 +34,20 @@ Milestone 24 expands tag maintenance in the same multi-edit workflow:
 
 ## Deferred Follow-Up Candidates
 
+### Milestone 49: reliable outcomes
+
+Implemented after scope approval; the original workflow and input refinement are user-accepted. Only the later review cancellation correction needs a short manual follow-up. Per-book outcomes distinguish success, unchanged data, failure, partial storage, unavailable books and file warnings. Successfully stored values are preserved and reconciled once. Failed/partially saved visible books remain selected unless the user made a newer selection. Generic failures no longer abort subsequent books. Custom fields retain independent storage with honest partial results and field names. Database updates use the existing BookService stored-metadata synchronization route; no new format writer or save-result contract.
+
+Feedback is a short green summary or a compact summary with expandable, bounded, virtualized attention details, localized in six languages. Existing input fields and custom metadata support are preserved. No automatic replay of title/author swaps, new retry button, history or undo. See [the design](../superpowers/specs/2026-10-24-saga-milestone-49-multi-edit-results-design.md) and [manual checklist](../manual-tests/milestone-49-checklist.md).
+
+The user accepted the original workflow and the input refinement: authors, series, tags and language can be typed directly, editing nonblank text selects the field and clearing it deselects it. Manual selection of an empty field still requests clearing; manually deselecting a populated field preserves its draft without applying it. Tags no longer requires selection before editing. Swap protection, tag modes, reading status and custom-field controls are unchanged.
+
+All five CodeRabbit review findings were assessed and corrected: cleanup availability notifications, preserving previous results when cancelling the dialog, phase-aware refresh/uncertain-storage messages, bounded asynchronous test waits and explicit assertions against exposing raw technical errors. Only a short manual cancellation follow-up remains; difficult failure paths are covered automatically.
+
 - Add the same multi-selection workflow to Bookshelf tiles.
 - Add advanced tag modes: split tags and merge tags.
 - Add a preview screen for title/author swaps before applying large batches.
 - Add a preview screen for large batches before applying changes.
 - Add undo/history for batch metadata edits.
-- Add conflict reporting that lists skipped books when duplicate title/author rules prevent an update.
+- Conflict reporting for skipped books is implemented in Milestone 49.
 - Add richer validation feedback inside the dialog instead of using only the busy/status feedback path.

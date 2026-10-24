@@ -582,7 +582,7 @@
   <data name="MetadataMultiEditTitle" xml:space="preserve"><value>Modifica multipla dei metadati</value></data>
   <data name="MetadataMultiEditTooltip" xml:space="preserve"><value>Modifica i metadati dei libri selezionati</value></data>
   <data name="MetadataMultiEditSelectedBooks" xml:space="preserve"><value>Libri selezionati</value></data>
-  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Seleziona solo i campi da modificare. I campi selezionati e vuoti verranno cancellati.</value></data>
+  <data name="MetadataMultiEditHelp" xml:space="preserve"><value>Scrivere in autore, serie, tag o lingua seleziona il campo; cancellare il testo lo deseleziona. Per eliminare i valori salvati, selezionare manualmente un campo vuoto (tag: Sostituisci).</value></data>
   <data name="MetadataMultiEditSwapTitleAuthors" xml:space="preserve"><value>Scambia titolo e autori</value></data>
   <data name="MetadataMultiEditSwapTitleAuthorsHelp" xml:space="preserve"><value>Usalo quando i libri importati hanno titolo e autore invertiti.</value></data>
   <data name="MetadataMultiEditSemicolonTooltip" xml:space="preserve"><value>Usa il punto e virgola per separare più valori.</value></data>
@@ -775,5 +775,20 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="AuthorRenameFailed" xml:space="preserve"><value>Impossibile rinominare l'autore. Ricarica i dati prima di riprovare.</value></data>
   <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Libri con file di metadati non aggiornati</value></data>
   <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>L'autore è stato rinominato, ma non è stato possibile aggiornare l'elenco dei libri. Aggiorna la biblioteca.</value></data>
+  <data name="MultiEditWorking" xml:space="preserve"><value>Aggiornamento dei libri selezionati…</value></data>
+  <data name="MultiEditSaved" xml:space="preserve"><value>{0} libri aggiornati.</value></data>
+  <data name="MultiEditSavedUnchanged" xml:space="preserve"><value>{0} libri aggiornati; {1} invariati.</value></data>
+  <data name="MultiEditResult" xml:space="preserve"><value>{0} completati; {1} invariati; {2} richiedono attenzione.</value></data>
+  <data name="MultiEditDetailsHeader" xml:space="preserve"><value>Dettagli</value></data>
+  <data name="MultiEditUnavailable" xml:space="preserve"><value>Il libro non è più disponibile.</value></data>
+  <data name="MultiEditNotProcessed" xml:space="preserve"><value>Non elaborato. Le modifiche precedenti sono state mantenute.</value></data>
+  <data name="MultiEditFileWarning" xml:space="preserve"><value>Biblioteca aggiornata; aggiornamento del file incompleto.</value></data>
+  <data name="MultiEditPartial" xml:space="preserve"><value>Aggiornato in parte. Controllare i campi prima di riapplicare le modifiche.</value></data>
+  <data name="MultiEditDuplicate" xml:space="preserve"><value>Esiste già un libro con questo titolo e autore.</value></data>
+  <data name="MultiEditReadFailed" xml:space="preserve"><value>Impossibile leggere questo libro.</value></data>
+  <data name="MultiEditCustomFailed" xml:space="preserve"><value>Impossibile aggiornare i campi personalizzati.</value></data>
+  <data name="MultiEditSaveFailed" xml:space="preserve"><value>Impossibile salvare le modifiche.</value></data>
+  <data name="MultiEditUncertain" xml:space="preserve"><value>Salvataggio non confermato. Controllare il libro prima di riprovare.</value></data>
+  <data name="MultiEditRefreshFailed" xml:space="preserve"><value>Impossibile ricaricare i valori salvati. Riaprire il libro per controllare i dati attuali.</value></data>
 </root>
 

@@ -88,6 +88,7 @@
       <RowDefinition Height="64" />
       <RowDefinition Height="56" />
       <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
       <RowDefinition Height="30" />
     </Grid.RowDefinitions>
 
@@ -984,7 +985,9 @@
       </Border>
     </Grid>
 
-    <Border Grid.Row="3"
+    <views:MetadataMultiEditFeedbackView Grid.Row="3" />
+
+    <Border Grid.Row="4"
             Padding="16,0"
             Background="{DynamicResource PanelBackgroundBrush}">
       <DockPanel>
