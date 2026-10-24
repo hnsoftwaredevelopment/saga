@@ -510,5 +510,28 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="MultiEditSaveFailed" xml:space="preserve"><value>Changes could not be saved.</value></data>
   <data name="MultiEditUncertain" xml:space="preserve"><value>Storage could not be confirmed. Check this book before trying again.</value></data>
   <data name="MultiEditRefreshFailed" xml:space="preserve"><value>Saved values could not be reloaded. Reopen the book to check its current data.</value></data>
+  <data name="SeriesManagementTitle" xml:space="preserve"><value>Manage series</value></data>
+  <data name="SeriesManagementDescription" xml:space="preserve"><value>Find a series, view its books in number order and rename the series for all linked books.</value></data>
+  <data name="SeriesSearch" xml:space="preserve"><value>Search series</value></data>
+  <data name="SeriesCountLabel" xml:space="preserve"><value>series</value></data>
+  <data name="SeriesLoadMore" xml:space="preserve"><value>Load more</value></data>
+  <data name="SeriesNoneFound" xml:space="preserve"><value>No series found.</value></data>
+  <data name="SeriesResizePanels" xml:space="preserve"><value>Resize panels</value></data>
+  <data name="SeriesBooks" xml:space="preserve"><value>books in this series</value></data>
+  <data name="SeriesLoadFailed" xml:space="preserve"><value>The series could not be loaded. Please try again.</value></data>
+  <data name="SeriesRename" xml:space="preserve"><value>Rename series</value></data>
+  <data name="SeriesRenameOriginal" xml:space="preserve"><value>Current series name</value></data>
+  <data name="SeriesRenameNew" xml:space="preserve"><value>New series name</value></data>
+  <data name="SeriesRenameExplanation" xml:space="preserve"><value>This changes the series name for all {0} books. Book numbers stay the same.</value></data>
+  <data name="SeriesRenameWorking" xml:space="preserve"><value>Renaming series and updating book files…</value></data>
+  <data name="SeriesRenameSaved" xml:space="preserve"><value>Series renamed for {0} books.</value></data>
+  <data name="SeriesRenameSavedWithWarnings" xml:space="preserve"><value>Series renamed for {0} books. Book files could not be updated for {1} books.</value></data>
+  <data name="SeriesRenameWarningDetails" xml:space="preserve"><value>Books whose files could not be updated</value></data>
+  <data name="SeriesRenameNameExists" xml:space="preserve"><value>That series name already exists. Choose another name; series are not merged.</value></data>
+  <data name="SeriesRenameInvalid" xml:space="preserve"><value>Enter a series name.</value></data>
+  <data name="SeriesRenameUnchanged" xml:space="preserve"><value>The series name has not changed.</value></data>
+  <data name="SeriesRenameConflict" xml:space="preserve"><value>The series has changed since confirmation. Select it again and confirm a new rename.</value></data>
+  <data name="SeriesRenameFailed" xml:space="preserve"><value>The series could not be renamed. No series changes were saved.</value></data>
+  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>The series was renamed, but the library view could not be refreshed. Reopen the library to see the changes.</value></data>
 </root>
 

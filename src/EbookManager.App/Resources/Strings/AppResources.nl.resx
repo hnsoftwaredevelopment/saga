@@ -510,5 +510,28 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="MultiEditSaveFailed" xml:space="preserve"><value>Wijzigingen konden niet worden opgeslagen.</value></data>
   <data name="MultiEditUncertain" xml:space="preserve"><value>Opslag kon niet worden bevestigd. Controleer dit boek vóór een nieuwe poging.</value></data>
   <data name="MultiEditRefreshFailed" xml:space="preserve"><value>Opgeslagen waarden konden niet worden herladen. Open het boek opnieuw om de actuele gegevens te controleren.</value></data>
+  <data name="SeriesManagementTitle" xml:space="preserve"><value>Series beheren</value></data>
+  <data name="SeriesManagementDescription" xml:space="preserve"><value>Zoek een serie, bekijk de boeken op volgnummer en hernoem de serie voor alle gekoppelde boeken.</value></data>
+  <data name="SeriesSearch" xml:space="preserve"><value>Serie zoeken</value></data>
+  <data name="SeriesCountLabel" xml:space="preserve"><value>series</value></data>
+  <data name="SeriesLoadMore" xml:space="preserve"><value>Meer laden</value></data>
+  <data name="SeriesNoneFound" xml:space="preserve"><value>Geen series gevonden.</value></data>
+  <data name="SeriesResizePanels" xml:space="preserve"><value>Panelen vergroten of verkleinen</value></data>
+  <data name="SeriesBooks" xml:space="preserve"><value>boeken in deze serie</value></data>
+  <data name="SeriesLoadFailed" xml:space="preserve"><value>De series konden niet worden geladen. Probeer het opnieuw.</value></data>
+  <data name="SeriesRename" xml:space="preserve"><value>Serie hernoemen</value></data>
+  <data name="SeriesRenameOriginal" xml:space="preserve"><value>Huidige serienaam</value></data>
+  <data name="SeriesRenameNew" xml:space="preserve"><value>Nieuwe serienaam</value></data>
+  <data name="SeriesRenameExplanation" xml:space="preserve"><value>Hiermee wijzigt de serienaam voor alle {0} boeken. De volgnummers blijven gelijk.</value></data>
+  <data name="SeriesRenameWorking" xml:space="preserve"><value>Serie hernoemen en boekbestanden bijwerken…</value></data>
+  <data name="SeriesRenameSaved" xml:space="preserve"><value>Serie hernoemd voor {0} boeken.</value></data>
+  <data name="SeriesRenameSavedWithWarnings" xml:space="preserve"><value>Serie hernoemd voor {0} boeken. Bij {1} boeken konden de boekbestanden niet worden bijgewerkt.</value></data>
+  <data name="SeriesRenameWarningDetails" xml:space="preserve"><value>Boeken waarvan de bestanden niet konden worden bijgewerkt</value></data>
+  <data name="SeriesRenameNameExists" xml:space="preserve"><value>Deze serienaam bestaat al. Kies een andere naam; series worden niet samengevoegd.</value></data>
+  <data name="SeriesRenameInvalid" xml:space="preserve"><value>Vul een serienaam in.</value></data>
+  <data name="SeriesRenameUnchanged" xml:space="preserve"><value>De serienaam is niet gewijzigd.</value></data>
+  <data name="SeriesRenameConflict" xml:space="preserve"><value>De serie is sinds de bevestiging veranderd. Selecteer de serie opnieuw en bevestig het hernoemen nogmaals.</value></data>
+  <data name="SeriesRenameFailed" xml:space="preserve"><value>De serie kon niet worden hernoemd. Er zijn geen seriewijzigingen opgeslagen.</value></data>
+  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>De serie is hernoemd, maar het bibliotheekoverzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw om de wijzigingen te zien.</value></data>
 </root>
 
