@@ -14,7 +14,10 @@
 - [x] Gebruiker heeft alle oorspronkelijke tests op build 2026.10.24.29 uitgevoerd en geaccepteerd; eigen checklistvinkjes behouden.
 - [x] Aanvullende invoerverbetering goedgekeurd en testgestuurd gebouwd: auteur/serie/tags/taal direct typen met automatisch aanvinken; wissen vinkt uit; handmatig leeg aanvinken en gevuld uitsluiten blijven mogelijk. Tags-container niet langer geblokkeerd. Swap, tagmodi, custom en leesstatus ongewijzigd; uitleg in zes talen.
 - [x] Aanvullende verificatie: 955 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.33 op 24 oktober om 13:52 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; geen opslag- of contractwijziging.
-- [ ] Alleen de vier nieuwe invoercontroles onderaan de checklist nog handmatig bevestigen; geen volledige hertest van de geaccepteerde slice nodig.
+- [x] Gebruiker accepteert ook alle vier aanvullende invoercontroles; eigen checklistvinkjes behouden.
+- [x] Alle vijf CodeRabbit-voorstellen gecontroleerd, goedgekeurd en verwerkt: beschikbaarheidsnotificaties, behoud van feedback bij annuleren, fase-afhankelijke foutmelding, begrensde testwachttijd en expliciet controleren dat technische fouttekst niet wordt getoond. Drie eerst falende regressietests plus aanvullende test voor onverwachte batchfout na eerdere commit.
+- [x] Reviewverificatie: 959 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.37 op 24 oktober om 14:21 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen vijfassige review; geen nieuwe interface, afhankelijkheid, schemawijziging, vertaling of opslaggedrag.
+- [ ] Alleen annuleren met een bestaande resultaatmelding nog handmatig bevestigen volgens de laatste checklistsectie; alle eerdere acceptatie blijft geldig.
 
 ## Historie: auteursbeheer hernoemen
 

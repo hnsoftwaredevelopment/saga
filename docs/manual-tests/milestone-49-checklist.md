@@ -2,7 +2,7 @@
 
 ## Status en testbuild
 
-De gebruiker heeft de oorspronkelijke slice getest en geaccepteerd op build 2026.10.24.29; alle eigen vinkjes hieronder zijn behouden. Alleen de aanvullende invoerverbetering onderaan vraagt nog een korte nacontrole. Start daarvoor Builds/Debug/Saga.exe, versie **2026.10.24.33**, gebouwd op **24 oktober 2026 om 13:52 (Europe/Amsterdam)**. Volledige suite: 955 tests geslaagd, 0 mislukt of overgeslagen. Build: 0 waarschuwingen/fouten; precies één Saga.exe onder Builds/Debug. Eigen review en lokalisatie-/layouttests uitgevoerd; de eerdere WPF-render met fictieve gegevens blijft van toepassing op de ongewijzigde resultaatweergave.
+De gebruiker heeft de oorspronkelijke slice én de invoerverbetering getest en geaccepteerd; alle eigen vinkjes hieronder zijn behouden. Alleen de nacontrole van de reviewcorrecties onderaan staat nog open. Start daarvoor Builds/Debug/Saga.exe, versie **2026.10.24.37**, gebouwd op **24 oktober 2026 om 14:21 (Europe/Amsterdam)**. Volledige suite: 959 tests geslaagd, 0 mislukt of overgeslagen. Build: 0 waarschuwingen/fouten; precies één Saga.exe onder Builds/Debug. Eigen review en lokalisatie-/layouttests uitgevoerd; de eerdere WPF-render met fictieve gegevens blijft van toepassing op de ongewijzigde resultaatweergave.
 
 Gebruik bij voorkeur een bibliotheekkopie voor conflict-/verwijdertests. De afgevinkte controles zijn door de gebruiker uitgevoerd; nieuwe controles worden niet vooraf als geslaagd beschouwd. Moeilijke opslag- en bestandsfouten zijn automatisch getest; beschadig daarvoor geen echte bibliotheek.
 
@@ -41,9 +41,15 @@ De oorspronkelijke auteursbeheeracceptatie blijft vastgelegd in de eerdere check
 
 ## Aanvulling: automatisch aanvinken bij standaardtekstvelden
 
-Deze vier controles zijn de enige nieuwe handmatige nacontrole; de geaccepteerde hoofdroute hoeft niet volledig opnieuw getest te worden.
+Deze vier controles zijn door de gebruiker uitgevoerd en geaccepteerd; de hoofdroute hoeft niet opnieuw getest te worden.
 
-- [ ] Open bulkbewerking. Auteur, serie, tags en taal kunnen direct worden ingevuld zonder eerst een vinkje te zetten. Tekst invoeren vinkt alleen het betreffende veld automatisch aan.
-- [ ] Wis de ingevoerde tekst: het vinkje gaat uit, ook bij alleen spaties. Vink het lege veld daarna zelf aan: dit blijft mogelijk om opgeslagen waarden bewust leeg te maken. Bij Tags geldt leegmaken alleen voor Vervangen; Toevoegen/Verwijderen met lege tekst wijzigen niets.
-- [ ] Vul tekst in en vink het veld daarna handmatig uit. De concepttekst blijft staan, maar dit veld wordt niet toegepast. Ga je opnieuw typen, dan wordt het veld weer aangevinkt.
-- [ ] Titel/auteur omwisselen blijft auteurvervanging blokkeren. De uitleg bovenaan beschrijft automatisch selecteren en bewust leegmaken; aangepaste velden en leesstatus behouden hun bestaande bediening.
+- [X] Open bulkbewerking. Auteur, serie, tags en taal kunnen direct worden ingevuld zonder eerst een vinkje te zetten. Tekst invoeren vinkt alleen het betreffende veld automatisch aan.
+- [X] Wis de ingevoerde tekst: het vinkje gaat uit, ook bij alleen spaties. Vink het lege veld daarna zelf aan: dit blijft mogelijk om opgeslagen waarden bewust leeg te maken. Bij Tags geldt leegmaken alleen voor Vervangen; Toevoegen/Verwijderen met lege tekst wijzigen niets.
+- [X] Vul tekst in en vink het veld daarna handmatig uit. De concepttekst blijft staan, maar dit veld wordt niet toegepast. Ga je opnieuw typen, dan wordt het veld weer aangevinkt.
+- [X] Titel/auteur omwisselen blijft auteurvervanging blokkeren. De uitleg bovenaan beschrijft automatisch selecteren en bewust leegmaken; aangepaste velden en leesstatus behouden hun bestaande bediening.
+
+## Nacontrole CodeRabbit-review
+
+- [ ] Laat een resultaatmelding staan, open bulkbewerking opnieuw en kies Annuleren of Escape. De vorige melding, eventuele details en boekgegevens blijven intact. Nieuwe resultaatdetails vervangen de vorige pas nadat een nieuwe opdracht is bevestigd.
+
+De beschikbaarheid van de bulkknop tijdens andere opschoonacties is automatisch getest. Ook een fout tijdens schermverversing ná voltooide verwerking, een onverwachte batchfout ná een eerder opgeslagen boek, begrensde testwachttijden en het niet tonen van technische fouttekst zijn automatisch afgedekt. Geen opslagfouten of schermfouten op een echte bibliotheek forceren. Alleen bovenstaande annuleercontrole vraagt nog een korte handmatige bevestiging.

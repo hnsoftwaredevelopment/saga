@@ -2,7 +2,7 @@
 
 ## Status en doel
 
-De gebruiker heeft richting en concrete uitwerking bevestigd na merge en acceptatie van PR #49 (auteursbeheer). Geïmplementeerd vanaf main 96fe288 op codex/milestone-49-multi-edit-results in PR #50. De oorspronkelijke handmatige tests zijn uitgevoerd en akkoord. Alleen de later goedgekeurde invoerverbetering vraagt een korte nacontrole. Test-/buildgegevens staan in tasks/todo.md en de checklist.
+De gebruiker heeft richting en concrete uitwerking bevestigd na merge en acceptatie van PR #49 (auteursbeheer). Geïmplementeerd vanaf main 96fe288 op codex/milestone-49-multi-edit-results in PR #50. De oorspronkelijke handmatige tests en invoerverbetering zijn uitgevoerd en akkoord. Alleen de latere reviewcorrectie voor annuleren vraagt een korte nacontrole. Test-/buildgegevens staan in tasks/todo.md en de checklist.
 
 Doel: vanuit de gewone boekenlijst meerdere boeken bewerken en precies weten welke wijzigingen gelukt zijn, welke niet en waarom. De bestaande velden en het bestaande invulvenster blijven behouden. Geen nieuwe online bron, auteurs samenvoegen, e-readerfunctie, batchhistorie, undo of extra selectie-/previewvenster.
 
@@ -52,6 +52,14 @@ Stijlvoorbeeld uit bestaande code: `await bookService.SaveAsync(updatedBook, can
 - Verse enige Debug-build onder Builds/Debug, versie/tijd vastleggen; eigen vijfassige review, normale niet-draft PR en handmatige checklist. Alleen gebruiker mergt. Markdown exact naar Obsidian spiegelen en hashes controleren.
 
 ## Grenzen en besluit
+
+### Goedgekeurde reviewcorrecties
+
+Alle vijf CodeRabbit-voorstellen zijn op verzoek verwerkt. Een gedeelde OnIsCleaningMetadataChanged-hook meldt wijzigingen in CanMultiEditSelectedBooks en de commandobeschikbaarheid, ook buiten bulkbewerking. Het bevestigde dialoogresultaat is nu de grens voor het wissen van oude feedback; gewoon annuleren of een geannuleerde voorbereiding behoudt de vorige resultaten.
+
+De UI houdt expliciet de fase Voorbereiden, Verwerken of Verversen bij. Na terugkeer van de service kan een volgende fout alleen als verversingsfout worden gemeld, niet als opslagmislukking. Een onverwachte fout terwijl de service nog verwerkt is juist onzeker: het ontbreken van een resultaat bewijst niet dat geen eerdere boeken zijn opgeslagen. Hergebruik hiervoor de bestaande zes-talige teksten MultiEditRefreshFailed en MultiEditUncertain; geen nieuw opslagcontract of nieuwe resource-sleutels.
+
+Drie eerst falende regressietests bewaken notificaties, annuleren met eerdere feedback en een UI-fout na geslaagde opslag. Een aanvullende providerfouttest bewaakt een onverwachte onderbreking nadat een eerder boek is opgeslagen. De gated test wacht maximaal vijf seconden op starten/afronden en geeft zijn gate ook bij een falende assertie vrij. De algemene-fouttest controleert detailidentiteit, een veilige reden en afwezigheid van technische fouttekst. Definitief: 959 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.37 op 24 oktober 2026 om 14:21 (Europe/Amsterdam), 0 waarschuwingen/fouten. De geaccepteerde oorspronkelijke en invoercontroles blijven behouden; alleen de normale annuleerroute vraagt nog een gerichte handmatige nacontrole.
 
 ### Goedgekeurde invoerverbetering na gebruikersacceptatie
 
