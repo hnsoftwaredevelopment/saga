@@ -2,7 +2,7 @@
 
 ## Status
 
-Milestone 48 profiles and explicit author renaming are implemented and user-tested in PR #49. The supplied author icon is accepted. Only the final small-window layout follow-up remains. See [the profile design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md), [rename design](../superpowers/specs/2026-10-22-saga-author-rename-design.md) and [current checklist](../manual-tests/author-rename-checklist.md).
+Milestone 48 profiles and explicit author renaming are implemented and user-tested in PR #49. The supplied author icon, 318-book author and window resizing are accepted. Review follow-ups preserve search selection and use bounded metadata refreshes without discarding loaded covers. See [the profile design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md), [rename design](../superpowers/specs/2026-10-22-saga-author-rename-design.md) and [current checklist](../manual-tests/author-rename-checklist.md).
 
 ## Context
 

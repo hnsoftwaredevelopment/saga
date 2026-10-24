@@ -2,7 +2,7 @@
 
 ## Status en gebruikersdoel
 
-De gebruiker heeft de aanpak goedgekeurd; hernoemen is geïmplementeerd als uitbreiding van de nog open PR #49. De gebruiker heeft auteursbeheer, hernoemen en het eigen auteuricoon getest en akkoord bevonden. Een al bestaande doelnaam blokkeert de actie, zonder samenvoegoptie. Alleen de laatste kleine-vensterindeling vraagt nog een gerichte handmatige controle.
+De gebruiker heeft de aanpak goedgekeurd; hernoemen is geïmplementeerd als uitbreiding van de nog open PR #49. De gebruiker heeft auteursbeheer, hernoemen en het eigen auteuricoon getest en akkoord bevonden, ook met 318 boeken, onbruikbare foto's en venstervergroting/verkleining. Een al bestaande doelnaam blokkeert de actie, zonder samenvoegoptie. Op 24 oktober zijn de twee aanvullende CodeRabbit-correcties goedgekeurd: selectie na hernoemen behouden en metadata efficiënter ophalen zonder omslagverlies.
 
 Voorbeeld: A.K. Straatsma wordt Anne Klaas Straatsma, mits die laatste naam niet al bij een andere auteursidentiteit voorkomt. Dezelfde auteur, foto, website en biografie blijven behouden. In het boekdetailscherm betekent een andere naam nog steeds een andere auteur toewijzen aan uitsluitend dat boek.
 
@@ -45,6 +45,14 @@ Eerst falende tests voor behoud van identiteit/profiel en het weigeren van een b
 Definitieve verificatie: 933 tests geslaagd, 0 mislukt of overgeslagen. Debug-build 2026.10.22.109, 22 oktober 2026 om 18:09 (Europe/Amsterdam), 0 waarschuwingen en fouten. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties uitgevoerd. De bestaande titelgesorteerde boekpagina's blijven bij hernoemen behouden; een regressietest met 205 boeken bewaakt Meer laden zonder doublures. Bij auteurswissel verdwijnen oude bestandswaarschuwingen. De twee relevante CodeRabbit-opmerkingen zijn verwerkt: passend werkbalkicoon en een scrollbaar profielpaneel met bereikbare onderknoppen op kleine vensters. Zie de afzonderlijke handmatige checklist voor de nog open layoutcontrole.
 
 ## Grenzen en beslispunt
+
+### Reviewcorrecties op 24 oktober 2026
+
+Na hernoemen gebruiken viewmodel en zoekveld de opgeslagen nieuwe naam in plaats van een lege zoekopdracht. Zo blijft de auteur zichtbaar en geselecteerd wanneer die buiten de eerste 200 ongefilterde auteurs valt. Een eerst falende regressietest met 205 andere auteurs bewijst dit.
+
+De optionele repositorycapaciteit IBookMetadataSnapshotRepository haalt alleen aangevraagde bestaande boeken op via de bestaande lichte lijstprojectie. EF en de actieve-bibliotheekadapter ondersteunen deze route; andere repositoryimplementaties behouden de veilige per-boekfallback. Eén databasecontext, groepen van maximaal 500 unieke ID's en afzonderlijke formaatprojectie voorkomen onbegrensde parameters en herhaalde omslagblobloads. Ontbrekende boeken worden overgeslagen. Pas ID-filtering vóór de recordprojectie toe, zodat EF de query naar SQL vertaalt. Geladen CoverBytes uit de bestaande boeken of geselecteerde details blijven bij de vervanging behouden; alleen geselecteerde details mogen via de bestaande selectieroute opnieuw volledig laden. Dit is uitsluitend een metadata-verversroute, geen omslagwijzigingsroute.
+
+Verificatie: 936 tests geslaagd, 0 mislukt/overgeslagen. SQLite-integratietest over 501 boeken bewaakt projectie, mede-auteurs, tags, formaten, omslagpad, ontbrekende/dubbele ID's en behoud van database-omslagbytes. Debug-build 2026.10.24.7 op 24 oktober om 12:50 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen review afgerond. De eerdere slice is handmatig geaccepteerd; alleen twee gerichte reviewnacontroles blijven apart staan.
 
 Altijd gegevensbehoud, bestaande duplicaatbescherming, eerst falende tests, eigen review, project-DoD en Markdown-spiegel toepassen. Eerst afstemmen bij noodzakelijke schemawijziging, nieuwe dependencies of uitbreiding naar samenvoegen/bulkbewerken. Nooit echte gebruikersgegevens voor fouttests veranderen, auteurs op naam automatisch samenvoegen, technische exceptions als gebruikersmelding tonen of zelf een PR mergen.
 

@@ -11,7 +11,10 @@
 - [x] Definitief: 933 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.22.109, 22 oktober 2026 om 18:09 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; regressies voor oude waarschuwingen en paginering bij 205 boeken afgedekt. Werkbalkicoon en kleine-vensterindeling uit CodeRabbit-review verwerkt.
 - [x] Gebruiker bevestigt: hernoemen werkt goed en het icoon ziet er goed uit.
 - [x] README, featurestatus, ontwerp en beide checklists bijgewerkt; gebruikersvinkjes behouden. Alle gewijzigde Markdown exact naar Obsidian gespiegeld en SHA256-hashes gelijk.
-- [ ] Laatste indelingswijziging gericht handmatig controleren: venster verkleinen, profiel scrollen en onderknoppen bereikbaar houden. Zie docs/manual-tests/author-rename-checklist.md.
+- [x] Gebruiker accepteert de volledige slice: ook auteur met 318 boeken, behoud van andere auteurs, weigeren van onbruikbare foto's met behoud van oude foto en venster verkleinen/vergroten met alle knoppen bereikbaar.
+- [x] CodeRabbit-vervolgopmerkingen inhoudelijk bevestigd en op verzoek verwerkt: nieuwe auteursnaam als zoekterm behouden; metadata in begrensde groepen lezen met één context, zonder lijst-omslagblobs en met behoud van reeds geladen omslagen. Eerst falende regressietests en echte SQLite-test over 501 boeken; ontbrekende en dubbele ID's afgedekt.
+- [x] Verificatie reviewcorrecties op 24 oktober: 936 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.7 om 12:50 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen vijfassige review uitgevoerd; geen nieuwe afhankelijkheid, schemawijziging, layout of vertalingen.
+- [ ] Alleen de twee nieuwe reviewcorrecties gericht handmatig controleren volgens docs/manual-tests/author-rename-checklist.md; oorspronkelijke slice is al geaccepteerd.
 
 ## Historie: Milestone 48 auteursbeheer voorbereiden
 
