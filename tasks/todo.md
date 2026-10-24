@@ -1,4 +1,36 @@
-# Milestone 47: betrouwbaarheid Quality afronden
+# Vervolg auteursbeheer: hernoemen
+
+- [x] Gebruiker bevestigt: hernoemen werkt voor de bestaande auteur en alle gekoppelde boeken; boekdetails blijven alleen de auteur van dat boek wijzigen.
+- [x] Gebruiker kiest expliciet geen samenvoegen bij een bestaande doelnaam; dan verwijzen naar aanpassen via boekdetails. Twee personen met dezelfde naam onderscheiden valt buiten scope.
+- [x] Technische inventarisatie en voorstel vastgelegd; oorspronkelijke gebruikersvinkjes behouden.
+- [x] Technische aanpak met transactionele databasewijziging en afzonderlijke bestandssynchronisatie bevestigd.
+- [x] PR #49 is open; bestaande branch vanaf main 1de190f uitgebreid zonder merge te veronderstellen.
+- [x] Identiteitsbehoudend hernoemen, unieke naam en duplicaatsleutels testgestuurd gebouwd.
+- [x] Bestandsverwerking met veilige resultaatstatus en commit-/annuleringsgrenzen aangesloten.
+- [x] Hernoemactie, bevestiging, selectie, hoofdschermactualisatie en zes talen gebouwd/getest; eigen SVG van gebruiker verwerkt.
+- [x] Definitief: 933 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.22.109, 22 oktober 2026 om 18:09 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; regressies voor oude waarschuwingen en paginering bij 205 boeken afgedekt. Werkbalkicoon en kleine-vensterindeling uit CodeRabbit-review verwerkt.
+- [x] Gebruiker bevestigt: hernoemen werkt goed en het icoon ziet er goed uit.
+- [x] README, featurestatus, ontwerp en beide checklists bijgewerkt; gebruikersvinkjes behouden. Alle gewijzigde Markdown exact naar Obsidian gespiegeld en SHA256-hashes gelijk.
+- [x] Gebruiker accepteert de volledige slice: ook auteur met 318 boeken, behoud van andere auteurs, weigeren van onbruikbare foto's met behoud van oude foto en venster verkleinen/vergroten met alle knoppen bereikbaar.
+- [x] CodeRabbit-vervolgopmerkingen inhoudelijk bevestigd en op verzoek verwerkt: nieuwe auteursnaam als zoekterm behouden; metadata in begrensde groepen lezen met één context, zonder lijst-omslagblobs en met behoud van reeds geladen omslagen. Eerst falende regressietests en echte SQLite-test over 501 boeken; ontbrekende en dubbele ID's afgedekt.
+- [x] Verificatie reviewcorrecties op 24 oktober: 936 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.7 om 12:50 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen vijfassige review uitgevoerd; geen nieuwe afhankelijkheid, schemawijziging, layout of vertalingen.
+- [ ] Alleen de twee nieuwe reviewcorrecties gericht handmatig controleren volgens docs/manual-tests/author-rename-checklist.md; oorspronkelijke slice is al geaccepteerd.
+
+## Historie: Milestone 48 auteursbeheer voorbereiden
+
+- [x] Gebruiker kiest auteursbeheer met foto en optionele website; voorbereiding akkoord.
+- [x] Bestaande Authors/BookAuthors, profielwens, foto-opslag en beide orphan-opruimroutes onderzocht.
+- [x] Conceptspecificatie en geordende technische aanpak vastgelegd; geen productcode, migratie of build gewijzigd.
+- [x] Concrete scope en technische keuzes door gebruiker bevestigd.
+- [x] Actuele main 1de190f gecontroleerd, codex/milestone-48-author-profiles gemaakt en geaccepteerd opslagbesluit vastgelegd.
+- [x] Additieve profielvelden, migratie en behoud zonder boeken testgestuurd ingevoerd; beide orphan-routes afgedekt.
+- [x] Profielservice, validatie, veilige foto-opslag en fout-/conflictgedrag getest, inclusief onzeker commitresultaat en annulering.
+- [x] Doorzoekbaar auteursvenster, gepagineerde boekenlijst, websiteactie en zes talen gebouwd; WPF-render en echte beeldverwerking gecontroleerd met fictieve gegevens.
+- [x] Volledige testset: 911 geslaagd, 0 mislukt of overgeslagen; Debug-build 2026.10.22.88, 22 oktober 2026 om 15:38 (Europe/Amsterdam), 0 waarschuwingen/fouten, precies één Saga.exe onder Builds/Debug. Eigen vijfassige review, README en checklist afgerond; Markdown exact naar Obsidian gespiegeld en hashes gecontroleerd.
+- [x] Gewone niet-draft PR #49 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/49. Mergeable; GitGuardian groen bij openingscontrole. Overige review-/CI-status wordt afzonderlijk beoordeeld zodra beschikbaar.
+- [x] Handmatige gebruikersacceptatie volgens docs/manual-tests/milestone-48-checklist.md; gebruikersvinkjes behouden.
+
+## Historie: Milestone 47 betrouwbaarheid Quality afronden
 
 - [x] Gebruiker geeft opdracht voor de drie reviewbevindingen; branch vanaf actuele main ff97e5a gemaakt.
 - [x] Afgesproken scope en aanpak vastgelegd; eerst falende tests voor foutstatus, oude details, UI-binding en vertalingen.

@@ -10,8 +10,16 @@ namespace EbookManager.App.Services;
 public sealed class CurrentLibraryBookRepository(
     CurrentLibrary currentLibrary,
     LibraryDbContextFactory contextFactory)
-    : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository, IMetadataQualityExclusionRepository
+    : IBookRepository, IBookMetadataSnapshotRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository, IMetadataQualityExclusionRepository
 {
+    public Task<IReadOnlyList<Book>> ListMetadataAsync(IReadOnlyCollection<Guid> bookIds, CancellationToken cancellationToken)
+    {
+        var repository = TryCreateRepository();
+        return repository is null
+            ? Task.FromResult<IReadOnlyList<Book>>([])
+            : repository.ListMetadataAsync(bookIds, cancellationToken);
+    }
+
     public Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
         var repository = TryCreateRepository();

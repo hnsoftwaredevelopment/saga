@@ -733,5 +733,47 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Die Korrektur konnte nicht abgeschlossen werden. Prüfen Sie die aktuellen Buchdaten, bevor Sie es erneut versuchen.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>Das Cover konnte nicht heruntergeladen oder verarbeitet werden. Versuchen Sie es erneut oder wählen Sie ein anderes Cover.</value></data>
   <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>Die ignorierten Meldungen konnten nicht wiederhergestellt werden. Versuchen Sie es erneut. Prüfen Sie bei anhaltenden Problemen, ob die Bibliothek verfügbar ist.</value></data>
+  <data name="AuthorManagementTitle" xml:space="preserve"><value>Autoren verwalten</value></data>
+  <data name="AuthorManagementDescription" xml:space="preserve"><value>Verwalten Sie Fotos, Websites und Biografien in dieser Bibliothek. Buchdaten bleiben unverändert.</value></data>
+  <data name="AuthorSearch" xml:space="preserve"><value>Autoren suchen</value></data>
+  <data name="AuthorCountLabel" xml:space="preserve"><value>Autoren</value></data>
+  <data name="AuthorLoadMore" xml:space="preserve"><value>Mehr laden</value></data>
+  <data name="AuthorNoneFound" xml:space="preserve"><value>Keine Autoren gefunden.</value></data>
+  <data name="AuthorResizePanels" xml:space="preserve"><value>Autorenbereiche skalieren</value></data>
+  <data name="AuthorNoPhoto" xml:space="preserve"><value>Kein Foto</value></data>
+  <data name="AuthorPhoto" xml:space="preserve"><value>Autorenfoto</value></data>
+  <data name="AuthorChoosePhoto" xml:space="preserve"><value>Foto auswählen…</value></data>
+  <data name="AuthorRemovePhoto" xml:space="preserve"><value>Foto entfernen</value></data>
+  <data name="AuthorPhotoHelp" xml:space="preserve"><value>Optional. JPEG oder PNG, bis 10 MB. Eine Kopie wird in der Bibliothek gespeichert.</value></data>
+  <data name="AuthorWebsite" xml:space="preserve"><value>Website (optional)</value></data>
+  <data name="AuthorOpenWebsite" xml:space="preserve"><value>Website öffnen</value></data>
+  <data name="AuthorBiography" xml:space="preserve"><value>Kurzbiografie (optional)</value></data>
+  <data name="AuthorBooks" xml:space="preserve"><value>Bücher in dieser Bibliothek</value></data>
+  <data name="AuthorUnsavedMessage" xml:space="preserve"><value>Änderungen speichern? Ja speichert, Nein verwirft, Abbrechen setzt die Bearbeitung fort.</value></data>
+  <data name="AuthorProfileInvalid" xml:space="preserve"><value>Geben Sie eine vollständige HTTP-/HTTPS-Adresse ohne Anmeldedaten ein. Die Biografie darf bis zu 10.000 Zeichen enthalten.</value></data>
+  <data name="AuthorProfileSaved" xml:space="preserve"><value>Autorenprofil gespeichert.</value></data>
+  <data name="AuthorProfileConflict" xml:space="preserve"><value>Dieser Autor wurde inzwischen geändert oder entfernt. Änderungen wurden nicht gespeichert. Verwerfen Sie die Änderungen und wählen Sie den Autor erneut.</value></data>
+  <data name="AuthorProfileLoadFailed" xml:space="preserve"><value>Autordaten konnten nicht geladen werden. Wählen Sie den Autor erneut.</value></data>
+  <data name="AuthorProfileSaveFailed" xml:space="preserve"><value>Profil konnte nicht gespeichert werden. Ihre Änderungen bleiben erhalten; versuchen Sie es erneut.</value></data>
+  <data name="AuthorPhotoInvalid" xml:space="preserve"><value>Wählen Sie ein gültiges JPEG oder PNG bis 10 MB und 25 Millionen Pixel. Das bisherige Foto bleibt erhalten.</value></data>
+  <data name="AuthorPhotoLoadFailed" xml:space="preserve"><value>Das gespeicherte Foto konnte nicht geladen werden. Andere Autordaten bleiben verfügbar.</value></data>
+  <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Profil gespeichert, das bisherige Foto konnte jedoch nicht entfernt werden.</value></data>
+  <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>Die Website konnte nicht im Browser geöffnet werden.</value></data>
+  <data name="AuthorPhotoFilter" xml:space="preserve"><value>Fotos (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
+  <data name="AuthorRename" xml:space="preserve"><value>Autor umbenennen</value></data>
+  <data name="AuthorRenameOriginal" xml:space="preserve"><value>Bisheriger Name</value></data>
+  <data name="AuthorRenameNew" xml:space="preserve"><value>Neuer Name</value></data>
+  <data name="AuthorRenameExplanation" xml:space="preserve"><value>Der Autor wird für alle {0} verknüpften Bücher umbenannt. Andere Autoren und Profildaten bleiben erhalten.</value></data>
+  <data name="AuthorRenameWorking" xml:space="preserve"><value>Autor wird umbenannt und Metadatendateien werden aktualisiert…</value></data>
+  <data name="AuthorRenameSaved" xml:space="preserve"><value>Autor für {0} Bücher umbenannt.</value></data>
+  <data name="AuthorRenameSavedWithWarnings" xml:space="preserve"><value>Autor für {0} Bücher umbenannt. Metadatendateien konnten für {1} Bücher nicht aktualisiert werden; siehe Details.</value></data>
+  <data name="AuthorRenameNameExists" xml:space="preserve"><value>Dieser Autorenname existiert bereits. Es wurde nichts geändert. Ordnen Sie Bücher in den Buchdetails dem vorhandenen Autor zu.</value></data>
+  <data name="AuthorRenameInvalid" xml:space="preserve"><value>Geben Sie einen gültigen Autorennamen ein, nicht Unknown.</value></data>
+  <data name="AuthorRenameConflict" xml:space="preserve"><value>Der Autor oder die verknüpften Bücher wurden geändert. Nichts wurde umbenannt. Wählen Sie den Autor erneut und bestätigen Sie die aktuelle Buchanzahl.</value></data>
+  <data name="AuthorRenameDuplicateBook" xml:space="preserve"><value>Diese Umbenennung würde doppelte Bücher erzeugen. Es wurde nichts geändert.</value></data>
+  <data name="AuthorRenameUnchanged" xml:space="preserve"><value>Der Autorenname ist unverändert.</value></data>
+  <data name="AuthorRenameFailed" xml:space="preserve"><value>Der Autor konnte nicht umbenannt werden. Laden Sie die Autordaten vor einem erneuten Versuch neu.</value></data>
+  <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Bücher mit nicht aktualisierten Metadatendateien</value></data>
+  <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>Der Autor wurde umbenannt, die Buchliste konnte jedoch nicht aktualisiert werden. Aktualisieren Sie die Bibliothek.</value></data>
 </root>
 

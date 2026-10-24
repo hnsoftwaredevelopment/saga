@@ -1,4 +1,32 @@
-# Milestone 47: betrouwbaarheid Quality afronden
+# Vervolg auteursbeheer: hernoemen
+
+Status: aanpak goedgekeurd en onderstaande stappen uitgevoerd binnen de bestaande open PR #49. De gebruiker accepteert de slice inclusief 318 boeken, het eigen icoon, foto-validatie en vensterindeling. De twee vervolgopmerkingen van CodeRabbit zijn op 24 oktober testgestuurd verwerkt: zoeken op de nieuwe auteursnaam en metadata in begrensde groepen ophalen zonder geladen omslagen kwijt te raken. 936 tests geslaagd; Debug-build 2026.10.24.7 heeft 0 waarschuwingen/fouten. Eigen review afgerond; alleen de twee reviewcorrecties hebben nog een gerichte handmatige nacontrole, geen volledige heracceptatie. Specificatie: docs/superpowers/specs/2026-10-22-saga-author-rename-design.md. De oorspronkelijke gebruikersvinkjes blijven behouden; PR #49 is niet gemerged. Onderstaande volgorde blijft als uitvoeringshistorie behouden.
+
+1. **Transactioneel hernoemen bewijzen.** Eerst falende repositorytests voor dezelfde auteur-id/profiel, gekoppelde boeken en bezette naam. Voeg gericht contract/resultaat en een EF-transactie toe; valideer bron/doel opnieuw en herbereken alle betrokken duplicaatsleutels. Circa 3–4 bestanden. Acceptatie: alles in de database of niets, geen auteurs samenvoegen. Verificatie: Author-repositorytests, inclusief mede-auteurs, nul boeken, pagina-overstijgend en rollback.
+2. **Bestandssynchronisatie aansluiten.** Inventariseer en test eerst de gedeelde BookService/MetadataSidecarWriter-route; eventuele minimale extractie als eigen increment. Voeg daarna Application-orkestratie toe voor uitsluitend de succesvol hernoemde boeken. Maximaal circa 5 bestanden per increment. Acceptatie: geen nieuwere metadata overschrijven en opgeslagen databasewijziging niet als geheel mislukt presenteren bij een bestandwaarschuwing. Verificatie: sidecar-/servicetests, commitgrens en annulering.
+
+Checkpoint na 1–2: hernoemen houdt identiteit, profiel en duplicaatbescherming intact; foutmeldingen onderscheiden weigering vóór opslag van een waarschuwing ná opslag. Gerichte tests groen vóór UI-aansluiting.
+
+3. **Actie en bevestiging toevoegen.** Eigen hernoeminteractie in het auteursvenster, oude/nieuwe naam en boekaantal, bestaande conceptbewaking, bezetstatus en behoud van selectie. Gedeeld model/viewmodel plus tests in kleine increments van circa 3–5 bestanden. Acceptatie: gewone profielopslag blijft niet-hernoemend en boekdetails veranderen niet van betekenis.
+4. **Actualisatie en talen afronden.** Gewijzigde boekidentiteiten aansluiten op bestaande hoofdschermreconciliatie; geen volledige boekenverzameling in het auteursviewmodel. Nieuwe teksten verdeeld over kleine vertaalincrements in zes talen. Verificatie: hoofdscherm-, viewmodel-, layout- en lokalisatietests.
+5. **Opleveren.** Volledige suite, Debug-build, eigen vijfassige review, nieuwe handmatige checklist, README/featurestatus en Obsidian-spiegels. Gewone PR volgens projectworkflow; gebruikersacceptatie pas afvinken na test van de nieuwe functie.
+
+Afhankelijkheden: 1 vóór 2 en 3, 3 vóór 4, 5 na alles. Risico's: verouderde duplicaatsleutels, identiteitsverlies via de bestaande per-boek-route en onjuiste succes/foutstatus na commit. Mitigatie: transactietests, expliciete hernoemopdracht en afzonderlijke bestandsresultaten. Geen agents of nieuwe dependency nodig. Geen schemawijziging voorzien.
+
+## Historie: Milestone 48 voorbereiding auteursbeheer
+
+Status: specificatie en technische keuzes door de gebruiker bevestigd; geïmplementeerd op codex/milestone-48-author-profiles vanaf actuele main 1de190f na merge van PR #48. Specificatie: docs/superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md. De oorspronkelijke voorbereiding is behouden. Handmatige gebruikersacceptatie staat nog open.
+
+1. Bevestig scope, optionele profielvelden, behoud zonder boeken en fotogrenzen; leg daarna het opslagbesluit vast. Eerst migratie- en repositorytests voor bestaande auteurs en behoud van verrijkte auteurs. Kleine increments: entity/configuratie/migratie/snapshot/test, daarna beide orphan-routes en regressietests.
+2. Implementeer gerichte profielcontracten en opslagservice met eerst falende tests voor identiteit, validatie, conflict en retry. Circa 3–5 bestanden per increment. Geen boekmetadata wijzigen.
+3. Bouw beheerde foto-opslag met apart geteste padveiligheid en validatie; daarna coördinatie met databaseopslag. Unieke nieuwe bestanden, oude foto pas na commit opruimen. Test fout en annuleren vóór aansluiting op de interface.
+4. Voeg afzonderlijk auteursviewmodel toe: doorzoeken, aantallen, selectie, boeken, concept en navigatiebewaking. Tests voor late resultaten, bibliotheekwissel en lege lijst; laad geen foto's voor de hele lijst.
+5. Sluit WPF-venster, bestandskiezer, gecontroleerde browseractie en navigatie aan. Deel op in venster/layout, interacties en vertalingen zodat ieder increment controleerbaar blijft. Zes talen en toetsenbord-/splittercontrole.
+6. Volledige tests, Debug-build onder Builds/Debug, eigen review op correctheid/architectuur/eenvoud/veiligheid/prestaties, handmatige checklist en README bijwerken, Markdown spiegelen. Gewone PR; gebruikersacceptatie blijft open tot de nieuwe build is getest.
+
+Afhankelijkheden: 1 vóór 2; 2 en 3 vóór opslag-UI; 4 vóór 5; 6 na alles. Checkpoint na 1: bestaande bibliotheek ongewijzigd leesbaar en profiel verdwijnt niet bij laatste boek. Na 3: fouten behouden oude gegevens en foto. Na 5: volledige profielroute zonder online dienst. Grootste risico's zijn orphan-opruiming, database/bestand-atomiciteit en traag laden; specifieke tests en begrensde verwerking staan in de spec. Geen agents of parallelle wijzigingen nodig.
+
+## Historie: Milestone 47 betrouwbaarheid Quality afronden
 
 De gebruiker heeft de drie concrete reviewbevindingen goedgekeurd. Scope: docs/superpowers/specs/2026-10-22-saga-milestone-47-quality-final-reliability-design.md. Branch vanaf actuele main ff97e5a; geen nieuwe kwaliteitsfunctionaliteit.
 

@@ -23,12 +23,21 @@ namespace EbookManager.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Biography")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NormalizedName")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhotoRelativePath")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WebsiteUrl")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

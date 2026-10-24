@@ -453,5 +453,47 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="MetadataQualityRepairReasonFailed" xml:space="preserve"><value>Het herstel kon niet worden afgerond. Controleer de actuele boekgegevens voordat je het opnieuw probeert.</value></data>
   <data name="MetadataQualityRepairReasonDownload" xml:space="preserve"><value>De omslag kon niet worden gedownload of verwerkt. Probeer het opnieuw of kies een andere omslag.</value></data>
   <data name="MetadataQualityExclusionsRestoreFailed" xml:space="preserve"><value>De genegeerde meldingen konden niet worden teruggezet. Probeer het opnieuw. Controleer bij herhaling of de bibliotheek beschikbaar is.</value></data>
+  <data name="AuthorManagementTitle" xml:space="preserve"><value>Auteurs beheren</value></data>
+  <data name="AuthorManagementDescription" xml:space="preserve"><value>Beheer foto's, websites en biografieën van auteurs in deze bibliotheek. Boekgegevens blijven ongewijzigd.</value></data>
+  <data name="AuthorSearch" xml:space="preserve"><value>Auteur zoeken</value></data>
+  <data name="AuthorCountLabel" xml:space="preserve"><value>auteurs</value></data>
+  <data name="AuthorLoadMore" xml:space="preserve"><value>Meer laden</value></data>
+  <data name="AuthorNoneFound" xml:space="preserve"><value>Geen auteurs gevonden.</value></data>
+  <data name="AuthorResizePanels" xml:space="preserve"><value>Breedte auteurspanelen aanpassen</value></data>
+  <data name="AuthorNoPhoto" xml:space="preserve"><value>Geen foto</value></data>
+  <data name="AuthorPhoto" xml:space="preserve"><value>Foto van de auteur</value></data>
+  <data name="AuthorChoosePhoto" xml:space="preserve"><value>Foto kiezen…</value></data>
+  <data name="AuthorRemovePhoto" xml:space="preserve"><value>Foto verwijderen</value></data>
+  <data name="AuthorPhotoHelp" xml:space="preserve"><value>Optioneel. JPEG of PNG, maximaal 10 MB. Een kopie wordt in je bibliotheek opgeslagen.</value></data>
+  <data name="AuthorWebsite" xml:space="preserve"><value>Website (optioneel)</value></data>
+  <data name="AuthorOpenWebsite" xml:space="preserve"><value>Website openen</value></data>
+  <data name="AuthorBiography" xml:space="preserve"><value>Korte biografie (optioneel)</value></data>
+  <data name="AuthorBooks" xml:space="preserve"><value>Boeken in deze bibliotheek</value></data>
+  <data name="AuthorUnsavedMessage" xml:space="preserve"><value>Wil je de wijzigingen opslaan? Ja slaat ze op, Nee verwerpt ze en Annuleren laat je verder bewerken.</value></data>
+  <data name="AuthorProfileInvalid" xml:space="preserve"><value>Vul een volledig http://- of https://-websiteadres in zonder inloggegevens. De biografie mag maximaal 10.000 tekens bevatten.</value></data>
+  <data name="AuthorProfileSaved" xml:space="preserve"><value>Auteursprofiel opgeslagen.</value></data>
+  <data name="AuthorProfileConflict" xml:space="preserve"><value>Deze auteur is ondertussen gewijzigd of verwijderd. Je wijzigingen zijn niet opgeslagen. Annuleer je wijzigingen en selecteer de auteur opnieuw.</value></data>
+  <data name="AuthorProfileLoadFailed" xml:space="preserve"><value>De auteursgegevens konden niet worden geladen. Selecteer de auteur opnieuw om het nogmaals te proberen.</value></data>
+  <data name="AuthorProfileSaveFailed" xml:space="preserve"><value>Het auteursprofiel kon niet worden opgeslagen. Je wijzigingen staan nog klaar; probeer het opnieuw.</value></data>
+  <data name="AuthorPhotoInvalid" xml:space="preserve"><value>Kies een geldige JPEG of PNG van maximaal 10 MB en 25 miljoen pixels. De vorige foto is behouden.</value></data>
+  <data name="AuthorPhotoLoadFailed" xml:space="preserve"><value>De opgeslagen foto kon niet worden geladen. De overige auteursgegevens blijven beschikbaar.</value></data>
+  <data name="AuthorProfileCleanupWarning" xml:space="preserve"><value>Profiel opgeslagen, maar de vorige foto kon niet worden opgeruimd.</value></data>
+  <data name="AuthorWebsiteOpenFailed" xml:space="preserve"><value>De website kon niet in je browser worden geopend.</value></data>
+  <data name="AuthorPhotoFilter" xml:space="preserve"><value>Foto's (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png</value></data>
+  <data name="AuthorRename" xml:space="preserve"><value>Auteur hernoemen</value></data>
+  <data name="AuthorRenameOriginal" xml:space="preserve"><value>Huidige naam</value></data>
+  <data name="AuthorRenameNew" xml:space="preserve"><value>Nieuwe naam</value></data>
+  <data name="AuthorRenameExplanation" xml:space="preserve"><value>Hiermee hernoem je de auteur voor alle {0} gekoppelde boeken. Andere auteurs en profielgegevens blijven behouden.</value></data>
+  <data name="AuthorRenameWorking" xml:space="preserve"><value>Auteur hernoemen en metadatabestanden bijwerken…</value></data>
+  <data name="AuthorRenameSaved" xml:space="preserve"><value>Auteur hernoemd voor {0} boeken.</value></data>
+  <data name="AuthorRenameSavedWithWarnings" xml:space="preserve"><value>Auteur hernoemd voor {0} boeken. Bij {1} boeken konden metadatabestanden niet worden bijgewerkt; zie de details.</value></data>
+  <data name="AuthorRenameNameExists" xml:space="preserve"><value>Deze auteursnaam bestaat al. Er is niets gewijzigd. Wijzig de auteur per boek via de boekdetails als je boeken aan deze bestaande auteur wilt koppelen.</value></data>
+  <data name="AuthorRenameInvalid" xml:space="preserve"><value>Vul een geldige auteursnaam in, niet Unknown.</value></data>
+  <data name="AuthorRenameConflict" xml:space="preserve"><value>De auteur of gekoppelde boeken zijn ondertussen gewijzigd. Er is niets hernoemd. Selecteer de auteur opnieuw en bevestig het actuele aantal boeken.</value></data>
+  <data name="AuthorRenameDuplicateBook" xml:space="preserve"><value>Deze hernoeming zou dubbele boeken veroorzaken. Er is niets gewijzigd.</value></data>
+  <data name="AuthorRenameUnchanged" xml:space="preserve"><value>De auteursnaam is ongewijzigd.</value></data>
+  <data name="AuthorRenameFailed" xml:space="preserve"><value>De auteur kon niet worden hernoemd. Laad de auteursgegevens opnieuw voordat je het nogmaals probeert.</value></data>
+  <data name="AuthorRenameWarningDetails" xml:space="preserve"><value>Boeken waarvan metadatabestanden niet konden worden bijgewerkt</value></data>
+  <data name="AuthorRenameRefreshFailed" xml:space="preserve"><value>De auteur is hernoemd, maar de boekenlijst kon niet worden ververst. Vernieuw de bibliotheek.</value></data>
 </root>
 

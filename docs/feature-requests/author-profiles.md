@@ -2,20 +2,23 @@
 
 ## Status
 
-Deferred future feature.
+Milestone 48 profiles and explicit author renaming are implemented and user-tested in PR #49. The supplied author icon, 318-book author and window resizing are accepted. Review follow-ups preserve search selection and use bounded metadata refreshes without discarding loaded covers. See [the profile design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md), [rename design](../superpowers/specs/2026-10-22-saga-author-rename-design.md) and [current checklist](../manual-tests/author-rename-checklist.md).
 
 ## Context
 
-Saga currently stores authors as book metadata. A future author-management milestone should make authors first-class library entities so users can keep richer information about writers and clean up aliases or spelling variants more comfortably.
+Saga stores authors and book-author links as library database entities. Milestone 48 reuses those identities for user-maintained profiles without changing book metadata. Orphan-author cleanup preserves authors with profile content.
 
 ## Goals
 
 - Add an author profile screen.
-- Store display name, photo, description or biography, birth date, and optional death date.
-- Support author aliases, pseudonyms, and alternate spellings.
+- First slice: show the existing name and store an optional photo, website URL and short biography.
+- First slice: searchable authors and their books in the active library; library-local, portable photos and explicit save/cancel behavior.
+- Implemented: explicitly rename the same author and all linked books, preserving the profile. Block an existing destination name without merging. Book details retain per-book author assignment.
+- Later: birth date and optional death date.
+- Later: support author aliases, pseudonyms, and alternate spellings.
 - Show all books by the author in the active library.
-- Include books stored under linked aliases when showing an author's books.
-- Help users clean up metadata by linking, renaming, or merging author variants.
+- Later: include books stored under linked aliases when showing an author's books.
+- Later: consider linking author variants as a separately specified feature. Implicit author merging is explicitly excluded.
 
 ## Initial Ideas
 
@@ -29,9 +32,9 @@ Saga currently stores authors as book metadata. A future author-management miles
 
 - Online author lookup.
 - Automatic alias detection beyond suggestions.
-- Cross-library or cloud-synced author profiles.
+- Cross-library profile sharing or a dedicated cloud-sync service; existing library-folder synchronization is unchanged.
 - Writing author profile data back into ebook files.
 
 ## Candidate Milestone
 
-After custom metadata, Calibre custom-column import, and the first metadata-management workflows are stable.
+Milestone 48 follows the accepted Quality reliability slice. Scope, storage and transactional rename choices were confirmed before implementation. Online lookup, aliases and broader author normalization remain future work.

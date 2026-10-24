@@ -15,6 +15,25 @@ public sealed class BookServiceTests : IAsyncLifetime
     private readonly TemporaryDirectory temporaryDirectory = new();
 
     [Fact]
+    public async Task Synchronize_stored_metadata_uses_current_book_without_updating_its_database_metadata()
+    {
+        var book = CreateBook();
+        var file = CreateBookFile(book.Id, "books/current", "book.epub", EbookFormat.Epub);
+        var repository = new InMemoryBookRepository(book, [file]);
+        var sidecars = new RecordingMetadataSidecarStore();
+        var adapter = new CapturingMetadataAdapter(file.RelativePath, MetadataWriteBackStatus.Unsupported);
+        var service = new BookService(repository, new NoopLibraryFileStore(),
+            new DictionaryMetadataAdapterResolver(new Dictionary<EbookFormat, IMetadataAdapter> { [EbookFormat.Epub] = adapter }), sidecars);
+
+        var result = await service.SynchronizeStoredMetadataAsync(book.Id);
+
+        result.Status.Should().Be(BookSaveStatus.Succeeded);
+        repository.UpdateAsyncCalled.Should().BeFalse();
+        sidecars.Writes.Should().ContainSingle().Which.Metadata.Should().Be(book.Metadata);
+        adapter.CapturedPaths.Should().Equal(file.RelativePath);
+    }
+
+    [Fact]
     public async Task Save_updates_sqlite_before_attempting_write_back_and_persists_each_file_result()
     {
         var libraryRoot = temporaryDirectory.CreateSubdirectory("Library").FullName;

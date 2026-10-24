@@ -10,9 +10,23 @@ namespace EbookManager.Infrastructure.Persistence.Repositories;
 
 public sealed class EfBookRepository(
     LibraryDbContextFactory contextFactory,
-    string libraryPath) : IBookRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository, IMetadataQualityExclusionRepository
+    string libraryPath) : IBookRepository, IBookMetadataSnapshotRepository, IBookDuplicateSnapshotRepository, IBookPagedRepository, IBookBulkMetadataRepository, IDuplicateExclusionRepository, IMetadataQualityExclusionRepository
 {
     private const int SqliteParameterChunkSize = 500;
+
+    public async Task<IReadOnlyList<Book>> ListMetadataAsync(IReadOnlyCollection<Guid> bookIds, CancellationToken cancellationToken)
+    {
+        if (bookIds.Count == 0) return [];
+        await using var context = contextFactory.Create(libraryPath);
+        var result = new List<Book>();
+        foreach (var ids in bookIds.Distinct().Chunk(SqliteParameterChunkSize))
+        {
+            var rows = await ListProjectionQuery(context.Books.Where(book => ids.Contains(book.Id))).ToListAsync(cancellationToken);
+            var formats = await ListFormatsAsync(context, rows.Select(book => book.Id).ToArray(), cancellationToken);
+            result.AddRange(rows.Select(book => ToDomain(book, formats)));
+        }
+        return result;
+    }
 
     public async Task<IReadOnlyList<Book>> ListAsync(CancellationToken cancellationToken)
     {
@@ -731,7 +745,10 @@ public sealed class EfBookRepository(
             .Include(x => x.Files);
 
     private static IQueryable<BookListProjection> ListProjectionQuery(LibraryDbContext context) =>
-        context.Books
+        ListProjectionQuery(context.Books);
+
+    private static IQueryable<BookListProjection> ListProjectionQuery(IQueryable<BookEntity> query) =>
+        query
             .AsNoTracking()
             .OrderBy(x => x.NormalizedTitle)
             .ThenBy(x => x.Id)
@@ -1007,7 +1024,7 @@ public sealed class EfBookRepository(
         CancellationToken cancellationToken)
     {
         var authors = await context.Authors
-            .Where(x => !x.BookAuthors.Any())
+            .Where(x => !x.BookAuthors.Any() && x.Biography == null && x.WebsiteUrl == null && x.PhotoRelativePath == null)
             .ToListAsync(cancellationToken);
         var tags = await context.Tags
             .Where(x => !x.BookTags.Any())
@@ -1026,7 +1043,8 @@ public sealed class EfBookRepository(
         {
             var ids = batch;
             var authors = await context.Authors
-                .Where(x => ids.Contains(x.Id) && !x.BookAuthors.Any())
+                .Where(x => ids.Contains(x.Id) && !x.BookAuthors.Any() &&
+                    x.Biography == null && x.WebsiteUrl == null && x.PhotoRelativePath == null)
                 .ToListAsync(cancellationToken);
             context.Authors.RemoveRange(authors);
         }

@@ -95,6 +95,19 @@ public sealed class BookService(
             return new BookSaveResult(BookSaveStatus.Failed, [], exception.Message);
         }
 
+        return await WriteMetadataFilesAsync(book, cancellationToken);
+    }
+
+    public async Task<BookSaveResult> SynchronizeStoredMetadataAsync(Guid bookId, CancellationToken cancellationToken = default)
+    {
+        var current = await bookRepository.GetAsync(bookId, cancellationToken);
+        return current is null
+            ? new BookSaveResult(BookSaveStatus.Failed, [])
+            : await WriteMetadataFilesAsync(current, cancellationToken);
+    }
+
+    private async Task<BookSaveResult> WriteMetadataFilesAsync(Book book, CancellationToken cancellationToken)
+    {
         var fileResults = new List<BookFileWriteBackResult>();
 
         try

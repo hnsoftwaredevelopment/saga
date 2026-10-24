@@ -1,6 +1,12 @@
 using EbookManager.App.Services;
 using EbookManager.App.Views;
 using EbookManager.Presentation.ViewModels;
+using EbookManager.Infrastructure.Files;
+using EbookManager.Infrastructure.Persistence;
+using EbookManager.Infrastructure.Persistence.Repositories;
+using EbookManager.Libraries;
+using EbookManager.Application.Authors;
+using EbookManager.Application.Books;
 
 namespace EbookManager.App;
 
@@ -10,6 +16,9 @@ public partial class MainWindow : System.Windows.Window
     private readonly SettingsViewModel settingsViewModel;
     private readonly LocalizationService localizationService;
     private readonly ThemeService themeService;
+    private readonly CurrentLibrary currentLibrary;
+    private readonly LibraryDbContextFactory contextFactory;
+    private readonly BookService bookService;
     private bool isHandlingDrop;
     private bool initialRefreshCompleted;
     private bool isClosingAfterPendingGroupingSave;
@@ -18,12 +27,18 @@ public partial class MainWindow : System.Windows.Window
         LibraryViewModel viewModel,
         SettingsViewModel settingsViewModel,
         LocalizationService localizationService,
-        ThemeService themeService)
+        ThemeService themeService,
+        CurrentLibrary currentLibrary,
+        LibraryDbContextFactory contextFactory,
+        BookService bookService)
     {
         this.viewModel = viewModel;
         this.settingsViewModel = settingsViewModel;
         this.localizationService = localizationService;
         this.themeService = themeService;
+        this.currentLibrary = currentLibrary;
+        this.contextFactory = contextFactory;
+        this.bookService = bookService;
         InitializeComponent();
         DataContext = viewModel;
         RegisterLibraryDragDropHandlers();
@@ -32,6 +47,24 @@ public partial class MainWindow : System.Windows.Window
     }
 
     public LibraryViewModel ViewModel => viewModel;
+
+    private async void OpenAuthorsClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        var library = currentLibrary.Current;
+        if (library is null) return;
+        // A modal window keeps operations bound to this library while the profile is being edited.
+        var repository = new EfAuthorProfileRepository(contextFactory, library.DirectoryPath);
+        using var authors = new AuthorManagementViewModel(repository,
+            new ManagedAuthorPhotoStore(library.DirectoryPath), localizationService.GetString,
+            new AuthorRenameService(repository, bookService));
+        new AuthorManagementWindow(authors) { Owner = this }.ShowDialog();
+        try { await viewModel.ReconcileExternalMetadataChangesAsync(authors.ChangedBookIds); }
+        catch (Exception)
+        {
+            System.Windows.MessageBox.Show(this, localizationService.GetString("AuthorRenameRefreshFailed"),
+                localizationService.GetString("AuthorManagementTitle"));
+        }
+    }
 
     public async Task LoadInitialLibraryAsync()
     {

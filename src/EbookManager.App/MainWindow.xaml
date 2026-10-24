@@ -169,6 +169,12 @@
                   Height="22"
                   Stretch="Uniform" />
           </Button>
+          <Button Style="{StaticResource ToolbarIconButtonStyle}"
+                  IsEnabled="{Binding HasActiveLibrary}" Click="OpenAuthorsClicked"
+                  ToolTip="{loc:Loc AuthorManagementTitle}"
+                  AutomationProperties.Name="{loc:Loc AuthorManagementTitle}">
+            <Path Data="{StaticResource AuthorIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="22" Height="22" Stretch="Uniform" />
+          </Button>
           <Button Command="{Binding ShowMetadataMultiEditCommand}"
                   Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc MetadataMultiEditTooltip}">
