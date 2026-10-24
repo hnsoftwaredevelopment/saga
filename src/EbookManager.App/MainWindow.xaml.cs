@@ -7,6 +7,7 @@ using EbookManager.Infrastructure.Persistence.Repositories;
 using EbookManager.Libraries;
 using EbookManager.Application.Authors;
 using EbookManager.Application.Books;
+using EbookManager.Application.Series;
 
 namespace EbookManager.App;
 
@@ -47,6 +48,21 @@ public partial class MainWindow : System.Windows.Window
     }
 
     public LibraryViewModel ViewModel => viewModel;
+
+    private async void OpenSeriesClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        var library = currentLibrary.Current;
+        if (library is null) return;
+        var repository = new EfSeriesRepository(contextFactory, library.DirectoryPath);
+        using var series = new SeriesManagementViewModel(repository, new SeriesRenameService(repository, bookService), localizationService.GetString);
+        new SeriesManagementWindow(series) { Owner = this }.ShowDialog();
+        try { await viewModel.ReconcileExternalMetadataChangesAsync(series.ChangedBookIds); }
+        catch (Exception)
+        {
+            System.Windows.MessageBox.Show(this, localizationService.GetString("SeriesRenameRefreshFailed"),
+                localizationService.GetString("SeriesManagementTitle"));
+        }
+    }
 
     private async void OpenAuthorsClicked(object sender, System.Windows.RoutedEventArgs e)
     {
