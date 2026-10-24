@@ -10,7 +10,7 @@
 - [x] Eenmalige reconciliatie, selectieversie, tweede opdracht blokkeren, bibliotheekwissel blokkeren, oude feedback opruimen en resultaatfeedback in zes talen. Begrensde/gevirtualiseerde details en visuele WPF-controle met fictieve gegevens.
 - [x] Zes talen en volledige testset: 949 geslaagd, 0 mislukt/overgeslagen. Definitieve Debug-build 2026.10.24.29 op 24 oktober om 13:31 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds/Debug. Tijdelijke bestandsvergrendeling opgelost na afsluiten Saga; daarna opnieuw schoon gebouwd.
 - [x] Eigen vijfassige review, echte metadata.json-controle, fout vóór/na commit, annulering, selectie en WPF-render met fictieve gegevens. Geen nieuw schema, afhankelijkheid, generiek opslagcontract of online bron. Een themapadprobleem in het tijdelijke preview-harnas is daar geïsoleerd; geen afzonderlijke product-themafout vastgesteld.
-- [ ] README, handmatige checklist, gecontroleerde Markdown-spiegels en normale PR.
+- [x] README, featurestatus, ontwerp en handmatige checklist bijgewerkt; alle gewijzigde Markdown exact naar Obsidian gespiegeld met gelijke SHA256-hashes. Gewone niet-draft PR #50 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/50. Mergeable; GitGuardian groen bij opening, CodeQL en CodeRabbit nog bezig.
 - [ ] Handmatige gebruikersacceptatie op de nieuwe testbuild.
 
 ## Historie: auteursbeheer hernoemen
