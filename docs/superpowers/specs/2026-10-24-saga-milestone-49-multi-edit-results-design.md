@@ -2,7 +2,7 @@
 
 ## Status en doel
 
-De gebruiker heeft richting en concrete uitwerking bevestigd na merge en acceptatie van PR #49 (auteursbeheer). Geïmplementeerd vanaf main 96fe288 op codex/milestone-49-multi-edit-results. Handmatige acceptatie blijft open volgens de afzonderlijke checklist. Test-/buildgegevens staan in tasks/todo.md en de checklist.
+De gebruiker heeft richting en concrete uitwerking bevestigd na merge en acceptatie van PR #49 (auteursbeheer). Geïmplementeerd vanaf main 96fe288 op codex/milestone-49-multi-edit-results in PR #50. De oorspronkelijke handmatige tests zijn uitgevoerd en akkoord. Alleen de later goedgekeurde invoerverbetering vraagt een korte nacontrole. Test-/buildgegevens staan in tasks/todo.md en de checklist.
 
 Doel: vanuit de gewone boekenlijst meerdere boeken bewerken en precies weten welke wijzigingen gelukt zijn, welke niet en waarom. De bestaande velden en het bestaande invulvenster blijven behouden. Geen nieuwe online bron, auteurs samenvoegen, e-readerfunctie, batchhistorie, undo of extra selectie-/previewvenster.
 
@@ -52,6 +52,12 @@ Stijlvoorbeeld uit bestaande code: `await bookService.SaveAsync(updatedBook, can
 - Verse enige Debug-build onder Builds/Debug, versie/tijd vastleggen; eigen vijfassige review, normale niet-draft PR en handmatige checklist. Alleen gebruiker mergt. Markdown exact naar Obsidian spiegelen en hashes controleren.
 
 ## Grenzen en besluit
+
+### Goedgekeurde invoerverbetering na gebruikersacceptatie
+
+Auteur, serie, tags en taal zijn direct bewerkbaar. Een gewijzigde niet-lege tekst vinkt het bijbehorende standaardveld aan; wissen of alleen witruimte vinkt het uit. De checkbox zelf blijft onafhankelijk bedienbaar: een leeg veld bewust aanvinken betekent leegmaken, terwijl een gevuld veld handmatig uitvinken de concepttekst behoudt maar de wijziging uitsluit. Alleen een volgende tekstwijziging selecteert het opnieuw. Geen voortdurende afgeleide checkboxbinding, want die zou bewust leegmaken of handmatig uitsluiten onmogelijk maken.
+
+Tags heeft niet langer een uitgeschakelde container op basis van UpdateTags. Tagmodi en opslagsemantiek veranderen niet: leegmaken alleen bij Vervangen, lege Toevoegen/Verwijderen-opdrachten veranderen niets. Auteurvervanging blijft uitgeschakeld bij titel/auteur omwisselen. Leesstatus en aangepaste velden vallen buiten deze aanvullende wijziging. Uitleg is in zes talen aangepast, zonder nieuwe resource-sleutels. Vier eerst falende tekstveldtests en een eerst falende XAML-regressie bewaken het gedrag; een extra test bewaakt de swapblokkering. Definitief: 955 tests geslaagd, Debug-build 2026.10.24.33 op 24 oktober 2026 om 13:52 (Europe/Amsterdam), 0 waarschuwingen/fouten. Bestaande gebruikersvinkjes blijven behouden.
 
 Altijd: behoud van opgeslagen gegevens en gebruikerswijzigingen, eerst falende tests, veilige redenen, actuele resultaten en eerlijke fasegrenzen. Eerst afstemmen: schemawijzigingen, nieuwe dependencies, undo/historie, automatische retries, extra invoer-/previewvensters, bredere wijzigingen aan generieke opslagcontracten. Nooit: auteurs samenvoegen, bestandswaarschuwing als volledige mislukking tonen, een oude swapopdracht automatisch herhalen, echte bibliotheek beschadigen voor een fouttest, zelf mergen.
 

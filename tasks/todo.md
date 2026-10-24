@@ -11,7 +11,10 @@
 - [x] Zes talen en volledige testset: 949 geslaagd, 0 mislukt/overgeslagen. Definitieve Debug-build 2026.10.24.29 op 24 oktober om 13:31 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds/Debug. Tijdelijke bestandsvergrendeling opgelost na afsluiten Saga; daarna opnieuw schoon gebouwd.
 - [x] Eigen vijfassige review, echte metadata.json-controle, fout vóór/na commit, annulering, selectie en WPF-render met fictieve gegevens. Geen nieuw schema, afhankelijkheid, generiek opslagcontract of online bron. Een themapadprobleem in het tijdelijke preview-harnas is daar geïsoleerd; geen afzonderlijke product-themafout vastgesteld.
 - [x] README, featurestatus, ontwerp en handmatige checklist bijgewerkt; alle gewijzigde Markdown exact naar Obsidian gespiegeld met gelijke SHA256-hashes. Gewone niet-draft PR #50 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/50. Mergeable; GitGuardian groen bij opening, CodeQL en CodeRabbit nog bezig.
-- [ ] Handmatige gebruikersacceptatie op de nieuwe testbuild.
+- [x] Gebruiker heeft alle oorspronkelijke tests op build 2026.10.24.29 uitgevoerd en geaccepteerd; eigen checklistvinkjes behouden.
+- [x] Aanvullende invoerverbetering goedgekeurd en testgestuurd gebouwd: auteur/serie/tags/taal direct typen met automatisch aanvinken; wissen vinkt uit; handmatig leeg aanvinken en gevuld uitsluiten blijven mogelijk. Tags-container niet langer geblokkeerd. Swap, tagmodi, custom en leesstatus ongewijzigd; uitleg in zes talen.
+- [x] Aanvullende verificatie: 955 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.33 op 24 oktober om 13:52 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; geen opslag- of contractwijziging.
+- [ ] Alleen de vier nieuwe invoercontroles onderaan de checklist nog handmatig bevestigen; geen volledige hertest van de geaccepteerde slice nodig.
 
 ## Historie: auteursbeheer hernoemen
 
