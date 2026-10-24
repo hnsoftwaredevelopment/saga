@@ -3,12 +3,13 @@
 - [x] Gebruiker vindt seriesbeheer de gewenste volgende stap: zoeken, aantallen, boeken op serienummer en veilig hernoemen zonder samenvoegen.
 - [x] PR #50 geverifieerd gemerged naar main f8ad6fa; laatste annuleercontrole geaccepteerd. Nieuwe codex/milestone-50-series-management gestart vanaf bijgewerkte main; geen bestaande wijzigingen aanwezig.
 - [x] Bestaand Series/SeriesNumber-model, seriefiltervergelijking, lichte projecties, auteursbeheer en hoofdschermreconciliatie onderzocht; concrete spec, featurebeschrijving en geordend plan voorbereid.
-- [ ] Concrete keuzes bevestigd: bestaande naamgroepering, numerieke volgorde met ontbrekende nummers onderaan, alleen hernoemen en geen conversie.
-- [ ] Lichte namen-/boekenprojecties met numerieke paginering in echte SQLite-tests bewijzen.
-- [ ] Transactioneel hernoemen, bron-/doelconflicten en behoud van alle overige metadata testgestuurd bouwen.
-- [ ] Bestandssynchronisatie en eerlijke resultaatgrenzen na commit aansluiten.
-- [ ] Viewmodel, venster, bevestiging, zoek-/selectiebewaking en zes talen bouwen.
-- [ ] Volledige suite, verse Debug-build, eigen review, checklist en exacte Markdown-spiegels.
+- [x] Concrete keuzes bevestigd: bestaande naamgroepering, numerieke volgorde met ontbrekende nummers onderaan, alleen hernoemen en geen conversie.
+- [x] Lichte namen-/boekenprojecties: eerst falende SQLite-test, daarna exacte decimalen vóór paginering; 210 boeken zonder verlies/doublures en Unicode-/schrijfvariantgroepering bewezen. Alleen namen/aantallen en sleutels van geselecteerde serie; auteurs per geladen pagina, geen omslagen.
+- [x] Transactioneel hernoemen testgestuurd gebouwd: bron/doel en volledige ID-/bronwaardenset hercontroleren, casecorrectie toestaan, 510 boeken en rollback bij latere updatefout. Alle overige scalairen, auteursvolgorde, tags, bestanden en custom waarden behouden; annulering vóór opslag en gewijzigde boekset afgedekt.
+- [x] Bestaande bestandssynchronisatie na commit aangesloten: echte metadata.json, bestandswaarschuwingen en afmaken van alle boeken bij annulering ná commit getest; geen nieuwe writer of folderverplaatsingen.
+- [x] Afzonderlijk viewmodel, werkbalkactie, modaal venster/bevestiging en zes talen gebouwd. Nieuwe zoeknaam/selectie, tweede opdracht blokkeren, late resultaten en aparte foutmelding ná commit afgedekt. WPF-render op 1040×650 en 800×480 gecontroleerd; splittercontrast gecorrigeerd.
+- [x] Volledige suite: 980 geslaagd, 0 mislukt/overgeslagen. Debug-build 2026.10.24.52 op 24 oktober 15:01 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe in Builds/Debug. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; README, featurestatus, ontwerp en nieuwe checklist bijgewerkt.
+- [ ] Alle nieuwe/gewijzigde Markdown exact naar Obsidian spiegelen en hashes controleren; gewone PR openen en koppelen.
 - [ ] Gewone PR en handmatige gebruikersacceptatie op de nieuwe build.
 
 ## Historie: Milestone 49 meervoudige metadatawijzigingen

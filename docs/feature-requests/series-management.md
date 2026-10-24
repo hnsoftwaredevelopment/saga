@@ -2,7 +2,7 @@
 
 ## Status
 
-Milestone 50 in voorbereiding na geaccepteerde en gemergede PR #50 (Milestone 49). Richting door gebruiker verwelkomd; [concrete specificatie](../superpowers/specs/2026-10-24-saga-milestone-50-series-management-design.md) ter bevestiging. Nog geen productcode, schema of nieuwe build gewijzigd.
+Milestone 50 is gebouwd op de goedgekeurde [specificatie](../superpowers/specs/2026-10-24-saga-milestone-50-series-management-design.md), vanaf geaccepteerde en gemergede PR #50. Beschikbaar via **Series beheren** in de hoofdwerkbalk. 980 geautomatiseerde tests slagen; Debug-build 2026.10.24.52 staat klaar. De [handmatige checklist](../manual-tests/milestone-50-checklist.md) wacht op gebruikersacceptatie.
 
 ## Eerste slice
 
@@ -13,6 +13,8 @@ Milestone 50 in voorbereiding na geaccepteerde en gemergede PR #50 (Milestone 49
 - Een bestaande andere doelserie blokkeren; geen samenvoegen.
 - Transactionele databasewijziging, bestaande bestandsverwerking met aparte waarschuwingen en directe actualisatie van hoofdscherm/filter.
 - Geen serietabel of bibliotheekconversie; geen foto-/biografieprofiel voor series in deze slice.
+
+De lijst groepeert alleen bestaande namen; lezen wijzigt de opgeslagen schrijfwijzen niet. Na bevestigd hernoemen hebben alle boeken in de groep dezelfde getrimde naam. Een bestandswaarschuwing noemt de betrokken boeken; de wijziging in de bibliotheek is dan wel opgeslagen. Na sluiten worden hoofdscherm, details en seriefilter via de bestaande route bijgewerkt met behoud van geladen omslagen.
 
 ## Buiten scope
 

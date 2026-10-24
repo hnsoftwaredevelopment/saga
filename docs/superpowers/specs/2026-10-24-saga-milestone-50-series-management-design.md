@@ -2,7 +2,7 @@
 
 ## Status en doel
 
-De gebruiker vindt seriesbeheer een passende volgende slice. Deze concrete functionele en technische uitwerking ligt ter bevestiging voor; nog geen productcode, schema of nieuwe build gewijzigd. PR #50 (Milestone 49) is door de gebruiker gemerged en volledig geaccepteerd, inclusief de laatste annuleercontrole. Basis: main f8ad6fa, branch codex/milestone-50-series-management.
+De gebruiker heeft deze concrete functionele en technische uitwerking bevestigd. Implementatie is afgerond op codex/milestone-50-series-management vanaf main f8ad6fa na geaccepteerde PR #50. 980 tests slagen; Debug-build 2026.10.24.52 van 24 oktober 15:01 (Europe/Amsterdam) heeft 0 waarschuwingen en fouten. Eigen review en WPF-rendercontrole op groot en klein werkgebied uitgevoerd; handmatige gebruikersacceptatie van Milestone 50 staat open. Geen schemawijziging, nieuwe dependency of conversie.
 
 Doel: een centraal, bibliotheekgebonden scherm zoals Auteurs beheren waarin de gebruiker series kan zoeken, hun boeken op volgorde kan bekijken en een serienaam veilig voor alle gekoppelde boeken kan wijzigen. Geen samenvoegen, nieuwe nummering, online lookup of automatische herkenning van complete/ontbrekende delen.
 
@@ -59,4 +59,12 @@ Opleveren met een verse enige Debug-build onder Builds/Debug, versie/tijd in de 
 
 Altijd: naamvergelijking consequent, serienummers en overige metadata behouden, eerst falende tests, gerichte projecties, expliciete commitgrens, veilige waarschuwingen en actuele selectie. Eerst afstemmen: aparte serietabel/migratie, nieuwe dependency, serienummers wijzigen, series samenvoegen/splitsen, nieuwe online bron, automatische volledigheidsdetectie of bredere wijziging aan generieke opslagcontracten. Nooit: serienummers automatisch corrigeren, gelijkende namen op gevoel combineren, data naar een oude snapshot terugzetten, een bestandswaarschuwing als volledige opslagmislukking tonen, echte boeken beschadigen voor tests of zelf mergen.
 
-Richting akkoord. De concrete keuzes — dezelfde naamgroepering als het bestaande filter, ontbrekende nummers onderaan, geen nummerbewerking en geen conversie — worden vóór de bouw door de gebruiker bevestigd.
+Richting en concrete keuzes zijn vóór de bouw door de gebruiker bevestigd: dezelfde naamgroepering als het bestaande filter, ontbrekende nummers onderaan, geen nummerbewerking en geen conversie.
+
+## Uitgevoerde verificatie
+
+De numerieke sortering gebeurt met exacte decimalen op dunne sleutels van alleen de geselecteerde serie, vóór paginering; auteurs worden alleen voor de geladen pagina opgehaald. SQLite-tests bewijzen Unicode-/schrijfvariantgroepering, 210 boeken zonder verlies of doublures en 510 boeken in een transactionele hernoeming. Een triggerfout in een latere updategroep bewijst volledige rollback. Toegevoegde boeken of gewijzigde bronwaarden maken de bevestiging ongeldig. Alle scalairen behalve Series/UpdatedUtc en de bestaande auteurvolgorde, tags, bestanden en custom waarden blijven behouden.
+
+Bestandstests controleren echte metadata.json, een bestandsfout na commit en het afmaken van alle boeken bij annulering ná commit. Viewmodeltests bewaken late zoekresultaten, tweede opdrachten, nieuwe zoeknaam/selectie, waarschuwingen en een weergavefout na commit. Layout-/resourcetests controleren de begrensde lijsten, splitter en zes talen. Visuele WPF-controle met fictieve gegevens op 1040×650 en 800×480; geen echte bibliotheek gebruikt. De splitter kreeg dezelfde lokale contrastkleur als auteursbeheer; serienummers volgen de huidige cultuur.
+
+Eigen review op correctheid, leesbaarheid/eenvoud, architectuur, veiligheid en prestaties: beperkte metadata-update, geparameteriseerde EF-query's, één transactie, gerichte projecties zonder omslagen, bestaand bestandspad en aparte feedback na commit. Geen open productbevindingen. Moeilijke foutscenario's zijn automatisch getest; gebruikersacceptatie blijft open in de nieuwe checklist.
