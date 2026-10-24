@@ -4880,7 +4880,7 @@ public sealed partial class LibraryViewModelTests
         public bool ConfirmQualityIssuesCorrectResult { get; init; }
         public int? ConfirmQualityIssuesCorrectAffectedCount { get; private set; }
         public Guid? SelectedImportRunId { get; init; }
-        public MetadataMultiEditResult? MetadataMultiEditResult { get; init; }
+        public MetadataMultiEditResult? MetadataMultiEditResult { get; set; }
         public Guid? MetadataQualityDashboardResult { get; init; }
         public bool MetadataQualityAuthorRepairResult { get; init; }
         public string? MetadataQualityAuthorRepairAuthor { get; init; }

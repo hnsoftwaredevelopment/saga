@@ -10,6 +10,8 @@ public sealed record MetadataMultiEditDetail(Guid BookId, string Title, string A
 
 public sealed partial class LibraryViewModel
 {
+    private enum MultiEditExecutionPhase { Preparing, Processing, Refreshing }
+
     private bool multiEditActive;
     private bool reconcilingMultiEdit;
     private long multiEditSelectionVersion;
@@ -32,14 +34,15 @@ public sealed partial class LibraryViewModel
         var labels = SelectedBooks.ToDictionary(row => row.Id, row => (row.Title, row.Authors));
         multiEditActive = true;
         NotifyMultiEditAvailability();
-        MultiEditDetails.Clear();
-        OnPropertyChanged(nameof(HasMultiEditDetails));
-        MultiEditMessage = null;
+        var phase = MultiEditExecutionPhase.Preparing;
         try
         {
             var edit = new MetadataMultiEditViewModel(selectedIds.Length, customMetadataFieldDefinitions);
             var result = await userInteraction.ShowMetadataMultiEditAsync(edit, cancellationToken);
             if (result is null || libraryPath != CurrentLibraryPath) return;
+            MultiEditDetails.Clear();
+            OnPropertyChanged(nameof(HasMultiEditDetails));
+            MultiEditMessage = null;
             var custom = TryCreateCustomMetadataMultiEditChanges(result);
             if (custom is null)
             {
@@ -57,7 +60,9 @@ public sealed partial class LibraryViewModel
                 result.TagAction switch { MetadataMultiEditTagAction.Add => MultiEditTagAction.Add, MetadataMultiEditTagAction.Remove => MultiEditTagAction.Remove, _ => MultiEditTagAction.Replace },
                 custom.Select(change => new MultiEditCustomChange(change.FieldId, names[change.FieldId], change.Value)).ToArray());
             var service = new MetadataMultiEditService(bookRepository, bookService, customMetadataRepository);
+            phase = MultiEditExecutionPhase.Processing;
             var results = await Task.Run(() => service.ApplyAsync(selectedIds, request, cancellationToken), CancellationToken.None);
+            phase = MultiEditExecutionPhase.Refreshing;
             if (libraryPath != CurrentLibraryPath) return;
             var persisted = results.Where(item => item.Book is not null).Select(item => item.Book!).ToArray();
             var customRefreshFailed = false;
@@ -118,8 +123,18 @@ public sealed partial class LibraryViewModel
                 ? string.Format(CultureInfo.CurrentCulture, localize("MultiEditResult"), updated, unchanged, MultiEditDetails.Select(detail => detail.BookId).Distinct().Count())
                 : string.Format(CultureInfo.CurrentCulture, localize(unchanged == 0 ? "MultiEditSaved" : "MultiEditSavedUnchanged"), updated, unchanged);
         }
-        catch (OperationCanceledException) { MultiEditIsError = true; MultiEditMessage = localize("MultiEditNotProcessed"); }
-        catch (Exception) { MultiEditIsError = true; MultiEditMessage = localize("MultiEditSaveFailed"); }
+        catch (OperationCanceledException) when (phase == MultiEditExecutionPhase.Preparing) { }
+        catch (Exception)
+        {
+            MultiEditIsError = true;
+            MultiEditMessage = localize(phase switch
+            {
+                MultiEditExecutionPhase.Refreshing => "MultiEditRefreshFailed",
+                // An unexpected batch exception does not prove that nothing was committed.
+                MultiEditExecutionPhase.Processing => "MultiEditUncertain",
+                _ => "MultiEditSaveFailed"
+            });
+        }
         finally
         {
             IsCleaningMetadata = false;
@@ -134,6 +149,12 @@ public sealed partial class LibraryViewModel
         showMetadataMultiEditCommand?.NotifyCanExecuteChanged();
         createLibraryCommand?.NotifyCanExecuteChanged();
         openLibraryCommand?.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsCleaningMetadataChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanMultiEditSelectedBooks));
+        showMetadataMultiEditCommand?.NotifyCanExecuteChanged();
     }
 
     private IReadOnlyList<CustomMetadataValueChange>? TryCreateCustomMetadataMultiEditChanges(
