@@ -2,7 +2,7 @@
 
 ## Status en testbuild
 
-De gebruiker heeft de oorspronkelijke slice én de invoerverbetering getest en geaccepteerd; alle eigen vinkjes hieronder zijn behouden. Alleen de nacontrole van de reviewcorrecties onderaan staat nog open. Start daarvoor Builds/Debug/Saga.exe, versie **2026.10.24.37**, gebouwd op **24 oktober 2026 om 14:21 (Europe/Amsterdam)**. Volledige suite: 959 tests geslaagd, 0 mislukt of overgeslagen. Build: 0 waarschuwingen/fouten; precies één Saga.exe onder Builds/Debug. Eigen review en lokalisatie-/layouttests uitgevoerd; de eerdere WPF-render met fictieve gegevens blijft van toepassing op de ongewijzigde resultaatweergave.
+De gebruiker heeft de oorspronkelijke slice, invoerverbetering en laatste annuleercontrole getest en geaccepteerd. PR #50 is gemerged; alle eigen vinkjes hieronder zijn behouden. Geaccepteerde testbuild: **2026.10.24.37**, gebouwd op **24 oktober 2026 om 14:21 (Europe/Amsterdam)**. Volledige suite: 959 tests geslaagd, 0 mislukt of overgeslagen. Build: 0 waarschuwingen/fouten; precies één Saga.exe onder Builds/Debug. Eigen review en lokalisatie-/layouttests uitgevoerd; de eerdere WPF-render met fictieve gegevens blijft van toepassing op de ongewijzigde resultaatweergave. Dit is de historische acceptatie van Milestone 49, niet een testbuild voor het nog te bouwen seriesbeheer.
 
 Gebruik bij voorkeur een bibliotheekkopie voor conflict-/verwijdertests. De afgevinkte controles zijn door de gebruiker uitgevoerd; nieuwe controles worden niet vooraf als geslaagd beschouwd. Moeilijke opslag- en bestandsfouten zijn automatisch getest; beschadig daarvoor geen echte bibliotheek.
 
@@ -50,6 +50,6 @@ Deze vier controles zijn door de gebruiker uitgevoerd en geaccepteerd; de hoofdr
 
 ## Nacontrole CodeRabbit-review
 
-- [ ] Laat een resultaatmelding staan, open bulkbewerking opnieuw en kies Annuleren of Escape. De vorige melding, eventuele details en boekgegevens blijven intact. Nieuwe resultaatdetails vervangen de vorige pas nadat een nieuwe opdracht is bevestigd.
+- [x] Laat een resultaatmelding staan, open bulkbewerking opnieuw en kies Annuleren of Escape. De vorige melding, eventuele details en boekgegevens blijven intact. Nieuwe resultaatdetails vervangen de vorige pas nadat een nieuwe opdracht is bevestigd.
 
-De beschikbaarheid van de bulkknop tijdens andere opschoonacties is automatisch getest. Ook een fout tijdens schermverversing ná voltooide verwerking, een onverwachte batchfout ná een eerder opgeslagen boek, begrensde testwachttijden en het niet tonen van technische fouttekst zijn automatisch afgedekt. Geen opslagfouten of schermfouten op een echte bibliotheek forceren. Alleen bovenstaande annuleercontrole vraagt nog een korte handmatige bevestiging.
+De beschikbaarheid van de bulkknop tijdens andere opschoonacties is automatisch getest. Ook een fout tijdens schermverversing ná voltooide verwerking, een onverwachte batchfout ná een eerder opgeslagen boek, begrensde testwachttijden en het niet tonen van technische fouttekst zijn automatisch afgedekt. Geen opslagfouten of schermfouten op een echte bibliotheek forceren. De gebruiker heeft ook bovenstaande annuleercontrole geaccepteerd; deze checklist is afgerond.

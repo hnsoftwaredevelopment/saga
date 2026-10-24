@@ -790,5 +790,28 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="MultiEditSaveFailed" xml:space="preserve"><value>Impossible d’enregistrer les modifications.</value></data>
   <data name="MultiEditUncertain" xml:space="preserve"><value>Enregistrement non confirmé. Vérifiez ce livre avant de réessayer.</value></data>
   <data name="MultiEditRefreshFailed" xml:space="preserve"><value>Impossible de recharger les valeurs enregistrées. Rouvrez le livre pour vérifier ses données actuelles.</value></data>
+  <data name="SeriesManagementTitle" xml:space="preserve"><value>Gérer les séries</value></data>
+  <data name="SeriesManagementDescription" xml:space="preserve"><value>Recherchez une série, consultez ses livres par numéro et renommez la série pour tous les livres associés.</value></data>
+  <data name="SeriesSearch" xml:space="preserve"><value>Rechercher une série</value></data>
+  <data name="SeriesCountLabel" xml:space="preserve"><value>séries</value></data>
+  <data name="SeriesLoadMore" xml:space="preserve"><value>Charger plus</value></data>
+  <data name="SeriesNoneFound" xml:space="preserve"><value>Aucune série trouvée.</value></data>
+  <data name="SeriesResizePanels" xml:space="preserve"><value>Redimensionner les panneaux</value></data>
+  <data name="SeriesBooks" xml:space="preserve"><value>livres de cette série</value></data>
+  <data name="SeriesLoadFailed" xml:space="preserve"><value>Impossible de charger les séries. Réessayez.</value></data>
+  <data name="SeriesRename" xml:space="preserve"><value>Renommer la série</value></data>
+  <data name="SeriesRenameOriginal" xml:space="preserve"><value>Nom actuel de la série</value></data>
+  <data name="SeriesRenameNew" xml:space="preserve"><value>Nouveau nom de la série</value></data>
+  <data name="SeriesRenameExplanation" xml:space="preserve"><value>Le nom de la série sera modifié pour les {0} livres. Les numéros restent identiques.</value></data>
+  <data name="SeriesRenameWorking" xml:space="preserve"><value>Renommage de la série et mise à jour des fichiers…</value></data>
+  <data name="SeriesRenameSaved" xml:space="preserve"><value>Série renommée pour {0} livres.</value></data>
+  <data name="SeriesRenameSavedWithWarnings" xml:space="preserve"><value>Série renommée pour {0} livres. Les fichiers de {1} livres n’ont pas pu être mis à jour.</value></data>
+  <data name="SeriesRenameWarningDetails" xml:space="preserve"><value>Livres dont les fichiers n’ont pas pu être mis à jour</value></data>
+  <data name="SeriesRenameNameExists" xml:space="preserve"><value>Ce nom de série existe déjà. Choisissez un autre nom ; les séries ne sont pas fusionnées.</value></data>
+  <data name="SeriesRenameInvalid" xml:space="preserve"><value>Saisissez un nom de série.</value></data>
+  <data name="SeriesRenameUnchanged" xml:space="preserve"><value>Le nom de la série n’a pas changé.</value></data>
+  <data name="SeriesRenameConflict" xml:space="preserve"><value>La série a changé depuis la confirmation. Sélectionnez-la à nouveau et confirmez le renommage.</value></data>
+  <data name="SeriesRenameFailed" xml:space="preserve"><value>Impossible de renommer la série. Aucune modification de série n’a été enregistrée.</value></data>
+  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>La série a été renommée, mais la bibliothèque n’a pas pu être actualisée. Rouvrez la bibliothèque pour voir les modifications.</value></data>
 </root>
 

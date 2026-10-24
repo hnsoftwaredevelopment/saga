@@ -1,4 +1,20 @@
-# Milestone 49: meervoudige metadatawijzigingen
+# Milestone 50: series beheren
+
+- [x] Gebruiker vindt seriesbeheer de gewenste volgende stap: zoeken, aantallen, boeken op serienummer en veilig hernoemen zonder samenvoegen.
+- [x] PR #50 geverifieerd gemerged naar main f8ad6fa; laatste annuleercontrole geaccepteerd. Nieuwe codex/milestone-50-series-management gestart vanaf bijgewerkte main; geen bestaande wijzigingen aanwezig.
+- [x] Bestaand Series/SeriesNumber-model, seriefiltervergelijking, lichte projecties, auteursbeheer en hoofdschermreconciliatie onderzocht; concrete spec, featurebeschrijving en geordend plan voorbereid.
+- [x] Concrete keuzes bevestigd: bestaande naamgroepering, numerieke volgorde met ontbrekende nummers onderaan, alleen hernoemen en geen conversie.
+- [x] Lichte namen-/boekenprojecties: eerst falende SQLite-test, daarna exacte decimalen vóór paginering; 210 boeken zonder verlies/doublures en Unicode-/schrijfvariantgroepering bewezen. Alleen namen/aantallen en sleutels van geselecteerde serie; auteurs per geladen pagina, geen omslagen.
+- [x] Transactioneel hernoemen testgestuurd gebouwd: bron/doel en volledige ID-/bronwaardenset hercontroleren, casecorrectie toestaan, 510 boeken en rollback bij latere updatefout. Alle overige scalairen, auteursvolgorde, tags, bestanden en custom waarden behouden; annulering vóór opslag en gewijzigde boekset afgedekt.
+- [x] Bestaande bestandssynchronisatie na commit aangesloten: echte metadata.json, bestandswaarschuwingen en afmaken van alle boeken bij annulering ná commit getest; geen nieuwe writer of folderverplaatsingen.
+- [x] Afzonderlijk viewmodel, werkbalkactie, modaal venster/bevestiging en zes talen gebouwd. Nieuwe zoeknaam/selectie, tweede opdracht blokkeren, late resultaten en aparte foutmelding ná commit afgedekt. WPF-render op 1040×650 en 800×480 gecontroleerd; splittercontrast gecorrigeerd.
+- [x] Volledige suite: 980 geslaagd, 0 mislukt/overgeslagen. Debug-build 2026.10.24.52 op 24 oktober 15:01 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe in Builds/Debug. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; README, featurestatus, ontwerp en nieuwe checklist bijgewerkt.
+- [x] Alle acht nieuwe/gewijzigde project-Markdown-bestanden exact naar Obsidian gespiegeld met gelijke SHA256-hashes. Gewone niet-draft PR #51 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/51. Mergeable; CodeQL is bij opening nog bezig.
+- [x] Gebruiker heeft de hoofdroute afgevinkt; eigen vinkjes behouden. De ene CodeRabbit-codebevinding is geldig: IsBusy schakelt lijst/knop uit en verliest focus. Echt WPF-venster eerst falend getest, daarna focus bewaren/herstellen met actieve-venster-, zichtbaarheids-, opdrachtversie- en nieuwere-focusbewaking; dialoog en aanroepende knop behouden focus. Algemene docstring-drempel is geen aanvullende projecteis.
+- [x] Aanvullende verificatie: 980 gewone tests en vijf interactieve WPF-focusscenario's groen, inclusief eerst falende regressie voor vertraagd herstel dat een nieuwere focuskeuze overschrijft. Debug-build 2026.10.24.61 van 24 oktober 15:35, 0 waarschuwingen/fouten en één Saga.exe. Eigen vijfassige review; opslag, schema en overige schermen ongewijzigd. Los WPF-testprogramma zonder nieuwe pakketten, bewust buiten de gewone suite wegens vereiste interactieve desktop.
+- [ ] Alleen de gerichte handmatige toetsenbordhercontrole op build 2026.10.24.61 volgens docs/manual-tests/milestone-50-checklist.md; alleen de gebruiker mergt.
+
+## Historie: Milestone 49 meervoudige metadatawijzigingen
 
 - [x] Gebruiker accepteert laatste PR #49-tests en meldt merge; GitHub bevestigt MERGED, main 96fe288 opgehaald en nieuwe codex/-branch gemaakt.
 - [x] Richting akkoord: korte succesmelding, begrijpelijke per-boekfouten, successen behouden, mislukte selectie beschikbaar voor een volgende bewuste poging.
@@ -17,7 +33,7 @@
 - [x] Gebruiker accepteert ook alle vier aanvullende invoercontroles; eigen checklistvinkjes behouden.
 - [x] Alle vijf CodeRabbit-voorstellen gecontroleerd, goedgekeurd en verwerkt: beschikbaarheidsnotificaties, behoud van feedback bij annuleren, fase-afhankelijke foutmelding, begrensde testwachttijd en expliciet controleren dat technische fouttekst niet wordt getoond. Drie eerst falende regressietests plus aanvullende test voor onverwachte batchfout na eerdere commit.
 - [x] Reviewverificatie: 959 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.37 op 24 oktober om 14:21 (Europe/Amsterdam), 0 waarschuwingen/fouten. Eigen vijfassige review; geen nieuwe interface, afhankelijkheid, schemawijziging, vertaling of opslaggedrag.
-- [ ] Alleen annuleren met een bestaande resultaatmelding nog handmatig bevestigen volgens de laatste checklistsectie; alle eerdere acceptatie blijft geldig.
+- [x] Gebruiker bevestigt dat resultaatmelding blijft staan na annuleren en heeft PR #50 gemerged; Milestone 49 volledig geaccepteerd.
 
 ## Historie: auteursbeheer hernoemen
 
