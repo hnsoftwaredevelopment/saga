@@ -25,11 +25,11 @@ De eerdere profielcontroles blijven behouden in [Milestone 48](milestone-48-chec
 
 Behoud van auteuridentiteit en profiel; nul boeken; bezette naam ook zonder boeken; ongeldige naam; schrijfwijzecorrectie; verouderde bevestiging; alle boeken voorbij paginagrenzen; duplicaatbescherming; volledige rollback bij databasefout; geen tweede opdracht tijdens opslag; metadata-bestandswaarschuwingen na succesvolle databasecommit; oude waarschuwingen wissen bij auteurswissel. Geen gebruikersbibliotheek beschadigen om deze fouten op te wekken. Database en bestanden vormen bewust geen gezamenlijke transactie.
 
-PR #49 blijft ter beoordeling; alleen de gebruiker mergt.
+PR #49 is door de gebruiker gemerged. Ook de laatste reviewcorrecties zijn handmatig getest en akkoord bevonden.
 
 ## Gerichte nacontrole van de reviewcorrecties op 24 oktober
 
-De bovenstaande gebruikersacceptatie blijft geldig voor de eerder geteste build. De twee volgende punten betreffen uitsluitend de latere reviewcorrecties; deze zijn automatisch afgedekt, nog niet door de gebruiker handmatig bevestigd.
+De bovenstaande gebruikersacceptatie blijft geldig. De gebruiker heeft ook de twee latere reviewcorrecties getest en akkoord bevonden vóór afronding van de slice.
 
-- [ ] Hernoem een auteur naar een vrije naam die alfabetisch ver achteraan staat. Na succes bevat het zoekveld de nieuwe naam en blijft de auteur zichtbaar en geselecteerd.
-- [ ] Sluit auteursbeheer na hernoemen; boeken, details en auteursfilters tonen de nieuwe naam en bestaande omslagen blijven zichtbaar. Een volledige hertest van foto-opslag of vensterindeling is niet nodig.
+- [x] Hernoem een auteur naar een vrije naam die alfabetisch ver achteraan staat. Na succes bevat het zoekveld de nieuwe naam en blijft de auteur zichtbaar en geselecteerd.
+- [x] Sluit auteursbeheer na hernoemen; boeken, details en auteursfilters tonen de nieuwe naam en bestaande omslagen blijven zichtbaar. Een volledige hertest van foto-opslag of vensterindeling is niet nodig.

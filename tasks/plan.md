@@ -1,4 +1,20 @@
-# Vervolg auteursbeheer: hernoemen
+# Milestone 49: meervoudige metadatawijzigingen, voorbereiding
+
+Richting akkoord; concrete specificatie ter bevestiging: docs/superpowers/specs/2026-10-24-saga-milestone-49-multi-edit-results-design.md. PR #49 is geverifieerd gemerged; laatste gebruikersnacontroles zijn akkoord. Nieuwe branch codex/milestone-49-multi-edit-results vanaf actuele main 96fe288. Alleen documentatievoorbereiding, geen nieuwe productcode/build.
+
+1. **Maak de bestaande bulksemantiek afzonderlijk testbaar.** Verplaats alleen bulklogica naar gerichte partial/gerichte opdrachtmapping; expliciet Application-contract zonder Presentation-afhankelijkheid. Acceptatie: bestaande velden, tagmodi, custom parsing en swapgedrag onveranderd. Test: bestaande MultiEdit-tests plus regressies voor opdrachtmapping. Circa 3–5 bestanden per increment.
+2. **Bewijs resultaten en opslagfase.** Eerst falende tests voor gemengd succes/conflict, ontbrekend boek, algemene fout en geen wijziging. Gebruik BookService en controleer opgeslagen toestand; bestandwaarschuwingen onderscheiden van niet-opgeslagen wijzigingen. Acceptatie: volgende boek wordt verwerkt en successen blijven behouden. Service/resultaat/tests in kleine increments van circa 3–5 bestanden.
+3. **Bewaak custom deelresultaten.** Eerst tests voor custom-only, standaardconflict zonder custom writes, standaard succesvol/custom mislukt en fout na enkele custom velden. Acceptatie: eerlijke deels-opgeslagen uitkomst, geen automatische herhaling van oude swapopdracht en geen stil succes bij ontbrekende custom opslag. Circa 3–5 bestanden; geen nieuwe gezamenlijke transactielaag.
+
+Checkpoint na 1–3: alle bestaande semantiek blijft, batchuitkomsten zijn betrouwbaar en gegevens-/bestandsgrenzen getest vóór nieuwe feedback-UI.
+
+4. **Sluit reconciliatie en selectie aan.** Gerichte partial/viewmodeltests; één eindverversing, geladen omslagen behouden, falende/deels opgeslagen zichtbare boeken blijven geselecteerd zonder nieuwere context te overschrijven. Acceptatie: details, filters en zoeken tonen werkelijk opgeslagen waarden. Verificatie: MultiEdit-, selectie- en omslagtests. Circa 3–5 bestanden.
+5. **Toon begrijpelijke feedback.** Korte groene succesroute; compact resultaat met uitklapbare, begrensde/gevirtualiseerde fout-/waarschuwingsdetails. Geen extra selectie-/previewvenster. Tests voor layout, aantallen en oude feedback verwijderen. Zes talen in kleine vertaalincrements. Circa 3–5 bestanden per increment.
+6. **Verifieer en lever op.** Volledige tests, schone Debug-build, eigen vijfassige review, README/featurestatus/checklist en gecontroleerde Markdown-spiegels. Normale PR na bevestigde scope; gebruikersacceptatie pas na nieuwe buildtest. Gericht handmatig: alles goed, conflict naast succes, volgende poging en annuleren; moeilijke fouten automatisch in tijdelijke bibliotheek.
+
+Afhankelijkheden: 1 vóór 2; 2 vóór 3; 2–3 vóór 4–5; 6 na alles. Risico's zijn faseverlies na commit, custom gedeeltelijke opslag en niet-idempotent omwisselen. Mitigatie: expliciete per-boekuitkomsten, herlezen, selectie-/retrygrenzen en eerst falende tests. Geen parallelle agents of nieuwe dependencies nodig. De specskill houdt implementatie tegen totdat de gebruiker de concrete uitwerking bevestigt.
+
+## Historie: auteursbeheer hernoemen
 
 Status: aanpak goedgekeurd en onderstaande stappen uitgevoerd binnen de bestaande open PR #49. De gebruiker accepteert de slice inclusief 318 boeken, het eigen icoon, foto-validatie en vensterindeling. De twee vervolgopmerkingen van CodeRabbit zijn op 24 oktober testgestuurd verwerkt: zoeken op de nieuwe auteursnaam en metadata in begrensde groepen ophalen zonder geladen omslagen kwijt te raken. 936 tests geslaagd; Debug-build 2026.10.24.7 heeft 0 waarschuwingen/fouten. Eigen review afgerond; alleen de twee reviewcorrecties hebben nog een gerichte handmatige nacontrole, geen volledige heracceptatie. Specificatie: docs/superpowers/specs/2026-10-22-saga-author-rename-design.md. De oorspronkelijke gebruikersvinkjes blijven behouden; PR #49 is niet gemerged. Onderstaande volgorde blijft als uitvoeringshistorie behouden.
 

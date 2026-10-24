@@ -1,4 +1,18 @@
-# Vervolg auteursbeheer: hernoemen
+# Milestone 49: meervoudige metadatawijzigingen
+
+- [x] Gebruiker accepteert laatste PR #49-tests en meldt merge; GitHub bevestigt MERGED, main 96fe288 opgehaald en nieuwe codex/-branch gemaakt.
+- [x] Richting akkoord: korte succesmelding, begrijpelijke per-boekfouten, successen behouden, mislukte selectie beschikbaar voor een volgende bewuste poging.
+- [x] Bestaande bulkroute, custom opslag, BookService en Quality-resultaatverwerking onderzocht; concrete specificatie en geordend plan vastgelegd.
+- [ ] Concrete uitwerking bevestigd, inclusief deels opgeslagen/custom wijzigingen en geen automatische herhaling van een oude swapopdracht.
+- [ ] Bestaande bulksemantiek afzonderlijk testbaar maken zonder wijziging van de betekenis van velden.
+- [ ] Getypeerde resultaten en veilige standaard-/bestandsverwerking testgestuurd bouwen.
+- [ ] Custom deelresultaten en foutgrenzen testgestuurd aansluiten.
+- [ ] Eenmalige reconciliatie, selectiebewaking en resultaatfeedback bouwen.
+- [ ] Zes talen, volledige tests, schone Debug-build en eigen review.
+- [ ] README, handmatige checklist, gecontroleerde Markdown-spiegels en normale PR.
+- [ ] Handmatige gebruikersacceptatie op de nieuwe testbuild.
+
+## Historie: auteursbeheer hernoemen
 
 - [x] Gebruiker bevestigt: hernoemen werkt voor de bestaande auteur en alle gekoppelde boeken; boekdetails blijven alleen de auteur van dat boek wijzigen.
 - [x] Gebruiker kiest expliciet geen samenvoegen bij een bestaande doelnaam; dan verwijzen naar aanpassen via boekdetails. Twee personen met dezelfde naam onderscheiden valt buiten scope.
@@ -14,7 +28,7 @@
 - [x] Gebruiker accepteert de volledige slice: ook auteur met 318 boeken, behoud van andere auteurs, weigeren van onbruikbare foto's met behoud van oude foto en venster verkleinen/vergroten met alle knoppen bereikbaar.
 - [x] CodeRabbit-vervolgopmerkingen inhoudelijk bevestigd en op verzoek verwerkt: nieuwe auteursnaam als zoekterm behouden; metadata in begrensde groepen lezen met één context, zonder lijst-omslagblobs en met behoud van reeds geladen omslagen. Eerst falende regressietests en echte SQLite-test over 501 boeken; ontbrekende en dubbele ID's afgedekt.
 - [x] Verificatie reviewcorrecties op 24 oktober: 936 tests geslaagd, 0 mislukt/overgeslagen; Debug-build 2026.10.24.7 om 12:50 (Europe/Amsterdam), 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen vijfassige review uitgevoerd; geen nieuwe afhankelijkheid, schemawijziging, layout of vertalingen.
-- [ ] Alleen de twee nieuwe reviewcorrecties gericht handmatig controleren volgens docs/manual-tests/author-rename-checklist.md; oorspronkelijke slice is al geaccepteerd.
+- [x] Laatste reviewcorrecties handmatig door gebruiker geaccepteerd; PR #49 gemerged naar main 96fe288.
 
 ## Historie: Milestone 48 auteursbeheer voorbereiden
 

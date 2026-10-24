@@ -34,6 +34,10 @@ Milestone 24 expands tag maintenance in the same multi-edit workflow:
 
 ## Deferred Follow-Up Candidates
 
+### Milestone 49 preparation
+
+Direction approved; concrete scope awaiting confirmation. Improve per-book outcomes, localized success/error feedback, committed-data/file-warning distinctions and selection after partial success. Preserve existing input fields and custom metadata support; do not automatically replay title/author swaps. See [the proposed design](../superpowers/specs/2026-10-24-saga-milestone-49-multi-edit-results-design.md). No implementation or new build yet.
+
 - Add the same multi-selection workflow to Bookshelf tiles.
 - Add advanced tag modes: split tags and merge tags.
 - Add a preview screen for title/author swaps before applying large batches.
