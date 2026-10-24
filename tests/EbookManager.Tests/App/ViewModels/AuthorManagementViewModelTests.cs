@@ -69,8 +69,16 @@ public sealed partial class AuthorManagementViewModelTests
         public Task<AuthorProfile?>? Delayed;
         public bool FailRead;
         public IReadOnlyList<AuthorBook> AuthorBooks = [];
+        public IReadOnlyList<AuthorSummary> OtherAuthors = [];
         public Task<AuthorPage> SearchAsync(string query, int skip, int take, CancellationToken token) =>
-            Task.FromResult(new AuthorPage([new(Profile.Id, Profile.Name, 0)], 1));
+            Task.FromResult(Search(query, skip, take));
+        private AuthorPage Search(string query, int skip, int take)
+        {
+            var matches = OtherAuthors.Append(new(Profile.Id, Profile.Name, 0))
+                .Where(author => author.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(author => author.Name).ToArray();
+            return new(matches.Skip(skip).Take(take).ToArray(), matches.Length);
+        }
         public Task<AuthorProfile?> GetAsync(Guid id, CancellationToken token) => FailRead
             ? Task.FromException<AuthorProfile?>(new IOException("Cannot read"))
             : id == DelayedId ? Delayed! : Task.FromResult<AuthorProfile?>(Profile);

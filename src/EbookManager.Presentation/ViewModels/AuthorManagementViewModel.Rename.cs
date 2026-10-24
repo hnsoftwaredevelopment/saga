@@ -68,7 +68,7 @@ public sealed partial class AuthorManagementViewModel
                 localize(result.Warnings.Count == 0 ? "AuthorRenameSaved" : "AuthorRenameSavedWithWarnings"),
                 result.Change.Books.Count, result.Warnings.Count);
             IsError = result.Warnings.Count > 0;
-            await SearchAsync("");
+            await SearchAsync(result.Change.Profile!.Name);
             return true;
         }
         catch (OperationCanceledException) { return false; }

@@ -8,6 +8,21 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed partial class AuthorManagementViewModelTests
 {
     [Fact]
+    public async Task Rename_keeps_author_in_results_beyond_the_first_200_authors()
+    {
+        var repository = new Repository
+        {
+            OtherAuthors = Enumerable.Range(0, 205).Select(index => new AuthorSummary(Guid.NewGuid(), $"Author {index:D3}", 1)).ToArray()
+        };
+        using var vm = new AuthorManagementViewModel(repository, new Photos(), key => key, new RenameService(repository));
+        await vm.SelectAsync(new(repository.Profile.Id, repository.Profile.Name, 1));
+
+        (await vm.RenameAsync((await vm.PreviewRenameAsync())!, "Z Renamed")).Should().BeTrue();
+
+        vm.Authors.Should().ContainSingle(author => author.Id == vm.SelectedAuthorId && author.Name == "Z Renamed");
+    }
+
+    [Fact]
     public async Task Rename_keeps_book_pagination_in_the_existing_title_order()
     {
         var repository = new Repository

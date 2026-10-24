@@ -119,7 +119,7 @@ public partial class AuthorManagementWindow : Window
         var edit = new AuthorRenameDialogViewModel(preview, Text);
         var dialog = new AuthorRenameWindow(edit) { Owner = this };
         if (dialog.ShowDialog() == true && await viewModel.RenameAsync(preview, edit.NewName))
-            SearchBox.Text = "";
+            SearchBox.Text = viewModel.Name;
     }
     private void DiscardClicked(object sender, RoutedEventArgs e) => viewModel.DiscardChanges();
     private void CloseClicked(object sender, RoutedEventArgs e) => Close();
