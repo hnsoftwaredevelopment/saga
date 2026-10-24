@@ -44,7 +44,7 @@
       <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="12,0,0,0">
           <TextBlock Text="{Binding Name}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" />
-          <Button Content="{loc:Loc SeriesRename}" Click="RenameClicked" IsEnabled="{Binding CanRename}" HorizontalAlignment="Left" Margin="0,10,0,12" AutomationProperties.Name="{loc:Loc SeriesRename}" />
+          <Button x:Name="RenameSeriesButton" Content="{loc:Loc SeriesRename}" Click="RenameClicked" IsEnabled="{Binding CanRename}" HorizontalAlignment="Left" Margin="0,10,0,12" AutomationProperties.Name="{loc:Loc SeriesRename}" />
           <TextBlock Margin="0,0,0,8"><Run Text="{Binding TotalBooks, Mode=OneWay}" /><Run Text=" · " /><Run Text="{loc:Loc SeriesBooks}" /></TextBlock>
           <DataGrid Height="250" ItemsSource="{Binding Books}" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True" HeadersVisibility="Column" AutomationProperties.Name="{loc:Loc SeriesBooks}">
             <DataGrid.Columns>
