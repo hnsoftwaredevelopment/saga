@@ -1,6 +1,6 @@
 # Milestone 51 — meerdere boeken selecteren in de boekenkast
 
-Test met `Builds\Debug\Saga.exe`, versie **2026.10.27.29**, gebouwd op **27 oktober 2026 om 15:25** (Europe/Amsterdam). De gebruiker meldt geslaagde tests en heeft de knopcorrectie afgevinkt; alle eigen vinkjes zijn behouden. De handmatige acceptatie is formeel gedeeltelijk open: de vier punten onder Groepen, zoeken en weergaven zijn nog niet afgevinkt, plus de nieuwe hercontrole van verticale navigatie hieronder.
+Test met `Builds\Debug\Saga.exe`, versie **2026.10.27.34**, gebouwd op **27 oktober 2026 om 16:03** (Europe/Amsterdam). De gebruiker bevestigt selectie over boekenplankgroepen en de eerdere knopcorrectie. De gemelde beperking tot één boek in gegroepeerde Lijst/Gedetailleerd is hersteld; de nieuwe hercontrole staat hieronder. Eerdere gebruikersvinkjes zijn behouden. Handmatige acceptatie blijft gedeeltelijk open voor de resterende groeps-/weergave-/filterpunten, verticale navigatie en de nieuwe gegroepeerde rijen.
 
 ## Selecteren met de muis
 
@@ -19,7 +19,7 @@ Test met `Builds\Debug\Saga.exe`, versie **2026.10.27.29**, gebouwd op **27 okto
 
 ## Groepen, zoeken en weergaven
 
-- [ ] Groepeer bijvoorbeeld op auteur of tags en open twee groepen. Met Ctrl kun je boeken uit beide groepen selecteren; kiezen in de tweede groep wist de eerste selectie niet.
+- [X] Groepeer bijvoorbeeld op auteur of tags en open twee groepen. Met Ctrl kun je boeken uit beide groepen selecteren; kiezen in de tweede groep wist de eerste selectie niet. De gebruiker bevestigt dit voor de boekenplank; Lijst/Gedetailleerd worden afzonderlijk hieronder hercontroleerd.
 - [ ] Komt een boek onder meerdere tags/auteurs voor, dan hebben de vermeldingen dezelfde selectiestaat en telt het boek één keer. Shift volgt de unieke volgorde van de open groepen; ingeklapte groepen worden niet nieuw meegenomen.
 - [ ] Wissel boekenkast → lijst → detailweergave → boekenkast. Dezelfde zichtbare boeken blijven geselecteerd. Wijzig ook eens de selectie in de lijst en ga terug naar de boekenkast.
 - [ ] Zoek of filter zodat een deel van de geselecteerde boeken niet meer bij de resultaten hoort. Die boeken verdwijnen uit de selectie. Wissen van de zoektekst selecteert ze niet ongemerkt opnieuw.
@@ -45,4 +45,12 @@ Voor deze visuele correctie zijn de 993 tests opnieuw geslaagd en is de Debug-bu
 
 ## Geautomatiseerde verificatie
 
-993 gewone tests slagen. Aanvullend slagen elf interactieve WPF-scenario's: de vijf bestaande series-focuscontroles en zes boekenkastcontroles voor virtuele navigatie, nieuwere tekstfocus, selectie/filterdoorsnede, groepen, native gridselectie met heen/terug wisselen en verticale navigatie bij smalle breedtes/binnenmarges/andere tegelbreedtes. Unit-tests bewaken Ctrl/Shift, unieke IDs, hergebruik/vervanging van rijen, bibliotheekwissel, annuleren en het daadwerkelijk toepassen op alleen geselecteerde boeken. De WPF-proef gebruikt uitsluitend fictieve boeken en leest geen echte bibliotheek.
+993 gewone tests slagen. Aanvullend slagen dertien interactieve WPF-scenario's: de vijf bestaande series-focuscontroles, zes boekenkastcontroles en twee nieuwe gegroepeerde lijst-/detailcontroles. Die nieuwe proeven gebruiken echte WPF-muis- en toetsenbordroutes voor Ctrl/Shift/Ctrl+Shift, omschakelen, groepsgrenzen, dubbele tagvermeldingen met gedeelde selectieranden, Home/End, Ctrl-focus/Spatie, Escape, nieuwere tekstfocus, filters en weergavewissels met verschillende groeperingen. De oorspronkelijke fout is vóór de productcorrectie falend aangetoond: Ctrl+klik in een andere groep behield slechts één boek. Unit-tests bewaken ook rijidentiteit, bibliotheekwissel, annuleren en bulkgebruik. Alle gegevens zijn fictief; geen echte bibliotheek gelezen. De Debug-build heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds.
+
+## Gerichte hercontrole — gegroepeerde Lijst en Gedetailleerd
+
+- [ ] Herhaal in **beide** weergaven: groepeer op auteur of tags, open twee groepen, klik één boek en Ctrl+klik een boek onder een andere kop. Beide blijven zichtbaar geselecteerd; Metadata wijzigen in de hoofdwerkbalk gebruikt het juiste aantal. Ctrl+klik verwijdert alleen het gekozen boek.
+- [ ] Klik een startboek en Shift+klik in een andere open groep. De tussenliggende unieke boeken worden geselecteerd. Controleer ook Ctrl+Shift en een boek dat onder meerdere tags staat: alle vermeldingen hebben dezelfde rand, het boek telt één keer.
+- [ ] Omhoog/omlaag en Home/End kiezen een rij, ook in een andere open groep. Shift breidt uit; Ctrl+pijl verplaatst alleen focus; Ctrl+Spatie schakelt het gefocuste boek om; Escape wist de selectie. Tab en groepskoppen blijven werken.
+- [ ] Gebruik verschillende groeperingen per weergave, selecteer enkele boeken en wissel tussen boekenplank, Lijst en Gedetailleerd. Iedere weergave houdt haar eigen groepering; dezelfde geselecteerde boeken krijgen ook in de gegroepeerde rijen een rand. Een ingeklapte groep eerst openen om haar boeken te zien.
+- [ ] Filter een deel van de selectie weg, wis het filter en controleer dat verborgen selecties niet terugkomen. Ga direct na toetsenbordnavigatie naar het zoekveld: focus blijft daar. Controleer de selectie-/focusranden ook in het gebruikelijke thema.
