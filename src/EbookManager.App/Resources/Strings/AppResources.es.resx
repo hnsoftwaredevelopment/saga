@@ -813,5 +813,6 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesRenameConflict" xml:space="preserve"><value>La serie ha cambiado desde la confirmación. Selecciónela de nuevo y confirme el cambio de nombre.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>No se pudo cambiar el nombre de la serie. No se guardaron cambios de serie.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>Se cambió el nombre de la serie, pero no se pudo actualizar la vista de la biblioteca. Vuelva a abrirla para ver los cambios.</value></data>
+  <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+clic selecciona más libros; Mayús+clic selecciona un intervalo. Use las flechas y Ctrl+Espacio con el teclado; Escape borra la selección.</value></data>
 </root>
 

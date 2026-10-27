@@ -813,5 +813,6 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesRenameConflict" xml:space="preserve"><value>La serie è cambiata dopo la conferma. Selezionala di nuovo e conferma la rinomina.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>Impossibile rinominare la serie. Nessuna modifica alla serie è stata salvata.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>La serie è stata rinominata, ma non è stato possibile aggiornare la vista della biblioteca. Riapri la biblioteca per vedere le modifiche.</value></data>
+  <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+clic seleziona più libri; Maiusc+clic seleziona un intervallo. Usa i tasti freccia e Ctrl+Spazio con la tastiera; Esc cancella la selezione.</value></data>
 </root>
 

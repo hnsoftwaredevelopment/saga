@@ -813,5 +813,6 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesRenameConflict" xml:space="preserve"><value>La série a changé depuis la confirmation. Sélectionnez-la à nouveau et confirmez le renommage.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>Impossible de renommer la série. Aucune modification de série n’a été enregistrée.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>La série a été renommée, mais la bibliothèque n’a pas pu être actualisée. Rouvrez la bibliothèque pour voir les modifications.</value></data>
+  <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+clic sélectionne plusieurs livres ; Maj+clic sélectionne une plage. Utilisez les flèches et Ctrl+Espace au clavier ; Échap efface la sélection.</value></data>
 </root>
 
