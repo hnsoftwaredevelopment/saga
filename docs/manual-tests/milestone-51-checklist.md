@@ -1,6 +1,6 @@
 # Milestone 51 — meerdere boeken selecteren in de boekenkast
 
-Test met `Builds\Debug\Saga.exe`, versie **2026.10.27.25**, gebouwd op **27 oktober 2026 om 11:43** (Europe/Amsterdam). De gebruiker meldt dat de tests geslaagd zijn; alle eigen vinkjes zijn behouden. Op verzoek is daarna alleen de dubbele bewerkingsknop uit de boekenkast verwijderd. De korte aanvullende controle onderaan staat nog open.
+Test met `Builds\Debug\Saga.exe`, versie **2026.10.27.29**, gebouwd op **27 oktober 2026 om 15:25** (Europe/Amsterdam). De gebruiker meldt geslaagde tests en heeft de knopcorrectie afgevinkt; alle eigen vinkjes zijn behouden. De handmatige acceptatie is formeel gedeeltelijk open: de vier punten onder Groepen, zoeken en weergaven zijn nog niet afgevinkt, plus de nieuwe hercontrole van verticale navigatie hieronder.
 
 ## Selecteren met de muis
 
@@ -35,10 +35,14 @@ Gebruik enkele boeken waarvan een tijdelijk gewijzigd veld na afloop kan worden 
 
 ## Korte hercontrole — dubbele knop verwijderd
 
-- [ ] In build 2026.10.27.25 staat boven de tegels geen tweede bewerkingsknop. Selectietelling en uitleg blijven zichtbaar. De bestaande knop in de hoofdwerkbalk opent de metadata-bewerking voor de geselecteerde boeken.
+- [X] In build 2026.10.27.25 staat boven de tegels geen tweede bewerkingsknop. Selectietelling en uitleg blijven zichtbaar. De bestaande knop in de hoofdwerkbalk opent de metadata-bewerking voor de geselecteerde boeken.
 
 Voor deze visuele correctie zijn de 993 tests opnieuw geslaagd en is de Debug-build zonder waarschuwingen/fouten geplaatst. Selectie-, toetsenbord- en opslaglogica zijn ongewijzigd.
 
+## Gerichte hercontrole na review — verticale navigatie
+
+- [ ] Maak de boekenplank smaller tot er bijvoorbeeld drie tegels op een rij staan en er een verticale scrollbar is. Pijl-omlaag gaat naar de tegel recht onder de huidige; Pijl-omhoog komt terug in dezelfde kolom. Herhaal na vergroten tot een extra tegel op de rij past.
+
 ## Geautomatiseerde verificatie
 
-993 gewone tests slagen. Aanvullend slagen tien interactieve WPF-scenario's: de vijf bestaande series-focuscontroles en vijf boekenkastcontroles voor virtuele navigatie, nieuwere tekstfocus, selectie/filterdoorsnede, groepen en native gridselectie met heen/terug wisselen. Unit-tests bewaken Ctrl/Shift, unieke IDs, hergebruik/vervanging van rijen, bibliotheekwissel, annuleren en het daadwerkelijk toepassen op alleen geselecteerde boeken. De WPF-proef gebruikt uitsluitend fictieve boeken en leest geen echte bibliotheek.
+993 gewone tests slagen. Aanvullend slagen elf interactieve WPF-scenario's: de vijf bestaande series-focuscontroles en zes boekenkastcontroles voor virtuele navigatie, nieuwere tekstfocus, selectie/filterdoorsnede, groepen, native gridselectie met heen/terug wisselen en verticale navigatie bij smalle breedtes/binnenmarges/andere tegelbreedtes. Unit-tests bewaken Ctrl/Shift, unieke IDs, hergebruik/vervanging van rijen, bibliotheekwissel, annuleren en het daadwerkelijk toepassen op alleen geselecteerde boeken. De WPF-proef gebruikt uitsluitend fictieve boeken en leest geen echte bibliotheek.

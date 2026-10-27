@@ -2,7 +2,7 @@
 
 ## Status
 
-Milestone 51 is gebouwd volgens het door de gebruiker goedgekeurde voorstel. De boekenkast heeft dezelfde centrale selectie als de bestaande bulkbewerking: klik, Ctrl, Shift en Ctrl+Shift; duidelijke selectie- en focusranden; een telling en bedieningsuitleg boven de tegels. Bewerken gebeurt met de bestaande knop in de hoofdwerkbalk; er staat geen tweede bewerkingsknop in de boekenkast. De [handmatige checklist](../manual-tests/milestone-51-checklist.md) bevat de gemelde geslaagde gebruikerstest en een korte aanvullende controle voor build 2026.10.27.25. 993 tests en tien interactieve WPF-scenario's slagen.
+Milestone 51 is gebouwd volgens het door de gebruiker goedgekeurde voorstel. De boekenkast heeft dezelfde centrale selectie als de bestaande bulkbewerking: klik, Ctrl, Shift en Ctrl+Shift; duidelijke selectie- en focusranden; een telling en bedieningsuitleg boven de tegels. Bewerken gebeurt met de bestaande knop in de hoofdwerkbalk; er staat geen tweede bewerkingsknop in de boekenkast. De gebruiker meldt geslaagde tests en heeft de knopcorrectie afgevinkt. De [handmatige checklist](../manual-tests/milestone-51-checklist.md) blijft formeel gedeeltelijk open: vier punten over groepen/weergaven/filters zijn nog niet afgevinkt, naast de nieuwe hercontrole van verticale navigatie bij smalle panelen. Build 2026.10.27.29 leest daarvoor het werkelijke kolomaantal uit het tegelpaneel. 993 tests en elf interactieve WPF-scenario's slagen.
 
 ## Werkwijze en grenzen
 
