@@ -533,5 +533,6 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesRenameConflict" xml:space="preserve"><value>De serie is sinds de bevestiging veranderd. Selecteer de serie opnieuw en bevestig het hernoemen nogmaals.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>De serie kon niet worden hernoemd. Er zijn geen seriewijzigingen opgeslagen.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>De serie is hernoemd, maar het bibliotheekoverzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw om de wijzigingen te zien.</value></data>
+  <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+klik selecteert meer boeken; Shift+klik selecteert een reeks. Gebruik de pijltjestoetsen en Ctrl+Spatie met het toetsenbord; Escape wist de selectie.</value></data>
 </root>
 

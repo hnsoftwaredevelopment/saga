@@ -21,7 +21,7 @@
     </Style>
     <DataTemplate x:Key="BookTileTemplate">
       <Border Width="150"
-              Margin="10"
+              Margin="8"
               Padding="10"
               Background="{DynamicResource PanelBackgroundBrush}"
               CornerRadius="14" BorderThickness="2">
@@ -123,7 +123,16 @@
     </DataTemplate>
   </UserControl.Resources>
   <Grid>
+    <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+    <StackPanel Margin="10,0,10,8">
+      <WrapPanel>
+        <TextBlock VerticalAlignment="Center" Margin="0,0,16,6" Foreground="{DynamicResource TextPrimaryBrush}" AutomationProperties.LiveSetting="Polite"><Run Text="{loc:Loc MetadataMultiEditSelectedBooks}" /><Run Text=": " /><Run Text="{Binding SelectedBookCount, Mode=OneWay}" /></TextBlock>
+        <Button Content="{loc:Loc MetadataMultiEditTitle}" Command="{Binding ShowMetadataMultiEditCommand}" Margin="0,0,0,6" AutomationProperties.Name="{loc:Loc MetadataMultiEditTitle}" />
+      </WrapPanel>
+      <TextBlock Text="{loc:Loc BookshelfSelectionHelp}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+    </StackPanel>
     <ListBox x:Name="BookshelfBooksList"
+             Grid.Row="1"
              ItemsSource="{Binding BookshelfVisibleBooksSource}"
              ItemTemplate="{StaticResource BookTileTemplate}"
              ItemContainerStyle="{StaticResource BookTileContainerStyle}" SelectionMode="Extended"
@@ -153,6 +162,7 @@
     </ListBox>
 
     <ListBox x:Name="BookshelfGroupsList"
+             Grid.Row="1"
              ItemsSource="{Binding BookshelfGroupedLibraryNodesSource}"
              ItemTemplate="{StaticResource BookshelfGroupNodeTemplate}"
              BorderThickness="0"
