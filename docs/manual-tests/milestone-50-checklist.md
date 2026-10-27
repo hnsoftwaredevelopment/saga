@@ -1,6 +1,6 @@
 # Milestone 50 — Series beheren
 
-Test met `Builds\Debug\Saga.exe`, versie **2026.10.24.61**, gebouwd op **24 oktober 2026 om 15:35** (Europe/Amsterdam). De gebruiker heeft de hoofdroute op de oorspronkelijke build afgevinkt; die vinkjes blijven behouden. Alleen de toetsenbordcontrole en de gerichte aanvullende controles hieronder staan open.
+Test met `Builds\Debug\Saga.exe`, versie **2026.10.24.61**, gebouwd op **24 oktober 2026 om 15:35** (Europe/Amsterdam). De gebruiker heeft de hoofdroute en alle aanvullende toetsenbordcontroles afgevinkt en bevestigd dat alles werkt zoals verwacht. Alle gebruikersvinkjes blijven behouden. PR #51 is gemerged; Milestone 50 is volledig geaccepteerd.
 
 ## Zoeken en bekijken
 
@@ -25,7 +25,7 @@ Kies een serie waarvan de naam tijdelijk gewijzigd mag worden; hernoem haar na d
 ## Venster en regressie
 
 - [X] Vergroot/verklein het venster en versleep de zichtbare splitter. Zoekveld, boekenlijst, hernoemen en sluiten blijven bereikbaar; rechts kan worden gescrold.
-- [ ] Gebruik Tab, pijltjes, Enter en Escape. Tijdens opslaan is een tweede wijziging/serie-selectie geblokkeerd.
+- [X] Gebruik Tab, pijltjes, Enter en Escape. Tijdens opslaan is een tweede wijziging/serie-selectie geblokkeerd.
 - [X] Auteurs beheren, gewone boekdetails en meervoudige metadatawijzigingen werken zoals voorheen.
 
 ## Automatisch afgedekt
@@ -34,8 +34,8 @@ Kies een serie waarvan de naam tijdelijk gewijzigd mag worden; hernoem haar na d
 
 ## Gerichte hercontrole toetsenbord — build 2026.10.24.61
 
-- [ ] Ga met Tab naar de serieslijst en kies achtereenvolgens meerdere series met de pijltjestoetsen. Na het laden kun je direct met de volgende pijltjestoets verder, zonder opnieuw te tabben.
-- [ ] Typ een zoeknaam met korte pauzes tussen de letters. De focus blijft in het zoekveld en de tekst blijft intact. Ga ook direct na een seriekeuze terug naar het zoekveld: een vertraagd focusherstel mag je daar niet uit halen.
-- [ ] Open **Serie hernoemen** met het toetsenbord, typ een naam en annuleer met Escape. De naam-invoer blijft tijdens de dialoog actief; na sluiten staat de focus weer op de hernoemknop. Controleer dit zo mogelijk ook na bevestigen van een tijdelijke naam.
+- [X] Ga met Tab naar de serieslijst en kies achtereenvolgens meerdere series met de pijltjestoetsen. Na het laden kun je direct met de volgende pijltjestoets verder, zonder opnieuw te tabben.
+- [X] Typ een zoeknaam met korte pauzes tussen de letters. De focus blijft in het zoekveld en de tekst blijft intact. Ga ook direct na een seriekeuze terug naar het zoekveld: een vertraagd focusherstel mag je daar niet uit halen.
+- [X] Open **Serie hernoemen** met het toetsenbord, typ een naam en annuleer met Escape. De naam-invoer blijft tijdens de dialoog actief; na sluiten staat de focus weer op de hernoemknop. Controleer dit zo mogelijk ook na bevestigen van een tijdelijke naam.
 
 Aanvullend zijn vijf scenario's op het echte WPF-venster automatisch gecontroleerd: opeenvolgende toetsenbordselecties, terugkerende focus na een laadfout, respecteren van een nieuwere focuskeuze, zoektekst bij meerdere verversingen en de hernoemdialoog met annuleren/opslaan. Uitvoeren op een interactief Windows-bureaublad met `dotnet run --project tests/EbookManager.WpfSmokeTests/EbookManager.WpfSmokeTests.csproj -c Debug`. Dit losse testprogramma gebruikt alleen fictieve gegevens en start niet de normale Saga-app of een echte bibliotheek; het zit bewust buiten de gewone testset die ook zonder interactief bureaublad kan draaien.
