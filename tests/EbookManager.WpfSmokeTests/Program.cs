@@ -92,6 +92,7 @@ internal static class Program
                     Require(rename.IsKeyboardFocusWithin, "Rename button did not regain focus after the dialog or save.");
                 }
                 Console.WriteLine("PASS: rename dialog retains focus; cancelling and saving return focus to its button.");
+                await BookshelfSelectionSmoke.RunAsync();
                 exitCode = 0;
             }
             catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception.Message); }
