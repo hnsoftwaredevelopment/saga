@@ -38,6 +38,7 @@ internal static class BookshelfSelectionSmoke
             await IdleAsync();
             var first = Containers(view).First(item => item.DataContext is BookRowViewModel row && row.Id == books[0].Id);
             first.Focus();
+            Require(first.IsSelected == ((BookRowViewModel)first.DataContext).IsSelected, "Native tile selection diverged from the shared selection when focusing a tile.");
             SendKey(first, Key.Right);
             await IdleAsync();
             Require(vm.SelectedBook?.Id == books[1].Id && vm.SelectedBookCount == 1, "Arrow selection did not select the next tile.");
