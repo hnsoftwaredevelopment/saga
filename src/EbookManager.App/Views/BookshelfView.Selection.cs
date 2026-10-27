@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using EbookManager.Presentation.ViewModels;
+using EbookManager.App.Controls;
 
 namespace EbookManager.App.Views;
 
@@ -45,7 +46,7 @@ public partial class BookshelfView
         var index = order.ToList().FindIndex(book => book.Id == row.Id);
         if (index < 0 || order.Count == 0) return;
         var list = ItemsControl.ItemsControlFromItemContainer(item) as ListBox;
-        var columns = Math.Max(1, (int)Math.Floor((list?.ActualWidth ?? 170) / 170));
+        var columns = FindWrapPanel(list)?.ColumnCount ?? 1;
         var next = e.Key switch
         {
             Key.Home => 0, Key.End => order.Count - 1,
@@ -88,6 +89,15 @@ public partial class BookshelfView
 
     private static bool ContainsExpandedBook(LibraryGroupNodeViewModel group, Guid id) => group.IsExpanded &&
         (group.Books.Any(row => row.Id == id) || group.Groups.Any(child => ContainsExpandedBook(child, id)));
+
+    private static VirtualizingWrapPanel? FindWrapPanel(DependencyObject? root)
+    {
+        if (root is null) return null;
+        if (root is VirtualizingWrapPanel panel) return panel;
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+            if (FindWrapPanel(VisualTreeHelper.GetChild(root, index)) is { } found) return found;
+        return null;
+    }
 
     private static ListBox? FindBookList(DependencyObject root, Guid id)
     {

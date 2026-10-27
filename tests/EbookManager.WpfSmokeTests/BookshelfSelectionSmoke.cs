@@ -55,6 +55,7 @@ internal static class BookshelfSelectionSmoke
             await IdleAsync();
             Require(otherInput.IsKeyboardFocusWithin, "Delayed tile navigation stole focus from a newer text input.");
             Console.WriteLine("PASS: delayed tile focus respects a newer text-input focus.");
+            await VerifyVerticalNavigationAsync(window, view, vm);
             vm.SelectBookshelfBook(vm.VisibleBooks[1], true, false);
             vm.SelectBookshelfBook(vm.VisibleBooks[5], false, true);
             await IdleAsync();
@@ -130,6 +131,56 @@ internal static class BookshelfSelectionSmoke
         finally { window.Close(); }
     }
     private static Task IdleAsync() => Dispatcher.CurrentDispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle).Task;
+    private static async Task VerifyVerticalNavigationAsync(Window window, BookshelfView view, LibraryViewModel vm)
+    {
+        var list = (ListBox)view.FindName("BookshelfBooksList");
+        var panel = FindPanel(list) ?? throw new InvalidOperationException("The tile wrap panel was not realized.");
+        var originalWidth = window.Width;
+        var originalPadding = list.Padding;
+        var originalItemWidth = panel.ItemWidth;
+        try
+        {
+            foreach (var (width, padding, itemWidth) in new[] { (700d, 0d, 170d), (870d, 0d, 170d), (800d, 64d, 170d), (800d, 0d, 200d) })
+            {
+                window.Width = width;
+                list.Padding = new Thickness(padding, 0, padding, 0);
+                panel.ItemWidth = itemWidth;
+                await IdleAsync();
+                list.ScrollIntoView(vm.VisibleBooks[0]);
+                list.UpdateLayout();
+                await IdleAsync();
+                var first = Containers(list).Single(item => ((BookRowViewModel)item.DataContext).Id == vm.VisibleBooks[0].Id);
+                var position = first.TransformToAncestor(list).Transform(new Point());
+                // Derive the expected book from rendered positions, independently of the navigation calculation.
+                var below = Containers(list).Select(item => new { Item = item, Position = item.TransformToAncestor(list).Transform(new Point()) })
+                    .Where(item => item.Position.Y > position.Y + 1)
+                    .OrderBy(item => item.Position.Y).ThenBy(item => Math.Abs(item.Position.X - position.X)).First().Item;
+                var expected = ((BookRowViewModel)below.DataContext).Id;
+                window.Activate(); first.Focus();
+                SendKey(first, Key.Down);
+                await IdleAsync();
+                Require(vm.SelectedBook?.Id == expected,
+                    $"Down did not follow the rendered tile column (window {width}, padding {padding}, tile {itemWidth}).");
+                SendKey((UIElement)Keyboard.FocusedElement, Key.Up);
+                await IdleAsync();
+                Require(vm.SelectedBook?.Id == ((BookRowViewModel)first.DataContext).Id, "Up did not return to the original rendered column.");
+            }
+            Console.WriteLine("PASS: vertical tile navigation follows rendered columns across scrollbars, padding and item widths.");
+        }
+        finally
+        {
+            window.Width = originalWidth; list.Padding = originalPadding; panel.ItemWidth = originalItemWidth;
+            await IdleAsync();
+        }
+    }
+
+    private static EbookManager.App.Controls.VirtualizingWrapPanel? FindPanel(DependencyObject root)
+    {
+        if (root is EbookManager.App.Controls.VirtualizingWrapPanel panel) return panel;
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+            if (FindPanel(VisualTreeHelper.GetChild(root, index)) is { } found) return found;
+        return null;
+    }
     private static bool FocusChild(DependencyObject root)
     {
         for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
