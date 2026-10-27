@@ -8,7 +8,7 @@
 - [x] Expliciete synchronisatie voor actieve grids en centrale selectie. Heen/terug wisselen en native gridselectie getest. Bestaande bulkroute wijzigt alleen geselecteerde boeken; na succes verdwijnen selectieranden en annuleren behoudt selectie.
 - [x] Selectietelling, bestaande metadata-actie en gelokaliseerde uitleg in zes talen aangesloten; resourcetests en visuele WPF-controle uitgevoerd. Tegelmarges houden beide nieuwe randen binnen de bestaande tegelmaat.
 - [x] Volledige suite: 993 geslaagd, 0 mislukt/overgeslagen. Tien interactieve WPF-scenario's groen. Debug-build 2026.10.27.23 op 27 oktober 09:17, 0 waarschuwingen/fouten en één Saga.exe in Builds/Debug. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; nieuwe checklist/featurestatus/README opgesteld. Geen productlicentie- of opslagwijziging; de proef hergebruikt de bestaande lokale licentieresolver.
-- [ ] Gewijzigde Markdown exact naar Obsidian spiegelen, hashes vergelijken en gewone PR openen/koppelen.
+- [x] Alle tien gewijzigde project-Markdown-bestanden exact naar Obsidian gespiegeld met gelijke hashes. Gewone niet-draft PR #53 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/53. Mergeable bij opening; CodeQL en GitGuardian zijn nog bezig.
 - [ ] Gewone PR en handmatige acceptatie op de nieuwe build.
 
 ## Historie: Milestone 50
