@@ -19,6 +19,8 @@ internal static class Program
     private static int Main()
     {
         var application = new System.Windows.Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+        var license = EbookManager.Infrastructure.Settings.SyncfusionLicenseKeyResolver.ResolveFromEnvironmentAndLocalFiles();
+        if (!string.IsNullOrWhiteSpace(license)) Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(license);
         application.Resources.MergedDictionaries.Add(new ResourceDictionary
         { Source = new Uri("pack://application:,,,/Saga;component/Resources/Styles/Themes/LightTheme.xaml") });
         var root = FindRepository();

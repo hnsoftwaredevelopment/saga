@@ -6,6 +6,26 @@ namespace EbookManager.Tests.App.ViewModels;
 public sealed partial class LibraryViewModelTests
 {
     [Fact]
+    public async Task Bookshelf_bulk_edit_updates_only_selected_books_and_clears_successful_tile_selection()
+    {
+        var books = new[] { CreateBook("One", ["A"]), CreateBook("Two", ["B"]), CreateBook("Three", ["C"]) };
+        var repository = new StaticBookRepository(books);
+        var interaction = new ScriptedUserInteractionService
+        {
+            MetadataMultiEditResult = new(false, "", true, "New Series", false, "", false, "", false, EbookManager.Domain.Books.ReadingStatus.Unread)
+        };
+        var vm = CreateViewModel(books, interaction, repository: repository);
+        await vm.RefreshAsync(); vm.SelectedView = LibraryView.Bookshelf;
+        vm.SelectBookshelfBook(vm.VisibleBooks.Single(row => row.Id == books[0].Id), false, false);
+        vm.SelectBookshelfBook(vm.VisibleBooks.Single(row => row.Id == books[1].Id), true, false);
+        await vm.ShowMetadataMultiEditCommand.ExecuteAsync(null);
+        repository.BooksSnapshot.Where(book => book.Id != books[2].Id).Should().OnlyContain(book => book.Metadata.Series == "New Series");
+        repository.BooksSnapshot.Single(book => book.Id == books[2].Id).Metadata.Series.Should().BeNull();
+        vm.SelectedBookCount.Should().Be(0);
+        vm.VisibleBooks.Should().OnlyContain(row => !row.IsSelected);
+    }
+
+    [Fact]
     public async Task Bookshelf_groups_use_expanded_unique_order_and_shared_selection_flags()
     {
         var one = CreateBook("One", ["A"], ["First", "Second"]);

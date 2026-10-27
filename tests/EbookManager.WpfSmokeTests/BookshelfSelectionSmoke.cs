@@ -27,7 +27,11 @@ internal static class BookshelfSelectionSmoke
         await vm.RefreshAsync();
         vm.SelectedView = LibraryView.Bookshelf;
         var view = new BookshelfView { DataContext = vm };
-        var window = new Window { Content = view, Width = 800, Height = 600 };
+        var otherInput = new TextBox();
+        var initialHost = new DockPanel();
+        DockPanel.SetDock(otherInput, Dock.Top);
+        initialHost.Children.Add(otherInput); initialHost.Children.Add(view);
+        var window = new Window { Content = initialHost, Width = 800, Height = 600 };
         try
         {
             window.Show(); window.Activate();
@@ -45,10 +49,27 @@ internal static class BookshelfSelectionSmoke
                 "End did not realize, scroll to and focus the last virtualized tile.");
             Require(Containers(view).Count() < 40, "Book selection realized the entire tile library.");
             Console.WriteLine("PASS: bookshelf keyboard navigation focuses virtualized tiles without realizing the full library.");
+            SendKey((UIElement)Keyboard.FocusedElement, Key.Home);
+            otherInput.Focus();
+            await IdleAsync();
+            Require(otherInput.IsKeyboardFocusWithin, "Delayed tile navigation stole focus from a newer text input.");
+            Console.WriteLine("PASS: delayed tile focus respects a newer text-input focus.");
             vm.SelectBookshelfBook(vm.VisibleBooks[1], true, false);
             vm.SelectBookshelfBook(vm.VisibleBooks[5], false, true);
             await IdleAsync();
             Require(vm.SelectedBookCount == 5 && vm.SelectedBooks.All(row => row.IsSelected), "Tile range did not match the central bulk selection.");
+            if (Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_BOOKSHELF") is { Length: > 0 } capturePath)
+            {
+                var image = new System.Windows.Media.Imaging.RenderTargetBitmap((int)view.ActualWidth, (int)view.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                var background = new DrawingVisual();
+                using (var drawing = background.RenderOpen()) drawing.DrawRectangle(Brushes.White, null, new Rect(0, 0, view.ActualWidth, view.ActualHeight));
+                image.Render(background);
+                image.Render(view);
+                var encoder = new System.Windows.Media.Imaging.PngBitmapEncoder();
+                encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(image));
+                using var output = System.IO.File.Create(capturePath);
+                encoder.Save(output);
+            }
             vm.SearchText = "Book 003";
             await IdleAsync();
             Require(vm.SelectedBookCount == 1 && vm.SelectedBooks.Single().Id == books[3].Id, "Filtering retained hidden selected books.");
@@ -75,6 +96,7 @@ internal static class BookshelfSelectionSmoke
             var listView = new LibraryListView { DataContext = vm, Visibility = Visibility.Collapsed };
             var detailedView = new DetailedGridView { DataContext = vm, Visibility = Visibility.Collapsed };
             window.Content = null;
+            initialHost.Children.Remove(view);
             var host = new Grid();
             host.Children.Add(view); host.Children.Add(listView); host.Children.Add(detailedView);
             window.Content = host;
@@ -89,6 +111,17 @@ internal static class BookshelfSelectionSmoke
                 {
                     var grid = (Syncfusion.UI.Xaml.Grid.SfDataGrid)((UserControl)control).FindName("BooksGrid");
                     Require(expected.SetEquals(grid.SelectedItems.OfType<BookRowViewModel>().Select(row => row.Id)), "Grid did not restore the shared selection.");
+                    if (mode == LibraryView.List)
+                    {
+                        window.Activate();
+                        await IdleAsync();
+                        Require(FocusChild(grid) && grid.IsKeyboardFocusWithin, "The native grid must have a focused input element before testing user selection.");
+                        grid.SelectedItems.Clear();
+                        grid.SelectedItems.Add(vm.VisibleBooks[4]); grid.SelectedItems.Add(vm.VisibleBooks[7]);
+                        await IdleAsync();
+                        expected = new HashSet<Guid> { vm.VisibleBooks[4].Id, vm.VisibleBooks[7].Id };
+                        Require(expected.SetEquals(vm.SelectedBooks.Select(row => row.Id)), "Native grid selection was not recorded for the bookshelf.");
+                    }
                 }
             }
             Console.WriteLine("PASS: shared selection is restored when switching through list, detailed and bookshelf views.");
@@ -96,6 +129,16 @@ internal static class BookshelfSelectionSmoke
         finally { window.Close(); }
     }
     private static Task IdleAsync() => Dispatcher.CurrentDispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle).Task;
+    private static bool FocusChild(DependencyObject root)
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+        {
+            var child = VisualTreeHelper.GetChild(root, index);
+            if (child is UIElement { Focusable: true, IsVisible: true, IsEnabled: true } target && target.Focus()) return true;
+            if (FocusChild(child)) return true;
+        }
+        return false;
+    }
     private static void Require(bool value, string message) { if (!value) throw new InvalidOperationException(message); }
     private static void SendKey(UIElement target, Key key) => target.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice,
         PresentationSource.FromVisual(target)!, Environment.TickCount, key) { RoutedEvent = Keyboard.PreviewKeyDownEvent });

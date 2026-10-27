@@ -16,7 +16,8 @@ public partial class BookshelfView
         while (source is not null)
         {
             if (source is ListBoxItem { DataContext: BookRowViewModel } item) return item;
-            source = source is Visual ? VisualTreeHelper.GetParent(source) : null;
+            source = source is Visual ? VisualTreeHelper.GetParent(source)
+                : source is FrameworkContentElement content ? content.Parent : LogicalTreeHelper.GetParent(source);
         }
         return null;
     }
@@ -74,9 +75,11 @@ public partial class BookshelfView
             FindBookList(BookshelfGroupsList, id)?.ScrollIntoView(vm.VisibleBooks.First(row => row.Id == id));
             BookshelfGroupsList.UpdateLayout();
         }
+        var focusAtRequest = Keyboard.FocusedElement;
         Dispatcher.BeginInvoke(() =>
         {
-            if (version != tileFocusVersion || !IsVisible || !ReferenceEquals(DataContext, vm)) return;
+            if (version != tileFocusVersion || !IsVisible || !ReferenceEquals(DataContext, vm) ||
+                !ReferenceEquals(Keyboard.FocusedElement, focusAtRequest)) return;
             var container = FindBookContainer(vm.IsBookshelfGrouped ? BookshelfGroupsList : BookshelfBooksList, id);
             container?.BringIntoView();
             container?.Focus();
