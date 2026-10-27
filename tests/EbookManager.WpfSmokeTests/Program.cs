@@ -95,6 +95,7 @@ internal static class Program
                 }
                 Console.WriteLine("PASS: rename dialog retains focus; cancelling and saving return focus to its button.");
                 await BookshelfSelectionSmoke.RunAsync();
+                await GroupedBookSelectionSmoke.RunAsync();
                 exitCode = 0;
             }
             catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception.Message); }
