@@ -69,6 +69,29 @@ internal static class BookshelfSelectionSmoke
             Require((Keyboard.FocusedElement as FrameworkElement)?.DataContext is BookRowViewModel groupedLast && groupedLast.Id == books[^1].Id,
                 "Grouped keyboard navigation did not realize and focus an offscreen book.");
             Console.WriteLine("PASS: grouped bookshelf selection spans open groups.");
+            vm.SetGroupingOptions([]);
+            vm.SetSelectedBooks([vm.VisibleBooks[0], vm.VisibleBooks[2]]);
+            var expected = vm.SelectedBooks.Select(row => row.Id).ToHashSet();
+            var listView = new LibraryListView { DataContext = vm, Visibility = Visibility.Collapsed };
+            var detailedView = new DetailedGridView { DataContext = vm, Visibility = Visibility.Collapsed };
+            window.Content = null;
+            var host = new Grid();
+            host.Children.Add(view); host.Children.Add(listView); host.Children.Add(detailedView);
+            window.Content = host;
+            foreach (var (mode, control) in new[] { (LibraryView.List, (FrameworkElement)listView), (LibraryView.Detailed, detailedView), (LibraryView.Bookshelf, view) })
+            {
+                view.Visibility = listView.Visibility = detailedView.Visibility = Visibility.Collapsed;
+                control.Visibility = Visibility.Visible;
+                vm.SelectedView = mode;
+                await IdleAsync();
+                Require(expected.SetEquals(vm.SelectedBooks.Select(row => row.Id)), "Switching library views lost the shared selected IDs.");
+                if (mode != LibraryView.Bookshelf)
+                {
+                    var grid = (Syncfusion.UI.Xaml.Grid.SfDataGrid)((UserControl)control).FindName("BooksGrid");
+                    Require(expected.SetEquals(grid.SelectedItems.OfType<BookRowViewModel>().Select(row => row.Id)), "Grid did not restore the shared selection.");
+                }
+            }
+            Console.WriteLine("PASS: shared selection is restored when switching through list, detailed and bookshelf views.");
         }
         finally { window.Close(); }
     }
