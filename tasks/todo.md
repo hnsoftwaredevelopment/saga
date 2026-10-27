@@ -2,12 +2,13 @@
 
 - [x] Gebruiker keurt het voorstel goed en geeft opdracht te bouwen: Ctrl/Shift, duidelijke selectie/telling, bestaande bulkactie, toetsenbord, groepen/filters/views.
 - [x] Bestaande tegeltemplates, groepsduplicaten, virtualisatie, centrale selectie en grid-/bulkroute onderzocht; concrete spec en plan vastgelegd.
-- [ ] Gerichte selectieregels, ID-/rijsynchronisatie en filter-/viewregressies testgestuurd bouwen.
-- [ ] Gewone/gegroepeerde tegels met selectie-/focusstijl en muisinteracties aansluiten.
-- [ ] Toetsenbord en scroll/virtualisatie met echte WPF-controles bewijzen.
-- [ ] Gridwissels en bestaande bulkuitkomsten veilig aansluiten en testen.
-- [ ] Selectietelling/actie en zes talen afronden.
-- [ ] Volledige suite, verse Debug-build, eigen review, checklist, docs en exacte Obsidian-spiegels.
+- [x] Gerichte selectieregels en ID-/rijsynchronisatie gebouwd. Eerst falende tests voor actuele rijreferenties bij dezelfde ID en selectiestaat; Ctrl/Shift, unieke groeps-IDs, filterdoorsnede, view-/bibliotheekwissel en annuleren getest.
+- [x] Gewone/gegroepeerde tegels met geselecteerde rand en afzonderlijke focusrand, centrale selectie en muisinteracties aangesloten. Gesloten groepen worden niet door een nieuwe reeks meegenomen; dubbele vermeldingen delen één staat.
+- [x] Pijltjes/Home/End/Spatie/Escape en virtualisatie op echte WPF-schermen bewezen. Ver weg gelegen groepstegel eerst falend getest en correct gerealiseerd; nieuwere tekstfocus heeft voorrang op uitgesteld navigatiefocus.
+- [x] Expliciete synchronisatie voor actieve grids en centrale selectie. Heen/terug wisselen en native gridselectie getest. Bestaande bulkroute wijzigt alleen geselecteerde boeken; na succes verdwijnen selectieranden en annuleren behoudt selectie.
+- [x] Selectietelling, bestaande metadata-actie en gelokaliseerde uitleg in zes talen aangesloten; resourcetests en visuele WPF-controle uitgevoerd. Tegelmarges houden beide nieuwe randen binnen de bestaande tegelmaat.
+- [x] Volledige suite: 993 geslaagd, 0 mislukt/overgeslagen. Tien interactieve WPF-scenario's groen. Debug-build 2026.10.27.23 op 27 oktober 09:17, 0 waarschuwingen/fouten en één Saga.exe in Builds/Debug. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; nieuwe checklist/featurestatus/README opgesteld. Geen productlicentie- of opslagwijziging; de proef hergebruikt de bestaande lokale licentieresolver.
+- [ ] Gewijzigde Markdown exact naar Obsidian spiegelen, hashes vergelijken en gewone PR openen/koppelen.
 - [ ] Gewone PR en handmatige acceptatie op de nieuwe build.
 
 ## Historie: Milestone 50

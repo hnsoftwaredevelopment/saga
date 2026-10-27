@@ -4,6 +4,8 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
+Milestone 51 adds multi-selection to the **Bookshelf** cover tiles: click/Ctrl/Shift/Ctrl+Shift, visible selection and keyboard focus, a selected-book count and direct access to the existing metadata editor. Open groups share one unique book selection; filtering removes hidden results from it, and switching between Bookshelf, List and Detailed views preserves it. Keyboard navigation realizes only the required tiles and respects newer text-field focus. **993 tests** and **ten interactive WPF scenarios** pass; Debug build **2026.10.27.23** is ready for manual acceptance. See the [bookshelf selection design](docs/superpowers/specs/2026-10-27-saga-milestone-51-bookshelf-selection-design.md).
+
 Milestone 50 adds **Manage series** to the main toolbar: search series with book counts, view books in numeric series order and explicitly rename an entire series. Existing destination names are blocked; series numbers and other book metadata are preserved. Renaming uses one database transaction, followed by the existing book-file synchronization with separate warnings. No schema migration or folder moves are required. The user has accepted the complete workflow, including the keyboard-focus correction in Debug build **2026.10.24.61**. All 980 automated tests and five interactive WPF focus scenarios pass. PR #51 is merged; Milestone 50 is complete. See the [series design](docs/superpowers/specs/2026-10-24-saga-milestone-50-series-management-design.md).
 
 Milestone 49 is fully user-accepted and merged in PR #50: multi-book metadata editing provides concise success feedback, localized per-book failure and file-warning details, preservation of completed updates, and selection of failed/partially updated visible books for a deliberate next attempt. Authors, series, tags and language are selected when text is entered and deselected when cleared; manually selecting an empty field still requests clearing. Tags is directly editable. Review corrections preserve feedback when cancelling, update command availability during other cleanups and distinguish refresh failures from uncertain storage. The final cancellation check is accepted; title/author swaps are never automatically replayed.
@@ -87,7 +89,7 @@ Milestone 47's final quality reliability improvements are manually checked and a
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The current manual acceptance steps are in the [Milestone 50 checklist](docs/manual-tests/milestone-50-checklist.md). Accepted bulk-edit checks remain in the [Milestone 49 checklist](docs/manual-tests/milestone-49-checklist.md); accepted author-management checks remain in the [author rename checklist](docs/manual-tests/author-rename-checklist.md) and [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
+The current manual acceptance steps are in the [Milestone 51 checklist](docs/manual-tests/milestone-51-checklist.md). Accepted series-management checks remain in the [Milestone 50 checklist](docs/manual-tests/milestone-50-checklist.md). Accepted bulk-edit checks remain in the [Milestone 49 checklist](docs/manual-tests/milestone-49-checklist.md); accepted author-management checks remain in the [author rename checklist](docs/manual-tests/author-rename-checklist.md) and [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
 
 ## Prerequisites
 

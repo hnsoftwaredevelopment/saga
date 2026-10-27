@@ -4,6 +4,8 @@
 
 De gebruiker heeft het voorstel voor Ctrl-/Shift-selectie, duidelijke selectieaanduiding, bestaande metadata-bulkbewerking, toetsenbord en betrouwbaar gedrag bij groepen/filters/weergaven goedgekeurd en opdracht gegeven te bouwen. Deze specificatie legt de uitvoeringskeuzes binnen die scope vast; geen extra akkoordronde. Basis: gemergede PR #51/main 5360aed plus de documentatieafronding van PR #52. Branch codex/milestone-51-bookshelf-selection. Geen schemawijziging, dependency of nieuwe opslagroute.
 
+Implementatie afgerond in kleine geteste commits. 993 tests en tien interactieve WPF-scenario's slagen. Debug-build 2026.10.27.23 van 27 oktober 09:17 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds/Debug. Handmatige gebruikersacceptatie staat open in docs/manual-tests/milestone-51-checklist.md.
+
 Doel: dezelfde bruikbare meervoudige boekselectie als in de grids beschikbaar maken bij de omslagtegels. Eén centrale selectie van unieke boek-ID's, onafhankelijk van gerealiseerde WPF-tegels. Een gewoon gekozen boek blijft in het detailpaneel zichtbaar; metadata wijzigen gebruikt de bestaande bulkdialoog en resultaatverwerking.
 
 ## Gedrag en acceptatie
@@ -42,3 +44,13 @@ Nieuwe gebruikerstaal staat in AppResources in en/nl/de/fr/es/it. WPF-focustests
 Altijd: unieke boek-ID's, bestaande bulkfeedback en opslag hergebruiken, eerst regressietests, toetsenbordfocus en virtualisatie bewaken, gebruikersvinkjes behouden, alle Markdown exact naar Obsidian spiegelen. Eerst afstemmen: nieuwe afhankelijkheid, schema, grotere wijziging aan opslag of nieuwe bewerkingsacties. Nooit: bij selecteren opslaan, onzichtbare filterresultaten meebewerken, voor selectie alle omslagen laden, gebruikersdata voor fouttests wijzigen of zelf een PR mergen.
 
 Opleveren met kleine geteste commits, volledige suite, Debug-build zonder waarschuwingen/fouten, eigen vijfassige review en een nieuwe handmatige checklist. Normale niet-draft PR. Handmatige acceptatie blijft open tot de gebruiker de nieuwe build heeft getest.
+
+## Uitvoering en review
+
+Selectieregels zitten in BookshelfSelectionState, de gedeelde collectie/rijstatus in LibraryViewModel.Selection en WPF-input/focus in BookshelfView.Selection. SetSelectedBooks gebruikt actuele zichtbare rijreferenties; een eerst falende regressie bewaakt rijvervanging bij dezelfde ID en de bijbehorende selectieranden. Filterverversingen hebben een selectieherstelgrens; de grids negeren tijdelijke selectie tijdens synchronisatie en nemen echte selectie vanuit het actieve grid over. De oude tweerichtingsbindingen op SelectedItem zijn vervangen door die expliciete synchronisatie, zodat een inactieve view de centrale selectie niet kan wissen.
+
+Het bestaande VirtualizingWrapPanel kan nu een niet-gerealiseerde index in beeld brengen. Een eerst falende WPF-proef voor een ver weg gelegen boek in een groep leidde tot gerichte realisatie van de juiste bladlijst. Een tweede eerst falende proef bewaakt dat uitgestelde tegelnavigatie nieuwere tekstfocus niet overneemt. Er worden geen boekbestanden/omslagen gelezen om een reeks te bepalen. De bestaande bulkdialoog verwerkt alleen geselecteerde IDs; een integratietest controleert dat het derde niet-geselecteerde boek ongewijzigd blijft en dat succesvolle selectieranden verdwijnen.
+
+De tien echte WPF-scenario's omvatten ook de vijf bestaande series-focuscontroles. De boekenkastproef gebruikt 80 fictieve boeken, controleert het begrensde aantal gerealiseerde tegels, open groepen, filterdoorsnede, gewijzigde native gridselectie en heen/terug wisselen. De proef gebruikt hetzelfde lokale licentieregister als Saga zonder een sleutel te loggen of de normale app-startup/echte bibliotheek te starten. Een onverwacht licentievenster in de proef kon zo geen focusresultaat vertekenen.
+
+Eigen review op correctheid, eenvoud/leesbaarheid, architectuur, veiligheid en prestaties afgerond: centrale unieke IDs, geen opslag bij selectie, gerichte partials, geen nieuwe dependencies, bestaande bestandsroute, versie-/focusbewaking en virtualisatie behouden. WPF-beeld met fictieve boeken visueel gecontroleerd; tegelmarges aangepast zodat de nieuwe selectie-/focusranden binnen de bestaande tegelmaat passen. Nieuwe uitleg is in zes talen aanwezig. Geen open productbevindingen; alleen handmatige acceptatie van de nieuwe build staat open.

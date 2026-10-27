@@ -2,6 +2,8 @@
 
 Voorstel en bouwopdracht zijn door de gebruiker goedgekeurd. Specificatie: docs/superpowers/specs/2026-10-27-saga-milestone-51-bookshelf-selection-design.md. Basis main 5360aed plus acceptatiedocumentatie PR #52. Geen nieuwe dependency, schema of opslagroute; geen agents nodig.
 
+Status: onderstaande stappen uitgevoerd in geteste commits. 993 gewone tests en tien interactieve WPF-scenario's slagen; de eigen vijfassige review en visuele controle zijn afgerond. Debug-build 2026.10.27.23 van 27 oktober 09:17 (Europe/Amsterdam) heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds/Debug. Handmatige acceptatie staat open. Eerst falende regressies voor rijidentiteit, groepsnavigatie en nieuwere tekstfocus zijn opgelost. Deze uitvoeringsvolgorde blijft als historie behouden.
+
 1. **Selectie bewijzen.** Eerst falende tests voor Ctrl/Shift/range en unieke IDs; gerichte Presentation-selectiepartial en afgeleide rijstatus. Circa 3–5 bestanden. Verificatie: selectie blijft na filterdoorsnede en rijvervanging juist.
 2. **Tegels aansluiten.** Eén centrale selectie voor gewone en open gegroepeerde tegels, duidelijke rand/focus en modificatietoetsen. Circa 2–4 bestanden. Verificatie: echte WPF-selectie en dubbele groepsvermeldingen.
 3. **Toetsenbord en scroll.** Pijltjes/Home/End/Spatie/Escape binnen tegels, Ctrl-focus zonder selectiewijziging, virtualisatie behouden. Circa 2–4 bestanden. Verificatie: voorbij de viewport en geen focusverlies.
