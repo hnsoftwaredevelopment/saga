@@ -1,3 +1,17 @@
+# Milestone 51: meervoudige boekenkastselectie
+
+- [x] Gebruiker keurt het voorstel goed en geeft opdracht te bouwen: Ctrl/Shift, duidelijke selectie/telling, bestaande bulkactie, toetsenbord, groepen/filters/views.
+- [x] Bestaande tegeltemplates, groepsduplicaten, virtualisatie, centrale selectie en grid-/bulkroute onderzocht; concrete spec en plan vastgelegd.
+- [ ] Gerichte selectieregels, ID-/rijsynchronisatie en filter-/viewregressies testgestuurd bouwen.
+- [ ] Gewone/gegroepeerde tegels met selectie-/focusstijl en muisinteracties aansluiten.
+- [ ] Toetsenbord en scroll/virtualisatie met echte WPF-controles bewijzen.
+- [ ] Gridwissels en bestaande bulkuitkomsten veilig aansluiten en testen.
+- [ ] Selectietelling/actie en zes talen afronden.
+- [ ] Volledige suite, verse Debug-build, eigen review, checklist, docs en exacte Obsidian-spiegels.
+- [ ] Gewone PR en handmatige acceptatie op de nieuwe build.
+
+## Historie: Milestone 50
+
 # Milestone 50: series beheren
 
 - [x] Gebruiker vindt seriesbeheer de gewenste volgende stap: zoeken, aantallen, boeken op serienummer en veilig hernoemen zonder samenvoegen.

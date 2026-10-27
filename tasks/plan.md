@@ -1,3 +1,21 @@
+# Milestone 51: meervoudige boekenkastselectie
+
+Voorstel en bouwopdracht zijn door de gebruiker goedgekeurd. Specificatie: docs/superpowers/specs/2026-10-27-saga-milestone-51-bookshelf-selection-design.md. Basis main 5360aed plus acceptatiedocumentatie PR #52. Geen nieuwe dependency, schema of opslagroute; geen agents nodig.
+
+1. **Selectie bewijzen.** Eerst falende tests voor Ctrl/Shift/range en unieke IDs; gerichte Presentation-selectiepartial en afgeleide rijstatus. Circa 3–5 bestanden. Verificatie: selectie blijft na filterdoorsnede en rijvervanging juist.
+2. **Tegels aansluiten.** Eén centrale selectie voor gewone en open gegroepeerde tegels, duidelijke rand/focus en modificatietoetsen. Circa 2–4 bestanden. Verificatie: echte WPF-selectie en dubbele groepsvermeldingen.
+3. **Toetsenbord en scroll.** Pijltjes/Home/End/Spatie/Escape binnen tegels, Ctrl-focus zonder selectiewijziging, virtualisatie behouden. Circa 2–4 bestanden. Verificatie: voorbij de viewport en geen focusverlies.
+
+Checkpoint: unieke-ID-selectie en inputroutes bewezen vóór aansluiting van viewwissels en bulkuitkomsten.
+
+4. **Weergavewissel en bulk.** Bestaande grids veilig synchroniseren; tijdelijke resetselectie niet terugschrijven. Bestaande metadata-opdracht verwerkt dezelfde IDs en houdt foutselectie zichtbaar. Opsplitsen in increments van circa 3–5 bestanden. Verificatie: grid→tegels→grid, filters, annuleren en fouten.
+5. **Telling en talen.** Kleine selectiebalk, duidelijke actie/telling en zes talen in kleine increments. Verificatie: resources, thema's en kleine werkgebieden.
+6. **Opleveren.** Volledige suite en WPF-controles, schone enige Debug-build, eigen review, checklist/README/featurestatus en exacte Obsidian-spiegels. Gewone PR; alleen gebruiker mergt en accepteert de handmatige checklist.
+
+Afhankelijkheden: 1 vóór 2–3; 2–3 vóór 4; 5 na bewezen interactie; 6 na alles. Grootste risico's: native ListBox-selectie versus centrale selectie, dubbele taggroepen, gridresets, rijen met nieuwe referenties en focus op niet-gerealiseerde containers. Mitigatie: identiteit centraal, beperkte synchronisatiebewaking en echte WPF-tests met fictieve gegevens. Het goedgekeurde voorstel bepaalt de scope; de technische uitwerking vraagt geen nieuwe akkoordronde.
+
+## Historie: Milestone 50
+
 # Milestone 50: seriesbeheer
 
 Richting en concrete specificatie door gebruiker bevestigd: docs/superpowers/specs/2026-10-24-saga-milestone-50-series-management-design.md. Gebouwd op codex/milestone-50-series-management vanaf geaccepteerde main f8ad6fa. Onderstaande increments zijn uitgevoerd met gerichte tests en commits. Numerieke SQLite-paginering, transactioneel hernoemen, bestandssynchronisatie, viewmodel, vensters en zes talen zijn aangesloten. 980 tests slagen; Debug-build 2026.10.24.52 van 24 oktober 15:01 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe. Eigen vijfassige review en WPF-rendercontrole uitgevoerd. Geen schemawijziging of nieuwe dependency. De gebruiker heeft ook de aanvullende toetsenbordcontrole op build 2026.10.24.61 geaccepteerd; PR #51 is gemerged naar main 5360aed. Milestone 50 is afgerond; onderstaande stappen blijven uitvoeringshistorie.
