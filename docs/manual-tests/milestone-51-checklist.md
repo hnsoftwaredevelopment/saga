@@ -1,5 +1,7 @@
 # Milestone 51 — meerdere boeken selecteren in de boekenkast
 
+**Gebruikersacceptatie, 27 oktober 2026:** meervoudige selectie werkt in alle drie de weergaven zoals verwacht; ook metadata bewerken werkt overal goed. Daarmee is de gemelde beperking van gegroepeerde Lijst/Gedetailleerd door de gebruiker akkoord bevonden. De niet afzonderlijk bevestigde detailcontroles hieronder blijven herkenbaar staan; hun geautomatiseerde dekking staat onder Geautomatiseerde verificatie.
+
 Test met `Builds\Debug\Saga.exe`, versie **2026.10.27.34**, gebouwd op **27 oktober 2026 om 16:03** (Europe/Amsterdam). De gebruiker bevestigt selectie over boekenplankgroepen en de eerdere knopcorrectie. De gemelde beperking tot één boek in gegroepeerde Lijst/Gedetailleerd is hersteld; de nieuwe hercontrole staat hieronder. Eerdere gebruikersvinkjes zijn behouden. Handmatige acceptatie blijft gedeeltelijk open voor de resterende groeps-/weergave-/filterpunten, verticale navigatie en de nieuwe gegroepeerde rijen.
 
 ## Selecteren met de muis
@@ -49,7 +51,7 @@ Voor deze visuele correctie zijn de 993 tests opnieuw geslaagd en is de Debug-bu
 
 ## Gerichte hercontrole — gegroepeerde Lijst en Gedetailleerd
 
-- [ ] Herhaal in **beide** weergaven: groepeer op auteur of tags, open twee groepen, klik één boek en Ctrl+klik een boek onder een andere kop. Beide blijven zichtbaar geselecteerd; Metadata wijzigen in de hoofdwerkbalk gebruikt het juiste aantal. Ctrl+klik verwijdert alleen het gekozen boek.
+- [X] Herhaal in **beide** weergaven: groepeer op auteur of tags, open twee groepen, klik één boek en Ctrl+klik een boek onder een andere kop. Beide blijven zichtbaar geselecteerd; Metadata wijzigen in de hoofdwerkbalk gebruikt het juiste aantal. Ctrl+klik verwijdert alleen het gekozen boek. De gebruiker bevestigt dat meervoudige selectie en metadata bewerken in alle drie de weergaven zoals verwacht werken.
 - [ ] Klik een startboek en Shift+klik in een andere open groep. De tussenliggende unieke boeken worden geselecteerd. Controleer ook Ctrl+Shift en een boek dat onder meerdere tags staat: alle vermeldingen hebben dezelfde rand, het boek telt één keer.
 - [ ] Omhoog/omlaag en Home/End kiezen een rij, ook in een andere open groep. Shift breidt uit; Ctrl+pijl verplaatst alleen focus; Ctrl+Spatie schakelt het gefocuste boek om; Escape wist de selectie. Tab en groepskoppen blijven werken.
 - [ ] Gebruik verschillende groeperingen per weergave, selecteer enkele boeken en wissel tussen boekenplank, Lijst en Gedetailleerd. Iedere weergave houdt haar eigen groepering; dezelfde geselecteerde boeken krijgen ook in de gegroepeerde rijen een rand. Een ingeklapte groep eerst openen om haar boeken te zien.

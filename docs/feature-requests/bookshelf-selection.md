@@ -2,6 +2,8 @@
 
 ## Status
 
+Gebruikersacceptatie van 27 oktober 2026: meervoudige selectie en metadata bewerken werken volgens de gebruiker in alle drie de weergaven zoals verwacht. De correctie voor gegroepeerde Lijst/Gedetailleerd is daarmee akkoord. De afzonderlijke detailchecks die niet expliciet zijn bevestigd blijven in de checklist staan; alle 993 tests en dertien WPF-scenario's waren groen. Onderstaande beschrijving bewaart de bouw- en testcontext.
+
 Milestone 51 is gebouwd volgens het door de gebruiker goedgekeurde voorstel. De boekenkast heeft dezelfde centrale selectie als de bestaande bulkbewerking: klik, Ctrl, Shift en Ctrl+Shift; duidelijke selectie- en focusranden; een telling en bedieningsuitleg boven de tegels. Bewerken gebeurt met de bestaande knop in de hoofdwerkbalk; er staat geen tweede bewerkingsknop in de boekenkast. De gebruiker heeft de knopcorrectie en selectie over boekenplankgroepen bevestigd, maar ontdekte dat gegroepeerde lijst-/detailrijen slechts één boek selecteerden. Build 2026.10.27.34 herstelt dit met gedeelde muis-/toetsenbordselectie en zichtbare randen. Iedere weergave houdt haar eigen groepering; geselecteerde boek-IDs blijven behouden. 993 tests en dertien interactieve WPF-scenario's slagen. De [handmatige checklist](../manual-tests/milestone-51-checklist.md) blijft gedeeltelijk open voor de resterende groeps-/weergave-/filterpunten, verticale navigatie bij smalle panelen en de nieuwe controle van gegroepeerde lijst-/detailrijen.
 
 ## Werkwijze en grenzen

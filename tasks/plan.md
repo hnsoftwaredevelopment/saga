@@ -1,5 +1,7 @@
 # Milestone 51: meervoudige boekenkastselectie
 
+Actuele gebruikersacceptatie, 27 oktober 2026: meerdere boeken selecteren en metadata bewerken werkt in alle drie de weergaven zoals verwacht. De gegroepeerde-rijencorrectie is akkoord; niet afzonderlijk bevestigde detailchecks blijven in de checklist staan. PR #53 staat nog open. Geen codewijziging of nieuwe build voor deze acceptatieregistratie; onderstaande stappen bewaren de uitvoeringshistorie.
+
 Voorstel en bouwopdracht zijn door de gebruiker goedgekeurd. Specificatie: docs/superpowers/specs/2026-10-27-saga-milestone-51-bookshelf-selection-design.md. Basis main 5360aed plus acceptatiedocumentatie PR #52. Geen nieuwe dependency, schema of opslagroute; geen agents nodig.
 
 Status: onderstaande stappen en reviewcorrecties zijn uitgevoerd in geteste commits. Actueel: 993 gewone tests en dertien interactieve WPF-scenario's slagen. Debug-build 2026.10.27.34 van 27 oktober 16:03 (Europe/Amsterdam) heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds/Debug. De gebruiker heeft de knopcorrectie en groepsselectie op de boekenplank bevestigd. De nieuwe melding over enkelvoudige selectie in gegroepeerde Lijst/Gedetailleerd is eerst falend bewezen en hersteld met gedeelde inputafhandeling en stijl. Beide views houden hun eigen groepering en dezelfde geselecteerde IDs. Eigen vijfassige review en visuele rijcontrole uitgevoerd. Handmatige acceptatie blijft gedeeltelijk open voor de resterende groeps-/weergave-/filterpunten, smalle-paneelnavigatie en de nieuwe gegroepeerde-rijencontroles.

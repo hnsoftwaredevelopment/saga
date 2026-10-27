@@ -1,5 +1,7 @@
 # Milestone 51: meervoudige boekenkastselectie
 
+- [x] Gebruikersacceptatie op 27 oktober 2026: meervoudige selectie én metadata bewerken werken in alle drie de weergaven zoals verwacht. De gemelde groepsselectiefout in Lijst/Gedetailleerd is akkoord. Niet afzonderlijk bevestigde detailcontroles blijven zichtbaar; PR #53 staat nog open en wordt uitsluitend door de gebruiker gemerged.
+
 - [x] Gebruiker keurt het voorstel goed en geeft opdracht te bouwen: Ctrl/Shift, duidelijke selectie/telling, bestaande bulkactie, toetsenbord, groepen/filters/views.
 - [x] Bestaande tegeltemplates, groepsduplicaten, virtualisatie, centrale selectie en grid-/bulkroute onderzocht; concrete spec en plan vastgelegd.
 - [x] Gerichte selectieregels en ID-/rijsynchronisatie gebouwd. Eerst falende tests voor actuele rijreferenties bij dezelfde ID en selectiestaat; Ctrl/Shift, unieke groeps-IDs, filterdoorsnede, view-/bibliotheekwissel en annuleren getest.
