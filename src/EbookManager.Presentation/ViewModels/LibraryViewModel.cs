@@ -1006,6 +1006,13 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     private void ApplyFilter(bool cancelPendingSearch = true)
     {
+        selectionRefreshDepth++;
+        try { ApplyFilterCore(cancelPendingSearch); }
+        finally { selectionRefreshDepth--; OnPropertyChanged(nameof(IsReconcilingBookSelection)); }
+    }
+
+    private void ApplyFilterCore(bool cancelPendingSearch)
+    {
         if (cancelPendingSearch)
         {
             var pendingSearch = searchFilterCancellation;
@@ -1131,31 +1138,6 @@ public sealed partial class LibraryViewModel : ObservableObject
         }
     }
 
-    public void SetSelectedBooks(IEnumerable<BookRowViewModel> selectedRows)
-    {
-        var visibleIds = VisibleBooks.Select(visible => visible.Id).ToHashSet();
-        var rows = selectedRows
-            .Where(row => visibleIds.Contains(row.Id))
-            .GroupBy(row => row.Id)
-            .Select(group => group.First())
-            .ToList();
-        if (SelectedBooks.Select(row => row.Id).SequenceEqual(rows.Select(row => row.Id)))
-        {
-            return;
-        }
-
-        multiEditSelectionVersion++;
-        SelectedBooks.Clear();
-        foreach (var row in rows)
-        {
-            SelectedBooks.Add(row);
-        }
-
-        OnPropertyChanged(nameof(SelectedBookCount));
-        OnPropertyChanged(nameof(CanMultiEditSelectedBooks));
-        OnPropertyChanged(nameof(MetadataMultiEditMenuHeader));
-        showMetadataMultiEditCommand?.NotifyCanExecuteChanged();
-    }
 
     public void SetGroupingOptions(IEnumerable<LibraryGroupOption> options)
     {
@@ -3660,6 +3642,8 @@ public sealed partial class LibraryViewModel : ObservableObject
 
     partial void OnCurrentLibraryPathChanged(string? value)
     {
+        bookshelfSelection.Reset();
+        SetSelectedBooks([]);
         OnPropertyChanged(nameof(HasActiveLibrary));
         showDuplicateExclusionsCommand?.NotifyCanExecuteChanged();
         showMetadataQualityExclusionsCommand?.NotifyCanExecuteChanged();

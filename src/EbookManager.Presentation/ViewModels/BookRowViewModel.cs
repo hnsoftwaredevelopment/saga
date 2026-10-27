@@ -15,6 +15,7 @@ public sealed partial class BookRowViewModel(
 {
     public Book Book { get; } = book;
     public Guid Id => Book.Id;
+    [ObservableProperty] private bool isSelected;
     public string Title => Book.Metadata.Title;
     public string Authors => string.Join(", ", Book.Metadata.Authors);
     public string AuthorsSortKey => AuthorSortKeyBuilder.BuildSortKey(Authors, authorSortStrategy);
