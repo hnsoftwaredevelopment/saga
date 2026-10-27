@@ -44,7 +44,7 @@ The user accepted the original workflow and the input refinement: authors, serie
 
 All five CodeRabbit review findings were assessed and corrected: cleanup availability notifications, preserving previous results when cancelling the dialog, phase-aware refresh/uncertain-storage messages, bounded asynchronous test waits and explicit assertions against exposing raw technical errors. The final manual cancellation check is accepted; difficult failure paths are covered automatically.
 
-- Implemented in Milestone 51: the same multi-selection workflow is available from Bookshelf tiles, including groups, keyboard navigation, shared selection across views and the existing bulk result behavior. [Manual acceptance](../manual-tests/milestone-51-checklist.md) is open for build 2026.10.27.23.
+- Implemented in Milestone 51: the same multi-selection workflow is available from Bookshelf tiles, including groups, keyboard navigation, shared selection across views and the existing bulk result behavior. [Manual acceptance](../manual-tests/milestone-51-checklist.md) includes a brief recheck for build 2026.10.27.25 after removing the duplicate Bookshelf edit button; the main toolbar remains the single entry point.
 - Add advanced tag modes: split tags and merge tags.
 - Add a preview screen for title/author swaps before applying large batches.
 - Add a preview screen for large batches before applying changes.

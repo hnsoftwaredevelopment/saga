@@ -11,6 +11,8 @@
 - [x] Alle tien gewijzigde project-Markdown-bestanden exact naar Obsidian gespiegeld met gelijke hashes. Gewone niet-draft PR #53 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/53. Mergeable bij opening; CodeQL en GitGuardian zijn nog bezig.
 - [ ] Gewone PR en handmatige acceptatie op de nieuwe build.
 
+- [x] Gebruiker meldt geslaagde tests en vraagt vervolgens de dubbele bewerkingsknop te verwijderen. Lokale knop en overbodige WrapPanel verwijderd; telling/uitleg blijven. De bestaande hoofdwerkbalk is de enige bewerkingsactie. Eigen checklistvinkjes behouden. 993 tests opnieuw groen; Debug-build 2026.10.27.25 van 27 oktober 11:43, 0 waarschuwingen/fouten en één Saga.exe. Eigen review: alleen visuele vereenvoudiging, geen selectie-/opslagwijziging. Korte aanvullende visuele controle staat open.
+
 ## Historie: Milestone 50
 
 # Milestone 50: series beheren

@@ -5,13 +5,15 @@ Voorstel en bouwopdracht zijn door de gebruiker goedgekeurd. Specificatie: docs/
 Status: onderstaande stappen uitgevoerd in geteste commits. 993 gewone tests en tien interactieve WPF-scenario's slagen; de eigen vijfassige review en visuele controle zijn afgerond. Debug-build 2026.10.27.23 van 27 oktober 09:17 (Europe/Amsterdam) heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds/Debug. Handmatige acceptatie staat open. Eerst falende regressies voor rijidentiteit, groepsnavigatie en nieuwere tekstfocus zijn opgelost. Deze uitvoeringsvolgorde blijft als historie behouden.
 
 1. **Selectie bewijzen.** Eerst falende tests voor Ctrl/Shift/range en unieke IDs; gerichte Presentation-selectiepartial en afgeleide rijstatus. Circa 3–5 bestanden. Verificatie: selectie blijft na filterdoorsnede en rijvervanging juist.
+
+Aanvulling na de gemelde geslaagde gebruikerstest: de gebruiker wil uitsluitend de bestaande knop in de hoofdwerkbalk gebruiken. De extra knop in de boekenkast is verwijderd; telling/uitleg en alle selectie-/opslaglogica blijven behouden. 993 tests opnieuw groen; build 2026.10.27.25 van 11:43 heeft 0 waarschuwingen/fouten. Alleen een korte visuele hercontrole staat open; eigen checklistvinkjes behouden.
 2. **Tegels aansluiten.** Eén centrale selectie voor gewone en open gegroepeerde tegels, duidelijke rand/focus en modificatietoetsen. Circa 2–4 bestanden. Verificatie: echte WPF-selectie en dubbele groepsvermeldingen.
 3. **Toetsenbord en scroll.** Pijltjes/Home/End/Spatie/Escape binnen tegels, Ctrl-focus zonder selectiewijziging, virtualisatie behouden. Circa 2–4 bestanden. Verificatie: voorbij de viewport en geen focusverlies.
 
 Checkpoint: unieke-ID-selectie en inputroutes bewezen vóór aansluiting van viewwissels en bulkuitkomsten.
 
 4. **Weergavewissel en bulk.** Bestaande grids veilig synchroniseren; tijdelijke resetselectie niet terugschrijven. Bestaande metadata-opdracht verwerkt dezelfde IDs en houdt foutselectie zichtbaar. Opsplitsen in increments van circa 3–5 bestanden. Verificatie: grid→tegels→grid, filters, annuleren en fouten.
-5. **Telling en talen.** Kleine selectiebalk, duidelijke actie/telling en zes talen in kleine increments. Verificatie: resources, thema's en kleine werkgebieden.
+5. **Telling en talen.** Telling/uitleg bij de tegels, de bestaande actie in de hoofdwerkbalk en zes talen in kleine increments. Verificatie: resources, thema's en kleine werkgebieden.
 6. **Opleveren.** Volledige suite en WPF-controles, schone enige Debug-build, eigen review, checklist/README/featurestatus en exacte Obsidian-spiegels. Gewone PR; alleen gebruiker mergt en accepteert de handmatige checklist.
 
 Afhankelijkheden: 1 vóór 2–3; 2–3 vóór 4; 5 na bewezen interactie; 6 na alles. Grootste risico's: native ListBox-selectie versus centrale selectie, dubbele taggroepen, gridresets, rijen met nieuwe referenties en focus op niet-gerealiseerde containers. Mitigatie: identiteit centraal, beperkte synchronisatiebewaking en echte WPF-tests met fictieve gegevens. Het goedgekeurde voorstel bepaalt de scope; de technische uitwerking vraagt geen nieuwe akkoordronde.
