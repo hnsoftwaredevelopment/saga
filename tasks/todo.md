@@ -7,8 +7,9 @@
 - [x] Bestaande metadata.json-/ebook-synchronisatie na commit, aparte bestandswaarschuwingen en annulering afgedekt met eerst falende serviceproeven en echte tijdelijke bestanden.
 - [x] Viewmodel met zoeken/paginering, selectie/annuleren, nieuwe naam behouden, foutfeedback en blokkeren tijdens opslaan. Extra stale-preview- en refresh-na-commit-regressies opgelost.
 - [x] Tagbeheervenster, hernoemdialoog, werkbalkicoon en zes talen aangesloten; herkenbare splitter en begrensde lijsten. Echte WPF-focusproeven en licht/donker bij minimale grootte gecontroleerd.
-- [x] Volledige suite: 1024 geslaagd, 0 mislukt/overgeslagen. Zeventien interactieve WPF-scenario's groen. Debug-build 2026.10.29.25 van 29 oktober 10:35:47 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties afgerond.
+- [x] Volledige suite: 1047 geslaagd, 0 mislukt/overgeslagen. Negentien interactieve WPF-scenario's groen. Debug-build 2026.10.29.40 van 29 oktober 14:20:14 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties afgerond.
 - [x] Nieuwe checklist, featurestatus, README, specificatie en taken bijgewerkt; Markdown wordt exact naar Obsidian gespiegeld en met gelijke hashes gecontroleerd.
+- [x] Gebruikersfeedback verwerkt: expliciete boekselectie met telling/zichtbare markering, Tag wijzigen, Tag verwijderen en afzonderlijk Tag overal hernoemen. Bronboeklijst en bron-/doelaantallen opnieuw laden; bestaande doeltag per boek dedupliceren met behoud van overige tags en niet-geselecteerde boeken. Eerst falende tests en echte WPF-acties/paginering groen; oorspronkelijke gebruikersvinkjes en niet-uitgelokte bestandswaarschuwing behouden.
 - [ ] Gebruiker voert docs/manual-tests/milestone-52-checklist.md uit en accepteert de slice; alleen de gebruiker mergt de gewone niet-draft PR.
 ## Historie: Milestone 51 — geaccepteerd en gemerged
 # Milestone 51: meervoudige boekenkastselectie
