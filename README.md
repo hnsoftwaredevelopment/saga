@@ -4,6 +4,8 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
+**Additional review, 29 October 2026:** when a book belongs to multiple tag groups, vertical navigation now preserves the intended group as well as the book ID. Focus and scrolling are scoped to that group's tile list. A failing WPF regression reproduced the wrong-occurrence focus; after correction **993 tests and all 15 WPF scenarios pass** using an isolated temporary build. Replacing the normal Debug testbuild is pending closure of the running Saga instance. The existing build noted below does not contain this last correction yet. Earlier build/test figures are historical context.
+
 **Review follow-up, 29 October 2026:** grouped Bookshelf Up/Down navigation now calculates tile rows within each group, preventing partial rows from skipping the first books of the next group. Shift uses the corrected target and the existing unique global range order. **993 tests and 14 interactive WPF scenarios pass**; clean Debug build **2026.10.29.5** was placed at **08:15 Europe/Amsterdam**. The targeted grouped-keyboard recheck is in the current checklist. The previously accepted selection/metadata workflow remains recorded below.
 
 **User acceptance, 27 October 2026:** multi-selection and metadata editing now work as expected in all three views, including the grouped-row correction in build 2026.10.27.34. Detailed checks not individually confirmed remain visible in the checklist. PR #53 is still open; the implementation and verification context follows.

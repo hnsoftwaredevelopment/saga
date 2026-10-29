@@ -2,6 +2,8 @@
 
 ## Status
 
+Aanvullende review 29 oktober 2026: een boek met meerdere tags hield de juiste geselecteerde ID, maar de focus kon naar zijn vermelding in de eerste groep springen. De navigatie geeft nu ook de doelgroep door en beperkt scroll/focus tot haar bladlijst. Eerst falend bewezen met dezelfde boek-ID in aangrenzende groepen; daarna slagen 993 tests en vijftien WPF-scenario's, inclusief Shift/Ctrl, met een geïsoleerde tijdelijke build. Plaatsen van de normale Debug-testbuild wacht nog op afsluiten van Saga; de hieronder genoemde build bevat deze laatste correctie nog niet. Eerdere gebruikersacceptatie blijft behouden.
+
 Reviewaanvulling 29 oktober 2026: Pijl-omhoog/-omlaag op de gegroepeerde boekenplank rekent nu binnen de eigen groepsrijen. Een gedeeltelijk gevulde rij verschuift het doel in de volgende groep niet meer; een ontbrekende kolom kiest de dichtstbijzijnde beschikbare tegel. Shift gebruikt datzelfde doel en behoudt de unieke globale reeksvolgorde. 993 tests en veertien WPF-scenario's slagen; Debug-build 2026.10.29.5 van 08:15 (Europe/Amsterdam) heeft 0 waarschuwingen/fouten. Alleen de nieuwe gerichte toetsenbordhercontrole is toegevoegd; eerdere gebruikersacceptatie blijft behouden.
 
 Gebruikersacceptatie van 27 oktober 2026: meervoudige selectie en metadata bewerken werken volgens de gebruiker in alle drie de weergaven zoals verwacht. De correctie voor gegroepeerde Lijst/Gedetailleerd is daarmee akkoord. De afzonderlijke detailchecks die niet expliciet zijn bevestigd blijven in de checklist staan; alle 993 tests en dertien WPF-scenario's waren groen. Onderstaande beschrijving bewaart de bouw- en testcontext.

@@ -1,5 +1,8 @@
 # Milestone 51: meervoudige boekenkastselectie
 
+- [x] Aanvullende CodeRabbit-focusbevinding voor dubbele tagvermeldingen eerst falend gereproduceerd en hersteld: boek én doelgroep blijven samen tot focus/scroll in de juiste bladlijst. ID-selectie blijft uniek. 993 tests en vijftien WPF-scenario's groen met tijdelijke geïsoleerde build 2026.10.29.8 van 29 oktober 08:57. Verouderde actuele cijfers in specificatie/plan expliciet historisch gemarkeerd; eigen vijfassige review uitgevoerd.
+- [ ] Normale Debug-testbuild plaatsen zodra de gebruiker Saga heeft afgesloten; huidige Builds/Debug bevat deze laatste focuscorrectie nog niet. Daarna alleen de aanvullende hercontrole voor hetzelfde boek in twee taggroepen vragen. Eerdere acceptatie blijft behouden.
+
 - [x] CodeRabbit-opmerking 4389990878 onderzocht en eerst falend bewezen: gedeeltelijke groepsrijen verschoven Up/Down naar het verkeerde boek. Groepslokale navigatie met expliciete groepsovergangen hersteld; globale unieke Shift-volgorde behouden. 993 tests en veertien WPF-scenario's slagen. Debug-build 2026.10.29.5 van 29 oktober 08:15, 0 waarschuwingen/fouten, één Saga.exe. Eigen vijfassige review uitgevoerd.
 - [ ] Alleen de nieuwe gerichte boekenplankhercontrole voor gedeeltelijke groepsrijen/Shift uitvoeren. Eerdere gebruikersacceptatie voor selectie en metadata bewerken in alle drie de weergaven blijft behouden; niet afzonderlijk bevestigde detailchecks blijven zichtbaar. Alleen de gebruiker mergt PR #53.
 

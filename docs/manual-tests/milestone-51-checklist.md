@@ -1,5 +1,7 @@
 # Milestone 51 — meerdere boeken selecteren in de boekenkast
 
+**Aanvullende review 29 oktober:** de focus bij hetzelfde boek in meerdere taggroepen is hersteld en automatisch geverifieerd. De normale Debug-build hieronder bevat deze laatste correctie nog niet: vervangen wacht op afsluiten van Saga. Een tijdelijke geïsoleerde build is gecontroleerd met 993 gewone tests en vijftien WPF-scenario's. Gebruik de nieuwe hercontrole onderaan pas na plaatsing van de bijgewerkte Debug-build.
+
 **Gebruikersacceptatie, 27 oktober 2026:** meervoudige selectie werkt in alle drie de weergaven zoals verwacht; ook metadata bewerken werkt overal goed. Daarmee is de gemelde beperking van gegroepeerde Lijst/Gedetailleerd door de gebruiker akkoord bevonden. De niet afzonderlijk bevestigde detailcontroles hieronder blijven herkenbaar staan; hun geautomatiseerde dekking staat onder Geautomatiseerde verificatie.
 
 Test met `Builds\Debug\Saga.exe`, versie **2026.10.29.5**, gebouwd op **29 oktober 2026 om 08:15** (Europe/Amsterdam). Eerdere gebruikersacceptatie van selectie en metadata bewerken in alle drie de weergaven blijft behouden. De nieuwe reviewcorrectie raakt alleen Pijl-omhoog/-omlaag tussen boekenplankgroepen; daarvoor staat onderaan een gerichte hercontrole. Niet afzonderlijk bevestigde detailcontroles blijven zichtbaar.
@@ -61,3 +63,9 @@ Voor deze visuele correctie zijn de 993 tests opnieuw geslaagd en is de Debug-bu
 
 - [ ] Groepeer de boekenplank zodat een korte groep gevolgd wordt door een grotere groep. Maak het venster breed genoeg voor meerdere tegels per rij. Ga met Pijl-omlaag vanuit de laatste rij van de korte groep naar de eerste rij van de volgende: de overeenkomstige kolom wordt gekozen, zonder boeken over te slaan. Controleer ook Pijl-omhoog terug. Is die kolom niet beschikbaar, dan wordt de dichtstbijzijnde beschikbare tegel gekozen.
 - [ ] Herhaal met Shift+Pijl-omlaag en controleer het eindboek en de geselecteerde reeks voordat je Metadata wijzigen opent. Een ingeklapte groep wordt bij navigatie overgeslagen. Annuleer de bewerking; voor deze hercontrole hoef je geen metadata op te slaan.
+
+## Aanvullende hercontrole — hetzelfde boek onder meerdere tags
+
+- [ ] Geef een testboek twee tags en groepeer de boekenplank op tags. Open beide aangrenzende groepen. Ga met Pijl-omlaag naar de vermelding van dit boek in de tweede groep: de focusrand en scrollpositie blijven in die tweede groep. De volgende Pijl-omlaag navigeert verder in die groep; Pijl-omhoog kan terug naar de eerste groep. Herhaal met Shift en Ctrl: de bedoelde vermelding krijgt focus en het boek telt één keer.
+
+Aanvullende automatische regressie: een boek staat als eerste tegel in twee aangrenzende groepen. De proef controleert naast zijn ID ook de daadwerkelijke groepslijst van het gefocuste ListBoxItem. Vóór de correctie ging Down terug naar groep A; na de correctie blijft de focus in B en werkt verdere navigatie, omhoog terug, Shift en Ctrl. Totaal vijftien interactieve WPF-scenario's groen.
