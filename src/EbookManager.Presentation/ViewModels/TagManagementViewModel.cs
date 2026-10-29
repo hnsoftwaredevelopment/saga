@@ -150,6 +150,7 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
             var bookExtent = Math.Max(200, Books.Count);
             TagId = result.Change.TagId;
             Name = result.Change.Name;
+            Warnings = result.Warnings;
             if (merged)
             {
                 SetSelectedBooks([]);
@@ -168,7 +169,6 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
             }
             else TotalBooks = result.Change.Books.Count;
             // A plain rename keeps the sorted pages; a merge reloads the surviving tag's union.
-            Warnings = result.Warnings;
             StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "TagRenameSaved" : "TagRenameSavedWithWarnings"), result.Change.Books.Count, Warnings.Count);
             IsError = Warnings.Count > 0;
             if (!await SearchCoreAsync(Name) && !disposed) SetStatus("TagRenameRefreshFailed", true);

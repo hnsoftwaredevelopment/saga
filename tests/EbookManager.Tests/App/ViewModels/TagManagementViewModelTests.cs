@@ -11,6 +11,31 @@ public sealed class TagManagementViewModelTests
     private static readonly Guid TagId = Guid.NewGuid();
 
     [Fact]
+    public async Task Failed_book_reload_after_committed_merge_preserves_file_warnings_and_changed_ids()
+    {
+        var repository = new TagFake();
+        using var vm = new TagManagementViewModel(repository, repository, key => key);
+        await vm.SelectAsync(new(TagId, "Old", 2));
+        var preview = (await vm.PreviewRenameAsync())!;
+        var targetId = Guid.NewGuid();
+        TagSourceBook[] warnings = [preview.Books[0]];
+        repository.Rename = (_, _) => Task.FromResult(new TagRenameCompletion(
+            new(TagRenameStatus.Renamed, targetId, "Roman", preview.Books), warnings));
+        repository.List = (_, _, _) => throw new IOException("Sensitive path");
+
+        (await vm.RenameAsync(preview, "Roman")).Should().BeTrue();
+
+        vm.Warnings.Should().Equal(warnings);
+        vm.ChangedBookIds.Should().BeEquivalentTo(preview.Books.Select(book => book.Id));
+        vm.TagId.Should().Be(targetId);
+        vm.Name.Should().Be("Roman");
+        vm.StatusMessage.Should().Be("TagRenameRefreshFailed");
+        vm.IsError.Should().BeTrue();
+        vm.IsBusy.Should().BeFalse();
+        vm.Books.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Global_merge_selects_surviving_tag_and_reloads_its_books_without_requiring_book_selection()
     {
         var targetId = Guid.NewGuid();
