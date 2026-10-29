@@ -1,11 +1,15 @@
-# Milestone 52: tags beheren — voorbereiding
+# Milestone 52: tags beheren
 
-- [x] Merge PR #53 gecontroleerd en lokale main bijgewerkt naar e8e024c; Milestone 51 volledig door de gebruiker geaccepteerd.
-- [x] Open wensen en bestaande auteurs-/seriesbeheerpatronen onderzocht. Tags/BookTags gebruiken al stabiele IDs en genormaliseerde unieke namen.
-- [x] Voorstel en concrete specificatie opgesteld: tags doorzoeken, boeken bekijken en veilig bibliotheekbreed hernoemen; geen samenvoegen/splitsen/verwijderen in deze slice.
-- [ ] Gebruiker beoordeelt de voorgestelde scope; nog geen inhoudelijk akkoord op tags beheren veronderstellen.
-- [ ] Na scopeakkoord uitvoeringsplan en geteste increments uitwerken; productcode, nieuwe checklist en normale PR volgen tijdens implementatie.
-
+- [x] Scope door gebruiker bevestigd op 29 oktober; PR #53 gemerged en basis main e8e024c. Branch codex/milestone-52-tag-management.
+- [x] Auteursvariantenwens afzonderlijk voor later vastgelegd; bestaande auteursbeheer-/hernoemregels blijven ongewijzigd.
+- [x] Specificatie en geordende uitvoering met testcheckpoints vastgelegd; bestaande tagidentiteit/koppelingen en opslagpatronen hergebruiken.
+- [x] Lichte SQL-zoek-/boekpagina's en transactioneel hernoemen met ID-setcontrole, naamvalidatie, bestaande doelnaam, rollback en behoud van overige tags/volgorde. Eerst falende tests groen; 510 boeken en Unicode-paginering gecontroleerd.
+- [x] Bestaande metadata.json-/ebook-synchronisatie na commit, aparte bestandswaarschuwingen en annulering afgedekt met eerst falende serviceproeven en echte tijdelijke bestanden.
+- [x] Viewmodel met zoeken/paginering, selectie/annuleren, nieuwe naam behouden, foutfeedback en blokkeren tijdens opslaan. Extra stale-preview- en refresh-na-commit-regressies opgelost.
+- [x] Tagbeheervenster, hernoemdialoog, werkbalkicoon en zes talen aangesloten; herkenbare splitter en begrensde lijsten. Echte WPF-focusproeven en licht/donker bij minimale grootte gecontroleerd.
+- [x] Volledige suite: 1024 geslaagd, 0 mislukt/overgeslagen. Zeventien interactieve WPF-scenario's groen. Debug-build 2026.10.29.25 van 29 oktober 10:35:47 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties afgerond.
+- [x] Nieuwe checklist, featurestatus, README, specificatie en taken bijgewerkt; Markdown wordt exact naar Obsidian gespiegeld en met gelijke hashes gecontroleerd.
+- [ ] Gebruiker voert docs/manual-tests/milestone-52-checklist.md uit en accepteert de slice; alleen de gebruiker mergt de gewone niet-draft PR.
 ## Historie: Milestone 51 — geaccepteerd en gemerged
 # Milestone 51: meervoudige boekenkastselectie
 

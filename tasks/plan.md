@@ -1,11 +1,17 @@
-# Milestone 52: tags beheren — voorbereiding
+# Milestone 52: tags beheren
 
-Voorstel ter beoordeling na de geaccepteerde en gemergede Milestone 51 / PR #53. Basis main e8e024c; branch codex/milestone-52-tag-management. Specificatie: docs/superpowers/specs/2026-10-29-saga-milestone-52-tag-management-design.md.
+Scope op 29 oktober 2026 door de gebruiker goedgekeurd. Specificatie: docs/superpowers/specs/2026-10-29-saga-milestone-52-tag-management-design.md. Basis geaccepteerde en gemergede PR #53 / main e8e024c, branch codex/milestone-52-tag-management. Geen schemawijziging, dependency, bibliotheekconversie of agents.
 
-Voorgestelde hoofdroute: tags doorzoeken met aantallen, gekoppelde boeken bekijken en één tag expliciet voor alle boeken hernoemen, met behoud van overige tags en volgorde. Een andere bestaande doelnaam blokkeren; samenvoegen/splitsen/verwijderen later. Bestaande Tags/BookTags-structuur en bestandssynchronisatie gebruiken, zonder schemawijziging of nieuwe dependency.
+Uitgevoerd in geteste increments; handmatige acceptatie staat open. 1024 gewone tests en zeventien interactieve WPF-scenario's slagen. Debug-build 2026.10.29.25 van 29 oktober om 10:35:47 (Europe/Amsterdam) heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds/Debug. Eigen vijfassige review en visuele controle in beide thema's afgerond. De aanvullende auteursvariantenwens is als latere, afzonderlijke feature vastgelegd.
 
-De richting is nog niet inhoudelijk door de gebruiker bevestigd. Alleen onderzoek en specificatie uitgevoerd, geen productcode gewijzigd. Na scopeakkoord wordt het uitvoeringsplan uitgewerkt in geteste increments voor lezen/opslag, transactie, bestandssynchronisatie, viewmodel en venster/talen. De concrete acceptatiecriteria en teststrategie staan in de specificatie. Geen agents nodig.
+1. **Lichte leescontracten en paginering.** Afzonderlijke tag-IDs, zoeken met aantallen en boeken op titel/ID. Verificatie: SQLite-pagina's met meer dan 200 tags/boeken en Unicode; geen coverblobs of ebookbestanden voor lijsten.
+2. **Transactioneel hernoemen.** Bron-ID/naam en bevestigde boekset opnieuw controleren; bestaande doelnaam blokkeren en alleen Tag.Name/NormalizedName plus betrokken UpdatedUtc wijzigen. Verificatie: eerst falende tests, behoud van andere tags/volgorde en alle boekvelden, 510 boeken, rollback, gewijzigde bronkoppelingen, ongewijzigde/ongeldige naam en annulering.
+3. **Bestandssynchronisatie na commit.** Bestaande BookService-route en afzonderlijke bestandswaarschuwingen. Verificatie: eerst falende echte metadata.json-/waarschuwingsproeven en voltooiing bij annulering na commit.
+4. **Beheerviewmodel.** Zoeken, paginering, selectie, bevestiging, annuleren, bezetstatus en nieuwe naam behouden. Verificatie: gerichte tests; extra eerst falende regressies voor stale preview en eerlijk opgeslagen-maar-niet-ververst resultaat zijn opgelost.
+5. **Venster, werkbalk en talen.** Bestaande SeriesManagement-bediening volgen, tagicoon, zichtbare splitter, bereikbare knoppen en zes talen. Verificatie: XAML-/resourcetests en echte WPF-focustests voor laden, fout, nieuwere focus, zoektekst en annuleren/opslaan. Licht/donker op minimale grootte bekeken.
+6. **Opleveren.** Volledige suite, schone Debug-build, eigen review, actuele README/featurestatus, handmatige checklist en exacte Obsidian-spiegels. Gewone niet-draft PR; alleen de gebruiker accepteert en mergt.
 
+Afhankelijkheden: 1 vóór 2/4, 2 vóór 3, 3/4 vóór 5, 6 na alles. Checkpoints en commits volgen deze volgorde; de venster-/resourceaansluiting is apart gecommit. Opslagrisico's zijn afgedekt met transactie/ID-setcontrole, bestandsproblemen worden na commit onderscheiden en focus gebruikt het beproefde herstelpatroon van seriesbeheer. Geen uitbreiding naar tags samenvoegen/splitsen/verwijderen of auteurs samenvoegen.
 ## Historie: Milestone 51 — geaccepteerd en gemerged
 # Milestone 51: meervoudige boekenkastselectie
 

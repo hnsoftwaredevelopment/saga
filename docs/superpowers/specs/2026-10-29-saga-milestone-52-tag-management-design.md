@@ -2,11 +2,11 @@
 
 ## Status en doel
 
-Voorstel ter beoordeling. De gebruiker heeft gevraagd de volgende slice op te pakken na de geaccepteerde en gemergede Milestone 51 / PR #53. Tags beheren is nog niet inhoudelijk goedgekeurd; deze voorbereiding verandert geen productcode of bibliotheekgegevens. Basis main e8e024c, branch codex/milestone-52-tag-management.
+De gebruiker heeft op 29 oktober 2026 de concrete afbakening goedgekeurd en opdracht tot uitvoering gegeven. Basis is de geaccepteerde en gemergede Milestone 51 / PR #53, main e8e024c, branch codex/milestone-52-tag-management. De aanvullende wens voor auteursvarianten is afzonderlijk voor later vastgelegd; geen onderdeel van deze slice.
 
 Doel: één herkenbaar beheervenster zoals Auteurs beheren en Series beheren, waarin de gebruiker tags doorzoekt, gekoppelde boeken bekijkt en een tag expliciet hernoemt voor al haar boeken. Voorbeeld: Sciencefiction wijzigen naar Science fiction zonder andere tags op die boeken te verliezen.
 
-Uitgangspunten ter bevestiging: bibliotheekbreed hernoemen, één tag per actie, bestaande doelnaam blokkeren zonder samenvoegen, overige tags/volgorde behouden. Verwijderen, samenvoegen en splitsen zijn afzonderlijke vervolgstappen.
+Bevestigde uitgangspunten: bibliotheekbreed hernoemen, één tag per actie, bestaande doelnaam blokkeren zonder samenvoegen, overige tags/volgorde behouden. Verwijderen, samenvoegen en splitsen zijn afzonderlijke vervolgstappen.
 
 ## Gebruikersgedrag en acceptatie
 
@@ -46,3 +46,15 @@ Behoud de bestaande codeconventies: getypeerde resultaten, async CancellationTok
 Altijd: eerst regressietests, transacties en invoer valideren, alleen actieve bibliotheek, paginering en behoud van omslagen, bestaande opslagroute, eigen vijfassige review en alle Markdown exact naar Obsidian spiegelen. Afstemmen bij nieuwe dependencies/schema of uitbreiding naar verwijderen/samenvoegen/splitsen. Nooit: automatisch tags samenvoegen, ongemerkt boekmetadata wijzigen tijdens bladeren, verlies van overige tags, geheimen committen of zelf de PR mergen.
 
 Na scopeakkoord volgt de uitvoering in kleine geteste increments: opslagcontract/lezen → transactioneel hernoemen → bestandssynchronisatie → viewmodel → venster/werkbalk/talen → integrale verificatie. Per increment circa 3–5 bestanden en een aantoonbaar testcheckpoint; ondersteunende venster-/resourceaansluiting zo nodig splitsen. Geen agents nodig. Gewone niet-draft PR na implementatie; een schone enige Debug-build met versie/tijd en checklist voor gebruikersacceptatie. CodeRabbit-limieten blokkeren niet wanneer eigen review, regressietests en overige controles aantoonbaar voldoen.
+
+## Uitvoering en verificatie
+
+Gebouwd in afzonderlijke geteste commits. Gerichte ITagRepository/Tags-contracten gebruiken stabiele IDs. EfTagRepository zoekt en pagineert met lichte SQL-projecties, controleert de genormaliseerde doelnaam en de bevestigde bronnaam/volledige boek-ID-set, en past Tag.Name/NormalizedName plus betrokken UpdatedUtc-waarden in één transactie aan. BookTags en hun Order blijven ongewijzigd. De bestaande namenregel Trim().ToLowerInvariant() is behouden, zonder nieuwe fuzzy matching.
+
+Eerst falende tests bewijzen dat lezen/hernoemen ontbreekt en dat alleen een databasewijziging niet genoeg is: de bestaande bestandsroute moet na commit werkelijk worden uitgevoerd en afzonderlijke waarschuwingen tonen. Bij annulering na commit wordt synchronisatie voltooid. Tests met 510 boeken bewaken rollback en paginagrenzen; Unicode en tagindexpaginering zijn afzonderlijk gecontroleerd. De hoofdschermverversing gebruikt de bestaande begrensde metadata-snapshotroute met behoud van omslagen.
+
+TagManagementViewModel en de WPF-vensters volgen het bestaande SeriesManagement-patroon, zonder generiek beheerframework. Na hernoemen blijft de nieuwe naam zichtbaar en worden eerder geladen boekpagina's behouden. Zes talen, toegankelijke namen, zichtbare splitter en begrensde lijsten zijn aangesloten. Invoeren van één tag zonder puntkomma/regeleinde wordt in het invoervenster toegelicht. Echte WPF-proeven bewaken zoek-/lijstfocus, een fout, nieuwere focuskeuzes en annuleren/opslaan vanuit de dialoog; minimaal vensterformaat in beide thema's is visueel bekeken met fictieve gegevens.
+
+Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties leidde tot twee extra eerst falende regressies: bronnaam gewijzigd vóór preview mag niet tot een stille mislukking bij opslaan leiden; een indexverversingsfout ná commit moet expliciet opgeslagen-maar-niet-ververst melden. Beide zijn hersteld. Geen externe API, geheimen, nieuwe dependency, schemawijziging of nieuwe ebookwriter.
+
+Definitieve verificatie: 1024 tests geslaagd, 0 mislukt/overgeslagen; zeventien interactieve WPF-scenario's groen. Debug-build 2026.10.29.25 van 29 oktober 2026 om 10:35:47 (Europe/Amsterdam), 0 waarschuwingen/fouten, precies één Saga.exe onder Builds/Debug. [Handmatige acceptatie](../../manual-tests/milestone-52-checklist.md) staat open. De auteursvariantenwens is uitsluitend als afzonderlijke latere feature vastgelegd. Alle gewijzigde Markdown wordt exact naar Obsidian gespiegeld en op gelijke hashes gecontroleerd.
