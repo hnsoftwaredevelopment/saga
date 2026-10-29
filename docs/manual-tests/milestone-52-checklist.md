@@ -1,6 +1,6 @@
 # Milestone 52 — tags beheren
 
-Testbuild: `Builds\Debug\Saga.exe`, versie **2026.10.29.47**, gebouwd op **29 oktober 2026 om 15:07:43 Europe/Amsterdam**. Eén Saga.exe onder Builds; 0 waarschuwingen en 0 fouten. De productwijziging is gebouwd en automatisch geverifieerd; handmatige gebruikersacceptatie staat open.
+Testbuild: `Builds\Debug\Saga.exe`, versie **2026.10.29.47**, gebouwd op **29 oktober 2026 om 15:07:43 Europe/Amsterdam**. Eén Saga.exe onder Builds; 0 waarschuwingen en 0 fouten. De productwijziging is gebouwd en automatisch geverifieerd. De gebruiker heeft op 29 oktober 2026 bevestigd: “Ja nu werkt het zoals verwacht. Deze slice is akkoord”. Hiermee is de volledige slice geaccepteerd, inclusief de selectieacties en globaal samenvoegen. De afzonderlijke oorspronkelijke vinkjes en opmerkingen blijven als testhistorie behouden; niet handmatig uitgelokte fouten blijven automatisch afgedekt. PR #54 wacht op merge door de gebruiker.
 
 Gebruik voor wijzigingen bij voorkeur een kleine testtag of noteer de oorspronkelijke waarden. Tag wijzigen en Tag verwijderen gelden uitsluitend voor geselecteerde boeken; Tag overal hernoemen geldt voor alle gekoppelde boeken. Geen selectie betekent nooit automatisch alle boeken. De onderstaande eerdere gebruikersvinkjes en opmerkingen zijn behouden; de nieuwe hercontrole staat onderaan.
 

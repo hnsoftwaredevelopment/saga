@@ -11,7 +11,8 @@
 - [x] Nieuwe checklist, featurestatus, README, specificatie en taken bijgewerkt; Markdown wordt exact naar Obsidian gespiegeld en met gelijke hashes gecontroleerd.
 - [x] Gebruikersfeedback verwerkt: expliciete boekselectie met telling/zichtbare markering, Tag wijzigen, Tag verwijderen en afzonderlijk Tag overal hernoemen. Bronboeklijst en bron-/doelaantallen opnieuw laden; bestaande doeltag per boek dedupliceren met behoud van overige tags en niet-geselecteerde boeken. Eerst falende tests en echte WPF-acties/paginering groen; oorspronkelijke gebruikersvinkjes en niet-uitgelokte bestandswaarschuwing behouden.
 - [x] Aanvullend gebruikersverzoek: Tag overal hernoemen naar een bestaande tag voegt alle bronboeken veilig samen met de doeltag, zonder boekselectie. Eén transactie, bestaande doelpositie/identiteit behouden, lege bron verwijderen, doellijst/telling opnieuw laden. Eerst falende opslag-/viewmodeltests, bestandssynchronisatie en echte WPF-bevestiging/focus groen; gerichte hercontrole toegevoegd.
-- [ ] Gebruiker voert docs/manual-tests/milestone-52-checklist.md uit en accepteert de slice; alleen de gebruiker mergt de gewone niet-draft PR.
+- [x] Gebruiker accepteert op 29 oktober 2026 de volledige slice: “Ja nu werkt het zoals verwacht. Deze slice is akkoord”. Inclusief selectieacties en globaal samenvoegen; niet handmatig uitgelokte fouten blijven automatisch afgedekt.
+- [ ] Alleen de gebruiker mergt de gewone niet-draft PR #54.
 ## Historie: Milestone 51 — geaccepteerd en gemerged
 # Milestone 51: meervoudige boekenkastselectie
 
