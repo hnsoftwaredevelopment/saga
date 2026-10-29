@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Style x:Key="GroupedBookContainerStyle" TargetType="ListBoxItem">
+    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="AutomationProperties.Name" Value="{Binding Title}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBoxItem">
+          <Border x:Name="FocusBorder" BorderThickness="1" BorderBrush="Transparent">
+            <Border x:Name="SelectionBorder" BorderThickness="2" BorderBrush="Transparent">
+              <ContentPresenter />
+            </Border>
+          </Border>
+          <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+              <Setter TargetName="SelectionBorder" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            </DataTrigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+              <Setter TargetName="FocusBorder" Property="BorderBrush" Value="{DynamicResource TextPrimaryBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+</ResourceDictionary>

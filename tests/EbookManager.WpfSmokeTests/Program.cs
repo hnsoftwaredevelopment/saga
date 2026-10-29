@@ -19,6 +19,8 @@ internal static class Program
     private static int Main()
     {
         var application = new System.Windows.Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+        var license = EbookManager.Infrastructure.Settings.SyncfusionLicenseKeyResolver.ResolveFromEnvironmentAndLocalFiles();
+        if (!string.IsNullOrWhiteSpace(license)) Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(license);
         application.Resources.MergedDictionaries.Add(new ResourceDictionary
         { Source = new Uri("pack://application:,,,/Saga;component/Resources/Styles/Themes/LightTheme.xaml") });
         var root = FindRepository();
@@ -92,6 +94,10 @@ internal static class Program
                     Require(rename.IsKeyboardFocusWithin, "Rename button did not regain focus after the dialog or save.");
                 }
                 Console.WriteLine("PASS: rename dialog retains focus; cancelling and saving return focus to its button.");
+                await BookshelfSelectionSmoke.RunAsync();
+                await GroupedBookSelectionSmoke.RunAsync();
+                await GroupedBookshelfNavigationSmoke.RunAsync();
+                await GroupedBookshelfNavigationSmoke.RunDuplicateAsync();
                 exitCode = 0;
             }
             catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception.Message); }

@@ -1,3 +1,33 @@
+# Milestone 51: meervoudige boekenkastselectie
+
+- [x] Aanvullende CodeRabbit-focusbevinding voor dubbele tagvermeldingen eerst falend gereproduceerd en hersteld: boek én doelgroep blijven samen tot focus/scroll in de juiste bladlijst. ID-selectie blijft uniek. 993 tests en vijftien WPF-scenario's groen met tijdelijke geïsoleerde build 2026.10.29.8 van 29 oktober 08:57. Verouderde actuele cijfers in specificatie/plan expliciet historisch gemarkeerd; eigen vijfassige review uitgevoerd.
+- [x] Na afsluiten van Saga normale Debug-build 2026.10.29.9 geplaatst op 29 oktober om 08:59:31 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds. Alle vijftien WPF-scenario's slagen ook tegen die build; 993 gewone tests groen. Eerdere acceptatie blijft behouden.
+- [x] Gebruiker bevestigt op 29 oktober ook de resterende controlepunten, inclusief focus bij hetzelfde boek in twee taggroepen. Volledige checklist akkoord; eigen review zonder aanvullende bevindingen, CodeQL en GitGuardian groen. CodeRabbit-limiet blokkeert afronding niet; laatste fix is door eigen review en regressietests afgedekt.
+
+- [x] CodeRabbit-opmerking 4389990878 onderzocht en eerst falend bewezen: gedeeltelijke groepsrijen verschoven Up/Down naar het verkeerde boek. Groepslokale navigatie met expliciete groepsovergangen hersteld; globale unieke Shift-volgorde behouden. 993 tests en veertien WPF-scenario's slagen. Debug-build 2026.10.29.5 van 29 oktober 08:15, 0 waarschuwingen/fouten, één Saga.exe. Eigen vijfassige review uitgevoerd.
+- [x] Hercontrole voor gedeeltelijke groepsrijen/Shift en overige detailchecks op 29 oktober door gebruiker getest en akkoord. Alleen de gebruiker mergt PR #53.
+
+- [x] Gebruikersacceptatie op 27 oktober 2026: meervoudige selectie én metadata bewerken werken in alle drie de weergaven zoals verwacht. De gemelde groepsselectiefout in Lijst/Gedetailleerd is akkoord. Niet afzonderlijk bevestigde detailcontroles blijven zichtbaar; PR #53 staat nog open en wordt uitsluitend door de gebruiker gemerged.
+
+- [x] Gebruiker keurt het voorstel goed en geeft opdracht te bouwen: Ctrl/Shift, duidelijke selectie/telling, bestaande bulkactie, toetsenbord, groepen/filters/views.
+- [x] Bestaande tegeltemplates, groepsduplicaten, virtualisatie, centrale selectie en grid-/bulkroute onderzocht; concrete spec en plan vastgelegd.
+- [x] Gerichte selectieregels en ID-/rijsynchronisatie gebouwd. Eerst falende tests voor actuele rijreferenties bij dezelfde ID en selectiestaat; Ctrl/Shift, unieke groeps-IDs, filterdoorsnede, view-/bibliotheekwissel en annuleren getest.
+- [x] Gewone/gegroepeerde tegels met geselecteerde rand en afzonderlijke focusrand, centrale selectie en muisinteracties aangesloten. Gesloten groepen worden niet door een nieuwe reeks meegenomen; dubbele vermeldingen delen één staat.
+- [x] Pijltjes/Home/End/Spatie/Escape en virtualisatie op echte WPF-schermen bewezen. Ver weg gelegen groepstegel eerst falend getest en correct gerealiseerd; nieuwere tekstfocus heeft voorrang op uitgesteld navigatiefocus.
+- [x] Expliciete synchronisatie voor actieve grids en centrale selectie. Heen/terug wisselen en native gridselectie getest. Bestaande bulkroute wijzigt alleen geselecteerde boeken; na succes verdwijnen selectieranden en annuleren behoudt selectie.
+- [x] Selectietelling, bestaande metadata-actie en gelokaliseerde uitleg in zes talen aangesloten; resourcetests en visuele WPF-controle uitgevoerd. Tegelmarges houden beide nieuwe randen binnen de bestaande tegelmaat.
+- [x] Volledige suite: 993 geslaagd, 0 mislukt/overgeslagen. Tien interactieve WPF-scenario's groen. Debug-build 2026.10.27.23 op 27 oktober 09:17, 0 waarschuwingen/fouten en één Saga.exe in Builds/Debug. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties; nieuwe checklist/featurestatus/README opgesteld. Geen productlicentie- of opslagwijziging; de proef hergebruikt de bestaande lokale licentieresolver.
+- [x] Alle tien gewijzigde project-Markdown-bestanden exact naar Obsidian gespiegeld met gelijke hashes. Gewone niet-draft PR #53 geopend en gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/53. Mergeable bij opening; CodeQL en GitGuardian zijn nog bezig.
+- [x] Handmatige acceptatie volledig bevestigd op 29 oktober, inclusief de resterende groeps-/weergave-/filterpunten en reviewcorrecties op build 2026.10.29.9. PR #53 staat open; alleen de gebruiker mergt.
+
+- [x] Gebruikersmelding gegroepeerde Lijst/Gedetailleerd opgelost: standaard enkelvoudige bladlijsten en de oude altijd-vervangende rijhandler eerst falend bewezen via echte WPF-muisinput. Gedeelde preview-inputhelper en selectiestijl ondersteunen Ctrl/Shift, groepsgrenzen, toetsenbord, dubbele tags en nieuwere tekstfocus. Iedere view behoudt haar groepering en gedeelde geselecteerde IDs. 993 gewone tests en dertien WPF-scenario's groen; Debug-build 2026.10.27.34 van 27 oktober 16:03 heeft 0 waarschuwingen/fouten en één Saga.exe. Eigen vijfassige review en visuele controle uitgevoerd; nieuwe gebruikershercontrole blijft open.
+
+- [x] CodeRabbit-review: werkelijke paneelkolommen gebruiken voor Pijl-omhoog/-omlaag, eerst falend bewezen met echte tegelposities op smalle breedte. Vier layoutvarianten slagen; totaal elf WPF-scenario's en 993 gewone tests groen. Debug-build 2026.10.27.29 van 27 oktober 15:25 heeft 0 waarschuwingen/fouten en één Saga.exe. Eigen vijfassige review herhaald. Acceptatiestatus gelijkgetrokken zonder open gebruikersvinkjes te veranderen; plannummering hersteld. PR #52 gemerged geverifieerd en actuele main ea65412 geïntegreerd.
+
+- [x] Gebruiker meldt geslaagde tests en vraagt vervolgens de dubbele bewerkingsknop te verwijderen. Lokale knop en overbodige WrapPanel verwijderd; telling/uitleg blijven. De bestaande hoofdwerkbalk is de enige bewerkingsactie. Eigen checklistvinkjes behouden. 993 tests opnieuw groen; Debug-build 2026.10.27.25 van 27 oktober 11:43, 0 waarschuwingen/fouten en één Saga.exe. Eigen review: alleen visuele vereenvoudiging, geen selectie-/opslagwijziging. Gebruiker heeft ook deze visuele controle afgevinkt. De overige eigen vinkjes blijven behouden; vier groeps-/weergave-/filterpunten staan nog niet afgevinkt.
+
+## Historie: Milestone 50
+
 # Milestone 50: series beheren
 
 - [x] Gebruiker vindt seriesbeheer de gewenste volgende stap: zoeken, aantallen, boeken op serienummer en veilig hernoemen zonder samenvoegen.

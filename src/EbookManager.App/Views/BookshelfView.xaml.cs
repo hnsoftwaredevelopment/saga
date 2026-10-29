@@ -27,15 +27,6 @@ public partial class BookshelfView : UserControl
         DataContextChanged += (_, e) => AttachViewModel(e.NewValue as LibraryViewModel);
     }
 
-    private void BookRowMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-    {
-        if (DataContext is LibraryViewModel viewModel &&
-            sender is FrameworkElement { DataContext: BookRowViewModel row })
-        {
-            viewModel.SelectedBook = row;
-        }
-    }
-
     private void GroupExpanderExpanded(object sender, RoutedEventArgs e)
     {
         QueueBookshelfLayoutRefresh();

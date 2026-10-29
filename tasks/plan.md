@@ -1,3 +1,32 @@
+# Milestone 51: meervoudige boekenkastselectie
+
+Actuele verificatie 29 oktober: de gedeelde boek-ID krijgt nu ook de juiste groepsvermelding voor focus en scroll. De nieuwe WPF-regressie bewijst de focus op de bedoelde groepslijst, verder navigeren en Shift/Ctrl. 993 tests en vijftien WPF-scenario's groen, inclusief de normale Debug-build 2026.10.29.9 van 08:59:31 (Europe/Amsterdam), met 0 waarschuwingen/fouten en één Saga.exe onder Builds. Op 29 oktober zijn alle resterende checklistpunten door de gebruiker getest en akkoord bevonden. Eigen review opnieuw zonder aanvullende bevindingen; CodeQL en GitGuardian groen. CodeRabbit kan de laatste fix door haar limiet niet beoordelen; de eigen review, regressietests en gebruikersacceptatie zijn vastgelegd. Oudere build-/testblokken hieronder zijn uitvoeringshistorie; het onterecht actuele blok van 27 oktober is historisch gemarkeerd.
+
+Reviewstatus 29 oktober 2026: de nog geldige CodeRabbit-opmerking over Up/Down bij gedeeltelijke boekenplankgroepen is eerst falend bewezen en gericht hersteld. Groepslokale rij/kolom en expliciete overgang vervangen de globale indexstap; Shift-reeksen behouden hun bestaande unieke volgorde. 993 tests en veertien WPF-scenario's groen, Debug-build 2026.10.29.5 om 08:15 zonder waarschuwingen/fouten en één Saga.exe. Eigen vijfassige review uitgevoerd; nieuwe handmatige hercontrole toegevoegd zonder eerdere acceptatie te wijzigen. Eerdere kolombreedte-/documentatieopmerkingen waren al verwerkt. Geen nieuwe afhankelijkheden of agents.
+
+Actuele gebruikersacceptatie, 27 oktober 2026: meerdere boeken selecteren en metadata bewerken werkt in alle drie de weergaven zoals verwacht. De gegroepeerde-rijencorrectie is akkoord; niet afzonderlijk bevestigde detailchecks blijven in de checklist staan. PR #53 staat nog open. Geen codewijziging of nieuwe build voor deze acceptatieregistratie; onderstaande stappen bewaren de uitvoeringshistorie.
+
+Voorstel en bouwopdracht zijn door de gebruiker goedgekeurd. Specificatie: docs/superpowers/specs/2026-10-27-saga-milestone-51-bookshelf-selection-design.md. Basis main 5360aed plus acceptatiedocumentatie PR #52. Geen nieuwe dependency, schema of opslagroute; geen agents nodig.
+
+Historische verificatie van 27 oktober 2026: onderstaande stappen en reviewcorrecties zijn uitgevoerd in geteste commits. Destijds slaagden 993 gewone tests en dertien interactieve WPF-scenario's. Debug-build 2026.10.27.34 van 27 oktober 16:03 (Europe/Amsterdam) heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds/Debug. De gebruiker heeft de knopcorrectie en groepsselectie op de boekenplank bevestigd. De nieuwe melding over enkelvoudige selectie in gegroepeerde Lijst/Gedetailleerd is eerst falend bewezen en hersteld met gedeelde inputafhandeling en stijl. Beide views houden hun eigen groepering en dezelfde geselecteerde IDs. Eigen vijfassige review en visuele rijcontrole uitgevoerd. Handmatige acceptatie blijft gedeeltelijk open voor de resterende groeps-/weergave-/filterpunten, smalle-paneelnavigatie en de nieuwe gegroepeerde-rijencontroles.
+
+Reviewafronding: de dubbele knop is door de gebruiker geaccepteerd als verwijderd. CodeRabbit wees op een afwijkende kolomberekening bij scrollbar/padding; navigatie gebruikt nu de werkelijke ColumnCount van het paneel. Een extra WPF-regressie controleert gerenderde posities in vier layouts. README/checklist/spec/taken geven dezelfde gedeeltelijk open acceptatie aan. PR #52 is gemerged; main ea65412 is geïntegreerd. De onderstaande lijst loopt ononderbroken door.
+
+1. **Selectie bewijzen.** Eerst falende tests voor Ctrl/Shift/range en unieke IDs; gerichte Presentation-selectiepartial en afgeleide rijstatus. Circa 3–5 bestanden. Verificatie: selectie blijft na filterdoorsnede en rijvervanging juist.
+
+2. **Tegels aansluiten.** Eén centrale selectie voor gewone en open gegroepeerde tegels, duidelijke rand/focus en modificatietoetsen. Circa 2–4 bestanden. Verificatie: echte WPF-selectie en dubbele groepsvermeldingen.
+3. **Toetsenbord en scroll.** Pijltjes/Home/End/Spatie/Escape binnen tegels, Ctrl-focus zonder selectiewijziging, virtualisatie behouden. Circa 2–4 bestanden. Verificatie: voorbij de viewport en geen focusverlies.
+
+   Checkpoint: unieke-ID-selectie en inputroutes bewezen vóór aansluiting van viewwissels en bulkuitkomsten.
+
+4. **Weergavewissel en bulk.** Bestaande grids veilig synchroniseren; tijdelijke resetselectie niet terugschrijven. Bestaande metadata-opdracht verwerkt dezelfde IDs en houdt foutselectie zichtbaar. Opsplitsen in increments van circa 3–5 bestanden. Verificatie: grid→tegels→grid, filters, annuleren en fouten.
+5. **Telling en talen.** Telling/uitleg bij de tegels, de bestaande actie in de hoofdwerkbalk en zes talen in kleine increments. Verificatie: resources, thema's en kleine werkgebieden.
+6. **Opleveren.** Volledige suite en WPF-controles, schone enige Debug-build, eigen review, checklist/README/featurestatus en exacte Obsidian-spiegels. Gewone PR; alleen gebruiker mergt en accepteert de handmatige checklist.
+
+Afhankelijkheden: 1 vóór 2–3; 2–3 vóór 4; 5 na bewezen interactie; 6 na alles. Grootste risico's: native ListBox-selectie versus centrale selectie, dubbele taggroepen, gridresets, rijen met nieuwe referenties en focus op niet-gerealiseerde containers. Mitigatie: identiteit centraal, beperkte synchronisatiebewaking en echte WPF-tests met fictieve gegevens. Het goedgekeurde voorstel bepaalt de scope; de technische uitwerking vraagt geen nieuwe akkoordronde.
+
+## Historie: Milestone 50
+
 # Milestone 50: seriesbeheer
 
 Richting en concrete specificatie door gebruiker bevestigd: docs/superpowers/specs/2026-10-24-saga-milestone-50-series-management-design.md. Gebouwd op codex/milestone-50-series-management vanaf geaccepteerde main f8ad6fa. Onderstaande increments zijn uitgevoerd met gerichte tests en commits. Numerieke SQLite-paginering, transactioneel hernoemen, bestandssynchronisatie, viewmodel, vensters en zes talen zijn aangesloten. 980 tests slagen; Debug-build 2026.10.24.52 van 24 oktober 15:01 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe. Eigen vijfassige review en WPF-rendercontrole uitgevoerd. Geen schemawijziging of nieuwe dependency. De gebruiker heeft ook de aanvullende toetsenbordcontrole op build 2026.10.24.61 geaccepteerd; PR #51 is gemerged naar main 5360aed. Milestone 50 is afgerond; onderstaande stappen blijven uitvoeringshistorie.

@@ -7,25 +7,18 @@ namespace EbookManager.App.Views;
 public partial class LibraryListView : System.Windows.Controls.UserControl
 {
     private readonly LibraryGridColumnVisibility columnVisibility;
+    private readonly LibraryGridSelectionSynchronization selectionSynchronization;
     private LibraryViewModel? attachedViewModel;
 
     public LibraryListView()
     {
         InitializeComponent();
+        _ = new GroupedLibrarySelection(this, ListGroupsList);
+        selectionSynchronization = new(BooksGrid, LibraryView.List);
         columnVisibility = new LibraryGridColumnVisibility(BooksGrid, EbookManager.Presentation.ViewModels.LibraryView.List);
         DataContextChanged += (_, e) => AttachViewModel(e.NewValue as LibraryViewModel);
         Loaded += (_, _) => AttachViewModel(DataContext as LibraryViewModel);
         Unloaded += (_, _) => AttachViewModel(null);
-    }
-
-    private void BookRowMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-    {
-        if (DataContext is EbookManager.Presentation.ViewModels.LibraryViewModel viewModel &&
-            sender is System.Windows.FrameworkElement { DataContext: EbookManager.Presentation.ViewModels.BookRowViewModel row })
-        {
-            viewModel.SelectedBook = row;
-            viewModel.SetSelectedBooks([row]);
-        }
     }
 
     private void BooksGridPreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -38,10 +31,7 @@ public partial class LibraryListView : System.Windows.Controls.UserControl
 
     private void BooksGridSelectionChanged(object sender, Syncfusion.UI.Xaml.Grid.GridSelectionChangedEventArgs e)
     {
-        if (DataContext is EbookManager.Presentation.ViewModels.LibraryViewModel viewModel)
-        {
-            viewModel.SetSelectedBooks(BooksGrid.SelectedItems.OfType<EbookManager.Presentation.ViewModels.BookRowViewModel>());
-        }
+        selectionSynchronization?.RecordUserSelection();
     }
 
     private void AttachViewModel(LibraryViewModel? viewModel)
@@ -57,6 +47,7 @@ public partial class LibraryListView : System.Windows.Controls.UserControl
         }
 
         attachedViewModel = viewModel;
+        selectionSynchronization.Attach(viewModel);
         columnVisibility.Attach(viewModel);
         if (attachedViewModel is not null)
         {

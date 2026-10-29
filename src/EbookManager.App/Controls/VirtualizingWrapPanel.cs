@@ -46,6 +46,7 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
     public double ViewportWidth => viewport.Width;
 
     public double ViewportHeight => viewport.Height;
+    public int ColumnCount { get; private set; } = 1;
 
     public double HorizontalOffset => offset.X;
 
@@ -67,6 +68,7 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
         var safeItemHeight = Math.Max(1, ItemHeight);
         var availableWidth = double.IsInfinity(availableSize.Width) ? safeItemWidth : Math.Max(1, availableSize.Width);
         var columns = Math.Max(1, (int)Math.Floor(availableWidth / safeItemWidth));
+        ColumnCount = columns;
         var rows = itemCount == 0 ? 0 : (int)Math.Ceiling(itemCount / (double)columns);
 
         var availableHeight = double.IsInfinity(availableSize.Height)
@@ -136,6 +138,7 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
         var safeItemWidth = Math.Max(1, ItemWidth);
         var safeItemHeight = Math.Max(1, ItemHeight);
         var columns = Math.Max(1, (int)Math.Floor(Math.Max(1, finalSize.Width) / safeItemWidth));
+        ColumnCount = columns;
 
         foreach (UIElement child in InternalChildren)
         {
@@ -160,6 +163,15 @@ public sealed class VirtualizingWrapPanel : VirtualizingPanel, IScrollInfo
     }
 
     public void LineUp() => SetVerticalOffset(VerticalOffset - 16);
+    protected override void BringIndexIntoView(int index)
+    {
+        if (ItemsControl.GetItemsOwner(this) is not { } owner || index < 0 || index >= owner.Items.Count) return;
+        var columns = Math.Max(1, (int)Math.Floor(Math.Max(1, viewport.Width) / Math.Max(1, ItemWidth)));
+        var top = (index / columns) * Math.Max(1, ItemHeight);
+        if (top < offset.Y) SetVerticalOffset(top);
+        else if (top + ItemHeight > offset.Y + viewport.Height) SetVerticalOffset(top + ItemHeight - viewport.Height);
+        UpdateLayout();
+    }
 
     public void LineDown() => SetVerticalOffset(VerticalOffset + 16);
 
