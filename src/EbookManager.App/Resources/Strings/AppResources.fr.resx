@@ -815,7 +815,7 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>La série a été renommée, mais la bibliothèque n’a pas pu être actualisée. Rouvrez la bibliothèque pour voir les modifications.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+clic sélectionne plusieurs livres ; Maj+clic sélectionne une plage. Utilisez les flèches et Ctrl+Espace au clavier ; Échap efface la sélection.</value></data>
   <data name="TagManagementTitle" xml:space="preserve"><value>Gérer les étiquettes</value></data>
-  <data name="TagManagementDescription" xml:space="preserve"><value>Recherchez une étiquette, consultez ses livres et renommez-la pour tous les livres associés.</value></data>
+  <data name="TagManagementDescription" xml:space="preserve"><value>Recherchez des étiquettes et consultez leurs livres. Modifiez ou retirez une étiquette des livres sélectionnés, ou renommez-la partout.</value></data>
   <data name="TagSearch" xml:space="preserve"><value>Rechercher des étiquettes</value></data>
   <data name="TagCountLabel" xml:space="preserve"><value>étiquettes</value></data>
   <data name="TagLoadMore" xml:space="preserve"><value>Charger plus</value></data>
@@ -823,7 +823,7 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="TagResizePanels" xml:space="preserve"><value>Redimensionner les panneaux</value></data>
   <data name="TagBooks" xml:space="preserve"><value>livres avec cette étiquette</value></data>
   <data name="TagLoadFailed" xml:space="preserve"><value>Impossible de charger les étiquettes ou les livres. Réessayez.</value></data>
-  <data name="TagRename" xml:space="preserve"><value>Renommer l’étiquette</value></data>
+  <data name="TagRename" xml:space="preserve"><value>Renommer l’étiquette partout</value></data>
   <data name="TagRenameOriginal" xml:space="preserve"><value>Nom actuel de l’étiquette</value></data>
   <data name="TagRenameNew" xml:space="preserve"><value>Nouveau nom de l’étiquette</value></data>
   <data name="TagRenameExplanation" xml:space="preserve"><value>Cette étiquette sera modifiée pour les {0} livres. Les autres étiquettes et leur ordre seront conservés.</value></data>
@@ -831,11 +831,26 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="TagRenameSaved" xml:space="preserve"><value>Étiquette renommée pour {0} livres.</value></data>
   <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Étiquette renommée pour {0} livres. Les fichiers de {1} livres n’ont pas pu être mis à jour.</value></data>
   <data name="TagRenameWarningDetails" xml:space="preserve"><value>Livres dont les fichiers n’ont pas pu être mis à jour</value></data>
-  <data name="TagRenameNameExists" xml:space="preserve"><value>Ce nom d’étiquette existe déjà. Choisissez un autre nom ; les étiquettes ne seront pas fusionnées.</value></data>
+  <data name="TagRenameNameExists" xml:space="preserve"><value>Ce nom d’étiquette existe déjà. Utilisez Modifier l’étiquette pour l’attribuer aux livres sélectionnés.</value></data>
   <data name="TagRenameInvalid" xml:space="preserve"><value>Saisissez un seul nom d’étiquette, sans point-virgule ni saut de ligne.</value></data>
   <data name="TagRenameUnchanged" xml:space="preserve"><value>Le nom de l’étiquette n’a pas changé.</value></data>
   <data name="TagRenameConflict" xml:space="preserve"><value>L’étiquette ou ses livres associés ont changé depuis la confirmation. Sélectionnez à nouveau l’étiquette et confirmez le renommage.</value></data>
   <data name="TagRenameFailed" xml:space="preserve"><value>Impossible de renommer l’étiquette. Aucune modification n’a été enregistrée.</value></data>
   <data name="TagRenameRefreshFailed" xml:space="preserve"><value>L’étiquette a été renommée, mais l’affichage de la bibliothèque n’a pas pu être actualisé. Rouvrez la bibliothèque pour voir les modifications.</value></data>
+  <data name="TagSelectedBooks" xml:space="preserve"><value>{0} livres sélectionnés</value></data>
+  <data name="TagChangeSelection" xml:space="preserve"><value>Modifier l’étiquette</value></data>
+  <data name="TagRemoveSelection" xml:space="preserve"><value>Retirer l’étiquette</value></data>
+  <data name="TagChangeSelectionTitle" xml:space="preserve"><value>Modifier l’étiquette des livres sélectionnés</value></data>
+  <data name="TagChangeExplanation" xml:space="preserve"><value>Remplacez ‘{0}’ pour {1} livres sélectionnés. Les autres livres gardent leur étiquette. Si un livre possède déjà la nouvelle étiquette, seule l’ancienne est retirée.</value></data>
+  <data name="TagChangeTarget" xml:space="preserve"><value>Étiquette nouvelle ou existante</value></data>
+  <data name="TagRemoveSelectionTitle" xml:space="preserve"><value>Retirer l’étiquette des livres sélectionnés</value></data>
+  <data name="TagRemoveExplanation" xml:space="preserve"><value>Retirer ‘{0}’ de {1} livres sélectionnés ? Les autres étiquettes et les livres eux-mêmes seront conservés.</value></data>
+  <data name="TagAssignmentWorking" xml:space="preserve"><value>Mise à jour des étiquettes des livres sélectionnés…</value></data>
+  <data name="TagAssignmentSaved" xml:space="preserve"><value>Étiquettes mises à jour pour {0} livres.</value></data>
+  <data name="TagAssignmentSavedWithWarnings" xml:space="preserve"><value>Étiquettes mises à jour pour {0} livres. Les fichiers de {1} livres n’ont pas pu être mis à jour.</value></data>
+  <data name="TagAssignmentConflict" xml:space="preserve"><value>L’étiquette ou les livres sélectionnés ont changé depuis la confirmation. Sélectionnez à nouveau les livres et confirmez une nouvelle modification.</value></data>
+  <data name="TagAssignmentUnchanged" xml:space="preserve"><value>Les livres sélectionnés n’ont pas été modifiés.</value></data>
+  <data name="TagAssignmentFailed" xml:space="preserve"><value>Impossible de modifier les étiquettes des livres sélectionnés. Aucune modification n’a été enregistrée.</value></data>
+  <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>Les modifications d’étiquettes ont été enregistrées, mais les listes n’ont pas pu être actualisées. Fermez et rouvrez la gestion des étiquettes.</value></data>
 </root>
 
