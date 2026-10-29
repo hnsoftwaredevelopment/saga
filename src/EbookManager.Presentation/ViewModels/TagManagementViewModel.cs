@@ -44,7 +44,7 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
 
     public Task SearchAsync(string text, bool append = false) => CanBrowse ? SearchCoreAsync(text, append) : Task.CompletedTask;
 
-    private async Task SearchCoreAsync(string text, bool append = false)
+    private async Task<bool> SearchCoreAsync(string text, bool append = false)
     {
         var version = ++searchVersion;
         Query = text;
@@ -52,13 +52,14 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
         try
         {
             var page = await Task.Run(() => repository.SearchAsync(text, append ? Tags.Count : 0, 200, lifetime.Token), lifetime.Token);
-            if (disposed || version != searchVersion) return;
+            if (disposed || version != searchVersion) return false;
             Tags = append ? Tags.Concat(page.Tags).DistinctBy(tag => tag.Id).ToArray() : page.Tags;
             TotalTags = page.TotalCount;
             OnPropertyChanged(nameof(HasMoreTags));
+            return true;
         }
-        catch (OperationCanceledException) { }
-        catch (Exception) { if (!disposed && version == searchVersion) SetStatus("TagLoadFailed", true); }
+        catch (OperationCanceledException) { return false; }
+        catch (Exception) { if (!disposed && version == searchVersion) SetStatus("TagLoadFailed", true); return false; }
         finally { if (!disposed && version == searchVersion) IsSearching = false; }
     }
 
@@ -108,7 +109,8 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
         {
             var preview = await Task.Run(() => renameService.PreviewAsync(TagId!.Value, lifetime.Token), lifetime.Token);
             if (disposed) return null;
-            if (preview.Books.Count == 0) { SetStatus("TagRenameConflict", true); return null; }
+            if (preview.Books.Count == 0 || preview.TagId != TagId || preview.Name != Name)
+            { SetStatus("TagRenameConflict", true); return null; }
             return preview;
         }
         catch (OperationCanceledException) { return null; }
@@ -148,7 +150,7 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
             Warnings = result.Warnings;
             StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "TagRenameSaved" : "TagRenameSavedWithWarnings"), TotalBooks, Warnings.Count);
             IsError = Warnings.Count > 0;
-            await SearchCoreAsync(Name);
+            if (!await SearchCoreAsync(Name) && !disposed) SetStatus("TagRenameRefreshFailed", true);
             NotifySelection();
             return true;
         }

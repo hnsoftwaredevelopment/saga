@@ -127,16 +127,45 @@ public sealed class TagManagementViewModelTests
         vm.StatusMessage.Should().Be("TagLoadFailed");
     }
 
+    [Fact]
+    public async Task Preview_rejects_a_name_changed_elsewhere_instead_of_allowing_a_silent_failed_save()
+    {
+        var repository = new TagFake();
+        using var vm = new TagManagementViewModel(repository, repository, key => key);
+        await vm.SelectAsync(new(TagId, "Old", 2));
+        repository.PreviewName = "Changed elsewhere";
+        (await vm.PreviewRenameAsync()).Should().BeNull();
+        vm.StatusMessage.Should().Be("TagRenameConflict");
+        vm.CanBrowse.Should().BeTrue();
+        vm.ChangedBookIds.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Index_refresh_failure_after_success_is_reported_as_saved_and_keeps_changed_ids()
+    {
+        var repository = new TagFake();
+        using var vm = new TagManagementViewModel(repository, repository, key => key);
+        await vm.SelectAsync(new(TagId, "Old", 2));
+        var preview = (await vm.PreviewRenameAsync())!;
+        repository.Search = _ => throw new IOException("Sensitive path");
+        (await vm.RenameAsync(preview, "New")).Should().BeTrue();
+        vm.Name.Should().Be("New");
+        vm.ChangedBookIds.Should().BeEquivalentTo(preview.Books.Select(book => book.Id));
+        vm.StatusMessage.Should().Be("TagRenameRefreshFailed");
+        vm.IsError.Should().BeTrue();
+    }
+
     private sealed class TagFake : ITagRepository, ITagRenameService
     {
         private readonly TagSourceBook[] source = [new(Guid.NewGuid(), "One"), new(Guid.NewGuid(), "Two")];
         public Func<string, Task<TagPage>> Search { get; set; } = text => Task.FromResult(new TagPage([new(TagId, text, 2)], 1));
         public Func<TagRenamePreview, string, Task<TagRenameCompletion>>? Rename { get; set; }
         public Func<Guid, int, int, Task<TagBookPage>>? List { get; set; }
+        public string PreviewName { get; set; } = "Old";
         public Task<TagPage> SearchAsync(string query, int skip, int take, CancellationToken token) => Search(query);
         public Task<TagBookPage> ListBooksAsync(Guid tagId, int skip, int take, CancellationToken token) => List?.Invoke(tagId, skip, take) ?? Task.FromResult(new TagBookPage(
             source.Select((book, index) => new TagBook(book.Id, book.Title, "Author")).ToArray(), 2));
-        public Task<TagRenamePreview> PreviewAsync(Guid tagId, CancellationToken token) => Task.FromResult(new TagRenamePreview(TagId, "Old", source));
+        public Task<TagRenamePreview> PreviewAsync(Guid tagId, CancellationToken token) => Task.FromResult(new TagRenamePreview(TagId, PreviewName, source));
         public Task<TagRenameCompletion> RenameAsync(TagRenamePreview preview, string name, CancellationToken token) => Rename?.Invoke(preview, name)
             ?? Task.FromResult(new TagRenameCompletion(new(TagRenameStatus.Renamed, TagId, name, source), [source[0]]));
         public Task<TagRenamePreview> PreviewRenameAsync(Guid tagId, CancellationToken token) => PreviewAsync(tagId, token);

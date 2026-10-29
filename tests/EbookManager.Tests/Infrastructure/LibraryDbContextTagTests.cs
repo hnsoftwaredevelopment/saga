@@ -45,6 +45,9 @@ public sealed partial class LibraryDbContextTests
         await books.AddAsync(other, CreateFile(other.Id, Hash(2)), default);
         await using var context = factory.Create(library.DirectoryPath);
         var tagId = await context.Tags.Where(tag => tag.Name == "Target").Select(tag => tag.Id).SingleAsync();
+        var entity = await context.Books.SingleAsync(row => row.Id == book.Id);
+        var scalarValues = context.Entry(entity).Properties.Where(property => property.Metadata.Name != "UpdatedUtc")
+            .ToDictionary(property => property.Metadata.Name, property => property.CurrentValue);
         var original = await books.GetAsync(book.Id, default);
         var otherBefore = await books.GetAsync(other.Id, default);
         var links = await context.BookTags.AsNoTracking().OrderBy(link => link.Order).Select(link => new { link.BookId, link.TagId, link.Order }).ToArrayAsync();
@@ -52,6 +55,9 @@ public sealed partial class LibraryDbContextTests
         var result = await repository.RenameAsync(await repository.PreviewRenameAsync(tagId, default), " New name ", default);
         result.Status.Should().Be(TagRenameStatus.Renamed);
         result.TagId.Should().Be(tagId);
+        await context.Entry(entity).ReloadAsync();
+        context.Entry(entity).Properties.Where(property => property.Metadata.Name != "UpdatedUtc")
+            .ToDictionary(property => property.Metadata.Name, property => property.CurrentValue).Should().BeEquivalentTo(scalarValues);
         var updated = (await books.GetAsync(book.Id, default))!;
         updated.Metadata.Tags.Should().Equal("Before", "New name", "After");
         updated.Metadata.Authors.Should().Equal(original!.Metadata.Authors);
@@ -129,6 +135,51 @@ public sealed partial class LibraryDbContextTests
         var id = await SeedTagBooksAsync(factory, library.DirectoryPath, 1);
         var repository = new EfTagRepository(factory, library.DirectoryPath);
         (await repository.RenameAsync(await repository.PreviewRenameAsync(id, default), name, default)).Status.Should().Be(TagRenameStatus.InvalidName);
+    }
+
+    [Fact]
+    public async Task Tag_rename_rejects_added_links_and_cancellation_before_commit()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var id = await SeedTagBooksAsync(factory, library.DirectoryPath, 1);
+        var repository = new EfTagRepository(factory, library.DirectoryPath);
+        var preview = await repository.PreviewRenameAsync(id, default);
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        await FluentActions.Awaiting(() => repository.RenameAsync(preview, "New", cancellation.Token)).Should().ThrowAsync<OperationCanceledException>();
+        await using var context = factory.Create(library.DirectoryPath);
+        context.Books.Add(new BookEntity
+        {
+            Id = Guid.NewGuid(), Title = "Added", NormalizedTitle = "added", DuplicateKey = "added",
+            BookTags = [new() { TagId = id, Order = 0 }]
+        });
+        await context.SaveChangesAsync();
+        (await repository.RenameAsync(preview, "New", default)).Status.Should().Be(TagRenameStatus.Conflict);
+        (await context.Tags.AsNoTracking().SingleAsync(tag => tag.Id == id)).Name.Should().Be("Target");
+    }
+
+    [Fact]
+    public async Task Tag_index_pages_and_searches_unicode_normalized_names()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        await SeedTagBooksAsync(factory, library.DirectoryPath, 205);
+        await using (var context = factory.Create(library.DirectoryPath))
+        {
+            var books = await context.Books.ToArrayAsync();
+            for (var index = 0; index < books.Length; index++) context.BookTags.Add(new()
+            {
+                BookId = books[index].Id, Order = 1,
+                Tag = new() { Id = Guid.NewGuid(), Name = $"Été {index:D3}", NormalizedName = $"été {index:D3}" }
+            });
+            await context.SaveChangesAsync();
+        }
+        var repository = new EfTagRepository(factory, library.DirectoryPath);
+        var first = await repository.SearchAsync(" ÉTÉ ", 0, 200, default);
+        var last = await repository.SearchAsync("été", 200, 200, default);
+        first.TotalCount.Should().Be(205);
+        first.Tags.Concat(last.Tags).Select(tag => tag.Name).Should().Equal(Enumerable.Range(0, 205).Select(index => $"Été {index:D3}"));
     }
 
     private static async Task<Guid> SeedTagBooksAsync(LibraryDbContextFactory factory, string path, int count)
