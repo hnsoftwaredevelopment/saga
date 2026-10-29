@@ -1,3 +1,12 @@
+# Milestone 52: tags beheren — voorbereiding
+
+- [x] Merge PR #53 gecontroleerd en lokale main bijgewerkt naar e8e024c; Milestone 51 volledig door de gebruiker geaccepteerd.
+- [x] Open wensen en bestaande auteurs-/seriesbeheerpatronen onderzocht. Tags/BookTags gebruiken al stabiele IDs en genormaliseerde unieke namen.
+- [x] Voorstel en concrete specificatie opgesteld: tags doorzoeken, boeken bekijken en veilig bibliotheekbreed hernoemen; geen samenvoegen/splitsen/verwijderen in deze slice.
+- [ ] Gebruiker beoordeelt de voorgestelde scope; nog geen inhoudelijk akkoord op tags beheren veronderstellen.
+- [ ] Na scopeakkoord uitvoeringsplan en geteste increments uitwerken; productcode, nieuwe checklist en normale PR volgen tijdens implementatie.
+
+## Historie: Milestone 51 — geaccepteerd en gemerged
 # Milestone 51: meervoudige boekenkastselectie
 
 - [x] Aanvullende CodeRabbit-focusbevinding voor dubbele tagvermeldingen eerst falend gereproduceerd en hersteld: boek én doelgroep blijven samen tot focus/scroll in de juiste bladlijst. ID-selectie blijft uniek. 993 tests en vijftien WPF-scenario's groen met tijdelijke geïsoleerde build 2026.10.29.8 van 29 oktober 08:57. Verouderde actuele cijfers in specificatie/plan expliciet historisch gemarkeerd; eigen vijfassige review uitgevoerd.

@@ -1,3 +1,12 @@
+# Milestone 52: tags beheren — voorbereiding
+
+Voorstel ter beoordeling na de geaccepteerde en gemergede Milestone 51 / PR #53. Basis main e8e024c; branch codex/milestone-52-tag-management. Specificatie: docs/superpowers/specs/2026-10-29-saga-milestone-52-tag-management-design.md.
+
+Voorgestelde hoofdroute: tags doorzoeken met aantallen, gekoppelde boeken bekijken en één tag expliciet voor alle boeken hernoemen, met behoud van overige tags en volgorde. Een andere bestaande doelnaam blokkeren; samenvoegen/splitsen/verwijderen later. Bestaande Tags/BookTags-structuur en bestandssynchronisatie gebruiken, zonder schemawijziging of nieuwe dependency.
+
+De richting is nog niet inhoudelijk door de gebruiker bevestigd. Alleen onderzoek en specificatie uitgevoerd, geen productcode gewijzigd. Na scopeakkoord wordt het uitvoeringsplan uitgewerkt in geteste increments voor lezen/opslag, transactie, bestandssynchronisatie, viewmodel en venster/talen. De concrete acceptatiecriteria en teststrategie staan in de specificatie. Geen agents nodig.
+
+## Historie: Milestone 51 — geaccepteerd en gemerged
 # Milestone 51: meervoudige boekenkastselectie
 
 Actuele verificatie 29 oktober: de gedeelde boek-ID krijgt nu ook de juiste groepsvermelding voor focus en scroll. De nieuwe WPF-regressie bewijst de focus op de bedoelde groepslijst, verder navigeren en Shift/Ctrl. 993 tests en vijftien WPF-scenario's groen, inclusief de normale Debug-build 2026.10.29.9 van 08:59:31 (Europe/Amsterdam), met 0 waarschuwingen/fouten en één Saga.exe onder Builds. Op 29 oktober zijn alle resterende checklistpunten door de gebruiker getest en akkoord bevonden. Eigen review opnieuw zonder aanvullende bevindingen; CodeQL en GitGuardian groen. CodeRabbit kan de laatste fix door haar limiet niet beoordelen; de eigen review, regressietests en gebruikersacceptatie zijn vastgelegd. Oudere build-/testblokken hieronder zijn uitvoeringshistorie; het onterecht actuele blok van 27 oktober is historisch gemarkeerd.
