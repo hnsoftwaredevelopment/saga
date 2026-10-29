@@ -36,4 +36,3 @@ public sealed class TagRenameService(ITagRepository repository, BookService book
         return new(change, warnings.AsReadOnly());
     }
 }
-
