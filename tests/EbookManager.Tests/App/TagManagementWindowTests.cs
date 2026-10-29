@@ -23,10 +23,10 @@ public sealed class TagManagementWindowTests
     [Fact]
     public void All_tag_resource_references_exist_in_six_languages_and_placeholders_are_valid()
     {
-        var paths = new[] { "TagManagementWindow.xaml", "TagRenameWindow.xaml" };
+        var paths = new[] { "TagManagementWindow.xaml", "TagRenameWindow.xaml", "TagAssignmentWindow.xaml" };
         var xaml = string.Join("\n", paths.Select(path => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TestAssets", path))));
         var keys = System.Text.RegularExpressions.Regex.Matches(xaml, @"\{loc:Loc (Tag\w+)\}").Select(match => match.Groups[1].Value)
-            .Concat(new[] { "TagLoadFailed", "TagRenameWorking", "TagRenameSaved", "TagRenameSavedWithWarnings", "TagRenameNameExists", "TagRenameInvalid", "TagRenameUnchanged", "TagRenameConflict", "TagRenameFailed", "TagRenameRefreshFailed", "TagRenameExplanation" }).Distinct().ToArray();
+            .Concat(new[] { "TagLoadFailed", "TagRenameWorking", "TagRenameSaved", "TagRenameSavedWithWarnings", "TagRenameNameExists", "TagRenameInvalid", "TagRenameUnchanged", "TagRenameConflict", "TagRenameFailed", "TagRenameRefreshFailed", "TagRenameExplanation", "TagSelectedBooks", "TagChangeSelectionTitle", "TagChangeExplanation", "TagRemoveSelectionTitle", "TagRemoveExplanation", "TagAssignmentWorking", "TagAssignmentSaved", "TagAssignmentSavedWithWarnings", "TagAssignmentConflict", "TagAssignmentUnchanged", "TagAssignmentFailed", "TagAssignmentRefreshFailed" }).Distinct().ToArray();
         foreach (var language in new[] { "", ".nl", ".de", ".fr", ".es", ".it" })
         {
             var resources = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "Strings", $"AppResources{language}.resx"))

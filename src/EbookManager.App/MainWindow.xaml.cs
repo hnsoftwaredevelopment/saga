@@ -55,7 +55,8 @@ public partial class MainWindow : System.Windows.Window
         var library = currentLibrary.Current;
         if (library is null) return;
         var repository = new EfTagRepository(contextFactory, library.DirectoryPath);
-        using var tags = new TagManagementViewModel(repository, new TagRenameService(repository, bookService), localizationService.GetString);
+        using var tags = new TagManagementViewModel(repository, new TagRenameService(repository, bookService), localizationService.GetString,
+            new TagAssignmentService(repository, bookService));
         new TagManagementWindow(tags) { Owner = this }.ShowDialog();
         try { await viewModel.ReconcileExternalMetadataChangesAsync(tags.ChangedBookIds); }
         catch (Exception)

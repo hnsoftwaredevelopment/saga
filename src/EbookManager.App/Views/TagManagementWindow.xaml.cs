@@ -13,6 +13,7 @@ public partial class TagManagementWindow : Window
     private readonly CancellationTokenSource lifetime = new();
     private CancellationTokenSource? searchDelay;
     private bool changingSelection;
+    private bool changingBookSelection;
     private UIElement? focusToRestore;
     private int focusVersion;
 
@@ -38,6 +39,8 @@ public partial class TagManagementWindow : Window
 
     private void ViewModelChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName is nameof(viewModel.Books) or nameof(viewModel.SelectedBookCount))
+            Dispatcher.BeginInvoke(() => RestoreBookSelection());
         if (e.PropertyName == nameof(viewModel.IsBusy))
         {
             var version = ++focusVersion;
@@ -102,6 +105,36 @@ public partial class TagManagementWindow : Window
         RestoreFocus(sender as UIElement);
         if (confirmed)
             await viewModel.RenameAsync(preview, dialog.NewName);
+    }
+    private void BooksSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (!changingBookSelection && !viewModel.IsBusy)
+            viewModel.SetSelectedBooks(TagBooksGrid.SelectedItems.OfType<TagBook>());
+    }
+    private void RestoreBookSelection()
+    {
+        if (!IsLoaded) return;
+        var ids = viewModel.SelectedBookIds.ToHashSet();
+        if (ids.SetEquals(TagBooksGrid.SelectedItems.OfType<TagBook>().Select(book => book.Id))) return;
+        changingBookSelection = true;
+        try
+        {
+            TagBooksGrid.SelectedItems.Clear();
+            foreach (var book in viewModel.Books.Where(book => ids.Contains(book.Id))) TagBooksGrid.SelectedItems.Add(book);
+        }
+        finally { changingBookSelection = false; }
+    }
+    private async void ChangeSelectedClicked(object sender, RoutedEventArgs e) => await ChangeSelectionAsync(sender, TagAssignmentOperation.Replace);
+    private async void RemoveSelectedClicked(object sender, RoutedEventArgs e) => await ChangeSelectionAsync(sender, TagAssignmentOperation.Remove);
+    private async Task ChangeSelectionAsync(object sender, TagAssignmentOperation operation)
+    {
+        searchDelay?.Cancel();
+        var preview = await viewModel.PreviewAssignmentAsync();
+        if (preview is null) return;
+        var dialog = new TagAssignmentDialogViewModel(preview, operation, key => Localization.LocalizedStrings.Current[key]);
+        var confirmed = new TagAssignmentWindow(dialog) { Owner = this }.ShowDialog() == true;
+        RestoreFocus(sender as UIElement);
+        if (confirmed) await viewModel.ApplyAssignmentAsync(preview, new(operation, dialog.NewName));
     }
     private void RestoreFocus(UIElement? target)
     {

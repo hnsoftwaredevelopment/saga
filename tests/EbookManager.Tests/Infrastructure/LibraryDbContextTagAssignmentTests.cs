@@ -15,7 +15,7 @@ public sealed partial class LibraryDbContextTests
         var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
         var books = new EfBookRepository(factory, library.DirectoryPath);
         var first = CreateBook("First", ["Author"], ["Before", "Source", "After"]);
-        var second = CreateBook("Second", ["Author"], ["Source", "Target", "After"]);
+        var second = CreateBook("Second", ["Author"], ["Before", "Source", "Middle", "Target", "After"]);
         var untouched = CreateBook("Untouched", ["Author"], ["Source"]);
         var all = new[] { first, second, untouched };
         for (var index = 0; index < all.Length; index++) await books.AddAsync(all[index], CreateFile(all[index].Id, Hash(index + 1)), default);
@@ -28,7 +28,7 @@ public sealed partial class LibraryDbContextTests
         result.Status.Should().Be(TagAssignmentStatus.Applied);
         result.TargetTagId.Should().Be(target.Id);
         (await books.GetAsync(first.Id, default))!.Metadata.Tags.Should().Equal("Before", "Target", "After");
-        (await books.GetAsync(second.Id, default))!.Metadata.Tags.Should().Equal("Target", "After");
+        (await books.GetAsync(second.Id, default))!.Metadata.Tags.Should().Equal("Before", "Middle", "Target", "After");
         (await books.GetAsync(untouched.Id, default)).Should().BeEquivalentTo(otherBefore);
         (await repository.ListBooksAsync(source.Id, 0, 200, default)).Books.Select(book => book.Id).Should().Equal(untouched.Id);
         (await repository.ListBooksAsync(target.Id, 0, 200, default)).TotalCount.Should().Be(2);
