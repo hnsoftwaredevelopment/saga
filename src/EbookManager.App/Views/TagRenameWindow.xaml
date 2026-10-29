@@ -17,6 +17,7 @@
       <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Margin="0,0,0,16" />
       <Label Content="{loc:Loc TagRenameNew}" Target="{Binding ElementName=NewNameBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
       <TextBox x:Name="NewNameBox" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:Loc TagRenameNew}" />
+      <TextBlock Text="{loc:Loc TagRenameInvalid}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0" />
     </StackPanel>
     </ScrollViewer>
   </DockPanel>
