@@ -75,6 +75,60 @@ internal static class GroupedBookshelfNavigationSmoke
         }
         finally { window.Close(); }
     }
+    public static async Task RunDuplicateAsync()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var books = Enumerable.Range(0, 5).Select(index => new Book(Guid.NewGuid(),
+            new BookMetadata($"Book {index:D2}", ["Author"], Tags: index == 0 ? ["A", "B"] : [index == 1 ? "A" : "B"]),
+            ReadingStatus.Unread, null, now, now)).ToArray();
+        var repository = new SmokeBookRepository(books);
+        var service = new BookService(repository, new ManagedLibraryFileStore(System.IO.Path.GetTempPath()), new MetadataAdapterResolver([new FallbackMetadataAdapter()]));
+        var vm = new LibraryViewModel(repository, new BookSearchService(), new BookDetailsViewModel(service), new SmokeInteraction(),
+            bookService: service, searchFilterDelay: _ => Task.CompletedTask);
+        await vm.RefreshAsync();
+        vm.SelectedView = LibraryView.Bookshelf;
+        vm.SetGroupingOptions([LibraryGroupOption.Tag]);
+        foreach (var group in vm.GroupedLibraryNodes) group.IsExpanded = true;
+        var view = new BookshelfView { DataContext = vm };
+        var window = new Window { Content = view, Width = 700, Height = 850 };
+        try
+        {
+            window.Show(); window.Activate(); await IdleAsync();
+            async Task Press(int sourceGroup, int sourceBook, Key key, int expectedGroup, int expectedBook, ModifierKeys modifiers = ModifierKeys.None)
+            {
+                var groups = (ListBox)view.FindName("BookshelfGroupsList");
+                groups.ScrollIntoView(vm.GroupedLibraryNodes[sourceGroup]); groups.UpdateLayout();
+                var list = GroupList(groups, vm.GroupedLibraryNodes[sourceGroup]) ?? throw new InvalidOperationException("Source group not realized.");
+                list.ScrollIntoView(vm.VisibleBooks[sourceBook]); list.UpdateLayout();
+                var item = (ListBoxItem)list.ItemContainerGenerator.ContainerFromItem(vm.VisibleBooks[sourceBook]);
+                vm.SelectBookshelfBook(vm.VisibleBooks[sourceBook], false, false);
+                item.Focus();
+                GroupedBookSelectionSmoke.WithModifiers(modifiers, () => item.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice,
+                    PresentationSource.FromVisual(item), Environment.TickCount, key) { RoutedEvent = Keyboard.PreviewKeyDownEvent }));
+                await IdleAsync();
+                Require(Keyboard.FocusedElement is ListBoxItem focused && focused.DataContext is BookRowViewModel row && row.Id == books[expectedBook].Id &&
+                    ReferenceEquals(ItemsControl.ItemsControlFromItemContainer(focused).ItemsSource, vm.GroupedLibraryNodes[expectedGroup].Books),
+                    $"{key} focused the wrong occurrence of book {expectedBook}; expected group {expectedGroup}.");
+                Require(vm.SelectedBooks.Select(row => row.Id).Distinct().Count() == vm.SelectedBookCount, "Duplicate occurrences were counted twice.");
+            }
+            await Press(0, 0, Key.Down, 1, 0);
+            await Press(1, 0, Key.Down, 1, 4);
+            await Press(1, 0, Key.Up, 0, 0);
+            await Press(0, 0, Key.Down, 1, 0, ModifierKeys.Shift);
+            Require(vm.SelectedBookCount == 1 && vm.SelectedBooks.Single().Id == books[0].Id, "Shift selected a duplicate book twice.");
+            await Press(0, 0, Key.Down, 1, 0, ModifierKeys.Control);
+            Require(vm.SelectedBooks.Single().Id == books[0].Id, "Ctrl navigation changed the selected IDs.");
+            Console.WriteLine("PASS: duplicate tagged tiles keep vertical focus in the intended group, including Shift and Ctrl.");
+        }
+        finally { window.Close(); }
+    }
+    private static ListBox? GroupList(DependencyObject root, LibraryGroupNodeViewModel group)
+    {
+        if (root is ListBox list && ReferenceEquals(list.ItemsSource, group.Books)) return list;
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+            if (GroupList(VisualTreeHelper.GetChild(root, index), group) is { } found) return found;
+        return null;
+    }
     private static Task IdleAsync() => Dispatcher.CurrentDispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle).Task;
     private static void Require(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
     private static ListBox? FindBookList(DependencyObject root, BookRowViewModel row)

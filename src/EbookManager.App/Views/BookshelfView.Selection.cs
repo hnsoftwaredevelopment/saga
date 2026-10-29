@@ -55,28 +55,31 @@ public partial class BookshelfView
         };
         var target = vm.IsBookshelfGrouped && e.Key is (Key.Up or Key.Down)
             ? GroupedVerticalTarget(vm, list, row, columns, e.Key == Key.Down)
-            : order[Math.Clamp(next, 0, order.Count - 1)];
-        if (!control || shift) vm.SelectBookshelfBook(target, control, shift);
-        FocusBook(vm, target.Id);
+            : new BookNavigationTarget(order[Math.Clamp(next, 0, order.Count - 1)], null);
+        if (!control || shift) vm.SelectBookshelfBook(target.Book, control, shift);
+        FocusBook(vm, target.Book.Id, target.Group);
     }
 
-    private BookRowViewModel GroupedVerticalTarget(LibraryViewModel vm, ListBox? list,
+    private readonly record struct BookNavigationTarget(BookRowViewModel Book, LibraryGroupNodeViewModel? Group);
+
+    private BookNavigationTarget GroupedVerticalTarget(LibraryViewModel vm, ListBox? list,
         BookRowViewModel row, int columns, bool down)
     {
         var groups = ExpandedBookGroups(vm.GroupedLibraryNodes).ToList();
         var groupIndex = groups.FindIndex(group => ReferenceEquals(group, list?.DataContext));
-        if (groupIndex < 0) return row;
-        var books = groups[groupIndex].Books;
+        if (groupIndex < 0) return new(row, null);
+        var currentGroup = groups[groupIndex];
+        var books = currentGroup.Books;
         var index = books.IndexOf(row);
-        if (index < 0) return row;
+        if (index < 0) return new(row, currentGroup);
         var column = index % columns;
         var tileRow = index / columns;
         if (down && tileRow < (books.Count - 1) / columns)
-            return books[Math.Min(index + columns, books.Count - 1)];
-        if (!down && tileRow > 0) return books[index - columns];
+            return new(books[Math.Min(index + columns, books.Count - 1)], currentGroup);
+        if (!down && tileRow > 0) return new(books[index - columns], currentGroup);
 
         var adjacent = groupIndex + (down ? 1 : -1);
-        if (adjacent < 0 || adjacent >= groups.Count) return row;
+        if (adjacent < 0 || adjacent >= groups.Count) return new(row, currentGroup);
         var target = groups[adjacent];
         // A group restarts its own tile rows; a partial preceding row must not offset it.
         var targetList = FindGroupBookList(BookshelfGroupsList, target);
@@ -89,7 +92,7 @@ public partial class BookshelfView
         }
         var targetColumns = FindWrapPanel(targetList)?.ColumnCount ?? columns;
         var start = down ? 0 : (target.Books.Count - 1) / targetColumns * targetColumns;
-        return target.Books[Math.Min(start + Math.Min(column, targetColumns - 1), target.Books.Count - 1)];
+        return new(target.Books[Math.Min(start + Math.Min(column, targetColumns - 1), target.Books.Count - 1)], target);
     }
 
     private static IEnumerable<LibraryGroupNodeViewModel> ExpandedBookGroups(IEnumerable<LibraryGroupNodeViewModel> groups)
@@ -112,37 +115,43 @@ public partial class BookshelfView
         return null;
     }
 
-    private void FocusBook(LibraryViewModel vm, Guid id)
+    private void FocusBook(LibraryViewModel vm, Guid id, LibraryGroupNodeViewModel? targetGroup = null)
     {
         var version = ++tileFocusVersion;
+        ListBox? focusList;
         if (!vm.IsBookshelfGrouped)
         {
             var index = vm.VisibleBooks.ToList().FindIndex(row => row.Id == id);
+            if (index < 0) return;
             BookshelfBooksList.ScrollIntoView(vm.VisibleBooks[index]);
             BookshelfBooksList.UpdateLayout();
+            focusList = BookshelfBooksList;
         }
         else
         {
-            var group = vm.GroupedLibraryNodes.FirstOrDefault(group => ContainsExpandedBook(group, id));
-            if (group is null) return;
-            BookshelfGroupsList.ScrollIntoView(group);
+            targetGroup ??= ExpandedBookGroups(vm.GroupedLibraryNodes).FirstOrDefault(group => group.Books.Any(row => row.Id == id));
+            if (targetGroup is null) return;
+            var top = vm.GroupedLibraryNodes.FirstOrDefault(group => ContainsGroup(group, targetGroup));
+            if (top is null) return;
+            BookshelfGroupsList.ScrollIntoView(top);
             BookshelfGroupsList.UpdateLayout();
-            FindBookList(BookshelfGroupsList, id)?.ScrollIntoView(vm.VisibleBooks.First(row => row.Id == id));
+            // Preserve the intended occurrence when one book belongs to multiple groups.
+            focusList = FindGroupBookList(BookshelfGroupsList, targetGroup);
+            if (focusList is null) return;
+            focusList.ScrollIntoView(targetGroup.Books.First(row => row.Id == id));
             BookshelfGroupsList.UpdateLayout();
         }
         var focusAtRequest = Keyboard.FocusedElement;
         Dispatcher.BeginInvoke(() =>
         {
-            if (version != tileFocusVersion || !IsVisible || !ReferenceEquals(DataContext, vm) ||
+            if (version != tileFocusVersion || !IsVisible || !ReferenceEquals(DataContext, vm) || vm.SelectedView != LibraryView.Bookshelf ||
+                !focusList.IsLoaded || !focusList.IsVisible ||
                 !ReferenceEquals(Keyboard.FocusedElement, focusAtRequest)) return;
-            var container = FindBookContainer(vm.IsBookshelfGrouped ? BookshelfGroupsList : BookshelfBooksList, id);
+            var container = FindBookContainer(focusList, id);
             container?.BringIntoView();
             container?.Focus();
         }, DispatcherPriority.ContextIdle);
     }
-
-    private static bool ContainsExpandedBook(LibraryGroupNodeViewModel group, Guid id) => group.IsExpanded &&
-        (group.Books.Any(row => row.Id == id) || group.Groups.Any(child => ContainsExpandedBook(child, id)));
 
     private static VirtualizingWrapPanel? FindWrapPanel(DependencyObject? root)
     {
@@ -150,14 +159,6 @@ public partial class BookshelfView
         if (root is VirtualizingWrapPanel panel) return panel;
         for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
             if (FindWrapPanel(VisualTreeHelper.GetChild(root, index)) is { } found) return found;
-        return null;
-    }
-
-    private static ListBox? FindBookList(DependencyObject root, Guid id)
-    {
-        if (root is ListBox list && list.Items.OfType<BookRowViewModel>().Any(row => row.Id == id)) return list;
-        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
-            if (FindBookList(VisualTreeHelper.GetChild(root, index), id) is { } found) return found;
         return null;
     }
 

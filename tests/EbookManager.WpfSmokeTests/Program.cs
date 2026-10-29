@@ -97,6 +97,7 @@ internal static class Program
                 await BookshelfSelectionSmoke.RunAsync();
                 await GroupedBookSelectionSmoke.RunAsync();
                 await GroupedBookshelfNavigationSmoke.RunAsync();
+                await GroupedBookshelfNavigationSmoke.RunDuplicateAsync();
                 exitCode = 0;
             }
             catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception.Message); }
