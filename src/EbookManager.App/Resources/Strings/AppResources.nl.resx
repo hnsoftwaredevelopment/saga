@@ -546,7 +546,7 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="TagRename" xml:space="preserve"><value>Tag overal hernoemen</value></data>
   <data name="TagRenameOriginal" xml:space="preserve"><value>Huidige tagnaam</value></data>
   <data name="TagRenameNew" xml:space="preserve"><value>Nieuwe tagnaam</value></data>
-  <data name="TagRenameExplanation" xml:space="preserve"><value>Deze tag wordt gewijzigd voor alle {0} boeken. Andere tags en hun volgorde blijven behouden.</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Deze tag wordt gewijzigd voor alle {0} boeken. Bestaat de nieuwe naam al, dan worden de tags samengevoegd. Elk boek houdt de doeltag één keer; andere tags behouden hun volgorde.</value></data>
   <data name="TagRenameWorking" xml:space="preserve"><value>Tag hernoemen en boekbestanden bijwerken…</value></data>
   <data name="TagRenameSaved" xml:space="preserve"><value>Tag hernoemd voor {0} boeken.</value></data>
   <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Tag hernoemd voor {0} boeken. De boekbestanden van {1} boeken konden niet worden bijgewerkt.</value></data>

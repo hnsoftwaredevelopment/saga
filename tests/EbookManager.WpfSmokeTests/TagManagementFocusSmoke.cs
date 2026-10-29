@@ -58,6 +58,18 @@ internal static class TagManagementFocusSmoke
             Require(vm.ChangedBookIds.Count == 1 && vm.Tags.Single().Name == "Renamed tag", "Renamed tag was not retained in the filtered index.");
             Console.WriteLine("PASS: tag rename dialog keeps text focus and restores its caller after cancel/save.");
 
+            var targetId = repository.Tags.Single(tag => tag.Name == "Second").Id;
+            rename.Focus();
+            var mergeDialog = CompleteDialogAsync(true, "Second");
+            rename.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await mergeDialog;
+            await WaitAsync(() => !vm.IsBusy && vm.TagId == targetId); await IdleAsync();
+            Require(vm.TotalBooks == 2 && vm.Books.Count == 2 && vm.Tags.Single().BookCount == 2,
+                "Global merge did not show the surviving tag's books/count.");
+            Require(((TagSummary?)list.SelectedItem)?.Id == targetId && rename.IsKeyboardFocusWithin,
+                "Global merge lost its surviving tag selection or action focus.");
+            Console.WriteLine("PASS: global tag rename into an existing tag reloads the surviving tag and preserves action focus without book selection.");
+
             if (Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_TAGS") is { Length: > 0 } directory)
             {
                 foreach (var theme in new[] { "Light", "Dark" })
@@ -83,7 +95,7 @@ internal static class TagManagementFocusSmoke
         }
     }
 
-    private static async Task CompleteDialogAsync(bool confirm)
+    private static async Task CompleteDialogAsync(bool confirm, string newName = "Renamed tag")
     {
         await WaitAsync(() => System.Windows.Application.Current.Windows.OfType<TagRenameWindow>().Any(window => window.IsLoaded));
         var dialog = System.Windows.Application.Current.Windows.OfType<TagRenameWindow>().Single();
@@ -92,7 +104,7 @@ internal static class TagManagementFocusSmoke
             await Task.Delay(50);
             var name = (TextBox)dialog.FindName("NewNameBox");
             Require(dialog.IsActive && name.IsKeyboardFocusWithin, "Busy restoration stole focus from the tag rename dialog.");
-            if (confirm) name.Text = "Renamed tag";
+            if (confirm) name.Text = newName;
             dialog.DialogResult = confirm;
         }
         finally { if (dialog.IsVisible) dialog.Close(); }
@@ -113,8 +125,10 @@ internal static class TagManagementFocusSmoke
 
     private sealed class TagRepository : ITagRepository, ITagRenameService
     {
-        public TagSummary[] Tags { get; } = [new(Guid.NewGuid(), "First", 1), new(Guid.NewGuid(), "Second", 1)];
+        public TagSummary[] Tags { get; private set; } = [new(Guid.NewGuid(), "First", 1), new(Guid.NewGuid(), "Second", 1)];
         private readonly TagSourceBook source = new(Guid.NewGuid(), "Book");
+        private readonly TagBook existing = new(Guid.NewGuid(), "Existing book", "Author");
+        private bool merged;
         public bool FailLoad { get; set; }
         public Task<TagPage> SearchAsync(string query, int skip, int take, CancellationToken token)
         {
@@ -125,7 +139,7 @@ internal static class TagManagementFocusSmoke
         {
             await Task.Delay(30, token);
             if (FailLoad) throw new System.IO.IOException("Simulated tag read failure");
-            return new([new(source.Id, source.Title, "Author")], 1);
+            return merged ? new([new(source.Id, source.Title, "Author"), existing], 2) : new([new(source.Id, source.Title, "Author")], 1);
         }
         public Task<TagRenamePreview> PreviewRenameAsync(Guid id, CancellationToken token) => PreviewAsync(id, token);
         public async Task<TagRenamePreview> PreviewAsync(Guid id, CancellationToken token)
@@ -135,6 +149,12 @@ internal static class TagManagementFocusSmoke
         }
         public Task<TagRenameResult> RenameAsync(TagRenamePreview preview, string name, CancellationToken token)
         {
+            if (Tags.FirstOrDefault(tag => tag.Id != preview.TagId && tag.Name == name) is { } target)
+            {
+                merged = true;
+                Tags = [target with { BookCount = 2 }];
+                return Task.FromResult(new TagRenameResult(TagRenameStatus.Renamed, target.Id, target.Name, preview.Books));
+            }
             var index = Array.FindIndex(Tags, tag => tag.Id == preview.TagId);
             Tags[index] = Tags[index] with { Name = name };
             return Task.FromResult(new TagRenameResult(TagRenameStatus.Renamed, preview.TagId, name, preview.Books));

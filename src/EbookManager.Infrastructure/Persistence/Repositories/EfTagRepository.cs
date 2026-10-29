@@ -54,8 +54,17 @@ public sealed partial class EfTagRepository(LibraryDbContextFactory factory, str
         if (books.Length == 0 || !books.Select(book => book.Id).SequenceEqual(preview.Books.Select(book => book.Id).Order()))
             return Rejected(TagRenameStatus.Conflict);
         var normalized = TagNames.Normalize(newName);
-        if (await context.Tags.AnyAsync(other => other.Id != tag.Id && other.NormalizedName == normalized, token))
-            return Rejected(TagRenameStatus.NameExists);
+        var target = await context.Tags.SingleOrDefaultAsync(other => other.Id != tag.Id && other.NormalizedName == normalized, token);
+        if (target is not null)
+        {
+            var links = await AssignmentSourcesAsync(context, tag.Id, books.Select(book => book.Id).ToArray(), token);
+            if (links.Length != books.Length || !await ReplaceAssignmentsAsync(context, tag.Id, target.Id, links, token))
+                return Rejected(TagRenameStatus.Conflict);
+            context.Tags.Remove(tag);
+            await context.SaveChangesAsync(token);
+            await transaction.CommitAsync(token);
+            return new(TagRenameStatus.Renamed, target.Id, target.Name, books);
+        }
         if (tag.Name == newName) return Rejected(TagRenameStatus.Unchanged);
         tag.Name = newName;
         tag.NormalizedName = normalized;

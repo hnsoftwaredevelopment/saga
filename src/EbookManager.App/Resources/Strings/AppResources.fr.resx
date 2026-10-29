@@ -826,7 +826,7 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="TagRename" xml:space="preserve"><value>Renommer l’étiquette partout</value></data>
   <data name="TagRenameOriginal" xml:space="preserve"><value>Nom actuel de l’étiquette</value></data>
   <data name="TagRenameNew" xml:space="preserve"><value>Nouveau nom de l’étiquette</value></data>
-  <data name="TagRenameExplanation" xml:space="preserve"><value>Cette étiquette sera modifiée pour les {0} livres. Les autres étiquettes et leur ordre seront conservés.</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Cette étiquette sera modifiée pour les {0} livres. Si le nouveau nom existe déjà, les étiquettes seront fusionnées. Chaque livre conserve une seule fois l&apos;étiquette cible ; les autres étiquettes gardent leur ordre.</value></data>
   <data name="TagRenameWorking" xml:space="preserve"><value>Renommage de l’étiquette et mise à jour des fichiers…</value></data>
   <data name="TagRenameSaved" xml:space="preserve"><value>Étiquette renommée pour {0} livres.</value></data>
   <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Étiquette renommée pour {0} livres. Les fichiers de {1} livres n’ont pas pu être mis à jour.</value></data>

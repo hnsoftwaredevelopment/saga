@@ -11,6 +11,31 @@ public sealed class TagManagementViewModelTests
     private static readonly Guid TagId = Guid.NewGuid();
 
     [Fact]
+    public async Task Global_merge_selects_surviving_tag_and_reloads_its_books_without_requiring_book_selection()
+    {
+        var targetId = Guid.NewGuid();
+        var repository = new TagFake();
+        using var vm = new TagManagementViewModel(repository, repository, key => key);
+        await vm.SelectAsync(new(TagId, "Old", 2));
+        var preview = (await vm.PreviewRenameAsync())!;
+        var all = preview.Books.Select(book => new TagBook(book.Id, book.Title, "Author"))
+            .Append(new(Guid.NewGuid(), "Previously tagged", "Author")).ToArray();
+        repository.Rename = (_, _) => Task.FromResult(new TagRenameCompletion(new(TagRenameStatus.Renamed, targetId, "Roman", preview.Books), []));
+        repository.Search = _ => Task.FromResult(new TagPage([new(targetId, "Roman", 3)], 1));
+        repository.List = (id, skip, take) => Task.FromResult(new TagBookPage(id == targetId ? all.Skip(skip).Take(take).ToArray() : [], id == targetId ? 3 : 0));
+        vm.SelectedBookCount.Should().Be(0);
+        (await vm.RenameAsync(preview, " roman ")).Should().BeTrue();
+        vm.TagId.Should().Be(targetId);
+        vm.Name.Should().Be("Roman");
+        vm.Query.Should().Be("Roman");
+        vm.Books.Should().Equal(all);
+        vm.TotalBooks.Should().Be(3);
+        vm.Tags.Single().BookCount.Should().Be(3);
+        vm.ChangedBookIds.Should().BeEquivalentTo(preview.Books.Select(book => book.Id));
+        vm.IsError.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task Rename_keeps_ordered_books_selects_new_query_and_reports_committed_ids_and_warnings()
     {
         var repository = new TagFake();

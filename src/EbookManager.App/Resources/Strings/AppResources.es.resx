@@ -826,7 +826,7 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="TagRename" xml:space="preserve"><value>Renombrar etiqueta en todos los libros</value></data>
   <data name="TagRenameOriginal" xml:space="preserve"><value>Nombre actual de la etiqueta</value></data>
   <data name="TagRenameNew" xml:space="preserve"><value>Nuevo nombre de la etiqueta</value></data>
-  <data name="TagRenameExplanation" xml:space="preserve"><value>Se cambiará esta etiqueta en los {0} libros. Se conservarán las demás etiquetas y su orden.</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Se cambiará esta etiqueta en los {0} libros. Si el nuevo nombre ya existe, se combinarán las etiquetas. Cada libro conservará la etiqueta de destino una sola vez; las demás mantendrán su orden.</value></data>
   <data name="TagRenameWorking" xml:space="preserve"><value>Cambiando el nombre de la etiqueta y actualizando los archivos…</value></data>
   <data name="TagRenameSaved" xml:space="preserve"><value>Etiqueta renombrada en {0} libros.</value></data>
   <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Etiqueta renombrada en {0} libros. No se pudieron actualizar los archivos de {1} libros.</value></data>

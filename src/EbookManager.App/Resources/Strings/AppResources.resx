@@ -546,7 +546,7 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="TagRename" xml:space="preserve"><value>Rename tag everywhere</value></data>
   <data name="TagRenameOriginal" xml:space="preserve"><value>Current tag name</value></data>
   <data name="TagRenameNew" xml:space="preserve"><value>New tag name</value></data>
-  <data name="TagRenameExplanation" xml:space="preserve"><value>This changes the tag for all {0} books. Other tags and their order stay the same.</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>This changes the tag for all {0} books. If the new name already exists, the tags are combined. Each book keeps the target tag once; other tags keep their order.</value></data>
   <data name="TagRenameWorking" xml:space="preserve"><value>Renaming tag and updating book files…</value></data>
   <data name="TagRenameSaved" xml:space="preserve"><value>Tag renamed for {0} books.</value></data>
   <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Tag renamed for {0} books. Book files could not be updated for {1} books.</value></data>

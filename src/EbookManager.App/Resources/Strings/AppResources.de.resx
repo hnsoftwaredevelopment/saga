@@ -826,7 +826,7 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="TagRename" xml:space="preserve"><value>Schlagwort überall umbenennen</value></data>
   <data name="TagRenameOriginal" xml:space="preserve"><value>Aktueller Schlagwortname</value></data>
   <data name="TagRenameNew" xml:space="preserve"><value>Neuer Schlagwortname</value></data>
-  <data name="TagRenameExplanation" xml:space="preserve"><value>Dieses Schlagwort wird für alle {0} Bücher geändert. Andere Schlagwörter und ihre Reihenfolge bleiben erhalten.</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Dieses Schlagwort wird für alle {0} Bücher geändert. Ist der neue Name bereits vorhanden, werden die Schlagwörter zusammengeführt. Jedes Buch behält das Zielschlagwort einmal; andere Schlagwörter behalten ihre Reihenfolge.</value></data>
   <data name="TagRenameWorking" xml:space="preserve"><value>Schlagwort wird umbenannt und Buchdateien werden aktualisiert…</value></data>
   <data name="TagRenameSaved" xml:space="preserve"><value>Schlagwort für {0} Bücher umbenannt.</value></data>
   <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Schlagwort für {0} Bücher umbenannt. Bei {1} Büchern konnten die Dateien nicht aktualisiert werden.</value></data>

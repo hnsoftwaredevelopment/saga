@@ -146,11 +146,30 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
                 }, result.Change.Status != TagRenameStatus.Unchanged);
                 return false;
             }
+            var merged = result.Change.TagId != preview.TagId;
+            var bookExtent = Math.Max(200, Books.Count);
+            TagId = result.Change.TagId;
             Name = result.Change.Name;
-            TotalBooks = result.Change.Books.Count;
-            // Only the name changed; keep the already sorted book pages and their scroll position.
+            if (merged)
+            {
+                SetSelectedBooks([]);
+                Books = [];
+                TotalBooks = 0;
+                var loaded = new List<TagBook>();
+                TagBookPage page;
+                do
+                {
+                    page = await Task.Run(() => repository.ListBooksAsync(result.Change.TagId, loaded.Count, 200, lifetime.Token), lifetime.Token);
+                    loaded.AddRange(page.Books);
+                } while (page.Books.Count > 0 && loaded.Count < Math.Min(bookExtent, page.TotalCount));
+                if (disposed) return true;
+                Books = loaded.DistinctBy(book => book.Id).ToArray();
+                TotalBooks = page.TotalCount;
+            }
+            else TotalBooks = result.Change.Books.Count;
+            // A plain rename keeps the sorted pages; a merge reloads the surviving tag's union.
             Warnings = result.Warnings;
-            StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "TagRenameSaved" : "TagRenameSavedWithWarnings"), TotalBooks, Warnings.Count);
+            StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "TagRenameSaved" : "TagRenameSavedWithWarnings"), result.Change.Books.Count, Warnings.Count);
             IsError = Warnings.Count > 0;
             if (!await SearchCoreAsync(Name) && !disposed) SetStatus("TagRenameRefreshFailed", true);
             NotifySelection();

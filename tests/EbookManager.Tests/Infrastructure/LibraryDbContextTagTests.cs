@@ -97,7 +97,7 @@ public sealed partial class LibraryDbContextTests
     }
 
     [Fact]
-    public async Task Tag_rename_rejects_existing_name_stale_links_and_stale_name_but_allows_case_correction()
+    public async Task Tag_rename_rejects_stale_links_and_stale_name_but_allows_case_correction()
     {
         using var library = new TemporaryLibrary();
         var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
@@ -109,7 +109,6 @@ public sealed partial class LibraryDbContextTests
         }
         var repository = new EfTagRepository(factory, library.DirectoryPath);
         var preview = await repository.PreviewRenameAsync(id, default);
-        (await repository.RenameAsync(preview, " unused ", default)).Status.Should().Be(TagRenameStatus.NameExists);
         (await repository.RenameAsync(preview, "Target", default)).Status.Should().Be(TagRenameStatus.Unchanged);
         (await repository.RenameAsync(preview, "target", default)).Status.Should().Be(TagRenameStatus.Renamed);
         (await repository.RenameAsync(preview, "New", default)).Status.Should().Be(TagRenameStatus.Conflict);

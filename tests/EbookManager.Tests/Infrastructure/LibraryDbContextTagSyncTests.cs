@@ -13,15 +13,22 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task Tag_sync_uses_committed_metadata_and_reports_file_warning(bool failWrite)
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task Tag_sync_uses_committed_metadata_and_reports_file_warning(bool failWrite, bool merge)
     {
         using var library = new TemporaryLibrary();
         var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
         var books = new EfBookRepository(factory, library.DirectoryPath);
         var book = CreateBook("Book", ["Author"], ["Target"]);
         await books.AddAsync(book, CreateFile(book.Id), default);
+        if (merge)
+        {
+            var existing = CreateBook("Existing", ["Author"], ["Renamed"]);
+            await books.AddAsync(existing, CreateFile(existing.Id, Hash(2)), default);
+        }
         var repository = new EfTagRepository(factory, library.DirectoryPath);
         var sidecars = new TagSidecars(failWrite);
         var service = new TagRenameService(repository, new BookService(books,

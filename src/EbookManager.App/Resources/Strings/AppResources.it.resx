@@ -826,7 +826,7 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="TagRename" xml:space="preserve"><value>Rinomina etichetta ovunque</value></data>
   <data name="TagRenameOriginal" xml:space="preserve"><value>Nome attuale dell’etichetta</value></data>
   <data name="TagRenameNew" xml:space="preserve"><value>Nuovo nome dell’etichetta</value></data>
-  <data name="TagRenameExplanation" xml:space="preserve"><value>Questa etichetta verrà modificata per tutti i {0} libri. Le altre etichette e il loro ordine saranno mantenuti.</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Questa etichetta verrà modificata per tutti i {0} libri. Se il nuovo nome esiste già, le etichette verranno unite. Ogni libro manterrà una sola etichetta di destinazione; le altre manterranno il loro ordine.</value></data>
   <data name="TagRenameWorking" xml:space="preserve"><value>Rinomina dell’etichetta e aggiornamento dei file…</value></data>
   <data name="TagRenameSaved" xml:space="preserve"><value>Etichetta rinominata per {0} libri.</value></data>
   <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Etichetta rinominata per {0} libri. Non è stato possibile aggiornare i file di {1} libri.</value></data>

@@ -45,28 +45,37 @@ public sealed partial class EfTagRepository
                 await context.SaveChangesAsync(token);
             }
         }
+        if (!await ReplaceAssignmentsAsync(context, source.Id, target?.Id, links, token))
+            return Rejected(TagAssignmentStatus.Conflict);
+        await transaction.CommitAsync(token);
+        return new(TagAssignmentStatus.Applied, source.Id, target?.Id, target?.Name,
+            links.Select(link => new TagSourceBook(link.BookId, link.Title)).ToArray());
+    }
+
+    private static async Task<bool> ReplaceAssignmentsAsync(LibraryDbContext context, Guid sourceId, Guid? targetId,
+        AssignmentSource[] links, CancellationToken token)
+    {
         var updated = DateTimeOffset.UtcNow;
+        var ids = links.Select(link => link.BookId).ToArray();
         foreach (var chunk in ids.Chunk(500))
         {
-            var alreadyAssigned = target is null ? [] : (await context.BookTags.AsNoTracking()
-                .Where(link => link.TagId == target.Id && chunk.Contains(link.BookId)).Select(link => link.BookId).ToArrayAsync(token)).ToHashSet();
+            var alreadyAssigned = targetId is null ? [] : (await context.BookTags.AsNoTracking()
+                .Where(link => link.TagId == targetId && chunk.Contains(link.BookId)).Select(link => link.BookId).ToArrayAsync(token)).ToHashSet();
             // Free the original Order slots before adding replacement links; both unique indexes remain valid.
-            var deleted = await context.BookTags.Where(link => link.TagId == source.Id && chunk.Contains(link.BookId)).ExecuteDeleteAsync(token);
-            if (deleted != chunk.Length) return Rejected(TagAssignmentStatus.Conflict);
-            if (target is not null)
+            var deleted = await context.BookTags.Where(link => link.TagId == sourceId && chunk.Contains(link.BookId)).ExecuteDeleteAsync(token);
+            if (deleted != chunk.Length) return false;
+            if (targetId is not null)
             {
                 var chunkIds = chunk.ToHashSet();
                 foreach (var link in links.Where(link => chunkIds.Contains(link.BookId) && !alreadyAssigned.Contains(link.BookId)))
-                    context.BookTags.Add(new() { BookId = link.BookId, TagId = target.Id, Order = link.Order });
+                    context.BookTags.Add(new() { BookId = link.BookId, TagId = targetId.Value, Order = link.Order });
                 await context.SaveChangesAsync(token);
             }
             var changed = await context.Books.Where(book => chunk.Contains(book.Id))
                 .ExecuteUpdateAsync(setters => setters.SetProperty(book => book.UpdatedUtc, updated), token);
-            if (changed != chunk.Length) return Rejected(TagAssignmentStatus.Conflict);
+            if (changed != chunk.Length) return false;
         }
-        await transaction.CommitAsync(token);
-        return new(TagAssignmentStatus.Applied, source.Id, target?.Id, target?.Name,
-            links.Select(link => new TagSourceBook(link.BookId, link.Title)).ToArray());
+        return true;
     }
 
     private sealed record AssignmentSource(Guid BookId, string Title, int Order);
