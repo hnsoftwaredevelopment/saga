@@ -814,5 +814,28 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesRenameFailed" xml:space="preserve"><value>Impossibile rinominare la serie. Nessuna modifica alla serie è stata salvata.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>La serie è stata rinominata, ma non è stato possibile aggiornare la vista della biblioteca. Riapri la biblioteca per vedere le modifiche.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+clic seleziona più libri; Maiusc+clic seleziona un intervallo. Usa i tasti freccia e Ctrl+Spazio con la tastiera; Esc cancella la selezione.</value></data>
+  <data name="TagManagementTitle" xml:space="preserve"><value>Gestisci etichette</value></data>
+  <data name="TagManagementDescription" xml:space="preserve"><value>Cerca un’etichetta, consulta i suoi libri e rinominala per tutti i libri collegati.</value></data>
+  <data name="TagSearch" xml:space="preserve"><value>Cerca etichette</value></data>
+  <data name="TagCountLabel" xml:space="preserve"><value>etichette</value></data>
+  <data name="TagLoadMore" xml:space="preserve"><value>Carica altri</value></data>
+  <data name="TagNoneFound" xml:space="preserve"><value>Nessuna etichetta trovata.</value></data>
+  <data name="TagResizePanels" xml:space="preserve"><value>Ridimensiona i pannelli</value></data>
+  <data name="TagBooks" xml:space="preserve"><value>libri con questa etichetta</value></data>
+  <data name="TagLoadFailed" xml:space="preserve"><value>Impossibile caricare le etichette o i libri. Riprova.</value></data>
+  <data name="TagRename" xml:space="preserve"><value>Rinomina etichetta</value></data>
+  <data name="TagRenameOriginal" xml:space="preserve"><value>Nome attuale dell’etichetta</value></data>
+  <data name="TagRenameNew" xml:space="preserve"><value>Nuovo nome dell’etichetta</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Questa etichetta verrà modificata per tutti i {0} libri. Le altre etichette e il loro ordine saranno mantenuti.</value></data>
+  <data name="TagRenameWorking" xml:space="preserve"><value>Rinomina dell’etichetta e aggiornamento dei file…</value></data>
+  <data name="TagRenameSaved" xml:space="preserve"><value>Etichetta rinominata per {0} libri.</value></data>
+  <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Etichetta rinominata per {0} libri. Non è stato possibile aggiornare i file di {1} libri.</value></data>
+  <data name="TagRenameWarningDetails" xml:space="preserve"><value>Libri i cui file non sono stati aggiornati</value></data>
+  <data name="TagRenameNameExists" xml:space="preserve"><value>Questo nome di etichetta esiste già. Scegli un altro nome; le etichette non vengono unite.</value></data>
+  <data name="TagRenameInvalid" xml:space="preserve"><value>Inserisci un solo nome di etichetta senza punto e virgola o interruzioni di riga.</value></data>
+  <data name="TagRenameUnchanged" xml:space="preserve"><value>Il nome dell’etichetta non è cambiato.</value></data>
+  <data name="TagRenameConflict" xml:space="preserve"><value>L’etichetta o i libri collegati sono cambiati dopo la conferma. Seleziona di nuovo l’etichetta e conferma la rinomina.</value></data>
+  <data name="TagRenameFailed" xml:space="preserve"><value>Impossibile rinominare l’etichetta. Non è stata salvata alcuna modifica.</value></data>
+  <data name="TagRenameRefreshFailed" xml:space="preserve"><value>L’etichetta è stata rinominata, ma la vista della biblioteca non è stata aggiornata. Riapri la biblioteca per vedere le modifiche.</value></data>
 </root>
 

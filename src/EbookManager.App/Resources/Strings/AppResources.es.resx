@@ -814,5 +814,28 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesRenameFailed" xml:space="preserve"><value>No se pudo cambiar el nombre de la serie. No se guardaron cambios de serie.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>Se cambió el nombre de la serie, pero no se pudo actualizar la vista de la biblioteca. Vuelva a abrirla para ver los cambios.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+clic selecciona más libros; Mayús+clic selecciona un intervalo. Use las flechas y Ctrl+Espacio con el teclado; Escape borra la selección.</value></data>
+  <data name="TagManagementTitle" xml:space="preserve"><value>Gestionar etiquetas</value></data>
+  <data name="TagManagementDescription" xml:space="preserve"><value>Busque una etiqueta, consulte sus libros y cámbiele el nombre para todos los libros vinculados.</value></data>
+  <data name="TagSearch" xml:space="preserve"><value>Buscar etiquetas</value></data>
+  <data name="TagCountLabel" xml:space="preserve"><value>etiquetas</value></data>
+  <data name="TagLoadMore" xml:space="preserve"><value>Cargar más</value></data>
+  <data name="TagNoneFound" xml:space="preserve"><value>No se encontraron etiquetas.</value></data>
+  <data name="TagResizePanels" xml:space="preserve"><value>Cambiar el tamaño de los paneles</value></data>
+  <data name="TagBooks" xml:space="preserve"><value>libros con esta etiqueta</value></data>
+  <data name="TagLoadFailed" xml:space="preserve"><value>No se pudieron cargar las etiquetas o los libros. Inténtelo de nuevo.</value></data>
+  <data name="TagRename" xml:space="preserve"><value>Cambiar nombre de etiqueta</value></data>
+  <data name="TagRenameOriginal" xml:space="preserve"><value>Nombre actual de la etiqueta</value></data>
+  <data name="TagRenameNew" xml:space="preserve"><value>Nuevo nombre de la etiqueta</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Se cambiará esta etiqueta en los {0} libros. Se conservarán las demás etiquetas y su orden.</value></data>
+  <data name="TagRenameWorking" xml:space="preserve"><value>Cambiando el nombre de la etiqueta y actualizando los archivos…</value></data>
+  <data name="TagRenameSaved" xml:space="preserve"><value>Etiqueta renombrada en {0} libros.</value></data>
+  <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Etiqueta renombrada en {0} libros. No se pudieron actualizar los archivos de {1} libros.</value></data>
+  <data name="TagRenameWarningDetails" xml:space="preserve"><value>Libros cuyos archivos no se pudieron actualizar</value></data>
+  <data name="TagRenameNameExists" xml:space="preserve"><value>Ese nombre de etiqueta ya existe. Elija otro nombre; las etiquetas no se fusionan.</value></data>
+  <data name="TagRenameInvalid" xml:space="preserve"><value>Introduzca un solo nombre de etiqueta sin punto y coma ni saltos de línea.</value></data>
+  <data name="TagRenameUnchanged" xml:space="preserve"><value>El nombre de la etiqueta no ha cambiado.</value></data>
+  <data name="TagRenameConflict" xml:space="preserve"><value>La etiqueta o sus libros vinculados han cambiado desde la confirmación. Seleccione la etiqueta de nuevo y confirme el cambio de nombre.</value></data>
+  <data name="TagRenameFailed" xml:space="preserve"><value>No se pudo cambiar el nombre de la etiqueta. No se guardaron cambios.</value></data>
+  <data name="TagRenameRefreshFailed" xml:space="preserve"><value>Se cambió el nombre de la etiqueta, pero no se pudo actualizar la vista de la biblioteca. Vuelva a abrir la biblioteca para ver los cambios.</value></data>
 </root>
 
