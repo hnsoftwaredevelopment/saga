@@ -7,7 +7,7 @@ using System.Globalization;
 namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class TagManagementViewModel(ITagRepository repository, ITagRenameService renameService,
-    Func<string, string> localize) : ObservableObject, IDisposable
+    Func<string, string> localize, ITagAssignmentService? assignments = null) : ObservableObject, IDisposable
 {
     private readonly CancellationTokenSource lifetime = new();
     private readonly HashSet<Guid> changedBookIds = [];
@@ -26,6 +26,7 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanBrowse))]
     [NotifyPropertyChangedFor(nameof(CanRename))]
+    [NotifyPropertyChangedFor(nameof(CanChangeSelectedBooks))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreBooks))]
     [NotifyPropertyChangedFor(nameof(HasMoreTags))]
@@ -67,6 +68,7 @@ public sealed partial class TagManagementViewModel(ITagRepository repository, IT
     {
         if (!CanBrowse) return;
         IsBusy = true;
+        SetSelectedBooks([]);
         TagId = selected.Id;
         Name = selected.Name;
         Books = [];
