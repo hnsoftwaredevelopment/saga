@@ -1,5 +1,8 @@
 # Milestone 51: meervoudige boekenkastselectie
 
+- [x] CodeRabbit-opmerking 4389990878 onderzocht en eerst falend bewezen: gedeeltelijke groepsrijen verschoven Up/Down naar het verkeerde boek. Groepslokale navigatie met expliciete groepsovergangen hersteld; globale unieke Shift-volgorde behouden. 993 tests en veertien WPF-scenario's slagen. Debug-build 2026.10.29.5 van 29 oktober 08:15, 0 waarschuwingen/fouten, één Saga.exe. Eigen vijfassige review uitgevoerd.
+- [ ] Alleen de nieuwe gerichte boekenplankhercontrole voor gedeeltelijke groepsrijen/Shift uitvoeren. Eerdere gebruikersacceptatie voor selectie en metadata bewerken in alle drie de weergaven blijft behouden; niet afzonderlijk bevestigde detailchecks blijven zichtbaar. Alleen de gebruiker mergt PR #53.
+
 - [x] Gebruikersacceptatie op 27 oktober 2026: meervoudige selectie én metadata bewerken werken in alle drie de weergaven zoals verwacht. De gemelde groepsselectiefout in Lijst/Gedetailleerd is akkoord. Niet afzonderlijk bevestigde detailcontroles blijven zichtbaar; PR #53 staat nog open en wordt uitsluitend door de gebruiker gemerged.
 
 - [x] Gebruiker keurt het voorstel goed en geeft opdracht te bouwen: Ctrl/Shift, duidelijke selectie/telling, bestaande bulkactie, toetsenbord, groepen/filters/views.

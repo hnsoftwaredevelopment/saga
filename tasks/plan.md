@@ -1,5 +1,7 @@
 # Milestone 51: meervoudige boekenkastselectie
 
+Reviewstatus 29 oktober 2026: de nog geldige CodeRabbit-opmerking over Up/Down bij gedeeltelijke boekenplankgroepen is eerst falend bewezen en gericht hersteld. Groepslokale rij/kolom en expliciete overgang vervangen de globale indexstap; Shift-reeksen behouden hun bestaande unieke volgorde. 993 tests en veertien WPF-scenario's groen, Debug-build 2026.10.29.5 om 08:15 zonder waarschuwingen/fouten en één Saga.exe. Eigen vijfassige review uitgevoerd; nieuwe handmatige hercontrole toegevoegd zonder eerdere acceptatie te wijzigen. Eerdere kolombreedte-/documentatieopmerkingen waren al verwerkt. Geen nieuwe afhankelijkheden of agents.
+
 Actuele gebruikersacceptatie, 27 oktober 2026: meerdere boeken selecteren en metadata bewerken werkt in alle drie de weergaven zoals verwacht. De gegroepeerde-rijencorrectie is akkoord; niet afzonderlijk bevestigde detailchecks blijven in de checklist staan. PR #53 staat nog open. Geen codewijziging of nieuwe build voor deze acceptatieregistratie; onderstaande stappen bewaren de uitvoeringshistorie.
 
 Voorstel en bouwopdracht zijn door de gebruiker goedgekeurd. Specificatie: docs/superpowers/specs/2026-10-27-saga-milestone-51-bookshelf-selection-design.md. Basis main 5360aed plus acceptatiedocumentatie PR #52. Geen nieuwe dependency, schema of opslagroute; geen agents nodig.

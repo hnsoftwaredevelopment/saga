@@ -2,7 +2,7 @@
 
 **Gebruikersacceptatie, 27 oktober 2026:** meervoudige selectie werkt in alle drie de weergaven zoals verwacht; ook metadata bewerken werkt overal goed. Daarmee is de gemelde beperking van gegroepeerde Lijst/Gedetailleerd door de gebruiker akkoord bevonden. De niet afzonderlijk bevestigde detailcontroles hieronder blijven herkenbaar staan; hun geautomatiseerde dekking staat onder Geautomatiseerde verificatie.
 
-Test met `Builds\Debug\Saga.exe`, versie **2026.10.27.34**, gebouwd op **27 oktober 2026 om 16:03** (Europe/Amsterdam). De gebruiker bevestigt selectie over boekenplankgroepen en de eerdere knopcorrectie. De gemelde beperking tot één boek in gegroepeerde Lijst/Gedetailleerd is hersteld; de nieuwe hercontrole staat hieronder. Eerdere gebruikersvinkjes zijn behouden. Handmatige acceptatie blijft gedeeltelijk open voor de resterende groeps-/weergave-/filterpunten, verticale navigatie en de nieuwe gegroepeerde rijen.
+Test met `Builds\Debug\Saga.exe`, versie **2026.10.29.5**, gebouwd op **29 oktober 2026 om 08:15** (Europe/Amsterdam). Eerdere gebruikersacceptatie van selectie en metadata bewerken in alle drie de weergaven blijft behouden. De nieuwe reviewcorrectie raakt alleen Pijl-omhoog/-omlaag tussen boekenplankgroepen; daarvoor staat onderaan een gerichte hercontrole. Niet afzonderlijk bevestigde detailcontroles blijven zichtbaar.
 
 ## Selecteren met de muis
 
@@ -47,7 +47,7 @@ Voor deze visuele correctie zijn de 993 tests opnieuw geslaagd en is de Debug-bu
 
 ## Geautomatiseerde verificatie
 
-993 gewone tests slagen. Aanvullend slagen dertien interactieve WPF-scenario's: de vijf bestaande series-focuscontroles, zes boekenkastcontroles en twee nieuwe gegroepeerde lijst-/detailcontroles. Die nieuwe proeven gebruiken echte WPF-muis- en toetsenbordroutes voor Ctrl/Shift/Ctrl+Shift, omschakelen, groepsgrenzen, dubbele tagvermeldingen met gedeelde selectieranden, Home/End, Ctrl-focus/Spatie, Escape, nieuwere tekstfocus, filters en weergavewissels met verschillende groeperingen. De oorspronkelijke fout is vóór de productcorrectie falend aangetoond: Ctrl+klik in een andere groep behield slechts één boek. Unit-tests bewaken ook rijidentiteit, bibliotheekwissel, annuleren en bulkgebruik. Alle gegevens zijn fictief; geen echte bibliotheek gelezen. De Debug-build heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds.
+993 gewone tests slagen. Aanvullend slagen veertien interactieve WPF-scenario's: de vijf bestaande series-focuscontroles, zes boekenkastcontroles, twee gegroepeerde lijst-/detailcontroles en de nieuwe groepsrij-navigatieproef. De proeven gebruiken echte WPF-muis- en toetsenbordroutes voor Ctrl/Shift/Ctrl+Shift, omschakelen, groepsgrenzen, dubbele tagvermeldingen met gedeelde selectieranden, Home/End, Ctrl-focus/Spatie, Escape, nieuwere tekstfocus, filters en weergavewissels met verschillende groeperingen. De nieuwe navigatieproef gebruikt groepen met 2, 5, 1 en 4 boeken en controleert beide richtingen, gedeeltelijke rijen, eerste/laatste grens, ingeklapte groepen, focus en de exacte Shift-selectie. Eerst falend bewezen: Down vanaf het eerste boek koos boek 4 in plaats van boek 3. Unit-tests bewaken ook rijidentiteit, bibliotheekwissel, annuleren en bulkgebruik. Alle gegevens zijn fictief; geen echte bibliotheek gelezen. De Debug-build heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds.
 
 ## Gerichte hercontrole — gegroepeerde Lijst en Gedetailleerd
 
@@ -56,3 +56,8 @@ Voor deze visuele correctie zijn de 993 tests opnieuw geslaagd en is de Debug-bu
 - [ ] Omhoog/omlaag en Home/End kiezen een rij, ook in een andere open groep. Shift breidt uit; Ctrl+pijl verplaatst alleen focus; Ctrl+Spatie schakelt het gefocuste boek om; Escape wist de selectie. Tab en groepskoppen blijven werken.
 - [ ] Gebruik verschillende groeperingen per weergave, selecteer enkele boeken en wissel tussen boekenplank, Lijst en Gedetailleerd. Iedere weergave houdt haar eigen groepering; dezelfde geselecteerde boeken krijgen ook in de gegroepeerde rijen een rand. Een ingeklapte groep eerst openen om haar boeken te zien.
 - [ ] Filter een deel van de selectie weg, wis het filter en controleer dat verborgen selecties niet terugkomen. Ga direct na toetsenbordnavigatie naar het zoekveld: focus blijft daar. Controleer de selectie-/focusranden ook in het gebruikelijke thema.
+
+## Gerichte hercontrole na review — gedeeltelijke boekenplankgroepen
+
+- [ ] Groepeer de boekenplank zodat een korte groep gevolgd wordt door een grotere groep. Maak het venster breed genoeg voor meerdere tegels per rij. Ga met Pijl-omlaag vanuit de laatste rij van de korte groep naar de eerste rij van de volgende: de overeenkomstige kolom wordt gekozen, zonder boeken over te slaan. Controleer ook Pijl-omhoog terug. Is die kolom niet beschikbaar, dan wordt de dichtstbijzijnde beschikbare tegel gekozen.
+- [ ] Herhaal met Shift+Pijl-omlaag en controleer het eindboek en de geselecteerde reeks voordat je Metadata wijzigen opent. Een ingeklapte groep wordt bij navigatie overgeslagen. Annuleer de bewerking; voor deze hercontrole hoef je geen metadata op te slaan.
