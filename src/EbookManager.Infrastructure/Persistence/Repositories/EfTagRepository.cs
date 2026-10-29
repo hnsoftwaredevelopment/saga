@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EbookManager.Infrastructure.Persistence.Repositories;
 
-public sealed class EfTagRepository(LibraryDbContextFactory factory, string libraryPath) : ITagRepository
+public sealed partial class EfTagRepository(LibraryDbContextFactory factory, string libraryPath) : ITagRepository, ITagAssignmentRepository
 {
     public async Task<TagPage> SearchAsync(string query, int skip, int take, CancellationToken token)
     {
