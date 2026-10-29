@@ -53,9 +53,63 @@ public partial class BookshelfView
             Key.Left => index - 1, Key.Right => index + 1,
             Key.Up => index - columns, _ => index + columns
         };
-        var target = order[Math.Clamp(next, 0, order.Count - 1)];
+        var target = vm.IsBookshelfGrouped && e.Key is (Key.Up or Key.Down)
+            ? GroupedVerticalTarget(vm, list, row, columns, e.Key == Key.Down)
+            : order[Math.Clamp(next, 0, order.Count - 1)];
         if (!control || shift) vm.SelectBookshelfBook(target, control, shift);
         FocusBook(vm, target.Id);
+    }
+
+    private BookRowViewModel GroupedVerticalTarget(LibraryViewModel vm, ListBox? list,
+        BookRowViewModel row, int columns, bool down)
+    {
+        var groups = ExpandedBookGroups(vm.GroupedLibraryNodes).ToList();
+        var groupIndex = groups.FindIndex(group => ReferenceEquals(group, list?.DataContext));
+        if (groupIndex < 0) return row;
+        var books = groups[groupIndex].Books;
+        var index = books.IndexOf(row);
+        if (index < 0) return row;
+        var column = index % columns;
+        var tileRow = index / columns;
+        if (down && tileRow < (books.Count - 1) / columns)
+            return books[Math.Min(index + columns, books.Count - 1)];
+        if (!down && tileRow > 0) return books[index - columns];
+
+        var adjacent = groupIndex + (down ? 1 : -1);
+        if (adjacent < 0 || adjacent >= groups.Count) return row;
+        var target = groups[adjacent];
+        // A group restarts its own tile rows; a partial preceding row must not offset it.
+        var targetList = FindGroupBookList(BookshelfGroupsList, target);
+        if (targetList is null)
+        {
+            var top = vm.GroupedLibraryNodes.First(group => ContainsGroup(group, target));
+            BookshelfGroupsList.ScrollIntoView(top);
+            BookshelfGroupsList.UpdateLayout();
+            targetList = FindGroupBookList(BookshelfGroupsList, target);
+        }
+        var targetColumns = FindWrapPanel(targetList)?.ColumnCount ?? columns;
+        var start = down ? 0 : (target.Books.Count - 1) / targetColumns * targetColumns;
+        return target.Books[Math.Min(start + Math.Min(column, targetColumns - 1), target.Books.Count - 1)];
+    }
+
+    private static IEnumerable<LibraryGroupNodeViewModel> ExpandedBookGroups(IEnumerable<LibraryGroupNodeViewModel> groups)
+    {
+        foreach (var group in groups.Where(group => group.IsExpanded))
+        {
+            foreach (var child in ExpandedBookGroups(group.Groups)) yield return child;
+            if (group.HasBooks) yield return group;
+        }
+    }
+
+    private static bool ContainsGroup(LibraryGroupNodeViewModel group, LibraryGroupNodeViewModel target) =>
+        ReferenceEquals(group, target) || group.Groups.Any(child => ContainsGroup(child, target));
+
+    private static ListBox? FindGroupBookList(DependencyObject root, LibraryGroupNodeViewModel group)
+    {
+        if (root is ListBox list && ReferenceEquals(list.ItemsSource, group.Books)) return list;
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+            if (FindGroupBookList(VisualTreeHelper.GetChild(root, index), group) is { } found) return found;
+        return null;
     }
 
     private void FocusBook(LibraryViewModel vm, Guid id)

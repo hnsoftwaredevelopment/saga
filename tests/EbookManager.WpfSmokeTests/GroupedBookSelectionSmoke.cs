@@ -131,7 +131,7 @@ internal static class GroupedBookSelectionSmoke
 
     // SetKeyboardState affects only this thread, never sends keys to the user's apps.
     // https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setkeyboardstate
-    private static void WithModifiers(ModifierKeys modifiers, Action action)
+    internal static void WithModifiers(ModifierKeys modifiers, Action action)
     {
         var saved = new byte[256];
         Require(GetKeyboardState(saved), "Could not save test keyboard state.");
