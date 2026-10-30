@@ -104,7 +104,7 @@ internal static class AuthorMergeSmoke
     }
     private static void Require(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
 
-    private sealed class Authors : IAuthorProfileRepository, IAuthorMergeService, IAuthorPhotoStore
+    internal sealed class Authors : IAuthorProfileRepository, IAuthorMergeService, IAuthorPhotoStore
     {
         private readonly List<AuthorProfile> profiles = [new(Guid.NewGuid(), "J. Nowee", null, null, null), new(Guid.NewGuid(), "Johannes Nowee", null, null, null)];
         private readonly AuthorBook[] books = [new(Guid.NewGuid(), "Book one", null), new(Guid.NewGuid(), "Book two", null)];

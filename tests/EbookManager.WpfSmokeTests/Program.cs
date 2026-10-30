@@ -103,6 +103,8 @@ internal static class Program
                 await TagManagementFocusSmoke.RunAsync();
                 await TagSelectionActionsSmoke.RunAsync();
                 await AuthorMergeSmoke.RunAsync();
+                await AuthorComparisonSmoke.RunAsync();
+                await AuthorDuplicateDiscoverySmoke.RunAsync();
                 exitCode = 0;
             }
             catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception.Message); }
