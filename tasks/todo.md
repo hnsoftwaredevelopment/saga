@@ -1,3 +1,15 @@
+# Milestone 55: seriesvarianten vinden en samenvoegen
+
+- [x] Gebruiker keurt slice goed; basis, branch en concrete specificatie vastgelegd.
+- [ ] Opslag en conservatieve detectie testgestuurd bouwen.
+- [ ] Bestaande bestandssynchronisatie na commit en waarschuwingen testen.
+- [ ] Zoek-/vergelijkingsmodellen met nummers, keuze, paginering en verversing bouwen/testen.
+- [ ] WPF-route en zes talen aansluiten; echte controles uitvoeren.
+- [ ] Volledige suite, schone build en eigen review afronden.
+- [ ] Checklist/status/README en exacte Obsidian-spiegels bijwerken; gewone PR openen.
+- [ ] Gebruiker test/accepteert en mergt.
+
+## Historie: Milestone 54
 # Milestone 54: auteursduplicaten vinden en vergelijken
 
 - [x] Vervolg door gebruiker goedgekeurd; basis en aparte branch gecontroleerd, specificatie vastgelegd.
