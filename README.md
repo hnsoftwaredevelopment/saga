@@ -4,6 +4,10 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
+Milestone 55 adds **Find duplicates** in **Manage series**. Conservative suggestions recognize punctuation, spacing and accent differences while preserving significant numbers. Compare the books and their series numbers, explicitly choose an existing destination name and confirm. Repeated or missing numbers are shown for information and are never changed automatically. The complete confirmed book set is validated in one transaction; existing file synchronization follows with separate warnings. The suggestions, manager and main library refresh after saving, and the manager search is cleared while retaining the destination details. **1131 tests and 28 interactive WPF scenarios pass**. Clean Debug build **2026.10.31.6**, 31 October **00:08:58 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. The user accepted Milestone 55 on 31 October 2026; the [manual checklist](docs/manual-tests/milestone-55-checklist.md) retains the detailed test steps. PR #57 awaits merge. This follow-up is based on the still-open PR #56; merge that dependency first.
+
+### Milestone 54 — accepted, PR #56 awaits merge
+
 Milestone 54 adds **Find duplicates** in **Manage authors** and a visual author comparison. Suggestions show two original names, book counts and a reason; selecting a suggestion opens the existing safe merge route. Available photos, complete biographies and websites are shown beside the chosen result, with buttons to use a visible source value. Names stay visible while scrolling. Detection is conservative, uses a cached lightweight name index outside the UI thread, and never merges automatically. **1099 tests and 25 interactive WPF scenarios pass**. Clean Debug build **2026.10.30.45**, 30 October **22:53:25 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. The user accepted Milestone 54, including the search reset, after the [manual checks](docs/manual-tests/milestone-54-checklist.md). PR #56 awaits merge by the user. Comparison UI/icon harmonization is explicitly deferred.
 
 Reviewcorrectie 31 oktober 2026: CodeRabbit-opmerking 4428707720 is eerst falend gereproduceerd in de echte WPF-proef. ComparisonCards gebruikt nu doorlopende Tab-navigatie; alle acht bronknoppen op twee auteurskaarten zijn bereikbaar en Tab gaat daarna naar de resultaatkeuzes. 1099 tests en 26 WPF-proeven slagen. Schone tussentijdse PR #56-build 2026.10.31.3 van 31 oktober 00:06:12 Europe/Amsterdam, 0 waarschuwingen/fouten. De correctie wordt ook in vervolg-PR #57 meegenomen; de uiteindelijke gecombineerde testbuild wordt daar geregistreerd.
@@ -107,7 +111,7 @@ Milestone 47's final quality reliability improvements are manually checked and a
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The current manual acceptance steps are in the [Milestone 54 checklist](docs/manual-tests/milestone-54-checklist.md). User-tested manual author merging is recorded in the [Milestone 53 checklist](docs/manual-tests/milestone-53-checklist.md). Accepted tag-management checks remain in the [Milestone 52 checklist](docs/manual-tests/milestone-52-checklist.md). Accepted multi-selection checks remain in the [Milestone 51 checklist](docs/manual-tests/milestone-51-checklist.md). Accepted series-management checks remain in the [Milestone 50 checklist](docs/manual-tests/milestone-50-checklist.md). Accepted bulk-edit checks remain in the [Milestone 49 checklist](docs/manual-tests/milestone-49-checklist.md); accepted author-management checks remain in the [author rename checklist](docs/manual-tests/author-rename-checklist.md) and [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
+The current manual acceptance steps are in the [Milestone 55 checklist](docs/manual-tests/milestone-55-checklist.md). Accepted author discovery/comparison checks remain in the [Milestone 54 checklist](docs/manual-tests/milestone-54-checklist.md). User-tested manual author merging is recorded in the [Milestone 53 checklist](docs/manual-tests/milestone-53-checklist.md). Accepted tag-management checks remain in the [Milestone 52 checklist](docs/manual-tests/milestone-52-checklist.md). Accepted multi-selection checks remain in the [Milestone 51 checklist](docs/manual-tests/milestone-51-checklist.md). Accepted series-management checks remain in the [Milestone 50 checklist](docs/manual-tests/milestone-50-checklist.md). Accepted bulk-edit checks remain in the [Milestone 49 checklist](docs/manual-tests/milestone-49-checklist.md); accepted author-management checks remain in the [author rename checklist](docs/manual-tests/author-rename-checklist.md) and [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
 
 ## Prerequisites
 
@@ -239,6 +243,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-52-checklist.md](docs/manual-tests/milestone-52-checklist.md)
 - [docs/manual-tests/milestone-53-checklist.md](docs/manual-tests/milestone-53-checklist.md)
 - [docs/manual-tests/milestone-54-checklist.md](docs/manual-tests/milestone-54-checklist.md)
+- [docs/manual-tests/milestone-55-checklist.md](docs/manual-tests/milestone-55-checklist.md)
 
 ## Later-Version Candidates
 

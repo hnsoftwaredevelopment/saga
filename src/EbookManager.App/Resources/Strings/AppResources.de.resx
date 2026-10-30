@@ -887,5 +887,35 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Autor</value></data>
   <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Möglicherweise derselbe Autor</value></data>
   <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Übereinstimmung</value></data>
+  <data name="SeriesDuplicatesCompare" xml:space="preserve"><value>Bücher vergleichen</value></data>
+  <data name="SeriesDuplicatesCount" xml:space="preserve"><value>Vorschläge: {0} · Serien: {1}</value></data>
+  <data name="SeriesDuplicatesFind" xml:space="preserve"><value>Duplikate suchen</value></data>
+  <data name="SeriesDuplicatesFirst" xml:space="preserve"><value>Serie</value></data>
+  <data name="SeriesDuplicatesFormatting" xml:space="preserve"><value>Gleiche Buchstaben und Zahlen, andere Schreibweise</value></data>
+  <data name="SeriesDuplicatesHelp" xml:space="preserve"><value>Dies sind Vorschläge, keine bestätigten Duplikate. Wählen Sie ein Paar und vergleichen Sie Bücher und Bandnummern vor dem Zusammenführen.</value></data>
+  <data name="SeriesDuplicatesLimit" xml:space="preserve"><value>Mehr als 1000 Vorschläge. Verfeinern Sie die Suche für weitere passende Paare.</value></data>
+  <data name="SeriesDuplicatesLoadFailed" xml:space="preserve"><value>Serien konnten nicht geladen oder verglichen werden. Aktualisieren Sie die Liste und versuchen Sie es erneut.</value></data>
+  <data name="SeriesDuplicatesLoading" xml:space="preserve"><value>Serien vergleichen…</value></data>
+  <data name="SeriesDuplicatesNone" xml:space="preserve"><value>Keine möglichen Seriendubletten für diese Suche gefunden.</value></data>
+  <data name="SeriesDuplicatesReason" xml:space="preserve"><value>Übereinstimmung</value></data>
+  <data name="SeriesDuplicatesRefresh" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="SeriesDuplicatesSecond" xml:space="preserve"><value>Möglicherweise dieselbe Serie</value></data>
+  <data name="SeriesDuplicatesTitle" xml:space="preserve"><value>Mögliche Seriendubletten</value></data>
+  <data name="SeriesMergeConfirm" xml:space="preserve"><value>Zusammenführen bestätigen</value></data>
+  <data name="SeriesMergeConflict" xml:space="preserve"><value>Serien oder Bücher wurden seit dem Vergleich geändert. Aktualisieren und vergleichen Sie erneut. Es wurden keine Serienänderungen gespeichert.</value></data>
+  <data name="SeriesMergeCurrent" xml:space="preserve"><value>Aktuelle Serie</value></data>
+  <data name="SeriesMergeFailed" xml:space="preserve"><value>Die Serien konnten nicht zusammengeführt werden. Es wurden keine Serienänderungen gespeichert. Versuchen Sie es erneut.</value></data>
+  <data name="SeriesMergeHelp" xml:space="preserve"><value>Wählen Sie einen vorhandenen Namen für alle angezeigten Bücher. Titel, Autoren, Bandnummern und übrige Buchdaten bleiben unverändert.</value></data>
+  <data name="SeriesMergeMissingNumber" xml:space="preserve"><value>Keine Bandnummer</value></data>
+  <data name="SeriesMergeNote" xml:space="preserve"><value>Hinweis zur Bandnummer</value></data>
+  <data name="SeriesMergeNumbersHelp" xml:space="preserve"><value>Doppelte oder fehlende Nummern dienen als Hinweis. Saga behält alle Nummern bei und nummeriert Bücher niemals automatisch neu.</value></data>
+  <data name="SeriesMergeRefreshFailed" xml:space="preserve"><value>Die Serien wurden zusammengeführt, aber die Übersicht konnte nicht aktualisiert werden. Öffnen Sie die Serienverwaltung erneut.</value></data>
+  <data name="SeriesMergeRepeatedNumber" xml:space="preserve"><value>Nummer kommt mehrfach vor</value></data>
+  <data name="SeriesMergeSaved" xml:space="preserve"><value>Serien zusammengeführt; {0} Bücher aktualisiert.</value></data>
+  <data name="SeriesMergeSavedWithWarnings" xml:space="preserve"><value>Serien zusammengeführt; {0} Bücher aktualisiert. Dateien für {1} Bücher konnten nicht aktualisiert werden.</value></data>
+  <data name="SeriesMergeSummary" xml:space="preserve"><value>Bücher in diesem Vergleich: {0}</value></data>
+  <data name="SeriesMergeTarget" xml:space="preserve"><value>Beizubehaltender Serienname</value></data>
+  <data name="SeriesMergeTitle" xml:space="preserve"><value>Serien zusammenführen</value></data>
+  <data name="SeriesMergeWorking" xml:space="preserve"><value>Serien zusammenführen und Buchdateien aktualisieren…</value></data>
 </root>
 

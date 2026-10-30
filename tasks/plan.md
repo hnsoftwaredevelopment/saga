@@ -1,3 +1,18 @@
+# Milestone 55: seriesvarianten vinden en samenvoegen
+
+Goedgekeurde bouwopdracht; basis PR #56 head 56c4f49, branch codex/milestone-55-series-merge. Specificatie: docs/superpowers/specs/2026-10-30-saga-milestone-55-series-merge-design.md. Vorige PR staat bij aanvang open; zo nodig later herplaatsen op gemergede main. Geen agents, schema of dependencies.
+
+1. Gerichte modellen en EF-transactie; eerst falende tests voor behoud van nummers/metadata, bestaande doelboeken, meer dan 500 boeken, stale preview en rollback (3–5 bestanden per increment).
+2. Conservatieve naamindex en bestaande BookService-synchronisatie met aparte waarschuwingen; tests voor betekenisvolle cijfers, geen detectieschrijfacties, metadata.json en annulering na commit.
+3. Testbare zoek-/vergelijkingsmodellen: gehele preview, numerieke volgorde, gelijke/lege nummers zichtbaar, 200 zichtbare rijen en expliciete bestaande bestemming. Opslag blijft gescheiden.
+4. WPF-voorstellen en vergelijking aansluiten op Series beheren, zoek/focus en ongefilterde lijst na sluiten; eigen route gebruikt bestaande metadatareconciliatie. Zes talen en echte WPF-proeven.
+5. Volledige suite, schone enige Debug-build, eigen vijfassige review, handmatige checklist, README/featurestatus en exacte Markdown-spiegels; gewone PR en gebruikersacceptatie.
+
+Grootste risico's: cijfers uit namen weg-normaliseren (behouden), oude preview overschrijven (volledige snapshotcontrole), nummers stil wijzigen (alleen Series/UpdatedUtc schrijven), latere fouten als rollback melden (opgeslagen status/IDs/waarschuwingen behouden). Afhankelijkheden in deze volgorde, ieder increment verifiëren en committen.
+
+Uitgevoerd: opslag/detectie en WPF-workflow afzonderlijk gecommit; 1131 tests en 28 WPF-scenario's slagen. Definitieve Debug-build 2026.10.31.6 van 31 oktober 00:08:58 Europe/Amsterdam heeft 0 waarschuwingen/fouten; één Saga.exe. Eigen vijfassige review en beide thema's bij minimumgrootte afgerond. De gebruiker heeft Milestone 55 op 31 oktober 2026 geaccepteerd; checklist 55 bewaart de gedetailleerde teststappen. Gewone niet-draft PR #57 is geopend en gekoppeld; mergeable bij opening. GitGuardian groen, CodeRabbit overgeslagen; CodeQL-resultaat op deze vervolgbranch nog niet beschikbaar. Na omrichten naar main opnieuw controleren. PR #56 is nog open; daarom een gewone vervolg-PR op die branch, daarna naar main na merge van de afhankelijkheid.
+
+## Historie: Milestone 54
 # Milestone 54: auteursduplicaten vinden en vergelijken
 
 Goedgekeurd vervolg op de werkende handmatige samenvoeging. Begonnen vanaf PR #55 head 877fb91; inmiddels herplaatst op gemergede main 3377d8e met een exact gelijke bronboom. Branch codex/milestone-54-author-duplicate-discovery. Specificatie: docs/superpowers/specs/2026-10-30-saga-milestone-54-author-discovery-design.md.

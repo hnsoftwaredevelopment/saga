@@ -7,7 +7,7 @@ using System.Globalization;
 namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class SeriesManagementViewModel(ISeriesRepository repository, ISeriesRenameService renameService,
-    Func<string, string> localize) : ObservableObject, IDisposable
+    Func<string, string> localize, ISeriesMergeService? mergeService = null) : ObservableObject, IDisposable
 {
     private readonly CancellationTokenSource lifetime = new();
     private readonly HashSet<Guid> changedBookIds = [];
@@ -25,11 +25,13 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanBrowse))]
     [NotifyPropertyChangedFor(nameof(CanRename))]
+    [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreBooks))]
     [NotifyPropertyChangedFor(nameof(HasMoreSeries))]
     private bool isBusy;
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreSeries))]
     private bool isSearching;
@@ -43,7 +45,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
 
     public Task SearchAsync(string text, bool append = false) => CanBrowse ? SearchCoreAsync(text, append) : Task.CompletedTask;
 
-    private async Task SearchCoreAsync(string text, bool append = false)
+    private async Task<bool> SearchCoreAsync(string text, bool append = false)
     {
         var version = ++searchVersion;
         Query = text;
@@ -51,14 +53,16 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
         try
         {
             var page = await Task.Run(() => repository.SearchAsync(text, append ? Series.Count : 0, 200, lifetime.Token), lifetime.Token);
-            if (disposed || version != searchVersion) return;
+            if (disposed || version != searchVersion) return false;
             Series = append ? Series.Concat(page.Series).ToArray() : page.Series;
             TotalSeries = page.TotalCount;
             OnPropertyChanged(nameof(HasMoreSeries));
+            return true;
         }
         catch (OperationCanceledException) { }
         catch (Exception) { if (!disposed && version == searchVersion) SetStatus("SeriesLoadFailed", true); }
         finally { if (!disposed && version == searchVersion) IsSearching = false; }
+        return false;
     }
 
     public async Task SelectAsync(SeriesSummary selected)
