@@ -1,5 +1,7 @@
 # Milestone 55 — seriesvarianten vinden en samenvoegen
 
+Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw getest zonder problemen en bevestigt dat PR #56 en PR #57 zijn gemerged. GitHub bevestigt beide merges; lokale main is bijgewerkt naar 373d45f. Milestones 54 en 55 zijn afgerond. Onderstaande uitvoeringsnotities en individuele checklistvakjes blijven als historie behouden. De UI-/icoonharmonisatie blijft een afzonderlijke wens voor later.
+
 ## Opdracht en basis
 
 De gebruiker heeft de voorgestelde slice goedgekeurd: mogelijke dubbelen vinden, boeken/serienummers vergelijken, één bestaande serienaam kiezen en alle betrokken boeken daaronder samenbrengen. Nummers en overige metadata blijven behouden; gelijke nummers worden zichtbaar gemaakt zonder automatisch te hernummeren. De vorige UI-/icoonharmonisatie is uitgesteld.

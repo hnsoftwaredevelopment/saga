@@ -1,8 +1,14 @@
 # Series beheren
 
+Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw getest zonder problemen en bevestigt dat PR #56 en PR #57 zijn gemerged. GitHub bevestigt beide merges; lokale main is bijgewerkt naar 373d45f. Milestones 54 en 55 zijn afgerond. Onderstaande uitvoeringsnotities en individuele checklistvakjes blijven als historie behouden. De UI-/icoonharmonisatie blijft een afzonderlijke wens voor later.
+
 ## Status
 
-Milestone 55 voegt **Duplicaten zoeken** toe aan Series beheren: mogelijke schrijfvarianten vergelijken en bewust samenbrengen onder één bestaande naam. Boeken, nummers en overige gegevens blijven behouden. **1131 tests en 28 echte WPF-scenario's slagen**; Debug-build **2026.10.31.6**, 31 oktober 2026 om **00:08:58 Europe/Amsterdam**, heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds. Eigen review en licht/donkercontrole uitgevoerd. De gebruiker heeft de gehele slice op 31 oktober 2026 [geaccepteerd](../manual-tests/milestone-55-checklist.md). PR #57 wacht op merge. De vervolgbranch is gebaseerd op de nog openstaande PR #56.
+Milestone 56 voegt **Volgnummer wijzigen** toe voor één geselecteerd boek. Gehele en decimale nummers aanpassen of wissen, met invoercontrole en informatieve doubluremelding. Alleen het nummer/tijdstip worden opgeslagen, waarna de bestaande bestandsroute en directe sortering volgen. **1166 tests en 29 WPF-proeven groen**. Debug **2026.10.31.17** van **31 oktober 00:54:49 Europe/Amsterdam**, 0 waarschuwingen/fouten en één Saga.exe onder Builds. Eigen review en beide thema's op minimale grootte uitgevoerd. [Handmatige acceptatie](../manual-tests/milestone-56-checklist.md) staat open.
+
+## Historie — Milestone 55 geaccepteerd en gemerged
+
+Milestone 55 voegt **Duplicaten zoeken** toe aan Series beheren: mogelijke schrijfvarianten vergelijken en bewust samenbrengen onder één bestaande naam. Boeken, nummers en overige gegevens blijven behouden. **1131 tests en 28 echte WPF-scenario's slagen**; Debug-build **2026.10.31.6**, 31 oktober 2026 om **00:08:58 Europe/Amsterdam**, heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds. Eigen review en licht/donkercontrole uitgevoerd. De gebruiker heeft de gehele slice op 31 oktober 2026 [geaccepteerd](../manual-tests/milestone-55-checklist.md). PR #57 is gemerged. Deze slice begon als vervolg op PR #56; beide pull requests zijn inmiddels gemerged.
 
 ## Historie — Milestone 50 geaccepteerd en gemerged
 
@@ -30,4 +36,12 @@ De gehele preview wordt opnieuw gecontroleerd vóór één transactie die alleen
 
 ## Nog buiten scope
 
-Serienummers wijzigen/opnieuw toekennen, series splitsen, vrij gekozen willekeurige series samenvoegen, een vrije nieuwe doelnaam tijdens samenvoegen, lege series aanmaken, online seriegegevens, ontbrekende delen herkennen, leesvolgorde over meerdere series en nieuwe ebookmetadatawriters. Losse boekdetails en bulkbewerking behouden hun bestaande betekenis. Algemene UI-/icoonharmonisatie met boekvergelijking blijft een apart vervolgpunt.
+Automatisch of in bulk serienummers toekennen, series splitsen, vrij gekozen willekeurige series samenvoegen, een vrije nieuwe doelnaam tijdens samenvoegen, lege series aanmaken, online seriegegevens, ontbrekende delen herkennen, leesvolgorde over meerdere series en nieuwe ebookmetadatawriters. Losse boekdetails en bulkbewerking behouden hun bestaande betekenis. Algemene UI-/icoonharmonisatie met boekvergelijking blijft een apart vervolgpunt.
+
+## Volgnummer wijzigen — Milestone 56
+
+Selecteer één geladen boek en open de nummerdialoog. Titel, auteurs en serie geven context; het invoerveld heeft focus. Leeg betekent wissen; ongewijzigde en ongeldige invoer kan niet worden opgeslagen. Het lokale decimaalteken wordt gebruikt zonder duizendtalscheiding. Een nummer dat bij andere boeken uit dezelfde serie voorkomt blijft toegestaan. Nul/negatieve decimalen blijven net als in boekdetails mogelijk.
+
+Voor opslag worden identiteit, exacte serienaam, nummer, titel en auteurs opnieuw gecontroleerd. Nieuwe wijzigingen aan andere velden worden behouden: uitsluitend SeriesNumber/UpdatedUtc worden in één transactie aangepast. Na commit volgt bestaande metadata.json-/ebookverwerking. Bestandsproblemen worden apart gemeld; bij mislukte verversing is duidelijk dat het nummer wel opgeslagen is.
+
+De reeds geladen lijst wordt in pagina's van 200 opnieuw numeriek opgebouwd. De selectie wordt op ID hersteld als het boek nog in die lijst valt. Anders verdwijnt de selectie met een korte uitleg en blijft Meer laden beschikbaar; er wordt geen gehele bibliotheek geladen om een verschoven boek zichtbaar te houden. Serienaam, zoektekst en tellingen blijven gelijk. Bij sluiten volgt de bestaande metadatareconciliatie met behoud van geladen omslagen.

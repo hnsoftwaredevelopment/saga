@@ -917,5 +917,18 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesMergeTarget" xml:space="preserve"><value>Beizubehaltender Serienname</value></data>
   <data name="SeriesMergeTitle" xml:space="preserve"><value>Serien zusammenführen</value></data>
   <data name="SeriesMergeWorking" xml:space="preserve"><value>Serien zusammenführen und Buchdateien aktualisieren…</value></data>
+  <data name="SeriesNumberChange" xml:space="preserve"><value>Bandnummer ändern</value></data>
+  <data name="SeriesNumberCleared" xml:space="preserve"><value>Bandnummer für {0} entfernt.</value></data>
+  <data name="SeriesNumberConflict" xml:space="preserve"><value>Das Buch oder seine Serie wurde geändert. Wählen Sie die Serie erneut und öffnen Sie die Nummernbearbeitung. Es wurde keine Nummernänderung gespeichert.</value></data>
+  <data name="SeriesNumberDuplicate" xml:space="preserve"><value>Diese Nummer wird auch von {0} anderen Büchern dieser Serie verwendet. Sie können sie bewusst beibehalten.</value></data>
+  <data name="SeriesNumberFailed" xml:space="preserve"><value>Die Bandnummer konnte nicht aktualisiert werden. Es wurde keine Nummernänderung gespeichert. Versuchen Sie es erneut.</value></data>
+  <data name="SeriesNumberFileWarning" xml:space="preserve"><value>Die Nummer ist in Saga gespeichert, aber die Buchdateien konnten nicht aktualisiert werden.</value></data>
+  <data name="SeriesNumberHelp" xml:space="preserve"><value>Geben Sie eine Nummer ein, z. B. {0}, oder lassen Sie das Feld leer, um die Bandnummer zu entfernen. Der Serienname bleibt unverändert.</value></data>
+  <data name="SeriesNumberInvalid" xml:space="preserve"><value>Geben Sie eine gültige Zahl, z. B. {0}, ohne Tausendertrennzeichen ein oder lassen Sie das Feld leer.</value></data>
+  <data name="SeriesNumberOutsidePage" xml:space="preserve"><value>Nach dem Sortieren liegt dieses Buch außerhalb der geladenen Liste. Verwenden Sie Mehr laden zum Weiterblättern.</value></data>
+  <data name="SeriesNumberRefreshFailed" xml:space="preserve"><value>Die Bandnummer wurde gespeichert, aber die Liste konnte nicht aktualisiert werden. Öffnen Sie die Serienverwaltung erneut.</value></data>
+  <data name="SeriesNumberSaved" xml:space="preserve"><value>Bandnummer für {0} aktualisiert: {1}.</value></data>
+  <data name="SeriesNumberUnchanged" xml:space="preserve"><value>Die Bandnummer wurde nicht geändert.</value></data>
+  <data name="SeriesNumberWorking" xml:space="preserve"><value>Bandnummer und Buchdateien aktualisieren…</value></data>
 </root>
 

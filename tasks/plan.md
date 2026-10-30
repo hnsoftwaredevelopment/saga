@@ -1,4 +1,19 @@
+# Milestone 56: volgnummer wijzigen in Series beheren
+
+Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b; branch codex/milestone-56-series-number. Specificatie: docs/superpowers/specs/2026-10-31-saga-milestone-56-series-number-design.md.
+
+1. Gerichte snapshot/transactie en behoud van andere velden testgestuurd bouwen.
+2. Bestaande bestandssynchronisatie, annulering en bestandswaarschuwingen testen.
+3. Dialoog en beheerselectie: cultuur/lege invoer, informatieve doublure, sortering en veilige feedback.
+4. WPF en zes talen aansluiten; gerichte en volledige tests, echte UI-proeven en schone Debug-build.
+5. Eigen review, checklist/README/featurestatus, exacte spiegels en gewone PR. Gebruiker accepteert en mergt.
+
+Uitgevoerd: 1166 tests en 29 WPF-proeven groen. Schone enige Debug-build 2026.10.31.17 van 31 oktober 00:54:49 Europe/Amsterdam, 0 waarschuwingen/fouten. Eigen review, zes talen, beide thema’s en 600 geladen boeken afgedekt. Checklist 56 klaar; gewone niet-draft PR #58 geopend naar main en aan de chat gekoppeld. Mergeable bij opening, GitGuardian groen en CodeQL bezig. Elf Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. Gebruiker test/accepteert en mergt.
+
+## Historie: Milestone 55
 # Milestone 55: seriesvarianten vinden en samenvoegen
+
+Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw getest zonder problemen en bevestigt dat PR #56 en PR #57 zijn gemerged. GitHub bevestigt beide merges; lokale main is bijgewerkt naar 373d45f. Milestones 54 en 55 zijn afgerond. Onderstaande uitvoeringsnotities en individuele checklistvakjes blijven als historie behouden. De UI-/icoonharmonisatie blijft een afzonderlijke wens voor later.
 
 Goedgekeurde bouwopdracht; basis PR #56 head 56c4f49, branch codex/milestone-55-series-merge. Specificatie: docs/superpowers/specs/2026-10-30-saga-milestone-55-series-merge-design.md. Vorige PR staat bij aanvang open; zo nodig later herplaatsen op gemergede main. Geen agents, schema of dependencies.
 
