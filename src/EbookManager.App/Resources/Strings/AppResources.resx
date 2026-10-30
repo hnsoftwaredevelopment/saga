@@ -585,5 +585,27 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Authors merged; {0} books updated. Files could not be updated for {1} books.</value></data>
   <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>An old or temporary author photo could not be removed.</value></data>
   <data name="AuthorMergeFailed" xml:space="preserve"><value>The authors could not be merged. Check the selected photo and try again.</value></data>
+  <data name="AuthorComparisonSources" xml:space="preserve"><value>Available author profiles</value></data>
+  <data name="AuthorComparisonKeepAuthor" xml:space="preserve"><value>Keep this author</value></data>
+  <data name="AuthorComparisonUsePhoto" xml:space="preserve"><value>Use this photo</value></data>
+  <data name="AuthorComparisonUseWebsite" xml:space="preserve"><value>Use this website</value></data>
+  <data name="AuthorComparisonUseBiography" xml:space="preserve"><value>Use this biography</value></data>
+  <data name="AuthorComparisonNoValue" xml:space="preserve"><value>No data</value></data>
+  <data name="AuthorComparisonResult" xml:space="preserve"><value>Result</value></data>
+  <data name="AuthorDuplicatesFind" xml:space="preserve"><value>Find duplicates</value></data>
+  <data name="AuthorDuplicatesTitle" xml:space="preserve"><value>Possible duplicate authors</value></data>
+  <data name="AuthorDuplicatesHelp" xml:space="preserve"><value>These are suggestions, not confirmed duplicates. Select a pair and compare their details. You decide whether they are the same person.</value></data>
+  <data name="AuthorDuplicatesLoading" xml:space="preserve"><value>Comparing authors…</value></data>
+  <data name="AuthorDuplicatesLoadFailed" xml:space="preserve"><value>Authors could not be loaded or compared. Refresh the list and try again.</value></data>
+  <data name="AuthorDuplicatesFormatting" xml:space="preserve"><value>Same name, different spelling or order</value></data>
+  <data name="AuthorDuplicatesInitials" xml:space="preserve"><value>Surname and initials match</value></data>
+  <data name="AuthorDuplicatesLimit" xml:space="preserve"><value>More than 1000 suggestions. Refine the search text to find other matching pairs.</value></data>
+  <data name="AuthorDuplicatesNone" xml:space="preserve"><value>No possible duplicate authors found for this search.</value></data>
+  <data name="AuthorDuplicatesCount" xml:space="preserve"><value>Suggestions: {0} · Authors: {1}</value></data>
+  <data name="AuthorDuplicatesCompare" xml:space="preserve"><value>Compare details</value></data>
+  <data name="AuthorDuplicatesRefresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Author</value></data>
+  <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Possibly the same author</value></data>
+  <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Similarity</value></data>
 </root>
 

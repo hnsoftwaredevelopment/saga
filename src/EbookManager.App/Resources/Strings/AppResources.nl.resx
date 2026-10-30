@@ -585,5 +585,27 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Auteurs samengevoegd; {0} boeken bijgewerkt. De bestanden van {1} boeken konden niet worden bijgewerkt.</value></data>
   <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>Een oude of tijdelijke auteursfoto kon niet worden opgeruimd.</value></data>
   <data name="AuthorMergeFailed" xml:space="preserve"><value>De auteurs konden niet worden samengevoegd. Controleer de gekozen foto en probeer opnieuw.</value></data>
+  <data name="AuthorComparisonSources" xml:space="preserve"><value>Beschikbare auteursgegevens</value></data>
+  <data name="AuthorComparisonKeepAuthor" xml:space="preserve"><value>Deze auteur behouden</value></data>
+  <data name="AuthorComparisonUsePhoto" xml:space="preserve"><value>Deze foto gebruiken</value></data>
+  <data name="AuthorComparisonUseWebsite" xml:space="preserve"><value>Deze website gebruiken</value></data>
+  <data name="AuthorComparisonUseBiography" xml:space="preserve"><value>Deze biografie gebruiken</value></data>
+  <data name="AuthorComparisonNoValue" xml:space="preserve"><value>Geen gegevens</value></data>
+  <data name="AuthorComparisonResult" xml:space="preserve"><value>Resultaat</value></data>
+  <data name="AuthorDuplicatesFind" xml:space="preserve"><value>Duplicaten zoeken</value></data>
+  <data name="AuthorDuplicatesTitle" xml:space="preserve"><value>Mogelijke auteursduplicaten</value></data>
+  <data name="AuthorDuplicatesHelp" xml:space="preserve"><value>Dit zijn voorstellen, geen vastgestelde dubbelen. Selecteer een paar en vergelijk de gegevens. Je beslist zelf of het dezelfde auteur is.</value></data>
+  <data name="AuthorDuplicatesLoading" xml:space="preserve"><value>Auteurs vergelijken…</value></data>
+  <data name="AuthorDuplicatesLoadFailed" xml:space="preserve"><value>De auteurs konden niet worden geladen of vergeleken. Vernieuw het overzicht en probeer opnieuw.</value></data>
+  <data name="AuthorDuplicatesFormatting" xml:space="preserve"><value>Zelfde naam, andere schrijfwijze of volgorde</value></data>
+  <data name="AuthorDuplicatesInitials" xml:space="preserve"><value>Achternaam en initialen komen overeen</value></data>
+  <data name="AuthorDuplicatesLimit" xml:space="preserve"><value>Meer dan 1000 voorstellen. Verfijn de zoektekst om andere passende paren te vinden.</value></data>
+  <data name="AuthorDuplicatesNone" xml:space="preserve"><value>Geen mogelijke auteursduplicaten gevonden voor deze zoektekst.</value></data>
+  <data name="AuthorDuplicatesCount" xml:space="preserve"><value>Voorstellen: {0} · Auteurs: {1}</value></data>
+  <data name="AuthorDuplicatesCompare" xml:space="preserve"><value>Gegevens vergelijken</value></data>
+  <data name="AuthorDuplicatesRefresh" xml:space="preserve"><value>Vernieuwen</value></data>
+  <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Auteur</value></data>
+  <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Mogelijk dezelfde auteur</value></data>
+  <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Overeenkomst</value></data>
 </root>
 
