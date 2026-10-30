@@ -1,37 +1,76 @@
 <Window x:Class="EbookManager.App.Views.AuthorMergeWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:loc="clr-namespace:EbookManager.App.Localization"
-        Title="{loc:Loc AuthorMerge}" Width="720" Height="720" MinWidth="540" MinHeight="420"
-        WindowStartupLocation="CenterOwner" Background="{DynamicResource AppBackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}">
-  <Window.Resources><Style TargetType="Label"><Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" /></Style></Window.Resources>
-  <DockPanel Margin="20">
-    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-      <Button x:Name="ConfirmButton" Content="{loc:Loc AuthorMergeConfirm}" IsEnabled="{Binding CanMerge}" IsDefault="True" Click="ConfirmClicked" MinWidth="120" Margin="0,0,8,0" AutomationProperties.Name="{loc:Loc AuthorMergeConfirm}" />
-      <Button Content="{loc:Loc Cancel}" IsCancel="True" MinWidth="90" AutomationProperties.Name="{loc:Loc Cancel}" />
-    </StackPanel>
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-      <StackPanel>
-        <TextBlock Text="{loc:Loc AuthorMerge}" FontSize="22" FontWeight="SemiBold" />
-        <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Margin="0,8,0,12" />
-        <ItemsControl ItemsSource="{Binding Authors}" MaxHeight="130">
-          <ItemsControl.Template><ControlTemplate><ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsPresenter /></ScrollViewer></ControlTemplate></ItemsControl.Template>
-          <ItemsControl.ItemTemplate><DataTemplate><TextBlock Margin="0,2" TextWrapping="Wrap"><Run Text="{Binding Name, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding BookCount, Mode=OneWay}" /></TextBlock></DataTemplate></ItemsControl.ItemTemplate>
-        </ItemsControl>
-        <Label Content="{loc:Loc AuthorMergeTarget}" Target="{Binding ElementName=TargetBox}" Margin="0,12,0,0" Padding="0,0,0,4" />
-        <ComboBox x:Name="TargetBox" ItemsSource="{Binding Authors}" SelectedItem="{Binding Target}" DisplayMemberPath="Name" AutomationProperties.Name="{loc:Loc AuthorMergeTarget}" />
-        <TextBlock Text="{loc:Loc AuthorMergeProfileHelp}" TextWrapping="Wrap" Margin="0,14,0,8" Foreground="{DynamicResource TextSecondaryBrush}" />
-        <Label Content="{loc:Loc AuthorBiography}" Target="{Binding ElementName=BiographyChoiceBox}" Padding="0,0,0,4" />
-        <ComboBox x:Name="BiographyChoiceBox" ItemsSource="{Binding BiographyOptions}" SelectedItem="{Binding BiographyChoice}" DisplayMemberPath="Label" AutomationProperties.Name="{loc:Loc AuthorBiography}" />
-        <ScrollViewer MaxHeight="100" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,4,0,10"><TextBlock Text="{Binding BiographyChoice.Value}" TextWrapping="Wrap" /></ScrollViewer>
-        <Label Content="{loc:Loc AuthorWebsite}" Target="{Binding ElementName=WebsiteChoiceBox}" Padding="0,0,0,4" />
-        <ComboBox x:Name="WebsiteChoiceBox" ItemsSource="{Binding WebsiteOptions}" SelectedItem="{Binding WebsiteChoice}" DisplayMemberPath="Label" AutomationProperties.Name="{loc:Loc AuthorWebsite}" />
-        <TextBlock Text="{Binding WebsiteChoice.Value}" TextWrapping="Wrap" Margin="0,4,0,10" />
-        <Label Content="{loc:Loc AuthorPhoto}" Target="{Binding ElementName=PhotoChoiceBox}" Padding="0,0,0,4" />
-        <ComboBox x:Name="PhotoChoiceBox" ItemsSource="{Binding PhotoOptions}" SelectedItem="{Binding PhotoChoice}" DisplayMemberPath="Label" AutomationProperties.Name="{loc:Loc AuthorPhoto}" />
-        <Image x:Name="PhotoPreview" Height="110" Stretch="Uniform" HorizontalAlignment="Left" Margin="0,8,0,0" AutomationProperties.Name="{loc:Loc AuthorPhoto}" />
-        <TextBlock x:Name="PhotoError" Text="{loc:Loc AuthorPhotoLoadFailed}" Visibility="Collapsed" Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
-      </StackPanel>
-    </ScrollViewer>
-  </DockPanel>
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:loc="clr-namespace:EbookManager.App.Localization"
+ Title="{loc:Loc AuthorMerge}" Width="1120" Height="760" MinWidth="820" MinHeight="520"
+ WindowStartupLocation="CenterOwner" Background="{DynamicResource AppBackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}">
+ <Window.Resources>
+  <Style TargetType="Label"><Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" /></Style>
+  <Style x:Key="ValueStyle" TargetType="TextBlock"><Setter Property="TextWrapping" Value="Wrap" /><Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" /></Style>
+ </Window.Resources>
+ <DockPanel Margin="20">
+  <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+   <TextBlock Text="{loc:Loc AuthorMerge}" FontSize="22" FontWeight="SemiBold" />
+   <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Margin="0,8,0,0" />
+   <TextBlock Text="{loc:Loc AuthorMergeProfileHelp}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="0,6,0,0" />
+  </StackPanel>
+  <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+   <Button x:Name="ConfirmButton" Content="{loc:Loc AuthorMergeConfirm}" IsEnabled="{Binding CanMerge}" IsDefault="True" Click="ConfirmClicked" MinWidth="120" Margin="0,0,8,0" AutomationProperties.Name="{loc:Loc AuthorMergeConfirm}" />
+   <Button Content="{loc:Loc Cancel}" IsCancel="True" MinWidth="90" AutomationProperties.Name="{loc:Loc Cancel}" />
+  </StackPanel>
+  <Grid>
+   <Grid.ColumnDefinitions><ColumnDefinition Width="*" MinWidth="300" /><ColumnDefinition Width="320" /></Grid.ColumnDefinitions>
+   <ListBox x:Name="ComparisonCards" ItemsSource="{Binding ComparisonAuthors}" Background="Transparent" BorderThickness="0"
+    ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+    VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" AutomationProperties.Name="{loc:Loc AuthorComparisonSources}">
+    <ListBox.ItemsPanel><ItemsPanelTemplate><VirtualizingStackPanel Orientation="Horizontal" /></ItemsPanelTemplate></ListBox.ItemsPanel>
+    <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="0" /><Setter Property="VerticalContentAlignment" Value="Stretch" /></Style></ListBox.ItemContainerStyle>
+    <ListBox.ItemTemplate><DataTemplate>
+     <Border Width="280" Padding="12" Margin="0,0,8,0" Background="{DynamicResource PanelBackgroundBrush}" BorderBrush="{DynamicResource TextSecondaryBrush}" BorderThickness="1">
+      <DockPanel>
+       <StackPanel DockPanel.Dock="Top">
+       <TextBlock Text="{Binding Profile.Name}" Style="{StaticResource ValueStyle}" FontSize="18" FontWeight="SemiBold" />
+       <TextBlock Margin="0,6,0,8" Style="{StaticResource ValueStyle}"><Run Text="{loc:Loc AuthorBooks}" /><Run Text=" · " /><Run Text="{Binding BookCount, Mode=OneWay}" /></TextBlock>
+       <Button Content="{loc:Loc AuthorComparisonKeepAuthor}" Command="{Binding DataContext.UseTargetCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" HorizontalAlignment="Left" Margin="0,0,0,12" />
+       </StackPanel>
+       <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel>
+       <TextBlock Text="{loc:Loc AuthorPhoto}" FontWeight="SemiBold" Style="{StaticResource ValueStyle}" />
+       <Grid Height="130" Margin="0,6,0,6">
+        <TextBlock Text="{loc:Loc AuthorNoPhoto}" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource ValueStyle}" />
+        <Image Stretch="Uniform" Loaded="ComparisonPhotoLoaded" Unloaded="ComparisonPhotoUnloaded" DataContextChanged="ComparisonPhotoChanged" AutomationProperties.Name="{loc:Loc AuthorPhoto}" />
+       </Grid>
+       <Button Content="{loc:Loc AuthorComparisonUsePhoto}" Command="{Binding DataContext.UsePhotoCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" HorizontalAlignment="Left" Margin="0,0,0,14" />
+       <TextBlock Text="{loc:Loc AuthorWebsite}" FontWeight="SemiBold" Style="{StaticResource ValueStyle}" />
+       <TextBlock Text="{Binding WebsiteDisplay}" Style="{StaticResource ValueStyle}" Margin="0,6,0,8" />
+       <Button Content="{loc:Loc AuthorComparisonUseWebsite}" Command="{Binding DataContext.UseWebsiteCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" HorizontalAlignment="Left" Margin="0,0,0,14" />
+       <TextBlock Text="{loc:Loc AuthorBiography}" FontWeight="SemiBold" Style="{StaticResource ValueStyle}" />
+       <ScrollViewer MaxHeight="180" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,6,0,8"><TextBlock Text="{Binding BiographyDisplay}" Style="{StaticResource ValueStyle}" /></ScrollViewer>
+       <Button Content="{loc:Loc AuthorComparisonUseBiography}" Command="{Binding DataContext.UseBiographyCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" HorizontalAlignment="Left" />
+       </StackPanel></ScrollViewer>
+      </DockPanel>
+     </Border>
+    </DataTemplate></ListBox.ItemTemplate>
+   </ListBox>
+   <Border Grid.Column="1" Background="{DynamicResource PanelBackgroundBrush}" Padding="12" Margin="8,0,0,0">
+    <DockPanel>
+     <StackPanel DockPanel.Dock="Top">
+     <TextBlock Text="{loc:Loc AuthorComparisonResult}" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10" />
+     <Label Content="{loc:Loc AuthorMergeTarget}" Target="{Binding ElementName=TargetBox}" Padding="0,0,0,4" />
+     <ComboBox x:Name="TargetBox" ItemsSource="{Binding Authors}" SelectedItem="{Binding Target}" DisplayMemberPath="Name" AutomationProperties.Name="{loc:Loc AuthorMergeTarget}" />
+     </StackPanel>
+     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel>
+     <Label Content="{loc:Loc AuthorPhoto}" Target="{Binding ElementName=PhotoChoiceBox}" Padding="0,12,0,4" />
+     <ComboBox x:Name="PhotoChoiceBox" ItemsSource="{Binding PhotoOptions}" SelectedItem="{Binding PhotoChoice}" DisplayMemberPath="Label" AutomationProperties.Name="{loc:Loc AuthorPhoto}" />
+     <Image x:Name="PhotoPreview" Height="110" Stretch="Uniform" HorizontalAlignment="Left" Margin="0,8,0,0" AutomationProperties.Name="{loc:Loc AuthorPhoto}" />
+     <TextBlock x:Name="PhotoError" Text="{loc:Loc AuthorPhotoLoadFailed}" Visibility="Collapsed" Foreground="{DynamicResource DangerBrush}" TextWrapping="Wrap" />
+     <Label Content="{loc:Loc AuthorWebsite}" Target="{Binding ElementName=WebsiteChoiceBox}" Padding="0,12,0,4" />
+     <ComboBox x:Name="WebsiteChoiceBox" ItemsSource="{Binding WebsiteOptions}" SelectedItem="{Binding WebsiteChoice}" DisplayMemberPath="Label" AutomationProperties.Name="{loc:Loc AuthorWebsite}" />
+     <TextBlock Text="{Binding WebsiteChoice.Value}" Style="{StaticResource ValueStyle}" Margin="0,4,0,0" />
+     <Label Content="{loc:Loc AuthorBiography}" Target="{Binding ElementName=BiographyChoiceBox}" Padding="0,12,0,4" />
+     <ComboBox x:Name="BiographyChoiceBox" ItemsSource="{Binding BiographyOptions}" SelectedItem="{Binding BiographyChoice}" DisplayMemberPath="Label" AutomationProperties.Name="{loc:Loc AuthorBiography}" />
+     <TextBlock Text="{Binding BiographyChoice.Value}" Style="{StaticResource ValueStyle}" Margin="0,4,0,0" />
+     </StackPanel></ScrollViewer>
+    </DockPanel>
+   </Border>
+  </Grid>
+ </DockPanel>
 </Window>
