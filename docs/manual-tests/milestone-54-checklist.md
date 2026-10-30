@@ -1,6 +1,6 @@
 # Milestone 54 — auteursduplicaten vinden en vergelijken
 
-Testbuild: Builds\Debug\Saga.exe **2026.10.30.45**, gebouwd op **30 oktober 2026 om 22:53:25 Europe/Amsterdam**. **1099 tests en 25 WPF-scenario's slagen**; 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen vijfassige review uitgevoerd. Handmatige gebruikersacceptatie staat open. Gebruik voor samenvoegen bij voorkeur enkele kleine testauteurs of een voorstel waarvan je zeker weet dat het dezelfde auteur betreft. Zoeken en vergelijken wijzigen niets zonder bevestiging.
+Testbuild: Builds\Debug\Saga.exe **2026.10.30.45**, gebouwd op **30 oktober 2026 om 22:53:25 Europe/Amsterdam**. **1099 tests en 25 WPF-scenario's slagen**; 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen vijfassige review uitgevoerd. De gebruiker heeft de gehele slice inclusief de zoekveldcorrectie geaccepteerd: “Ja met deze wijziging werkt het goed, deze slice is voltooid”. Individuele vakjes blijven als testhistorie behouden; moeilijke foutpaden zijn automatisch gedekt. De UI-/icoonharmonisatie is uitgesteld. PR #56 wacht op merge door de gebruiker. Gebruik voor samenvoegen bij voorkeur enkele kleine testauteurs of een voorstel waarvan je zeker weet dat het dezelfde auteur betreft. Zoeken en vergelijken wijzigen niets zonder bevestiging.
 
 ## Mogelijke dubbelen vinden
 

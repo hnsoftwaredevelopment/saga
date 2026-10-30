@@ -2,7 +2,7 @@
 
 ## Status
 
-Milestone 54 is na de gebruikersfeedback goedgekeurd en gebouwd op de inmiddels gemergede PR #55 (main 3377d8e). Duplicaten zoeken toont mogelijke naamparen met aantallen en reden; de nieuwe vergelijking toont beschikbare foto's, volledige biografieën en websites naast het zichtbare resultaat. De gebruiker kiest zelf wat overblijft; opslag gebruikt de bestaande veilige samenvoeging. **1099 tests en 25 WPF-scenario's slagen**. [Handmatige acceptatie](../manual-tests/milestone-54-checklist.md) staat open.
+Milestone 54 is na de gebruikersfeedback goedgekeurd en gebouwd op de inmiddels gemergede PR #55 (main 3377d8e). Duplicaten zoeken toont mogelijke naamparen met aantallen en reden; de nieuwe vergelijking toont beschikbare foto's, volledige biografieën en websites naast het zichtbare resultaat. De gebruiker kiest zelf wat overblijft; opslag gebruikt de bestaande veilige samenvoeging. **1099 tests en 25 WPF-scenario's slagen**. De gebruiker heeft de gehele slice, inclusief de zoekveldcorrectie, [geaccepteerd](../manual-tests/milestone-54-checklist.md). De UI-/icoonharmonisatie is uitdrukkelijk voor later. PR #56 wacht op merge door de gebruiker.
 
 ### Historie: Milestone 53
 
