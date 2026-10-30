@@ -31,6 +31,7 @@ internal static class AuthorMergeSmoke
             Require(list.IsKeyboardFocusWithin, "Author selection lost keyboard focus after loading.");
             list.SelectedItems.Add(vm.Authors[1]); await IdleAsync();
             Require(vm.MergeSelectionCount == 2 && merge.IsEnabled && !vm.CanEdit, "Two authors did not enable merge and protect single-profile editing.");
+            state.AddUnrelatedAuthor();
             foreach (var confirm in new[] { false, true })
             {
                 merge.Focus();
@@ -39,27 +40,37 @@ internal static class AuthorMergeSmoke
                 await complete; await WaitAsync(() => !vm.IsBusy); await IdleAsync();
                 if (!confirm) Require(vm.MergeSelectionCount == 2 && state.Merges == 0 && merge.IsKeyboardFocusWithin, "Cancel changed data or lost the selected authors/caller focus.");
             }
-            Require(state.Merges == 1 && vm.Authors.Count == 1 && vm.Books.Count == 2 && vm.TotalBooks == 2 && vm.MergeSelectionCount == 1,
+            Require(state.Merges == 1 && vm.Authors.Count == 2 && vm.Books.Count == 2 && vm.TotalBooks == 2 && vm.MergeSelectionCount == 1,
                 "Merge did not refresh the surviving author, books, counts and selection.");
+            Require(((TextBox)window.FindName("SearchBox")).Text.Length == 0 && vm.TotalAuthors == 2,
+                "Closing a successful merge must clear the search and restore unrelated authors.");
             await Task.Delay(350); await IdleAsync();
             Require(list.SelectedItems.Count == 1 && ((AuthorSummary)list.SelectedItem).Id == vm.SelectedAuthorId, "The survivor is not visibly selected.");
             Console.WriteLine("PASS: author multi-selection, explicit merge dialog, cancel and survivor refresh preserve safe scope and focus.");
 
             state.AddAuthors(205);
             var search = (TextBox)window.FindName("SearchBox");
-            search.Text = "";
+            search.Text = " "; search.Text = "";
             await WaitAsync(() => !vm.IsSearching && vm.Authors.Count == 200); await IdleAsync();
             list.Focus(); list.SelectedItems.Add(vm.Authors[0]); await WaitAsync(() => !vm.IsBusy); await IdleAsync();
             list.SelectedItems.Add(vm.Authors[1]); await IdleAsync();
             var selected = vm.MergeAuthorIds.ToHashSet();
             var more = (Button)window.FindName("MoreAuthorsButton");
             more.Focus(); more.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            await WaitAsync(() => !vm.IsSearching && vm.Authors.Count == 206); await IdleAsync();
+            await WaitAsync(() => !vm.IsSearching && vm.Authors.Count == 207); await IdleAsync();
             Require(vm.MergeAuthorIds.ToHashSet().SetEquals(selected) && list.SelectedItems.Count == 2, "Loading more authors lost native selection.");
             search.Text = "Paged";
             await WaitAsync(() => !vm.IsSearching && vm.TotalAuthors == 205); await IdleAsync();
             Require(vm.MergeSelectionCount == 0 && list.SelectedItems.Count == 0 && !merge.IsEnabled, "A new search kept a hidden merge selection.");
             Console.WriteLine("PASS: author selection survives paging and new searches clear hidden selections.");
+            state.AddAuthorVariant();
+            var finish = CompleteDiscoveryAsync();
+            ((Button)window.FindName("FindAuthorDuplicatesButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await finish;
+            await WaitAsync(() => !vm.IsBusy && !vm.IsSearching && vm.TotalAuthors == 207); await IdleAsync();
+            Require(search.Text.Length == 0 && vm.Authors.Any(author => author.Name.StartsWith("Paged", StringComparison.Ordinal)) && vm.Name == "Johannes Nowee",
+                "Closing duplicate discovery after merging must clear the parent query and show unrelated authors while retaining the result profile.");
+            Console.WriteLine("PASS: closing merged author discovery clears the parent search and restores all authors without losing the survivor profile.");
         }
         finally { window.Close(); }
     }
@@ -74,7 +85,7 @@ internal static class AuthorMergeSmoke
             var vm = (AuthorMergeDialogViewModel)dialog.DataContext;
             var target = (ComboBox)dialog.FindName("TargetBox");
             Require(target.IsKeyboardFocusWithin, "Merge dialog lost target keyboard focus.");
-            vm.Target = vm.Authors.Last(); await IdleAsync();
+            vm.Target = vm.Authors.Single(author => author.Name == "Johannes Nowee"); await IdleAsync();
             Require(vm.CanMerge, "Empty profile fields should not require meaningless additional choices.");
             if (Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_AUTHOR_MERGE") is { Length: > 0 } directory)
                 foreach (var theme in new[] { "Light", "Dark" })
@@ -96,6 +107,19 @@ internal static class AuthorMergeSmoke
             { Source = new Uri("pack://application:,,,/Saga;component/Resources/Styles/Themes/LightTheme.xaml") };
         }
     }
+    private static async Task CompleteDiscoveryAsync()
+    {
+        await WaitAsync(() => System.Windows.Application.Current.Windows.OfType<AuthorDuplicatesWindow>().Any(window => window.IsLoaded));
+        var window = System.Windows.Application.Current.Windows.OfType<AuthorDuplicatesWindow>().Single();
+        var vm = (AuthorDuplicatesViewModel)window.DataContext;
+        await WaitAsync(() => !vm.IsWorking && vm.Candidates.Count == 1); await IdleAsync();
+        ((DataGrid)window.FindName("CandidatesGrid")).SelectedIndex = 0; await IdleAsync();
+        var confirm = CompleteDialogAsync(true);
+        ((Button)window.FindName("CompareButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        await confirm;
+        await WaitAsync(() => !vm.IsWorking && window.HasMerged);
+        window.Close();
+    }
     private static Task IdleAsync() => Dispatcher.CurrentDispatcher.InvokeAsync(() => { }, DispatcherPriority.ApplicationIdle).Task;
     private static async Task WaitAsync(Func<bool> complete)
     {
@@ -109,6 +133,8 @@ internal static class AuthorMergeSmoke
         private readonly List<AuthorProfile> profiles = [new(Guid.NewGuid(), "J. Nowee", null, null, null), new(Guid.NewGuid(), "Johannes Nowee", null, null, null)];
         private readonly AuthorBook[] books = [new(Guid.NewGuid(), "Book one", null), new(Guid.NewGuid(), "Book two", null)];
         public int Merges { get; private set; }
+        public void AddUnrelatedAuthor() => profiles.Add(new(Guid.NewGuid(), "Unrelated", null, null, null));
+        public void AddAuthorVariant() => profiles.Add(new(Guid.NewGuid(), "J.Nowee", null, null, null));
         public void AddAuthors(int count) { for (var i = 0; i < count; i++) profiles.Add(new(Guid.NewGuid(), $"Paged {i:D3}", null, null, null)); }
         public Task<AuthorPage> SearchAsync(string query, int skip, int take, CancellationToken token)
         {

@@ -29,6 +29,19 @@ public sealed partial class AuthorManagementViewModel
 
     public Task<byte[]?> ReadMergePhotoAsync(Guid id, string path) => photos.ReadAsync(id, path, lifetime.Token);
 
+    public async Task ShowAllAuthorsAfterMergeAsync()
+    {
+        if (!CanBrowse || HasChanges) return;
+        IsBusy = true;
+        try
+        {
+            if (!await SearchCoreAsync(""))
+            { if (!disposed) SetStatus("AuthorRenameRefreshFailed", true); return; }
+            if (Authors.FirstOrDefault(author => author.Id == original?.Id) is { } target) SetMergeAuthors([target]);
+        }
+        finally { if (!disposed) IsBusy = false; }
+    }
+
     public async Task<AuthorMergePreview?> PreviewMergeAsync()
     {
         if (!CanMerge) return null;

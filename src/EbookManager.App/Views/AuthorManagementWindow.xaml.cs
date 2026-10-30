@@ -132,7 +132,7 @@ public partial class AuthorManagementWindow : Window
         if (preview is null) return;
         var edit = new AuthorMergeDialogViewModel(preview, Text);
         if (new AuthorMergeWindow(edit, viewModel.ReadMergePhotoAsync) { Owner = this }.ShowDialog() == true)
-            if (await viewModel.MergeAsync(preview, edit.Selection)) ShowSelectedAuthorQuery();
+            if (await viewModel.MergeAsync(preview, edit.Selection)) await ClearMergedAuthorQueryAsync();
         RestoreAuthorSelection();
         if (MergeAuthorsButton.IsEnabled) MergeAuthorsButton.Focus(); else AuthorsList.Focus();
     }
@@ -144,7 +144,7 @@ public partial class AuthorManagementWindow : Window
         var duplicates = new AuthorDuplicatesViewModel(viewModel.CreateDuplicateIndex(), Text);
         var window = new AuthorDuplicatesWindow(duplicates, viewModel) { Owner = this };
         window.ShowDialog();
-        if (window.HasMerged) ShowSelectedAuthorQuery();
+        if (window.HasMerged) await ClearMergedAuthorQueryAsync();
         RestoreAuthorSelection();
         FindAuthorDuplicatesButton.Focus();
     }
@@ -186,6 +186,14 @@ public partial class AuthorManagementWindow : Window
         changingSearchText = true;
         try { SearchBox.Text = viewModel.Name; }
         finally { changingSearchText = false; }
+    }
+    private async Task ClearMergedAuthorQueryAsync()
+    {
+        searchDelay?.Cancel();
+        changingSearchText = true;
+        try { SearchBox.Clear(); }
+        finally { changingSearchText = false; }
+        await viewModel.ShowAllAuthorsAfterMergeAsync();
     }
     private void DiscardClicked(object sender, RoutedEventArgs e) => viewModel.DiscardChanges();
     private void CloseClicked(object sender, RoutedEventArgs e) => Close();
