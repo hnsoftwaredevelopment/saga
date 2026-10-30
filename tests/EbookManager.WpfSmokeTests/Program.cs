@@ -98,6 +98,8 @@ internal static class Program
                 await GroupedBookSelectionSmoke.RunAsync();
                 await GroupedBookshelfNavigationSmoke.RunAsync();
                 await GroupedBookshelfNavigationSmoke.RunDuplicateAsync();
+                await TagManagementFocusSmoke.RunAsync();
+                await TagSelectionActionsSmoke.RunAsync();
                 exitCode = 0;
             }
             catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception.Message); }

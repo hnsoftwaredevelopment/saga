@@ -534,5 +534,43 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesRenameFailed" xml:space="preserve"><value>The series could not be renamed. No series changes were saved.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>The series was renamed, but the library view could not be refreshed. Reopen the library to see the changes.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+click selects more books; Shift+click selects a range. Use the arrow keys and Ctrl+Space with the keyboard; Escape clears the selection.</value></data>
+  <data name="TagManagementTitle" xml:space="preserve"><value>Manage tags</value></data>
+  <data name="TagManagementDescription" xml:space="preserve"><value>Find tags and view their books. Change or remove a tag on selected books, or rename it everywhere.</value></data>
+  <data name="TagSearch" xml:space="preserve"><value>Search tags</value></data>
+  <data name="TagCountLabel" xml:space="preserve"><value>tags</value></data>
+  <data name="TagLoadMore" xml:space="preserve"><value>Load more</value></data>
+  <data name="TagNoneFound" xml:space="preserve"><value>No tags found.</value></data>
+  <data name="TagResizePanels" xml:space="preserve"><value>Resize panels</value></data>
+  <data name="TagBooks" xml:space="preserve"><value>books with this tag</value></data>
+  <data name="TagLoadFailed" xml:space="preserve"><value>The tags or books could not be loaded. Please try again.</value></data>
+  <data name="TagRename" xml:space="preserve"><value>Rename tag everywhere</value></data>
+  <data name="TagRenameOriginal" xml:space="preserve"><value>Current tag name</value></data>
+  <data name="TagRenameNew" xml:space="preserve"><value>New tag name</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>This changes the tag for all {0} books. If the new name already exists, the tags are combined. Each book keeps the target tag once; other tags keep their order.</value></data>
+  <data name="TagRenameWorking" xml:space="preserve"><value>Renaming tag and updating book files…</value></data>
+  <data name="TagRenameSaved" xml:space="preserve"><value>Tag renamed for {0} books.</value></data>
+  <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Tag renamed for {0} books. Book files could not be updated for {1} books.</value></data>
+  <data name="TagRenameWarningDetails" xml:space="preserve"><value>Books whose files could not be updated</value></data>
+  <data name="TagRenameNameExists" xml:space="preserve"><value>That tag name already exists. Use Change tag to assign it to selected books.</value></data>
+  <data name="TagRenameInvalid" xml:space="preserve"><value>Enter one tag name without semicolons or line breaks.</value></data>
+  <data name="TagRenameUnchanged" xml:space="preserve"><value>The tag name has not changed.</value></data>
+  <data name="TagRenameConflict" xml:space="preserve"><value>The tag or its linked books have changed since confirmation. Select the tag again and confirm a new rename.</value></data>
+  <data name="TagRenameFailed" xml:space="preserve"><value>The tag could not be renamed. No tag changes were saved.</value></data>
+  <data name="TagRenameRefreshFailed" xml:space="preserve"><value>The tag was renamed, but the library view could not be refreshed. Reopen the library to see the changes.</value></data>
+  <data name="TagSelectedBooks" xml:space="preserve"><value>{0} books selected</value></data>
+  <data name="TagChangeSelection" xml:space="preserve"><value>Change tag</value></data>
+  <data name="TagRemoveSelection" xml:space="preserve"><value>Remove tag</value></data>
+  <data name="TagChangeSelectionTitle" xml:space="preserve"><value>Change tag for selected books</value></data>
+  <data name="TagChangeExplanation" xml:space="preserve"><value>Replace ‘{0}’ on {1} selected books. Other books keep their current tag. If a book already has the new tag, only the old tag is removed.</value></data>
+  <data name="TagChangeTarget" xml:space="preserve"><value>New or existing tag</value></data>
+  <data name="TagRemoveSelectionTitle" xml:space="preserve"><value>Remove tag from selected books</value></data>
+  <data name="TagRemoveExplanation" xml:space="preserve"><value>Remove ‘{0}’ from {1} selected books? Other tags and the books themselves will be kept.</value></data>
+  <data name="TagAssignmentWorking" xml:space="preserve"><value>Updating tags on selected books…</value></data>
+  <data name="TagAssignmentSaved" xml:space="preserve"><value>Tags updated for {0} books.</value></data>
+  <data name="TagAssignmentSavedWithWarnings" xml:space="preserve"><value>Tags updated for {0} books. Files could not be updated for {1} books.</value></data>
+  <data name="TagAssignmentConflict" xml:space="preserve"><value>The tag or selected books have changed since confirmation. Select the books again and confirm a new change.</value></data>
+  <data name="TagAssignmentUnchanged" xml:space="preserve"><value>The selected books were not changed.</value></data>
+  <data name="TagAssignmentFailed" xml:space="preserve"><value>The tags on the selected books could not be changed. No changes were saved.</value></data>
+  <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>The tag changes were saved, but the lists could not be refreshed. Close and reopen tag management to see the result.</value></data>
 </root>
 

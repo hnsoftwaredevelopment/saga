@@ -814,5 +814,43 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesRenameFailed" xml:space="preserve"><value>Die Serie konnte nicht umbenannt werden. Es wurden keine Serienänderungen gespeichert.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>Die Serie wurde umbenannt, aber die Bibliotheksansicht konnte nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut, um die Änderungen zu sehen.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Strg+Klick wählt weitere Bücher; Umschalt+Klick wählt einen Bereich. Verwenden Sie die Pfeiltasten und Strg+Leertaste; Escape hebt die Auswahl auf.</value></data>
+  <data name="TagManagementTitle" xml:space="preserve"><value>Schlagwörter verwalten</value></data>
+  <data name="TagManagementDescription" xml:space="preserve"><value>Suchen Sie Schlagwörter und sehen Sie ihre Bücher. Ändern oder entfernen Sie ein Schlagwort bei ausgewählten Büchern oder benennen Sie es überall um.</value></data>
+  <data name="TagSearch" xml:space="preserve"><value>Schlagwörter suchen</value></data>
+  <data name="TagCountLabel" xml:space="preserve"><value>Schlagwörter</value></data>
+  <data name="TagLoadMore" xml:space="preserve"><value>Mehr laden</value></data>
+  <data name="TagNoneFound" xml:space="preserve"><value>Keine Schlagwörter gefunden.</value></data>
+  <data name="TagResizePanels" xml:space="preserve"><value>Bereichsgröße ändern</value></data>
+  <data name="TagBooks" xml:space="preserve"><value>Bücher mit diesem Schlagwort</value></data>
+  <data name="TagLoadFailed" xml:space="preserve"><value>Die Schlagwörter oder Bücher konnten nicht geladen werden. Versuchen Sie es erneut.</value></data>
+  <data name="TagRename" xml:space="preserve"><value>Schlagwort überall umbenennen</value></data>
+  <data name="TagRenameOriginal" xml:space="preserve"><value>Aktueller Schlagwortname</value></data>
+  <data name="TagRenameNew" xml:space="preserve"><value>Neuer Schlagwortname</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Dieses Schlagwort wird für alle {0} Bücher geändert. Ist der neue Name bereits vorhanden, werden die Schlagwörter zusammengeführt. Jedes Buch behält das Zielschlagwort einmal; andere Schlagwörter behalten ihre Reihenfolge.</value></data>
+  <data name="TagRenameWorking" xml:space="preserve"><value>Schlagwort wird umbenannt und Buchdateien werden aktualisiert…</value></data>
+  <data name="TagRenameSaved" xml:space="preserve"><value>Schlagwort für {0} Bücher umbenannt.</value></data>
+  <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Schlagwort für {0} Bücher umbenannt. Bei {1} Büchern konnten die Dateien nicht aktualisiert werden.</value></data>
+  <data name="TagRenameWarningDetails" xml:space="preserve"><value>Bücher, deren Dateien nicht aktualisiert werden konnten</value></data>
+  <data name="TagRenameNameExists" xml:space="preserve"><value>Dieser Schlagwortname ist bereits vorhanden. Verwenden Sie Schlagwort ändern, um es ausgewählten Büchern zuzuweisen.</value></data>
+  <data name="TagRenameInvalid" xml:space="preserve"><value>Geben Sie einen Schlagwortnamen ohne Semikolon oder Zeilenumbruch ein.</value></data>
+  <data name="TagRenameUnchanged" xml:space="preserve"><value>Der Schlagwortname wurde nicht geändert.</value></data>
+  <data name="TagRenameConflict" xml:space="preserve"><value>Das Schlagwort oder seine verknüpften Bücher haben sich seit der Bestätigung geändert. Wählen Sie das Schlagwort erneut aus und bestätigen Sie die Umbenennung erneut.</value></data>
+  <data name="TagRenameFailed" xml:space="preserve"><value>Das Schlagwort konnte nicht umbenannt werden. Es wurden keine Änderungen gespeichert.</value></data>
+  <data name="TagRenameRefreshFailed" xml:space="preserve"><value>Das Schlagwort wurde umbenannt, die Bibliotheksansicht konnte jedoch nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut, um die Änderungen zu sehen.</value></data>
+  <data name="TagSelectedBooks" xml:space="preserve"><value>{0} Bücher ausgewählt</value></data>
+  <data name="TagChangeSelection" xml:space="preserve"><value>Schlagwort ändern</value></data>
+  <data name="TagRemoveSelection" xml:space="preserve"><value>Schlagwort entfernen</value></data>
+  <data name="TagChangeSelectionTitle" xml:space="preserve"><value>Schlagwort für ausgewählte Bücher ändern</value></data>
+  <data name="TagChangeExplanation" xml:space="preserve"><value>Ersetzen Sie ‘{0}’ bei {1} ausgewählten Büchern. Andere Bücher behalten ihr Schlagwort. Hat ein Buch das neue Schlagwort bereits, wird nur das alte entfernt.</value></data>
+  <data name="TagChangeTarget" xml:space="preserve"><value>Neues oder vorhandenes Schlagwort</value></data>
+  <data name="TagRemoveSelectionTitle" xml:space="preserve"><value>Schlagwort aus ausgewählten Büchern entfernen</value></data>
+  <data name="TagRemoveExplanation" xml:space="preserve"><value>‘{0}’ aus {1} ausgewählten Büchern entfernen? Andere Schlagwörter und die Bücher selbst bleiben erhalten.</value></data>
+  <data name="TagAssignmentWorking" xml:space="preserve"><value>Schlagwörter der ausgewählten Bücher werden aktualisiert…</value></data>
+  <data name="TagAssignmentSaved" xml:space="preserve"><value>Schlagwörter bei {0} Büchern aktualisiert.</value></data>
+  <data name="TagAssignmentSavedWithWarnings" xml:space="preserve"><value>Schlagwörter bei {0} Büchern aktualisiert. Die Dateien von {1} Büchern konnten nicht aktualisiert werden.</value></data>
+  <data name="TagAssignmentConflict" xml:space="preserve"><value>Das Schlagwort oder die ausgewählten Bücher haben sich seit der Bestätigung geändert. Wählen Sie die Bücher erneut aus und bestätigen Sie die Änderung erneut.</value></data>
+  <data name="TagAssignmentUnchanged" xml:space="preserve"><value>Die ausgewählten Bücher wurden nicht geändert.</value></data>
+  <data name="TagAssignmentFailed" xml:space="preserve"><value>Die Schlagwörter der ausgewählten Bücher konnten nicht geändert werden. Es wurden keine Änderungen gespeichert.</value></data>
+  <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>Die Schlagwortänderungen wurden gespeichert, die Listen konnten jedoch nicht aktualisiert werden. Schließen und öffnen Sie die Schlagwortverwaltung erneut.</value></data>
 </root>
 

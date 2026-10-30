@@ -534,5 +534,43 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesRenameFailed" xml:space="preserve"><value>De serie kon niet worden hernoemd. Er zijn geen seriewijzigingen opgeslagen.</value></data>
   <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>De serie is hernoemd, maar het bibliotheekoverzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw om de wijzigingen te zien.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+klik selecteert meer boeken; Shift+klik selecteert een reeks. Gebruik de pijltjestoetsen en Ctrl+Spatie met het toetsenbord; Escape wist de selectie.</value></data>
+  <data name="TagManagementTitle" xml:space="preserve"><value>Tags beheren</value></data>
+  <data name="TagManagementDescription" xml:space="preserve"><value>Zoek tags en bekijk hun boeken. Wijzig of verwijder een tag bij geselecteerde boeken, of hernoem de tag overal.</value></data>
+  <data name="TagSearch" xml:space="preserve"><value>Tags zoeken</value></data>
+  <data name="TagCountLabel" xml:space="preserve"><value>tags</value></data>
+  <data name="TagLoadMore" xml:space="preserve"><value>Meer laden</value></data>
+  <data name="TagNoneFound" xml:space="preserve"><value>Geen tags gevonden.</value></data>
+  <data name="TagResizePanels" xml:space="preserve"><value>Panelen vergroten of verkleinen</value></data>
+  <data name="TagBooks" xml:space="preserve"><value>boeken met deze tag</value></data>
+  <data name="TagLoadFailed" xml:space="preserve"><value>De tags of boeken konden niet worden geladen. Probeer het opnieuw.</value></data>
+  <data name="TagRename" xml:space="preserve"><value>Tag overal hernoemen</value></data>
+  <data name="TagRenameOriginal" xml:space="preserve"><value>Huidige tagnaam</value></data>
+  <data name="TagRenameNew" xml:space="preserve"><value>Nieuwe tagnaam</value></data>
+  <data name="TagRenameExplanation" xml:space="preserve"><value>Deze tag wordt gewijzigd voor alle {0} boeken. Bestaat de nieuwe naam al, dan worden de tags samengevoegd. Elk boek houdt de doeltag één keer; andere tags behouden hun volgorde.</value></data>
+  <data name="TagRenameWorking" xml:space="preserve"><value>Tag hernoemen en boekbestanden bijwerken…</value></data>
+  <data name="TagRenameSaved" xml:space="preserve"><value>Tag hernoemd voor {0} boeken.</value></data>
+  <data name="TagRenameSavedWithWarnings" xml:space="preserve"><value>Tag hernoemd voor {0} boeken. De boekbestanden van {1} boeken konden niet worden bijgewerkt.</value></data>
+  <data name="TagRenameWarningDetails" xml:space="preserve"><value>Boeken waarvan de bestanden niet konden worden bijgewerkt</value></data>
+  <data name="TagRenameNameExists" xml:space="preserve"><value>Deze tagnaam bestaat al. Gebruik Tag wijzigen om de tag aan geselecteerde boeken toe te kennen.</value></data>
+  <data name="TagRenameInvalid" xml:space="preserve"><value>Vul één tagnaam in zonder puntkomma of regeleinde.</value></data>
+  <data name="TagRenameUnchanged" xml:space="preserve"><value>De tagnaam is niet gewijzigd.</value></data>
+  <data name="TagRenameConflict" xml:space="preserve"><value>De tag of de gekoppelde boeken zijn sinds de bevestiging gewijzigd. Selecteer de tag opnieuw en bevestig het hernoemen nogmaals.</value></data>
+  <data name="TagRenameFailed" xml:space="preserve"><value>De tag kon niet worden hernoemd. Er zijn geen tagwijzigingen opgeslagen.</value></data>
+  <data name="TagRenameRefreshFailed" xml:space="preserve"><value>De tag is hernoemd, maar het bibliotheekoverzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw om de wijzigingen te zien.</value></data>
+  <data name="TagSelectedBooks" xml:space="preserve"><value>{0} boeken geselecteerd</value></data>
+  <data name="TagChangeSelection" xml:space="preserve"><value>Tag wijzigen</value></data>
+  <data name="TagRemoveSelection" xml:space="preserve"><value>Tag verwijderen</value></data>
+  <data name="TagChangeSelectionTitle" xml:space="preserve"><value>Tag wijzigen voor geselecteerde boeken</value></data>
+  <data name="TagChangeExplanation" xml:space="preserve"><value>Vervang ‘{0}’ bij {1} geselecteerde boeken. Andere boeken behouden de huidige tag. Heeft een boek de nieuwe tag al, dan verdwijnt alleen de oude tag.</value></data>
+  <data name="TagChangeTarget" xml:space="preserve"><value>Nieuwe of bestaande tag</value></data>
+  <data name="TagRemoveSelectionTitle" xml:space="preserve"><value>Tag verwijderen uit geselecteerde boeken</value></data>
+  <data name="TagRemoveExplanation" xml:space="preserve"><value>Verwijder ‘{0}’ uit {1} geselecteerde boeken? Overige tags en de boeken zelf blijven behouden.</value></data>
+  <data name="TagAssignmentWorking" xml:space="preserve"><value>Tags van geselecteerde boeken bijwerken…</value></data>
+  <data name="TagAssignmentSaved" xml:space="preserve"><value>Tags bijgewerkt bij {0} boeken.</value></data>
+  <data name="TagAssignmentSavedWithWarnings" xml:space="preserve"><value>Tags bijgewerkt bij {0} boeken. De bestanden van {1} boeken konden niet worden bijgewerkt.</value></data>
+  <data name="TagAssignmentConflict" xml:space="preserve"><value>De tag of geselecteerde boeken zijn sinds de bevestiging gewijzigd. Selecteer de boeken opnieuw en bevestig een nieuwe wijziging.</value></data>
+  <data name="TagAssignmentUnchanged" xml:space="preserve"><value>De geselecteerde boeken zijn niet gewijzigd.</value></data>
+  <data name="TagAssignmentFailed" xml:space="preserve"><value>De tags van de geselecteerde boeken konden niet worden gewijzigd. Er zijn geen wijzigingen opgeslagen.</value></data>
+  <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>De tagwijzigingen zijn opgeslagen, maar de lijsten konden niet worden vernieuwd. Sluit Tags beheren en open het opnieuw om het resultaat te zien.</value></data>
 </root>
 

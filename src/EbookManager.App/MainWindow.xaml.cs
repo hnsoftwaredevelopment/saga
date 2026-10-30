@@ -8,6 +8,7 @@ using EbookManager.Libraries;
 using EbookManager.Application.Authors;
 using EbookManager.Application.Books;
 using EbookManager.Application.Series;
+using EbookManager.Application.Tags;
 
 namespace EbookManager.App;
 
@@ -48,6 +49,22 @@ public partial class MainWindow : System.Windows.Window
     }
 
     public LibraryViewModel ViewModel => viewModel;
+
+    private async void OpenTagsClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        var library = currentLibrary.Current;
+        if (library is null) return;
+        var repository = new EfTagRepository(contextFactory, library.DirectoryPath);
+        using var tags = new TagManagementViewModel(repository, new TagRenameService(repository, bookService), localizationService.GetString,
+            new TagAssignmentService(repository, bookService));
+        new TagManagementWindow(tags) { Owner = this }.ShowDialog();
+        try { await viewModel.ReconcileExternalMetadataChangesAsync(tags.ChangedBookIds); }
+        catch (Exception)
+        {
+            System.Windows.MessageBox.Show(this, localizationService.GetString("TagRenameRefreshFailed"),
+                localizationService.GetString("TagManagementTitle"));
+        }
+    }
 
     private async void OpenSeriesClicked(object sender, System.Windows.RoutedEventArgs e)
     {

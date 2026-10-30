@@ -180,6 +180,10 @@
                   ToolTip="{loc:Loc SeriesManagementTitle}" AutomationProperties.Name="{loc:Loc SeriesManagementTitle}">
             <Path Data="{StaticResource SeriesManagementIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="22" Height="22" Stretch="Uniform" />
           </Button>
+          <Button Style="{StaticResource ToolbarIconButtonStyle}" IsEnabled="{Binding HasActiveLibrary}" Click="OpenTagsClicked"
+                  ToolTip="{loc:Loc TagManagementTitle}" AutomationProperties.Name="{loc:Loc TagManagementTitle}">
+            <Path Data="{StaticResource TagManagementIconGeometry}" Fill="{DynamicResource AccentBrush}" Width="22" Height="22" Stretch="Uniform" />
+          </Button>
           <Button Command="{Binding ShowMetadataMultiEditCommand}"
                   Style="{StaticResource ToolbarIconButtonStyle}"
                   ToolTip="{loc:Loc MetadataMultiEditTooltip}">

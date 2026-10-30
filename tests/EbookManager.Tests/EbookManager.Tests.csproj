@@ -38,6 +38,9 @@
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\SeriesManagementWindow.xaml" Link="TestAssets\SeriesManagementWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\SeriesRenameWindow.xaml" Link="TestAssets\SeriesRenameWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\TagManagementWindow.xaml" Link="TestAssets\TagManagementWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\TagRenameWindow.xaml" Link="TestAssets\TagRenameWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\TagAssignmentWindow.xaml" Link="TestAssets\TagAssignmentWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\AuthorManagementWindow.xaml"
           Link="TestAssets\AuthorManagementWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\MetadataMultiEditWindow.xaml" Link="TestAssets\MetadataMultiEditWindow.xaml" CopyToOutputDirectory="PreserveNewest" />

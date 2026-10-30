@@ -1,3 +1,20 @@
+# Milestone 52: tags beheren
+
+- [x] Scope door gebruiker bevestigd op 29 oktober; PR #53 gemerged en basis main e8e024c. Branch codex/milestone-52-tag-management.
+- [x] Auteursvariantenwens afzonderlijk voor later vastgelegd; bestaande auteursbeheer-/hernoemregels blijven ongewijzigd.
+- [x] Specificatie en geordende uitvoering met testcheckpoints vastgelegd; bestaande tagidentiteit/koppelingen en opslagpatronen hergebruiken.
+- [x] Lichte SQL-zoek-/boekpagina's en transactioneel hernoemen met ID-setcontrole, naamvalidatie, bestaande doelnaam, rollback en behoud van overige tags/volgorde. Eerst falende tests groen; 510 boeken en Unicode-paginering gecontroleerd.
+- [x] Bestaande metadata.json-/ebook-synchronisatie na commit, aparte bestandswaarschuwingen en annulering afgedekt met eerst falende serviceproeven en echte tijdelijke bestanden.
+- [x] Viewmodel met zoeken/paginering, selectie/annuleren, nieuwe naam behouden, foutfeedback en blokkeren tijdens opslaan. Extra stale-preview- en refresh-na-commit-regressies opgelost.
+- [x] Tagbeheervenster, hernoemdialoog, werkbalkicoon en zes talen aangesloten; herkenbare splitter en begrensde lijsten. Echte WPF-focusproeven en licht/donker bij minimale grootte gecontroleerd.
+- [x] Volledige suite: 1054 geslaagd, 0 mislukt/overgeslagen. Twintig interactieve WPF-scenario's groen. Debug-build 2026.10.29.51 van 29 oktober 16:05:02 (Europe/Amsterdam), 0 waarschuwingen/fouten en één Saga.exe onder Builds. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties afgerond.
+- [x] Nieuwe checklist, featurestatus, README, specificatie en taken bijgewerkt; Markdown wordt exact naar Obsidian gespiegeld en met gelijke hashes gecontroleerd.
+- [x] Gebruikersfeedback verwerkt: expliciete boekselectie met telling/zichtbare markering, Tag wijzigen, Tag verwijderen en afzonderlijk Tag overal hernoemen. Bronboeklijst en bron-/doelaantallen opnieuw laden; bestaande doeltag per boek dedupliceren met behoud van overige tags en niet-geselecteerde boeken. Eerst falende tests en echte WPF-acties/paginering groen; oorspronkelijke gebruikersvinkjes en niet-uitgelokte bestandswaarschuwing behouden.
+- [x] Aanvullend gebruikersverzoek: Tag overal hernoemen naar een bestaande tag voegt alle bronboeken veilig samen met de doeltag, zonder boekselectie. Eén transactie, bestaande doelpositie/identiteit behouden, lege bron verwijderen, doellijst/telling opnieuw laden. Eerst falende opslag-/viewmodeltests, bestandssynchronisatie en echte WPF-bevestiging/focus groen; gerichte hercontrole toegevoegd.
+- [x] Gebruiker accepteert op 29 oktober 2026 de volledige slice: “Ja nu werkt het zoals verwacht. Deze slice is akkoord”. Inclusief selectieacties en globaal samenvoegen; niet handmatig uitgelokte fouten blijven automatisch afgedekt.
+- [x] Twee aanvullende CodeRabbit-punten afgehandeld: checklistindex 49–52 compleet en bestandswaarschuwingen vóór herladen bewaren. Eerst falende regressietest bewijst behoud van waarschuwingen/gewijzigde boek-ID's bij een leesfout na commit; geen wijziging aan de geaccepteerde normale bediening.
+- [ ] Alleen de gebruiker mergt de gewone niet-draft PR #54.
+## Historie: Milestone 51 — geaccepteerd en gemerged
 # Milestone 51: meervoudige boekenkastselectie
 
 - [x] Aanvullende CodeRabbit-focusbevinding voor dubbele tagvermeldingen eerst falend gereproduceerd en hersteld: boek én doelgroep blijven samen tot focus/scroll in de juiste bladlijst. ID-selectie blijft uniek. 993 tests en vijftien WPF-scenario's groen met tijdelijke geïsoleerde build 2026.10.29.8 van 29 oktober 08:57. Verouderde actuele cijfers in specificatie/plan expliciet historisch gemarkeerd; eigen vijfassige review uitgevoerd.

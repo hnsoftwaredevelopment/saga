@@ -10,6 +10,7 @@ Saga stores authors and book-author links as library database entities. Mileston
 
 ## Goals
 
+- Future user request: [recognize and deliberately merge author-name variants](author-variants.md), including one chosen name for the linked books and explicit handling of author profiles. Recorded on 29 October 2026; separate from current renaming and Milestone 52.
 - Add an author profile screen.
 - First slice: show the existing name and store an optional photo, website URL and short biography.
 - First slice: searchable authors and their books in the active library; library-local, portable photos and explicit save/cancel behavior.
