@@ -4,6 +4,10 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
+Milestone 56 adds **Change series number** for one selected book in **Manage series**. Enter a local decimal or clear the number, with immediate input feedback and non-blocking information about repeated numbers. Only the selected book's number and update timestamp change; titles, authors, series names and other data remain intact. Existing file synchronization follows after commit. The loaded book list is re-sorted, selection is restored by ID when visible, and the main library/details reconcile when the manager closes. **1166 tests and 29 interactive WPF scenarios pass**. Clean Debug build **2026.10.31.17**, 31 October **00:54:49 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. The [Milestone 56 manual checklist](docs/manual-tests/milestone-56-checklist.md) awaits user acceptance. The historical verification results below describe earlier slices; Milestones 54 and 55 are accepted and merged.
+
+### Milestone 55 — accepted and merged in PR #57
+
 Milestone 55 adds **Find duplicates** in **Manage series**. Conservative suggestions recognize punctuation, spacing and accent differences while preserving significant numbers. Compare the books and their series numbers, explicitly choose an existing destination name and confirm. Repeated or missing numbers are shown for information and are never changed automatically. The complete confirmed book set is validated in one transaction; existing file synchronization follows with separate warnings. The suggestions, manager and main library refresh after saving, and the manager search is cleared while retaining the destination details. **1131 tests and 28 interactive WPF scenarios pass**. Clean Debug build **2026.10.31.6**, 31 October **00:08:58 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. The user accepted Milestone 55 on 31 October 2026; the [manual checklist](docs/manual-tests/milestone-55-checklist.md) retains the detailed test steps. The user retested series merging without issues and merged PR #56 and PR #57 on 31 October 2026. Milestones 54 and 55 are complete.
 
 ### Milestone 54 — accepted and merged in PR #56
@@ -111,7 +115,7 @@ Milestone 47's final quality reliability improvements are manually checked and a
 - import diagnostics with phase timings for hashing, metadata, duplicate checks, copying, database save, and cleanup
 - aggregate import phase summaries in import result details
 
-The current manual acceptance steps are in the [Milestone 55 checklist](docs/manual-tests/milestone-55-checklist.md). Accepted author discovery/comparison checks remain in the [Milestone 54 checklist](docs/manual-tests/milestone-54-checklist.md). User-tested manual author merging is recorded in the [Milestone 53 checklist](docs/manual-tests/milestone-53-checklist.md). Accepted tag-management checks remain in the [Milestone 52 checklist](docs/manual-tests/milestone-52-checklist.md). Accepted multi-selection checks remain in the [Milestone 51 checklist](docs/manual-tests/milestone-51-checklist.md). Accepted series-management checks remain in the [Milestone 50 checklist](docs/manual-tests/milestone-50-checklist.md). Accepted bulk-edit checks remain in the [Milestone 49 checklist](docs/manual-tests/milestone-49-checklist.md); accepted author-management checks remain in the [author rename checklist](docs/manual-tests/author-rename-checklist.md) and [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
+The current manual acceptance steps are in the [Milestone 56 checklist](docs/manual-tests/milestone-56-checklist.md). Accepted series-merging checks remain in the [Milestone 55 checklist](docs/manual-tests/milestone-55-checklist.md). Accepted author discovery/comparison checks remain in the [Milestone 54 checklist](docs/manual-tests/milestone-54-checklist.md). User-tested manual author merging is recorded in the [Milestone 53 checklist](docs/manual-tests/milestone-53-checklist.md). Accepted tag-management checks remain in the [Milestone 52 checklist](docs/manual-tests/milestone-52-checklist.md). Accepted multi-selection checks remain in the [Milestone 51 checklist](docs/manual-tests/milestone-51-checklist.md). Accepted series-management checks remain in the [Milestone 50 checklist](docs/manual-tests/milestone-50-checklist.md). Accepted bulk-edit checks remain in the [Milestone 49 checklist](docs/manual-tests/milestone-49-checklist.md); accepted author-management checks remain in the [author rename checklist](docs/manual-tests/author-rename-checklist.md) and [Milestone 48 checklist](docs/manual-tests/milestone-48-checklist.md).
 
 ## Prerequisites
 
@@ -244,6 +248,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-53-checklist.md](docs/manual-tests/milestone-53-checklist.md)
 - [docs/manual-tests/milestone-54-checklist.md](docs/manual-tests/milestone-54-checklist.md)
 - [docs/manual-tests/milestone-55-checklist.md](docs/manual-tests/milestone-55-checklist.md)
+- [docs/manual-tests/milestone-56-checklist.md](docs/manual-tests/milestone-56-checklist.md)
 
 ## Later-Version Candidates
 

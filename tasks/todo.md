@@ -3,12 +3,14 @@
 Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b; branch codex/milestone-56-series-number. Specificatie: docs/superpowers/specs/2026-10-31-saga-milestone-56-series-number-design.md.
 
 - [x] Slice goedgekeurd, basis/branch en specificatie vastgelegd.
-- [ ] Opslag en bestaande bestandssynchronisatie testgestuurd bouwen.
-- [ ] Dialoog/beheer met validatie, doublures en directe sortering bouwen/testen.
-- [ ] WPF, zes talen en echte controles afronden.
-- [ ] Volledige suite, schone build en eigen review.
+- [x] Opslag en bestaande bestandssynchronisatie testgestuurd bouwen.
+- [x] Dialoog/beheer met validatie, doublures en directe sortering bouwen/testen.
+- [x] WPF, zes talen en echte controles afronden.
+- [x] Volledige suite, schone build en eigen review.
 - [ ] Checklist/status/documentatie spiegelen; gewone PR openen.
 - [ ] Gebruiker test, accepteert en mergt.
+
+Verificatie: 1166 tests en 29 echte WPF-proeven groen, 0 mislukt/overgeslagen. Debug 2026.10.31.17 van 31 oktober 00:54:49 Europe/Amsterdam, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen vijfassige review, zes talen, 600 geladen boeken en licht/donker op minimumgrootte gecontroleerd. Gebruikersacceptatie is nog open.
 
 ## Historie: Milestone 55
 # Milestone 55: seriesvarianten vinden en samenvoegen
