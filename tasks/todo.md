@@ -1,3 +1,18 @@
+# Milestone 54: auteursduplicaten vinden en vergelijken
+
+- [x] Vervolg door gebruiker goedgekeurd; basis en aparte branch gecontroleerd, specificatie vastgelegd.
+- [x] Visuele bronvergelijking en resultaat met expliciete knoppen bouwen/testen.
+- [x] Conservatieve detectie, lichte index, grens en annulering testgestuurd bouwen.
+- [x] Voorstellenvenster en bestaande veilige samenvoegroute aansluiten/testen.
+- [x] Zes talen, volledige tests/WPF, build, eigen review en checklist afronden.
+- [x] Documentatie exact spiegelen en gewone vervolg-PR openen.
+- [x] Gebruikersfeedback verwerkt: na geslaagde samenvoeging en sluiten van vergelijking/duplicatenvenster zoekveld wissen en ongefilterde index herladen. Profiel, melding en waarschuwingen behouden; annuleren bewaart zoektekst. Eerst falende echte WPF-hercontrole, inclusief meer dan 200 auteurs, hersteld.
+- [ ] Later: vergelijking visueel harmoniseren met boekduplicaten, inclusief dezelfde overname-/samenvoegiconen.
+- [x] Gebruiker accepteert de gehele slice inclusief zoekveldcorrectie; UI-/icoonverbetering wordt bewaard voor later.
+- [x] Reviewcorrectie 31 oktober 2026: CodeRabbit-opmerking 4428707720 is eerst falend gereproduceerd in de echte WPF-proef. ComparisonCards gebruikt nu doorlopende Tab-navigatie; alle acht bronknoppen op twee auteurskaarten zijn bereikbaar en Tab gaat daarna naar de resultaatkeuzes. 1099 tests en 26 WPF-proeven slagen. Schone tussentijdse PR #56-build 2026.10.31.3 van 31 oktober 00:06:12 Europe/Amsterdam, 0 waarschuwingen/fouten. De correctie wordt ook in vervolg-PR #57 meegenomen; de uiteindelijke gecombineerde testbuild wordt daar geregistreerd.
+- [ ] Alleen de gebruiker mergt PR #56.
+
+## Historie: Milestone 53
 # Milestone 53: auteurs bewust samenvoegen
 
 - [x] Gebruiker keurt scope en bouw goed op 30 oktober; PR #54 gemerged en main 7d3ed6e bijgewerkt.
@@ -8,7 +23,7 @@
 - [x] Native auteursselectie, pending edits, paging/focus en directe verversing aansluiten/testen.
 - [x] Zes talen, volledige suite, WPF, schone enige Debug-build en eigen review uitvoeren.
 - [x] README/featurestatus/checklist/spec/taken en exacte Obsidian-spiegels bijwerken; gewone PR openen.
-- [ ] Gebruiker test/accepteert en mergt.
+- [x] Gebruiker bevestigt dat de beschreven handmatige samenvoeging werkt; PR #55 is gemerged. De vervolgverbeteringen staan in Milestone 54.
 
 ## Historie: Milestone 52 — geaccepteerd en gemerged in PR #54
 # Milestone 52: tags beheren

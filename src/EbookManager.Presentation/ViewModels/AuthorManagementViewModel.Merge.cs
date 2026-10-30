@@ -29,6 +29,19 @@ public sealed partial class AuthorManagementViewModel
 
     public Task<byte[]?> ReadMergePhotoAsync(Guid id, string path) => photos.ReadAsync(id, path, lifetime.Token);
 
+    public async Task ShowAllAuthorsAfterMergeAsync()
+    {
+        if (!CanBrowse || HasChanges) return;
+        IsBusy = true;
+        try
+        {
+            if (!await SearchCoreAsync(""))
+            { if (!disposed) SetStatus("AuthorRenameRefreshFailed", true); return; }
+            if (Authors.FirstOrDefault(author => author.Id == original?.Id) is { } target) SetMergeAuthors([target]);
+        }
+        finally { if (!disposed) IsBusy = false; }
+    }
+
     public async Task<AuthorMergePreview?> PreviewMergeAsync()
     {
         if (!CanMerge) return null;
@@ -47,9 +60,12 @@ public sealed partial class AuthorManagementViewModel
         finally { if (!disposed) IsBusy = false; }
     }
 
-    public async Task<bool> MergeAsync(AuthorMergePreview preview, AuthorMergeSelection selection)
+    public Task<bool> MergeAsync(AuthorMergePreview preview, AuthorMergeSelection selection) =>
+        CanMerge && mergeAuthorIds.SetEquals(preview.Authors.Select(author => author.Profile.Id))
+            ? MergeCoreAsync(preview, selection) : Task.FromResult(false);
+
+    private async Task<bool> MergeCoreAsync(AuthorMergePreview preview, AuthorMergeSelection selection)
     {
-        if (!CanMerge || !mergeAuthorIds.SetEquals(preview.Authors.Select(author => author.Profile.Id))) return false;
         merging = true;
         IsBusy = true;
         ++selectionVersion;
@@ -77,7 +93,7 @@ public sealed partial class AuthorManagementViewModel
             Books = [];
             TotalBooks = 0;
             ApplyProfile(null);
-            await SearchCoreAsync(change.Profile!.Name);
+            if (!await SearchCoreAsync(change.Profile!.Name)) throw new InvalidOperationException("Merged author index reload failed.");
             if (disposed) return true;
             var summary = Authors.FirstOrDefault(author => author.Id == selection.TargetId);
             if (summary is null) throw new InvalidOperationException("Merged author index is unavailable.");

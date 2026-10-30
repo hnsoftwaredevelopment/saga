@@ -2,7 +2,7 @@
 
 ## Status
 
-Milestone 48 profiles and explicit author renaming are implemented and user-tested in PR #49. The supplied author icon, 318-book author and window resizing are accepted. Review follow-ups preserve search selection and use bounded metadata refreshes without discarding loaded covers. See [the profile design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md), [rename design](../superpowers/specs/2026-10-22-saga-author-rename-design.md) and [current checklist](../manual-tests/author-rename-checklist.md).
+Milestone 48 profiles and explicit author renaming are implemented and user-tested in PR #49. The supplied author icon, 318-book author and window resizing are accepted. Review follow-ups preserve search selection and use bounded metadata refreshes without discarding loaded covers. See [the profile design](../superpowers/specs/2026-10-22-saga-milestone-48-author-profiles-design.md), [rename design](../superpowers/specs/2026-10-22-saga-author-rename-design.md) and [accepted rename checklist](../manual-tests/author-rename-checklist.md).
 
 ## Context
 
@@ -10,12 +10,13 @@ Saga stores authors and book-author links as library database entities. Mileston
 
 ## Goals
 
-- Future user request: [recognize and deliberately merge author-name variants](author-variants.md), including one chosen name for the linked books and explicit handling of author profiles. Recorded on 29 October 2026; separate from current renaming and Milestone 52.
+- [Recognize and deliberately merge author-name variants](author-variants.md): manual merging is implemented in Milestone 53, visual comparison and conservative suggestions in Milestone 54. Explicit rename remains a separate action; new target names and pseudonym/alias registration remain later work.
 - Add an author profile screen.
 - First slice: show the existing name and store an optional photo, website URL and short biography.
 - First slice: searchable authors and their books in the active library; library-local, portable photos and explicit save/cancel behavior.
 - Implemented: explicitly rename the same author and all linked books, preserving the profile. Block an existing destination name without merging. Book details retain per-book author assignment.
-- Milestone 53 implemented: explicitly select multiple authors and merge into one selected existing author, with per-field biography/website/photo choices, duplicate-book protection and transactional metadata synchronization. This is separate from rename; automatic variant detection remains future work. Manual acceptance: [Milestone 53 checklist](../manual-tests/milestone-53-checklist.md).
+- Milestone 53 implemented: explicitly select multiple authors and merge into one selected existing author, with per-field biography/website/photo choices, duplicate-book protection and transactional metadata synchronization. This is separate from rename; suggestions are added in Milestone 54. User-test record: [Milestone 53 checklist](../manual-tests/milestone-53-checklist.md).
+- Milestone 54 implemented: side-by-side source photos, complete biographies and websites with visible result choices, plus conservative author-name duplicate suggestions and explicit comparison. The existing merge transaction is reused; online identity lookup, pseudonyms and broader alias registration remain future work. [Milestone 54 checklist](../manual-tests/milestone-54-checklist.md).
 - Later: birth date and optional death date.
 - Later: support author aliases, pseudonyms, and alternate spellings.
 - Show all books by the author in the active library.

@@ -865,5 +865,27 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Auteurs fusionnés ; {0} livres mis à jour. Les fichiers de {1} livres n&apos;ont pas pu être mis à jour.</value></data>
   <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>Une ancienne photo d&apos;auteur ou une photo temporaire n&apos;a pas pu être supprimée.</value></data>
   <data name="AuthorMergeFailed" xml:space="preserve"><value>Les auteurs n&apos;ont pas pu être fusionnés. Vérifiez la photo choisie et réessayez.</value></data>
+  <data name="AuthorComparisonSources" xml:space="preserve"><value>Profils des auteurs disponibles</value></data>
+  <data name="AuthorComparisonKeepAuthor" xml:space="preserve"><value>Conserver cet auteur</value></data>
+  <data name="AuthorComparisonUsePhoto" xml:space="preserve"><value>Utiliser cette photo</value></data>
+  <data name="AuthorComparisonUseWebsite" xml:space="preserve"><value>Utiliser ce site</value></data>
+  <data name="AuthorComparisonUseBiography" xml:space="preserve"><value>Utiliser cette biographie</value></data>
+  <data name="AuthorComparisonNoValue" xml:space="preserve"><value>Aucune donnée</value></data>
+  <data name="AuthorComparisonResult" xml:space="preserve"><value>Résultat</value></data>
+  <data name="AuthorDuplicatesFind" xml:space="preserve"><value>Rechercher des doublons</value></data>
+  <data name="AuthorDuplicatesTitle" xml:space="preserve"><value>Auteurs potentiellement en double</value></data>
+  <data name="AuthorDuplicatesHelp" xml:space="preserve"><value>Ce sont des suggestions, pas des doublons confirmés. Sélectionnez une paire et comparez les données. Vous décidez s&apos;il s&apos;agit de la même personne.</value></data>
+  <data name="AuthorDuplicatesLoading" xml:space="preserve"><value>Comparaison des auteurs…</value></data>
+  <data name="AuthorDuplicatesLoadFailed" xml:space="preserve"><value>Impossible de charger ou comparer les auteurs. Actualisez la liste et réessayez.</value></data>
+  <data name="AuthorDuplicatesFormatting" xml:space="preserve"><value>Même nom, orthographe ou ordre différent</value></data>
+  <data name="AuthorDuplicatesInitials" xml:space="preserve"><value>Nom de famille et initiales concordants</value></data>
+  <data name="AuthorDuplicatesLimit" xml:space="preserve"><value>Plus de 1000 suggestions. Précisez la recherche pour trouver d&apos;autres paires correspondantes.</value></data>
+  <data name="AuthorDuplicatesNone" xml:space="preserve"><value>Aucun doublon potentiel d&apos;auteur trouvé pour cette recherche.</value></data>
+  <data name="AuthorDuplicatesCount" xml:space="preserve"><value>Suggestions : {0} · Auteurs : {1}</value></data>
+  <data name="AuthorDuplicatesCompare" xml:space="preserve"><value>Comparer les données</value></data>
+  <data name="AuthorDuplicatesRefresh" xml:space="preserve"><value>Actualiser</value></data>
+  <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Auteur</value></data>
+  <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Peut-être le même auteur</value></data>
+  <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Ressemblance</value></data>
 </root>
 

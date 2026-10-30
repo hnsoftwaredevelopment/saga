@@ -865,5 +865,27 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Autoren zusammengeführt; {0} Bücher aktualisiert. Die Dateien von {1} Büchern konnten nicht aktualisiert werden.</value></data>
   <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>Ein altes oder temporäres Autorenfoto konnte nicht entfernt werden.</value></data>
   <data name="AuthorMergeFailed" xml:space="preserve"><value>Die Autoren konnten nicht zusammengeführt werden. Prüfen Sie das ausgewählte Foto und versuchen Sie es erneut.</value></data>
+  <data name="AuthorComparisonSources" xml:space="preserve"><value>Verfügbare Autorenprofile</value></data>
+  <data name="AuthorComparisonKeepAuthor" xml:space="preserve"><value>Diesen Autor behalten</value></data>
+  <data name="AuthorComparisonUsePhoto" xml:space="preserve"><value>Dieses Foto verwenden</value></data>
+  <data name="AuthorComparisonUseWebsite" xml:space="preserve"><value>Diese Website verwenden</value></data>
+  <data name="AuthorComparisonUseBiography" xml:space="preserve"><value>Diese Biografie verwenden</value></data>
+  <data name="AuthorComparisonNoValue" xml:space="preserve"><value>Keine Angaben</value></data>
+  <data name="AuthorComparisonResult" xml:space="preserve"><value>Ergebnis</value></data>
+  <data name="AuthorDuplicatesFind" xml:space="preserve"><value>Duplikate suchen</value></data>
+  <data name="AuthorDuplicatesTitle" xml:space="preserve"><value>Mögliche doppelte Autoren</value></data>
+  <data name="AuthorDuplicatesHelp" xml:space="preserve"><value>Dies sind Vorschläge, keine bestätigten Duplikate. Wählen Sie ein Paar und vergleichen Sie die Daten. Sie entscheiden, ob es dieselbe Person ist.</value></data>
+  <data name="AuthorDuplicatesLoading" xml:space="preserve"><value>Autoren werden verglichen…</value></data>
+  <data name="AuthorDuplicatesLoadFailed" xml:space="preserve"><value>Autoren konnten nicht geladen oder verglichen werden. Aktualisieren Sie die Liste und versuchen Sie es erneut.</value></data>
+  <data name="AuthorDuplicatesFormatting" xml:space="preserve"><value>Gleicher Name, andere Schreibweise oder Reihenfolge</value></data>
+  <data name="AuthorDuplicatesInitials" xml:space="preserve"><value>Nachname und Initialen stimmen überein</value></data>
+  <data name="AuthorDuplicatesLimit" xml:space="preserve"><value>Mehr als 1000 Vorschläge. Verfeinern Sie den Suchtext, um weitere passende Paare zu finden.</value></data>
+  <data name="AuthorDuplicatesNone" xml:space="preserve"><value>Keine möglichen doppelten Autoren für diese Suche gefunden.</value></data>
+  <data name="AuthorDuplicatesCount" xml:space="preserve"><value>Vorschläge: {0} · Autoren: {1}</value></data>
+  <data name="AuthorDuplicatesCompare" xml:space="preserve"><value>Daten vergleichen</value></data>
+  <data name="AuthorDuplicatesRefresh" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Autor</value></data>
+  <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Möglicherweise derselbe Autor</value></data>
+  <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Übereinstimmung</value></data>
 </root>
 
