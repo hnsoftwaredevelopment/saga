@@ -13,11 +13,13 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Theory]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    [InlineData(false, true)]
-    [InlineData(true, true)]
-    public async Task AuthorMerge_viewmodel_protects_drafts_refreshes_survivor_and_preserves_committed_warnings(bool failRefresh, bool candidateFlow)
+    [InlineData(false, false, false)]
+    [InlineData(true, false, false)]
+    [InlineData(false, true, false)]
+    [InlineData(true, true, false)]
+    [InlineData(true, false, true)]
+    [InlineData(true, true, true)]
+    public async Task AuthorMerge_viewmodel_protects_drafts_refreshes_survivor_and_preserves_committed_warnings(bool failRefresh, bool candidateFlow, bool failIndex)
     {
         using var library = new TemporaryLibrary();
         var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
@@ -54,14 +56,15 @@ public sealed partial class LibraryDbContextTests
             (await vm.MergeCandidateAsync(preview with { Authors = preview.Authors.ToArray() }, new(targetId, null, null, null))).Should().BeFalse();
         }
         else preview = (await vm.PreviewMergeAsync())!;
-        reloads.FailLoads = failRefresh;
+        reloads.FailLoads = failRefresh && !failIndex;
+        reloads.FailSearch = failRefresh && failIndex;
         var merged = candidateFlow ? await vm.MergeCandidateAsync(preview, new(targetId, null, null, null)) : await vm.MergeAsync(preview, new(targetId, null, null, null));
         merged.Should().BeTrue();
         vm.ChangedBookIds.Should().Equal(book.Id);
         vm.SelectedAuthorId.Should().Be(targetId);
         vm.Name.Should().Be("Target");
         vm.IsBusy.Should().BeFalse();
-        vm.Authors.Single().BookCount.Should().Be(2);
+        if (!failIndex) vm.Authors.Single().BookCount.Should().Be(2);
         if (failRefresh)
         {
             vm.StatusMessage.Should().Be("AuthorRenameRefreshFailed");
@@ -82,7 +85,9 @@ public sealed partial class LibraryDbContextTests
     private sealed class AuthorMergeReloads(IAuthorProfileRepository inner) : IAuthorProfileRepository
     {
         public bool FailLoads { get; set; }
-        public Task<AuthorPage> SearchAsync(string query, int skip, int take, CancellationToken token) => inner.SearchAsync(query, skip, take, token);
+        public bool FailSearch { get; set; }
+        public Task<AuthorPage> SearchAsync(string query, int skip, int take, CancellationToken token) => FailSearch
+            ? throw new IOException("Simulated index reload failure") : inner.SearchAsync(query, skip, take, token);
         public Task<AuthorProfile?> GetAsync(Guid id, CancellationToken token) => inner.GetAsync(id, token);
         public Task<IReadOnlyList<AuthorBook>> ListBooksAsync(Guid id, int skip, int take, CancellationToken token) =>
             FailLoads ? throw new IOException("Simulated reload failure") : inner.ListBooksAsync(id, skip, take, token);

@@ -77,9 +77,9 @@ public sealed partial class AuthorManagementViewModel(
 
     public Task SearchAsync(string query, bool append = false) => CanBrowse ? SearchCoreAsync(query, append) : Task.CompletedTask;
 
-    private async Task SearchCoreAsync(string query, bool append = false)
+    private async Task<bool> SearchCoreAsync(string query, bool append = false)
     {
-        if (disposed) return;
+        if (disposed) return false;
         if (!append) SetMergeAuthors([]);
         var version = ++searchVersion;
         currentQuery = query;
@@ -87,13 +87,14 @@ public sealed partial class AuthorManagementViewModel(
         try
         {
             var page = await Task.Run(() => repository.SearchAsync(query, append ? Authors.Count : 0, 200, lifetime.Token), lifetime.Token);
-            if (disposed || version != searchVersion) return;
+            if (disposed || version != searchVersion) return false;
             Authors = append ? Authors.Concat(page.Authors).ToArray() : page.Authors;
             TotalAuthors = page.TotalCount;
             OnPropertyChanged(nameof(HasMoreAuthors));
+            return true;
         }
-        catch (OperationCanceledException) { }
-        catch (Exception) { if (!disposed && version == searchVersion) SetStatus("AuthorProfileLoadFailed", true); }
+        catch (OperationCanceledException) { return false; }
+        catch (Exception) { if (!disposed && version == searchVersion) SetStatus("AuthorProfileLoadFailed", true); return false; }
         finally { if (!disposed && version == searchVersion) IsSearching = false; }
     }
 

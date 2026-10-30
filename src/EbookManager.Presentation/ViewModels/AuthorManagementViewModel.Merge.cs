@@ -80,7 +80,7 @@ public sealed partial class AuthorManagementViewModel
             Books = [];
             TotalBooks = 0;
             ApplyProfile(null);
-            await SearchCoreAsync(change.Profile!.Name);
+            if (!await SearchCoreAsync(change.Profile!.Name)) throw new InvalidOperationException("Merged author index reload failed.");
             if (disposed) return true;
             var summary = Authors.FirstOrDefault(author => author.Id == selection.TargetId);
             if (summary is null) throw new InvalidOperationException("Merged author index is unavailable.");
