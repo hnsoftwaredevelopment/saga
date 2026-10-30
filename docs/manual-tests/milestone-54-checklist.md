@@ -36,3 +36,10 @@ De volledige echte WPF-route is uitgebreid met een niet-betrokken auteur en meer
 Naamregels voor punten/spaties, komma-volgorde, diakritische tekens, tussenvoegsels en samengestelde achternamen zijn met positieve en negatieve voorbeelden getest. Verschillende volledig uitgeschreven voornamen, alleen een gedeelde achternaam en onbruikbare naamwaarden leveren geen automatische gelijkstelling op. Paren worden niet transitief tot één groep gemaakt.
 
 De lichte index is voorbij 500 auteurs getest zonder profielen, boeken of foto's te laden. Filteren hergebruikt die index en loopt buiten de UI-thread. Annulering, late resultaten, de voorstelgrens, expliciete keuzes, foto-loading en verversingsfouten na opslag zijn automatisch afgedekt. Waarschuwingen en gewijzigde boek-ID's blijven bij een fout behouden. Moeilijke bestandsfouten hoeven niet met echte gegevens te worden uitgelokt. Alle bestaande WPF-proeven en de nieuwe echte vergelijkings-/zoekroute slagen; beide vensters zijn in licht/donker gerenderd en bekeken.
+
+
+## Gerichte reviewhercontrole — Tab
+
+Reviewcorrectie 31 oktober 2026: CodeRabbit-opmerking 4428707720 is eerst falend gereproduceerd in de echte WPF-proef. ComparisonCards gebruikt nu doorlopende Tab-navigatie; alle acht bronknoppen op twee auteurskaarten zijn bereikbaar en Tab gaat daarna naar de resultaatkeuzes. 1099 tests en 26 WPF-proeven slagen. Schone tussentijdse PR #56-build 2026.10.31.3 van 31 oktober 00:06:12 Europe/Amsterdam, 0 waarschuwingen/fouten. De correctie wordt ook in vervolg-PR #57 meegenomen; de uiteindelijke gecombineerde testbuild wordt daar geregistreerd.
+
+- [ ] Open een vergelijking met twee auteurs. Gebruik Tab om alle bronknoppen van beide kaarten te bereiken; de focus moet vervolgens doorgaan naar de resultaatkeuzes. De volledige eerder geaccepteerde checklist hoeft hiervoor niet opnieuw te worden uitgevoerd.

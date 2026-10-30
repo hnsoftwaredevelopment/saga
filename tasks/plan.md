@@ -24,6 +24,8 @@ Goedgekeurd vervolg op de werkende handmatige samenvoeging. Begonnen vanaf PR #5
 
 Geen schema, dependencies, automatische merge, nieuwe doelnaam of online namenbron. Geen agents. Foto's alleen voor zichtbare vergelijking, maximaal twee gelijktijdige bronloads; zoekwerk buiten UI-thread en beperkt tot achternaam/initiaalbuckets.
 
+Reviewcorrectie 31 oktober 2026: CodeRabbit-opmerking 4428707720 is eerst falend gereproduceerd in de echte WPF-proef. ComparisonCards gebruikt nu doorlopende Tab-navigatie; alle acht bronknoppen op twee auteurskaarten zijn bereikbaar en Tab gaat daarna naar de resultaatkeuzes. 1099 tests en 26 WPF-proeven slagen. Schone tussentijdse PR #56-build 2026.10.31.3 van 31 oktober 00:06:12 Europe/Amsterdam, 0 waarschuwingen/fouten. De correctie wordt ook in vervolg-PR #57 meegenomen; de uiteindelijke gecombineerde testbuild wordt daar geregistreerd.
+
 ## Historie: Milestone 53
 # Milestone 53: auteurs bewust samenvoegen
 
