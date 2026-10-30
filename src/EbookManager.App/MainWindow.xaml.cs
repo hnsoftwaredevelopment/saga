@@ -87,9 +87,10 @@ public partial class MainWindow : System.Windows.Window
         if (library is null) return;
         // A modal window keeps operations bound to this library while the profile is being edited.
         var repository = new EfAuthorProfileRepository(contextFactory, library.DirectoryPath);
+        var photos = new ManagedAuthorPhotoStore(library.DirectoryPath);
         using var authors = new AuthorManagementViewModel(repository,
-            new ManagedAuthorPhotoStore(library.DirectoryPath), localizationService.GetString,
-            new AuthorRenameService(repository, bookService));
+            photos, localizationService.GetString,
+            new AuthorRenameService(repository, bookService), new AuthorMergeService(repository, repository, photos, bookService));
         new AuthorManagementWindow(authors) { Owner = this }.ShowDialog();
         try { await viewModel.ReconcileExternalMetadataChangesAsync(authors.ChangedBookIds); }
         catch (Exception)

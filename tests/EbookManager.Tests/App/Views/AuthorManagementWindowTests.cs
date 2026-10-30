@@ -27,7 +27,8 @@ public sealed class AuthorManagementWindowTests
         XNamespace xaml = "http://schemas.microsoft.com/winfx/2006/xaml";
         var authors = document.Descendants(p + "ListBox").Single(element => (string?)element.Attribute(xaml + "Name") == "AuthorsList");
         authors.Attribute("VirtualizingPanel.VirtualizationMode")!.Value.Should().Be("Recycling");
-        authors.Attribute("IsEnabled")!.Value.Should().Be("{Binding CanBrowse}");
+        authors.Attribute("IsEnabled")!.Value.Should().Be("{Binding CanChooseAuthors}");
+        authors.Attribute("SelectionMode")!.Value.Should().Be("Extended");
         document.Descendants(p + "GridSplitter").Single().Attribute("Style")!.Value
             .Should().Be("{StaticResource VisibleVerticalGridSplitterStyle}");
         document.Descendants(p + "DataGrid").Single().Attribute("IsReadOnly")!.Value.Should().Be("True");
@@ -48,6 +49,23 @@ public sealed class AuthorManagementWindowTests
             foreach (var key in keys)
                 translated.Descendants("data").Single(x => (string?)x.Attribute("name") == key)
                     .Element("value")!.Value.Should().NotBeNullOrWhiteSpace();
+        }
+    }
+
+    [Fact]
+    public void AuthorMerge_dialog_has_scrollable_choices_fixed_actions_and_valid_localized_placeholders()
+    {
+        var document = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "AuthorMergeWindow.xaml"));
+        XNamespace p = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        document.Descendants(p + "ComboBox").Should().HaveCount(4);
+        document.Descendants(p + "CheckBox").Should().BeEmpty();
+        document.Descendants(p + "ScrollViewer").Should().Contain(view => (string?)view.Attribute("VerticalScrollBarVisibility") == "Auto");
+        document.Descendants(p + "Button").Should().Contain(button => (string?)button.Attribute("IsEnabled") == "{Binding CanMerge}");
+        foreach (var language in new[] { "", ".nl", ".de", ".fr", ".es", ".it" })
+        {
+            var resources = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "Strings", $"AppResources{language}.resx"));
+            foreach (var text in resources.Descendants("data").Where(row => ((string?)row.Attribute("name"))?.StartsWith("AuthorMerge", StringComparison.Ordinal) == true))
+                FluentActions.Invoking(() => string.Format(System.Globalization.CultureInfo.InvariantCulture, text.Element("value")!.Value, 205, 510)).Should().NotThrow();
         }
     }
 }

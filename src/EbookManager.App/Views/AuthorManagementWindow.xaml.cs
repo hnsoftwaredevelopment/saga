@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace EbookManager.App.Views;
 
@@ -15,9 +16,11 @@ public partial class AuthorManagementWindow : Window
     private readonly AuthorManagementViewModel viewModel;
     private readonly CancellationTokenSource lifetime = new();
     private CancellationTokenSource? searchDelay;
-    private AuthorSummary? selectedAuthor;
     private bool changingSelection;
+    private bool changingSearchText;
     private bool closingConfirmed;
+    private UIElement? focusToRestore;
+    private int focusVersion;
 
     public AuthorManagementWindow(AuthorManagementViewModel viewModel)
     {
@@ -42,24 +45,36 @@ public partial class AuthorManagementWindow : Window
 
     private void ProfileChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName is nameof(viewModel.IsBusy) or nameof(viewModel.IsSearching))
+        {
+            var version = ++focusVersion;
+            if (viewModel.IsWorking)
+            {
+                if (Keyboard.FocusedElement is UIElement target && Window.GetWindow(target) == this) focusToRestore = target;
+            }
+            else
+            {
+                var target = focusToRestore;
+                var completedFocus = Keyboard.FocusedElement;
+                focusToRestore = null;
+                Dispatcher.BeginInvoke(() =>
+                {
+                    if (version == focusVersion && !viewModel.IsWorking && target?.IsEnabled == true && target.IsVisible &&
+                        ReferenceEquals(Keyboard.FocusedElement, completedFocus)) target.Focus();
+                }, System.Windows.Threading.DispatcherPriority.Input);
+            }
+        }
         if (e.PropertyName == nameof(viewModel.PhotoBytes))
             Portrait.Source = AuthorPhotoImageProcessor.Preview(viewModel.PhotoBytes);
-        if (e.PropertyName is nameof(viewModel.Authors) or nameof(viewModel.SelectedAuthorId))
+        if (e.PropertyName is nameof(viewModel.Authors) or nameof(viewModel.MergeSelectionCount))
         {
-            Dispatcher.BeginInvoke(() =>
-            {
-                if (!IsLoaded) return;
-                changingSelection = true;
-                selectedAuthor = viewModel.Authors.FirstOrDefault(author => author.Id == viewModel.SelectedAuthorId);
-                AuthorsList.SelectedItem = selectedAuthor;
-                changingSelection = false;
-            });
+            Dispatcher.BeginInvoke(() => RestoreAuthorSelection());
         }
     }
 
     private async void SearchChanged(object sender, TextChangedEventArgs e)
     {
-        if (!IsLoaded) return;
+        if (!IsLoaded || changingSearchText) return;
         searchDelay?.Cancel();
         searchDelay?.Dispose();
         var delay = CancellationTokenSource.CreateLinkedTokenSource(lifetime.Token);
@@ -75,19 +90,51 @@ public partial class AuthorManagementWindow : Window
 
     private async void AuthorSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (changingSelection || AuthorsList.SelectedItem is not AuthorSummary author) return;
+        if (changingSelection || !viewModel.CanChooseAuthors) return;
+        var desired = AuthorsList.SelectedItems.OfType<AuthorSummary>().ToArray();
         changingSelection = true;
         try
         {
             if (viewModel.IsBusy || !await ResolvePendingChangesAsync())
             {
-                AuthorsList.SelectedItem = selectedAuthor;
+                RestoreAuthorSelection();
                 return;
             }
-            selectedAuthor = author;
-            await viewModel.SelectAsync(author);
+            viewModel.SetMergeAuthors(desired);
+            if (desired.Length == 1)
+            {
+                await viewModel.SelectAsync(desired[0]);
+            }
         }
         finally { changingSelection = false; }
+    }
+
+    private void RestoreAuthorSelection()
+    {
+        if (!IsLoaded) return;
+        var ids = viewModel.MergeAuthorIds.ToHashSet();
+        if (ids.SetEquals(AuthorsList.SelectedItems.OfType<AuthorSummary>().Select(author => author.Id))) return;
+        var wasChanging = changingSelection;
+        changingSelection = true;
+        try
+        {
+            AuthorsList.SelectedItems.Clear();
+            foreach (var author in viewModel.Authors.Where(author => ids.Contains(author.Id))) AuthorsList.SelectedItems.Add(author);
+        }
+        finally { changingSelection = wasChanging; }
+    }
+
+    private async void MergeClicked(object sender, RoutedEventArgs e)
+    {
+        searchDelay?.Cancel();
+        if (!viewModel.CanMerge || !await ResolvePendingChangesAsync()) return;
+        var preview = await viewModel.PreviewMergeAsync();
+        if (preview is null) return;
+        var edit = new AuthorMergeDialogViewModel(preview, Text);
+        if (new AuthorMergeWindow(edit, viewModel.ReadMergePhotoAsync) { Owner = this }.ShowDialog() == true)
+            if (await viewModel.MergeAsync(preview, edit.Selection)) ShowSelectedAuthorQuery();
+        RestoreAuthorSelection();
+        if (MergeAuthorsButton.IsEnabled) MergeAuthorsButton.Focus(); else AuthorsList.Focus();
     }
 
     private async Task<bool> ResolvePendingChangesAsync()
@@ -119,7 +166,14 @@ public partial class AuthorManagementWindow : Window
         var edit = new AuthorRenameDialogViewModel(preview, Text);
         var dialog = new AuthorRenameWindow(edit) { Owner = this };
         if (dialog.ShowDialog() == true && await viewModel.RenameAsync(preview, edit.NewName))
-            SearchBox.Text = viewModel.Name;
+            ShowSelectedAuthorQuery();
+    }
+    private void ShowSelectedAuthorQuery()
+    {
+        searchDelay?.Cancel();
+        changingSearchText = true;
+        try { SearchBox.Text = viewModel.Name; }
+        finally { changingSearchText = false; }
     }
     private void DiscardClicked(object sender, RoutedEventArgs e) => viewModel.DiscardChanges();
     private void CloseClicked(object sender, RoutedEventArgs e) => Close();
