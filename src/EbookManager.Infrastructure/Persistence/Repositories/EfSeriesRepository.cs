@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EbookManager.Infrastructure.Persistence.Repositories;
 
-public sealed partial class EfSeriesRepository(LibraryDbContextFactory factory, string libraryPath) : ISeriesRepository
+public sealed partial class EfSeriesRepository(LibraryDbContextFactory factory, string libraryPath) : ISeriesRepository, ISeriesMergeRepository
 {
     public async Task<SeriesPage> SearchAsync(string query, int skip, int take, CancellationToken token)
     {
