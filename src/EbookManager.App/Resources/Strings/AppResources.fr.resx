@@ -852,5 +852,18 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="TagAssignmentUnchanged" xml:space="preserve"><value>Les livres sélectionnés n’ont pas été modifiés.</value></data>
   <data name="TagAssignmentFailed" xml:space="preserve"><value>Impossible de modifier les étiquettes des livres sélectionnés. Aucune modification n’a été enregistrée.</value></data>
   <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>Les modifications d’étiquettes ont été enregistrées, mais les listes n’ont pas pu être actualisées. Fermez et rouvrez la gestion des étiquettes.</value></data>
+  <data name="AuthorMerge" xml:space="preserve"><value>Fusionner les auteurs</value></data>
+  <data name="AuthorMergeConfirm" xml:space="preserve"><value>Confirmer la fusion</value></data>
+  <data name="AuthorMergeExplanation" xml:space="preserve"><value>Fusionner {0} auteurs sélectionnés, soit {1} livres distincts. Choisissez l&apos;auteur à conserver. Les autres fiches sélectionnées seront supprimées ; les livres seront conservés.</value></data>
+  <data name="AuthorMergeTarget" xml:space="preserve"><value>Auteur à conserver</value></data>
+  <data name="AuthorMergeProfileHelp" xml:space="preserve"><value>Choisissez de quel auteur conserver la biographie, le site et la photo. Des valeurs différentes exigent un choix explicite. Vous pouvez aussi laisser un champ vide. Les autres coauteurs sont conservés.</value></data>
+  <data name="AuthorMergeEmpty" xml:space="preserve"><value>Laisser vide</value></data>
+  <data name="AuthorMergeSelected" xml:space="preserve"><value>{0} auteurs sélectionnés · Utilisez Ctrl/Maj pour en sélectionner plusieurs.</value></data>
+  <data name="AuthorMergeConflict" xml:space="preserve"><value>Les auteurs sélectionnés ou leurs livres ont changé. Sélectionnez-les à nouveau.</value></data>
+  <data name="AuthorMergeWorking" xml:space="preserve"><value>Fusion des auteurs et mise à jour des fichiers…</value></data>
+  <data name="AuthorMergeSaved" xml:space="preserve"><value>Auteurs fusionnés ; {0} livres mis à jour.</value></data>
+  <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Auteurs fusionnés ; {0} livres mis à jour. Les fichiers de {1} livres n&apos;ont pas pu être mis à jour.</value></data>
+  <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>Une ancienne photo d&apos;auteur ou une photo temporaire n&apos;a pas pu être supprimée.</value></data>
+  <data name="AuthorMergeFailed" xml:space="preserve"><value>Les auteurs n&apos;ont pas pu être fusionnés. Vérifiez la photo choisie et réessayez.</value></data>
 </root>
 

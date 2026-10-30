@@ -852,5 +852,18 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="TagAssignmentUnchanged" xml:space="preserve"><value>Los libros seleccionados no se modificaron.</value></data>
   <data name="TagAssignmentFailed" xml:space="preserve"><value>No se pudieron cambiar las etiquetas de los libros seleccionados. No se guardaron cambios.</value></data>
   <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>Los cambios de etiquetas se guardaron, pero no se pudieron actualizar las listas. Cierre y vuelva a abrir la gestión de etiquetas.</value></data>
+  <data name="AuthorMerge" xml:space="preserve"><value>Combinar autores</value></data>
+  <data name="AuthorMergeConfirm" xml:space="preserve"><value>Confirmar combinación</value></data>
+  <data name="AuthorMergeExplanation" xml:space="preserve"><value>Combine {0} autores seleccionados, con {1} libros distintos. Elija el autor que desea conservar. Se eliminarán las demás fichas seleccionadas; los libros se conservarán.</value></data>
+  <data name="AuthorMergeTarget" xml:space="preserve"><value>Autor que se conservará</value></data>
+  <data name="AuthorMergeProfileHelp" xml:space="preserve"><value>Elija de qué autor conservar la biografía, el sitio web y la foto. Los valores diferentes requieren una elección explícita. También puede dejar un campo vacío. Se conservarán los demás coautores.</value></data>
+  <data name="AuthorMergeEmpty" xml:space="preserve"><value>Dejar vacío</value></data>
+  <data name="AuthorMergeSelected" xml:space="preserve"><value>{0} autores seleccionados · Use Ctrl/Mayús para seleccionar varios.</value></data>
+  <data name="AuthorMergeConflict" xml:space="preserve"><value>Los autores seleccionados o sus libros han cambiado. Selecciónelos de nuevo.</value></data>
+  <data name="AuthorMergeWorking" xml:space="preserve"><value>Combinando autores y actualizando archivos…</value></data>
+  <data name="AuthorMergeSaved" xml:space="preserve"><value>Autores combinados; {0} libros actualizados.</value></data>
+  <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Autores combinados; {0} libros actualizados. No se pudieron actualizar los archivos de {1} libros.</value></data>
+  <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>No se pudo eliminar una foto de autor antigua o temporal.</value></data>
+  <data name="AuthorMergeFailed" xml:space="preserve"><value>No se pudieron combinar los autores. Compruebe la foto seleccionada e inténtelo de nuevo.</value></data>
 </root>
 

@@ -42,15 +42,17 @@
       <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8">
           <Label Content="{loc:Loc AuthorSearch}" Target="{Binding ElementName=SearchBox}" Padding="0,0,0,4" />
-          <TextBox x:Name="SearchBox" TextChanged="SearchChanged" AutomationProperties.Name="{loc:Loc AuthorSearch}" />
+          <TextBox x:Name="SearchBox" TextChanged="SearchChanged" IsEnabled="{Binding CanBrowse}" AutomationProperties.Name="{loc:Loc AuthorSearch}" />
           <TextBlock Margin="0,6,0,0"><Run Text="{Binding TotalAuthors, Mode=OneWay}" /><Run Text=" · " /><Run Text="{loc:Loc AuthorCountLabel}" /></TextBlock>
+          <TextBlock Text="{Binding MergeSelectionSummary}" TextWrapping="Wrap" Margin="0,6,0,0" />
+          <Button x:Name="MergeAuthorsButton" Content="{loc:Loc AuthorMerge}" IsEnabled="{Binding CanMerge}" Click="MergeClicked" HorizontalAlignment="Left" Margin="0,6,0,0" AutomationProperties.Name="{loc:Loc AuthorMerge}" />
         </StackPanel>
-        <Button DockPanel.Dock="Bottom" Content="{loc:Loc AuthorLoadMore}" IsEnabled="{Binding HasMoreAuthors}" Click="MoreAuthorsClicked" Margin="0,8,0,0" />
+        <Button x:Name="MoreAuthorsButton" DockPanel.Dock="Bottom" Content="{loc:Loc AuthorLoadMore}" IsEnabled="{Binding HasMoreAuthors}" Click="MoreAuthorsClicked" Margin="0,8,0,0" />
         <Grid>
           <TextBlock Text="{loc:Loc AuthorNoneFound}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding Authors.Count}" Value="0"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></TextBlock.Style>
           </TextBlock>
-          <ListBox x:Name="AuthorsList" ItemsSource="{Binding Authors}" SelectionChanged="AuthorSelected" Background="Transparent" Foreground="{DynamicResource TextPrimaryBrush}" IsEnabled="{Binding CanBrowse}"
+          <ListBox x:Name="AuthorsList" ItemsSource="{Binding Authors}" SelectionMode="Extended" SelectionChanged="AuthorSelected" Background="Transparent" Foreground="{DynamicResource TextPrimaryBrush}" IsEnabled="{Binding CanChooseAuthors}"
                    ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
                    AutomationProperties.Name="{loc:Loc AuthorCountLabel}">
             <ListBox.ItemTemplate><DataTemplate><StackPanel Margin="4"><TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" /><TextBlock Text="{Binding BookCount}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" /></StackPanel></DataTemplate></ListBox.ItemTemplate>

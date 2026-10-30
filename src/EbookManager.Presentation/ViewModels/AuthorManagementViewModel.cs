@@ -7,7 +7,7 @@ namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class AuthorManagementViewModel(
     IAuthorProfileRepository repository, IAuthorPhotoStore photos, Func<string, string> localize,
-    IAuthorRenameService? renameService = null) : ObservableObject, IDisposable
+    IAuthorRenameService? renameService = null, IAuthorMergeService? mergeService = null) : ObservableObject, IDisposable
 {
     private readonly CancellationTokenSource lifetime = new();
     private readonly AuthorProfileService service = new(repository, photos);
@@ -37,15 +37,20 @@ public sealed partial class AuthorManagementViewModel(
     [NotifyPropertyChangedFor(nameof(CanOpenWebsite))]
     [NotifyPropertyChangedFor(nameof(CanRemovePhoto))]
     [NotifyPropertyChangedFor(nameof(CanRename))]
+    [NotifyPropertyChangedFor(nameof(CanMerge))]
+    [NotifyPropertyChangedFor(nameof(CanChooseAuthors))]
     private bool isBusy;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
+    [NotifyPropertyChangedFor(nameof(CanChooseAuthors))]
+    [NotifyPropertyChangedFor(nameof(CanMerge))]
     private bool isSearching;
 
     public bool HasProfile => original is not null;
     public Guid? SelectedAuthorId => original?.Id;
-    public bool CanEdit => HasProfile && !IsBusy && !disposed;
+    public bool CanEdit => HasProfile && !IsBusy && !disposed && MergeSelectionCount <= 1;
     public bool CanBrowse => !IsBusy && !disposed;
+    public bool CanChooseAuthors => CanBrowse && !IsSearching;
     public bool IsWorking => IsBusy || IsSearching;
     public bool CanSave => CanEdit && HasChanges;
     public bool CanOpenWebsite => CanEdit && !string.IsNullOrWhiteSpace(Website) && AuthorProfileValidation.IsValidWebsite(Website.Trim());
@@ -65,11 +70,15 @@ public sealed partial class AuthorManagementViewModel(
         OnPropertyChanged(nameof(CanOpenWebsite));
         OnPropertyChanged(nameof(CanRemovePhoto));
         OnPropertyChanged(nameof(CanRename));
+        OnPropertyChanged(nameof(CanMerge));
     }
 
-    public async Task SearchAsync(string query, bool append = false)
+    public Task SearchAsync(string query, bool append = false) => CanBrowse ? SearchCoreAsync(query, append) : Task.CompletedTask;
+
+    private async Task SearchCoreAsync(string query, bool append = false)
     {
         if (disposed) return;
+        if (!append) SetMergeAuthors([]);
         var version = ++searchVersion;
         currentQuery = query;
         IsSearching = true;
@@ -88,7 +97,7 @@ public sealed partial class AuthorManagementViewModel(
 
     public async Task SelectAsync(AuthorSummary author)
     {
-        if (disposed || HasChanges || renaming) return;
+        if (disposed || HasChanges || renaming || merging) return;
         var version = ++selectionVersion;
         IsBusy = true;
         original = null;
@@ -199,7 +208,8 @@ public sealed partial class AuthorManagementViewModel(
             original = result.Profile;
             ApplyProfile(PhotoBytes);
             SetStatus(result.CleanupWarning ? "AuthorProfileCleanupWarning" : "AuthorProfileSaved", result.CleanupWarning);
-            await SearchAsync(currentQuery);
+            await SearchCoreAsync(currentQuery);
+            if (Authors.FirstOrDefault(author => author.Id == original?.Id) is { } savedAuthor) SetMergeAuthors([savedAuthor]);
             return true;
         }
         catch (OperationCanceledException) { return false; }

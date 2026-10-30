@@ -572,5 +572,18 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="TagAssignmentUnchanged" xml:space="preserve"><value>De geselecteerde boeken zijn niet gewijzigd.</value></data>
   <data name="TagAssignmentFailed" xml:space="preserve"><value>De tags van de geselecteerde boeken konden niet worden gewijzigd. Er zijn geen wijzigingen opgeslagen.</value></data>
   <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>De tagwijzigingen zijn opgeslagen, maar de lijsten konden niet worden vernieuwd. Sluit Tags beheren en open het opnieuw om het resultaat te zien.</value></data>
+  <data name="AuthorMerge" xml:space="preserve"><value>Auteurs samenvoegen</value></data>
+  <data name="AuthorMergeConfirm" xml:space="preserve"><value>Samenvoegen bevestigen</value></data>
+  <data name="AuthorMergeExplanation" xml:space="preserve"><value>Voeg {0} geselecteerde auteurs samen, met samen {1} unieke boeken. Kies de auteur die blijft bestaan. De overige geselecteerde auteurvermeldingen verdwijnen; de boeken blijven behouden.</value></data>
+  <data name="AuthorMergeTarget" xml:space="preserve"><value>Te behouden auteur</value></data>
+  <data name="AuthorMergeProfileHelp" xml:space="preserve"><value>Kies van welke auteur je de biografie, website en foto behoudt. Bij verschillende waarden is een expliciete keuze nodig. Je kunt een veld ook leeg laten. Andere mede-auteurs blijven behouden.</value></data>
+  <data name="AuthorMergeEmpty" xml:space="preserve"><value>Leeg laten</value></data>
+  <data name="AuthorMergeSelected" xml:space="preserve"><value>{0} auteurs geselecteerd · Gebruik Ctrl/Shift voor meerdere auteurs.</value></data>
+  <data name="AuthorMergeConflict" xml:space="preserve"><value>De geselecteerde auteurs of hun boeken zijn gewijzigd. Selecteer ze opnieuw en probeer nogmaals.</value></data>
+  <data name="AuthorMergeWorking" xml:space="preserve"><value>Auteurs samenvoegen en boekbestanden bijwerken…</value></data>
+  <data name="AuthorMergeSaved" xml:space="preserve"><value>Auteurs samengevoegd; {0} boeken bijgewerkt.</value></data>
+  <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Auteurs samengevoegd; {0} boeken bijgewerkt. De bestanden van {1} boeken konden niet worden bijgewerkt.</value></data>
+  <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>Een oude of tijdelijke auteursfoto kon niet worden opgeruimd.</value></data>
+  <data name="AuthorMergeFailed" xml:space="preserve"><value>De auteurs konden niet worden samengevoegd. Controleer de gekozen foto en probeer opnieuw.</value></data>
 </root>
 

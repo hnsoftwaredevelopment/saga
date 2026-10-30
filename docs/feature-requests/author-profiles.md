@@ -15,6 +15,7 @@ Saga stores authors and book-author links as library database entities. Mileston
 - First slice: show the existing name and store an optional photo, website URL and short biography.
 - First slice: searchable authors and their books in the active library; library-local, portable photos and explicit save/cancel behavior.
 - Implemented: explicitly rename the same author and all linked books, preserving the profile. Block an existing destination name without merging. Book details retain per-book author assignment.
+- Milestone 53 implemented: explicitly select multiple authors and merge into one selected existing author, with per-field biography/website/photo choices, duplicate-book protection and transactional metadata synchronization. This is separate from rename; automatic variant detection remains future work. Manual acceptance: [Milestone 53 checklist](../manual-tests/milestone-53-checklist.md).
 - Later: birth date and optional death date.
 - Later: support author aliases, pseudonyms, and alternate spellings.
 - Show all books by the author in the active library.

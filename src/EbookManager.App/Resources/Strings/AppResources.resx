@@ -572,5 +572,18 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="TagAssignmentUnchanged" xml:space="preserve"><value>The selected books were not changed.</value></data>
   <data name="TagAssignmentFailed" xml:space="preserve"><value>The tags on the selected books could not be changed. No changes were saved.</value></data>
   <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>The tag changes were saved, but the lists could not be refreshed. Close and reopen tag management to see the result.</value></data>
+  <data name="AuthorMerge" xml:space="preserve"><value>Merge authors</value></data>
+  <data name="AuthorMergeConfirm" xml:space="preserve"><value>Confirm merge</value></data>
+  <data name="AuthorMergeExplanation" xml:space="preserve"><value>Merge {0} selected authors, covering {1} unique books. Choose the author to keep. The other selected author records will be removed; the books will remain.</value></data>
+  <data name="AuthorMergeTarget" xml:space="preserve"><value>Author to keep</value></data>
+  <data name="AuthorMergeProfileHelp" xml:space="preserve"><value>Choose whose biography, website and photo to keep. Different values require an explicit choice. You can also leave a field empty. Other coauthors are preserved.</value></data>
+  <data name="AuthorMergeEmpty" xml:space="preserve"><value>Leave empty</value></data>
+  <data name="AuthorMergeSelected" xml:space="preserve"><value>{0} authors selected · Use Ctrl/Shift to select multiple authors.</value></data>
+  <data name="AuthorMergeConflict" xml:space="preserve"><value>The selected authors or their books have changed. Select them again and retry.</value></data>
+  <data name="AuthorMergeWorking" xml:space="preserve"><value>Merging authors and updating book files…</value></data>
+  <data name="AuthorMergeSaved" xml:space="preserve"><value>Authors merged; {0} books updated.</value></data>
+  <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Authors merged; {0} books updated. Files could not be updated for {1} books.</value></data>
+  <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>An old or temporary author photo could not be removed.</value></data>
+  <data name="AuthorMergeFailed" xml:space="preserve"><value>The authors could not be merged. Check the selected photo and try again.</value></data>
 </root>
 

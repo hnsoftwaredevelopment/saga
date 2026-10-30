@@ -23,6 +23,8 @@ internal static class Program
         if (!string.IsNullOrWhiteSpace(license)) Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(license);
         application.Resources.MergedDictionaries.Add(new ResourceDictionary
         { Source = new Uri("pack://application:,,,/Saga;component/Resources/Styles/Themes/LightTheme.xaml") });
+        application.Resources.MergedDictionaries.Add(new ResourceDictionary
+        { Source = new Uri("pack://application:,,,/Saga;component/Resources/Styles/Icons.xaml") });
         var root = FindRepository();
         var splitter = XDocument.Load(Path.Combine(root, "src/EbookManager.App/App.xaml")).Descendants()
             .Single(element => element.Name.LocalName == "Style");
@@ -100,6 +102,7 @@ internal static class Program
                 await GroupedBookshelfNavigationSmoke.RunDuplicateAsync();
                 await TagManagementFocusSmoke.RunAsync();
                 await TagSelectionActionsSmoke.RunAsync();
+                await AuthorMergeSmoke.RunAsync();
                 exitCode = 0;
             }
             catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception.Message); }

@@ -852,5 +852,18 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="TagAssignmentUnchanged" xml:space="preserve"><value>Die ausgewählten Bücher wurden nicht geändert.</value></data>
   <data name="TagAssignmentFailed" xml:space="preserve"><value>Die Schlagwörter der ausgewählten Bücher konnten nicht geändert werden. Es wurden keine Änderungen gespeichert.</value></data>
   <data name="TagAssignmentRefreshFailed" xml:space="preserve"><value>Die Schlagwortänderungen wurden gespeichert, die Listen konnten jedoch nicht aktualisiert werden. Schließen und öffnen Sie die Schlagwortverwaltung erneut.</value></data>
+  <data name="AuthorMerge" xml:space="preserve"><value>Autoren zusammenführen</value></data>
+  <data name="AuthorMergeConfirm" xml:space="preserve"><value>Zusammenführen bestätigen</value></data>
+  <data name="AuthorMergeExplanation" xml:space="preserve"><value>{0} ausgewählte Autoren mit insgesamt {1} unterschiedlichen Büchern zusammenführen. Wählen Sie den Autor, der erhalten bleibt. Die anderen ausgewählten Autoreneinträge werden entfernt; die Bücher bleiben erhalten.</value></data>
+  <data name="AuthorMergeTarget" xml:space="preserve"><value>Zu erhaltender Autor</value></data>
+  <data name="AuthorMergeProfileHelp" xml:space="preserve"><value>Wählen Sie, wessen Biografie, Website und Foto erhalten bleiben. Unterschiedliche Werte erfordern eine ausdrückliche Auswahl. Sie können ein Feld auch leer lassen. Andere Mitautoren bleiben erhalten.</value></data>
+  <data name="AuthorMergeEmpty" xml:space="preserve"><value>Leer lassen</value></data>
+  <data name="AuthorMergeSelected" xml:space="preserve"><value>{0} Autoren ausgewählt · Mit Strg/Umschalt mehrere Autoren auswählen.</value></data>
+  <data name="AuthorMergeConflict" xml:space="preserve"><value>Die ausgewählten Autoren oder ihre Bücher wurden geändert. Wählen Sie sie erneut aus.</value></data>
+  <data name="AuthorMergeWorking" xml:space="preserve"><value>Autoren zusammenführen und Buchdateien aktualisieren…</value></data>
+  <data name="AuthorMergeSaved" xml:space="preserve"><value>Autoren zusammengeführt; {0} Bücher aktualisiert.</value></data>
+  <data name="AuthorMergeSavedWithWarnings" xml:space="preserve"><value>Autoren zusammengeführt; {0} Bücher aktualisiert. Die Dateien von {1} Büchern konnten nicht aktualisiert werden.</value></data>
+  <data name="AuthorMergeCleanupWarning" xml:space="preserve"><value>Ein altes oder temporäres Autorenfoto konnte nicht entfernt werden.</value></data>
+  <data name="AuthorMergeFailed" xml:space="preserve"><value>Die Autoren konnten nicht zusammengeführt werden. Prüfen Sie das ausgewählte Foto und versuchen Sie es erneut.</value></data>
 </root>
 
