@@ -1,3 +1,16 @@
+# Milestone 56: volgnummer wijzigen in Series beheren
+
+Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b; branch codex/milestone-56-series-number. Specificatie: docs/superpowers/specs/2026-10-31-saga-milestone-56-series-number-design.md.
+
+- [x] Slice goedgekeurd, basis/branch en specificatie vastgelegd.
+- [ ] Opslag en bestaande bestandssynchronisatie testgestuurd bouwen.
+- [ ] Dialoog/beheer met validatie, doublures en directe sortering bouwen/testen.
+- [ ] WPF, zes talen en echte controles afronden.
+- [ ] Volledige suite, schone build en eigen review.
+- [ ] Checklist/status/documentatie spiegelen; gewone PR openen.
+- [ ] Gebruiker test, accepteert en mergt.
+
+## Historie: Milestone 55
 # Milestone 55: seriesvarianten vinden en samenvoegen
 
 Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw getest zonder problemen en bevestigt dat PR #56 en PR #57 zijn gemerged. GitHub bevestigt beide merges; lokale main is bijgewerkt naar 373d45f. Milestones 54 en 55 zijn afgerond. Onderstaande uitvoeringsnotities en individuele checklistvakjes blijven als historie behouden. De UI-/icoonharmonisatie blijft een afzonderlijke wens voor later.

@@ -1,0 +1,25 @@
+# Milestone 56 — volgnummer wijzigen in Series beheren
+
+## Goedgekeurd doel en uitgangspunt
+
+De gebruiker heeft de voorgestelde slice goedgekeurd: selecteer één boek in Series beheren, wijzig of wis het volgnummer en werk bibliotheek/boekbestanden direct bij. Decimalen zijn toegestaan. Een gelijk nummer bij andere boeken is informatief en verhindert bewust opslaan niet. Automatisch hernummeren, meerdere boeken tegelijk wijzigen en ontbrekende delen opzoeken blijven buiten scope.
+
+Begonnen vanaf actuele main 373d45f (PR #56 en #57 gemerged), met lokale documentatiecommit a18571b die hun gebruikersacceptatie vastlegt. Die commit gaat mee met deze nieuwe gewone PR. Branch codex/milestone-56-series-number. Geen agents, schemawijziging, afhankelijkheid of boekmapverplaatsing.
+
+## Gedrag en acceptatiecriteria
+
+1. De bestaande boekenlijst krijgt enkelvoudige rijselectie en Volgnummer wijzigen, beschikbaar voor één actueel geladen boek wanneer beheer niet bezig is. Een apart venster toont titel, auteurs, serienaam en een bewerkbaar nummer; focus staat in het nummer. Er wordt niets geschreven bij openen/annuleren/Escape.
+2. Leeg betekent nummer wissen. Parse decimal met de huidige cultuur, zonder duizendtalscheiding of exponent. Voor Nederland is bijvoorbeeld 1,5 geldig. Bestaande boekdetails gebruikt een nullable decimal zonder extra grenzen; nul en negatieve bestaande decimale waarden blijven toegestaan. Ongeldige invoer/overflow toont begrijpelijke tekst en blokkeert opslaan; een numeriek ongewijzigde waarde schrijft niets.
+3. Een lichte snapshot bevat het geselecteerde boek (ID, exacte serienaam, nummer, titel, auteurs) en nummers van de overige boeken in dezelfde trim-/hoofdlettergroep. De dialoog toont een gelokaliseerde waarschuwing zodra de invoer bij een ander boek voorkomt. Leeg is geen dubbel nummer. Geen omslagen/ebookbestanden bij openen of typen.
+4. Voor opslaan wordt het geselecteerde boek in een transactie opnieuw gecontroleerd. Verwijderd, andere serie, gewijzigd nummer/titel/auteurs sinds openen geeft conflict zonder overschrijven. Nieuwe wijzigingen aan andere velden blijven behouden: SQL schrijft uitsluitend SeriesNumber en UpdatedUtc van dat ene boek. Andere boeken, auteurskoppelingen, tags, omslagen en mappen blijven gelijk. Gelijke nummers worden bij opslaan opnieuw bepaald, maar nooit geblokkeerd of automatisch aangepast.
+5. Na commit gebruikt de route BookService.SynchronizeStoredMetadataAsync met CancellationToken.None. Bestandsproblemen zijn aparte waarschuwingen; een mislukte verversing meldt dat het nummer wel is opgeslagen en behoudt waarschuwingen/gewijzigde boek-ID. Geen nieuwe ebookwriter of volledige SaveAsync met een oude metadata-kopie.
+6. Na succes wordt de reeds geladen boekenlijst opnieuw numeriek opgebouwd, zonder extra onbegrensde pagina's te laden. Selectie wordt op ID hersteld als het boek nog in die geladen lijst valt; anders blijft de resultaattekst met boektitel en nummer zichtbaar, met uitleg dat het boek buiten de geladen lijst valt en Meer laden beschikbaar blijft. De serienaam, seriezoektekst en aantallen blijven gelijk. Bij lijstvervanging verdwijnen oude rijreferenties; geen verborgen bewerkselectie. Hoofdscherm/details worden bij sluiten via de bestaande gewijzigde-ID-route bijgewerkt, met behoud van omslagen.
+7. Korte groene succesmelding, bij een bestandsprobleem een rode melding met betrokken boektitel. Een dubbel nummer is herkenbare aanvullende informatie. Toetsenbordfocus keert terug naar de actie of de boekenlijst als het boek na sorteren niet meer geladen is. Bestaand hernoemen/samenvoegen en Meer laden blijven werken.
+
+## Structuur en verificatie
+
+Gerichte Domain/Series-records en ISeriesNumberRepository, EF-partial, Application-service die de bestaande BookService gebruikt, Presentation-dialoog/managerpartial en één WPF-venster. Bestaande ObservableObject/CancellationToken-patronen; geen algemeen editorframework. Nieuwe teksten in Engels, Nederlands, Duits, Frans, Spaans en Italiaans.
+
+Eerst falende tests voor beperkt schrijven, behoud van overige/gelijktijdig gewijzigde data, stale preview, lege/gelijke/decimale nummers en rollback; daarna implementatie. Servicetests voor echte metadata.json, warnings en annulering na commit. Dialoogtests voor culturen, ongeldige invoer, ongewijzigd en informatieve doublures. Beheertests voor selectie/paginering, nieuw sorteren en bewaarde resultaatfeedback bij fouten. Echte WPF-proeven met fictieve boeken voor Tab/invoer/Enter/Escape, annuleren, bewaren, directe verversing en minimumgrootte/thema's. Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties.
+
+Commando's: `dotnet test EbookManager.sln -c Debug --no-restore`; `dotnet run --project tests/EbookManager.WpfSmokeTests/EbookManager.WpfSmokeTests.csproj -c Debug --no-restore`; `dotnet build src/EbookManager.App/EbookManager.App.csproj -c Debug --no-restore`. Schone enige Debug-build met versie/tijd, actuele README/feature/checklist/taken en exacte Obsidian-spiegels. Gewone niet-draft PR; gebruiker test en mergt.
