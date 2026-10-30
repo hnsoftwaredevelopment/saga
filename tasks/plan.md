@@ -1,3 +1,15 @@
+# Milestone 54: auteursduplicaten vinden en vergelijken
+
+Goedgekeurd vervolg op de werkende handmatige samenvoeging. Basis PR #55 head 877fb91; PR #55 staat nog open. Branch codex/milestone-54-author-duplicate-discovery. Specificatie: docs/superpowers/specs/2026-10-30-saga-milestone-54-author-discovery-design.md.
+
+1. Vergelijkingskaarten met beschikbare foto's, volledige profielwaarden, veldkeuzes en zichtbaar resultaat; bestaande opslag hergebruiken. Verify: dialoogmodellen en echte WPF-bronknoppen, foto-loading en scrollen.
+2. Pure, conservatieve naamvergelijking en lichte volledige indexpaginering. Verify: rood/groen voorbeelden en negatieve gevallen, 500+ auteurs, grens en annulering; geen foto-/boekbestanden laden.
+3. Voorstellenoverzicht met namen, tellingen, reden en filter; expliciete vergelijking/samenvoeging via bestaande service. Verify: late zoekresultaten, geen keuze betekent geen schrijven, refresh na merge en behoud van waarschuwingen.
+4. Zes talen, volledige suite, WPF/visuele controle, schone Debug-build, eigen review, gewone vervolg-PR, checklist en exacte Markdown-spiegels. Gebruiker accepteert en mergt; PR #55 eerst als de vervolg-PR daar nog op steunt.
+
+Geen schema, dependencies, automatische merge, nieuwe doelnaam of online namenbron. Geen agents. Foto's alleen voor zichtbare vergelijking, maximaal twee gelijktijdige bronloads; zoekwerk buiten UI-thread en beperkt tot achternaam/initiaalbuckets.
+
+## Historie: Milestone 53
 # Milestone 53: auteurs bewust samenvoegen
 
 Goedgekeurde bouwopdracht 30 oktober 2026. Specificatie: docs/superpowers/specs/2026-10-30-saga-milestone-53-author-merge-design.md. Basis main 7d3ed6e, branch codex/milestone-53-author-merge. Alleen handmatig gekozen auteurs; bestemming is één geselecteerde bestaande auteur. Geen schema, dependencies of agents.

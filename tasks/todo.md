@@ -1,3 +1,14 @@
+# Milestone 54: auteursduplicaten vinden en vergelijken
+
+- [x] Vervolg door gebruiker goedgekeurd; basis en aparte branch gecontroleerd, specificatie vastgelegd.
+- [ ] Visuele bronvergelijking en resultaat met expliciete knoppen bouwen/testen.
+- [ ] Conservatieve detectie, lichte index, grens en annulering testgestuurd bouwen.
+- [ ] Voorstellenvenster en bestaande veilige samenvoegroute aansluiten/testen.
+- [ ] Zes talen, volledige tests/WPF, build, eigen review en checklist afronden.
+- [ ] Documentatie exact spiegelen en gewone vervolg-PR openen.
+- [ ] Gebruiker test/accepteert en mergt.
+
+## Historie: Milestone 53
 # Milestone 53: auteurs bewust samenvoegen
 
 - [x] Gebruiker keurt scope en bouw goed op 30 oktober; PR #54 gemerged en main 7d3ed6e bijgewerkt.
