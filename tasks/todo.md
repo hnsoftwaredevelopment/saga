@@ -8,9 +8,10 @@
 - [x] Volledige suite, schone build en eigen review afronden.
 - [x] Checklist/status/README en exacte Obsidian-spiegels bijwerken; gewone PR #57 geopend en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/57. Geen draft; mergeable bij opening. GitGuardian groen, CodeRabbit overgeslagen; CodeQL heeft op deze vervolgbranch nog geen resultaat. Controles na omrichten naar main opnieuw bekijken.
 - [x] Gebruiker accepteert de gehele slice op 31 oktober 2026: “Deze slice is akkoord”.
+- [x] Reviewcorrectie 0060401 uit PR #56 in deze branch opgenomen: Tab bereikt alle bronknoppen. Samen 1131 tests en 28 WPF-proeven groen; Debug 2026.10.31.6 van 31 oktober 00:08:58 Europe/Amsterdam, 0 waarschuwingen/fouten.
 - [ ] Alleen de gebruiker mergt: eerst PR #56, daarna PR #57 naar main richten en controles opnieuw bekijken.
 
-Verificatie: 1131 tests en 27 echte WPF-scenario's groen, 0 mislukt/overgeslagen. Debug 2026.10.30.59 van 30 oktober 23:40:45 Europe/Amsterdam, 0 waarschuwingen/fouten, één Saga.exe onder Builds. Eigen vijfassige review en licht/donker bij minimale grootte afgerond. PR #56 staat nog open; deze vervolgbranch heeft die afhankelijkheid.
+Verificatie: 1131 tests en 28 echte WPF-scenario's groen, 0 mislukt/overgeslagen. Debug 2026.10.31.6 van 31 oktober 00:08:58 Europe/Amsterdam, 0 waarschuwingen/fouten, één Saga.exe onder Builds. Eigen vijfassige review en licht/donker bij minimale grootte afgerond. PR #56 staat nog open; deze vervolgbranch heeft die afhankelijkheid.
 
 ## Historie: Milestone 54
 # Milestone 54: auteursduplicaten vinden en vergelijken
