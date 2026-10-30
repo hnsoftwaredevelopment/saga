@@ -637,5 +637,18 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesMergeTarget" xml:space="preserve"><value>Series name to keep</value></data>
   <data name="SeriesMergeTitle" xml:space="preserve"><value>Merge series</value></data>
   <data name="SeriesMergeWorking" xml:space="preserve"><value>Merging series and updating book files…</value></data>
+  <data name="SeriesNumberChange" xml:space="preserve"><value>Change series number</value></data>
+  <data name="SeriesNumberCleared" xml:space="preserve"><value>Series number removed for {0}.</value></data>
+  <data name="SeriesNumberConflict" xml:space="preserve"><value>The book or its series has changed. Select the series again and reopen the number editor. No number change was saved.</value></data>
+  <data name="SeriesNumberDuplicate" xml:space="preserve"><value>This number is also used by {0} other books in this series. You can keep it if this is intentional.</value></data>
+  <data name="SeriesNumberFailed" xml:space="preserve"><value>The series number could not be updated. No number change was saved. Try again.</value></data>
+  <data name="SeriesNumberFileWarning" xml:space="preserve"><value>The number is saved in Saga, but the book files could not be updated.</value></data>
+  <data name="SeriesNumberHelp" xml:space="preserve"><value>Enter a number, such as {0}, or leave empty to remove the series number. The series name stays unchanged.</value></data>
+  <data name="SeriesNumberInvalid" xml:space="preserve"><value>Enter a valid number, such as {0}, without digit grouping, or leave the field empty.</value></data>
+  <data name="SeriesNumberOutsidePage" xml:space="preserve"><value>After sorting, this book is outside the loaded list. Use Load more to browse further.</value></data>
+  <data name="SeriesNumberRefreshFailed" xml:space="preserve"><value>The series number is saved, but the list could not be refreshed. Reopen Series management to see the result.</value></data>
+  <data name="SeriesNumberSaved" xml:space="preserve"><value>Series number updated for {0}: {1}.</value></data>
+  <data name="SeriesNumberUnchanged" xml:space="preserve"><value>The series number has not changed.</value></data>
+  <data name="SeriesNumberWorking" xml:space="preserve"><value>Updating the series number and book files…</value></data>
 </root>
 

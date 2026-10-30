@@ -917,5 +917,18 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesMergeTarget" xml:space="preserve"><value>Nom de série à conserver</value></data>
   <data name="SeriesMergeTitle" xml:space="preserve"><value>Fusionner des séries</value></data>
   <data name="SeriesMergeWorking" xml:space="preserve"><value>Fusion des séries et mise à jour des fichiers…</value></data>
+  <data name="SeriesNumberChange" xml:space="preserve"><value>Modifier le numéro</value></data>
+  <data name="SeriesNumberCleared" xml:space="preserve"><value>Numéro supprimé pour {0}.</value></data>
+  <data name="SeriesNumberConflict" xml:space="preserve"><value>Le livre ou sa série a changé. Sélectionnez à nouveau la série puis rouvrez la modification du numéro. Aucune modification du numéro enregistrée.</value></data>
+  <data name="SeriesNumberDuplicate" xml:space="preserve"><value>Ce numéro est aussi utilisé par {0} autres livres de cette série. Vous pouvez le conserver si ce choix est volontaire.</value></data>
+  <data name="SeriesNumberFailed" xml:space="preserve"><value>Impossible de mettre à jour le numéro. Aucune modification du numéro enregistrée. Réessayez.</value></data>
+  <data name="SeriesNumberFileWarning" xml:space="preserve"><value>Le numéro est enregistré dans Saga, mais les fichiers du livre n’ont pas pu être mis à jour.</value></data>
+  <data name="SeriesNumberHelp" xml:space="preserve"><value>Saisissez un numéro, par exemple {0}, ou laissez vide pour supprimer le numéro. Le nom de la série reste inchangé.</value></data>
+  <data name="SeriesNumberInvalid" xml:space="preserve"><value>Saisissez un nombre valide, par exemple {0}, sans séparateur de milliers, ou laissez le champ vide.</value></data>
+  <data name="SeriesNumberOutsidePage" xml:space="preserve"><value>Après le tri, ce livre se trouve hors de la liste chargée. Utilisez Charger davantage pour continuer.</value></data>
+  <data name="SeriesNumberRefreshFailed" xml:space="preserve"><value>Le numéro est enregistré, mais la liste n’a pas pu être actualisée. Rouvrez la gestion des séries pour voir le résultat.</value></data>
+  <data name="SeriesNumberSaved" xml:space="preserve"><value>Numéro mis à jour pour {0} : {1}.</value></data>
+  <data name="SeriesNumberUnchanged" xml:space="preserve"><value>Le numéro n’a pas changé.</value></data>
+  <data name="SeriesNumberWorking" xml:space="preserve"><value>Mise à jour du numéro et des fichiers…</value></data>
 </root>
 

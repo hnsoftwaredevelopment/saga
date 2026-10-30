@@ -111,6 +111,19 @@ public partial class SeriesManagementWindow : Window
         new SeriesDuplicatesWindow(duplicates, viewModel) { Owner = this }.ShowDialog();
         RestoreFocus(sender as UIElement);
     }
+    private async void NumberClicked(object sender, RoutedEventArgs e)
+    {
+        searchDelay?.Cancel();
+        var preview = await viewModel.PreviewNumberAsync();
+        if (preview is null) return;
+        var dialog = new SeriesNumberDialogViewModel(preview, key => Localization.LocalizedStrings.Current[key]);
+        var confirmed = new SeriesNumberWindow(dialog) { Owner = this }.ShowDialog() == true;
+        RestoreFocus(sender as UIElement);
+        if (!confirmed) return;
+        await viewModel.ChangeNumberAsync(preview, dialog.Number);
+        if (viewModel.SelectedBook is { } selected) BooksGrid.ScrollIntoView(selected);
+        RestoreFocus(viewModel.CanEditNumber ? sender as UIElement : BooksGrid);
+    }
     private void RestoreFocus(UIElement? target)
     {
         if (IsLoaded && IsActive && target is { IsVisible: true, IsEnabled: true } && Window.GetWindow(target) == this)

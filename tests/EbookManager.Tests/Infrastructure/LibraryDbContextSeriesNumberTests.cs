@@ -9,6 +9,27 @@ namespace EbookManager.Tests.Infrastructure;
 
 public sealed partial class LibraryDbContextTests
 {
+    [Fact]
+    public async Task SeriesNumber_rechecks_duplicate_information_without_blocking_other_book_changes_or_counting_other_series()
+    {
+        using var library = new TemporaryLibrary(); var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        await using var context = factory.Create(library.DirectoryPath);
+        var first = new BookEntity { Id = Guid.NewGuid(), Title = "First", NormalizedTitle = "first", DuplicateKey = "first", Series = "Series", SeriesNumber = 1 };
+        var second = new BookEntity { Id = Guid.NewGuid(), Title = "Second", NormalizedTitle = "second", DuplicateKey = "second", Series = " SERIES ", SeriesNumber = 2 };
+        var other = new BookEntity { Id = Guid.NewGuid(), Title = "Other", NormalizedTitle = "other", DuplicateKey = "other", Series = "Other", SeriesNumber = 3 };
+        var noSeries = new BookEntity { Id = Guid.NewGuid(), Title = "No series", NormalizedTitle = "no series", DuplicateKey = "no series", SeriesNumber = 3 };
+        context.Books.AddRange(first, second, other, noSeries); await context.SaveChangesAsync();
+        var repository = new EfSeriesRepository(factory, library.DirectoryPath);
+        (await repository.PreviewNumberAsync(noSeries.Id, default)).Should().BeNull();
+        (await repository.PreviewNumberAsync(Guid.NewGuid(), default)).Should().BeNull();
+        var preview = (await repository.PreviewNumberAsync(first.Id, default))!;
+        preview.OtherNumbers.Should().Equal(2m);
+        second.SeriesNumber = 3; await context.SaveChangesAsync();
+        var result = await repository.ChangeNumberAsync(preview, 3, default);
+        result.Status.Should().Be(SeriesNumberStatus.Changed); result.MatchingOtherBooks.Should().Be(1);
+        (await context.Books.AsNoTracking().SingleAsync(book => book.Id == first.Id)).SeriesNumber.Should().Be(3);
+    }
+
     [Theory]
     [InlineData("1.5")]
     [InlineData(null)]
