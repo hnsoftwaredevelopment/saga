@@ -2,7 +2,7 @@
 
 ## Opdracht en basis
 
-De gebruiker heeft de twee vervolgverbeteringen goedgekeurd: eerst beschikbare auteursgegevens naast elkaar vergelijken, daarna Duplicaten zoeken. De bestaande handmatige samenvoeging werkt volgens de gebruiker. PR #55 staat bij aanvang nog open; deze aparte branch codex/milestone-54-author-duplicate-discovery bouwt daarom voort op diens geteste head 877fb91. Een vervolg-PR richt zich op de branch van PR #55 zolang die nog niet is gemerged. Alleen de gebruiker mergt.
+De gebruiker heeft de twee vervolgverbeteringen goedgekeurd: eerst beschikbare auteursgegevens naast elkaar vergelijken, daarna Duplicaten zoeken. De bestaande handmatige samenvoeging werkt volgens de gebruiker. PR #55 staat bij aanvang nog open; deze aparte branch codex/milestone-54-author-duplicate-discovery bouwt daarom voort op diens geteste head 877fb91. PR #55 is inmiddels gemerged en de vervolgbranch is zonder bronwijzigingen herplaatst op main 3377d8e; de gewone vervolg-PR richt zich op main. Alleen de gebruiker mergt.
 
 ## Gebruikersgedrag
 
@@ -26,3 +26,17 @@ Gerichte pure matchlogica onder Application/Authors met xUnit-voorbeelden en neg
 4. Zes talen, volledige suite, schone enige Debug-build, eigen vijfassige review, checklist, README/status en exact gecontroleerde Obsidian-spiegels. Handmatige gebruikersacceptatie blijft apart.
 
 Commando's: `dotnet test EbookManager.sln -c Debug --no-restore`; `dotnet run --project tests/EbookManager.WpfSmokeTests/EbookManager.WpfSmokeTests.csproj -c Debug --no-restore`; `dotnet build src/EbookManager.App/EbookManager.App.csproj -c Debug --no-restore`. Project-DoD geldt; alleen de gebruiker accepteert en mergt.
+
+## Uitvoering en verificatie
+
+PR #55 is tijdens de uitvoering gemerged naar main 3377d8e. De aparte vervolgbranch is daarop herplaatst; de bronboom vóór en na deze rebase is exact gelijk gecontroleerd. De vervolg-PR richt zich daarom normaal op main, zonder afhankelijkheid van een nog open PR.
+
+Gebouwd in afzonderlijke geteste commits. De zoeklogica gebruikt lichte auteurpagina's van 500, een alleen in het venster gecachte index, achternaam/initiaalbuckets, twee positieve redenklassen en expliciete paren. Querywerk draait buiten de UI-thread, annulering/versies bewaken late resultaten, en de limiet vermeldt dat verfijnen mogelijk is. Opmaaknormalisatie wijzigt geen opgeslagen namen. Onbruikbare namen met cijfers of scheidingstekens voor meerdere personen worden niet als bewijs gebruikt.
+
+Bronkaarten zijn horizontaal gevirtualiseerd. Namen en bestemming blijven zichtbaar bij scrollen; volledige biografieën zijn bereikbaar. Bronfoto's laden met maximaal twee gelijktijdige verzoeken, worden bij recycling gewist en krijgen versiecontrole tegen late resultaten. De resultaatfoto blokkeert bevestigen tijdens laden of bij een fout. Bronknoppen veranderen uitsluitend de expliciete veldkeuzes in de bestaande dialoog; samenvoegen gebruikt AuthorMergeService ongewijzigd.
+
+Eigen review op correctheid, eenvoud, architectuur, veiligheid en prestaties vond aanvullend een bestaand verversingspad dat een mislukte indexreload na commit niet eerlijk meldde. Twee eerst falende regressies voor handmatige en voorgestelde paren zijn hersteld: waarschuwingen/boek-ID's blijven behouden, oude tellingen worden niet als nieuw gepresenteerd en de gebruiker krijgt opgeslagen-maar-niet-ververst feedback.
+
+De volledige suite slaagt met **1099 tests, 0 mislukt/overgeslagen**. **24 echte WPF-scenario's groen**, inclusief bronknoppen met echte kleine JPEG's, foto-concurrentie, lange biografieën, zoeken, annuleren en expliciete samenvoeging vanuit voorstellen. Beide nieuwe vensters zijn in licht/donker gerenderd en bekeken. Bestaande tests gebruiken uitsluitend fictieve of tijdelijke bibliotheken. De [checklist](../../manual-tests/milestone-54-checklist.md) staat klaar voor gebruikersacceptatie; moeilijke bestandsfouten hoeven niet handmatig te worden geforceerd.
+
+Definitieve Debug-build: **2026.10.30.40**, **30 oktober 2026 22:27:02 Europe/Amsterdam**, **0 waarschuwingen/fouten** en precies één Saga.exe onder Builds/Debug. README, featurestatus, checklist, specificatie en taken worden exact naar Obsidian gespiegeld en met gelijke hashes gecontroleerd. Alleen handmatige gebruikersacceptatie en merge staan nog open.

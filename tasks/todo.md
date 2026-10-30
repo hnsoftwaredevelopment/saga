@@ -1,11 +1,11 @@
 # Milestone 54: auteursduplicaten vinden en vergelijken
 
 - [x] Vervolg door gebruiker goedgekeurd; basis en aparte branch gecontroleerd, specificatie vastgelegd.
-- [ ] Visuele bronvergelijking en resultaat met expliciete knoppen bouwen/testen.
-- [ ] Conservatieve detectie, lichte index, grens en annulering testgestuurd bouwen.
-- [ ] Voorstellenvenster en bestaande veilige samenvoegroute aansluiten/testen.
-- [ ] Zes talen, volledige tests/WPF, build, eigen review en checklist afronden.
-- [ ] Documentatie exact spiegelen en gewone vervolg-PR openen.
+- [x] Visuele bronvergelijking en resultaat met expliciete knoppen bouwen/testen.
+- [x] Conservatieve detectie, lichte index, grens en annulering testgestuurd bouwen.
+- [x] Voorstellenvenster en bestaande veilige samenvoegroute aansluiten/testen.
+- [x] Zes talen, volledige tests/WPF, build, eigen review en checklist afronden.
+- [x] Documentatie exact spiegelen en gewone vervolg-PR openen.
 - [ ] Gebruiker test/accepteert en mergt.
 
 ## Historie: Milestone 53
@@ -19,7 +19,7 @@
 - [x] Native auteursselectie, pending edits, paging/focus en directe verversing aansluiten/testen.
 - [x] Zes talen, volledige suite, WPF, schone enige Debug-build en eigen review uitvoeren.
 - [x] README/featurestatus/checklist/spec/taken en exacte Obsidian-spiegels bijwerken; gewone PR openen.
-- [ ] Gebruiker test/accepteert en mergt.
+- [x] Gebruiker bevestigt dat de beschreven handmatige samenvoeging werkt; PR #55 is gemerged. De vervolgverbeteringen staan in Milestone 54.
 
 ## Historie: Milestone 52 — geaccepteerd en gemerged in PR #54
 # Milestone 52: tags beheren

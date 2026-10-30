@@ -2,6 +2,10 @@
 
 ## Status
 
+Milestone 54 is na de gebruikersfeedback goedgekeurd en gebouwd op de inmiddels gemergede PR #55 (main 3377d8e). Duplicaten zoeken toont mogelijke naamparen met aantallen en reden; de nieuwe vergelijking toont beschikbare foto's, volledige biografieën en websites naast het zichtbare resultaat. De gebruiker kiest zelf wat overblijft; opslag gebruikt de bestaande veilige samenvoeging. **1099 tests en 24 WPF-scenario's slagen**. [Handmatige acceptatie](../manual-tests/milestone-54-checklist.md) staat open.
+
+### Historie: Milestone 53
+
 Gebruikerswens van 29 oktober 2026. Milestone 53 is op 30 oktober goedgekeurd en gebouwd: handmatig geselecteerde auteurs samenvoegen naar één bestaande geselecteerde auteur, met expliciete foto-/website-/biografiekeuzes en veilige boekcontrole. Automatisch voorstellen van vermoedelijk gelijke namen volgt later. Zie de [specificatie](../superpowers/specs/2026-10-30-saga-milestone-53-author-merge-design.md) en [testchecklist](../manual-tests/milestone-53-checklist.md). 1074 tests en 22 WPF-scenario's slagen; build 2026.10.30.20, 30 oktober 19:25:45 Europe/Amsterdam. Handmatige acceptatie staat open.
 
 ## Gewenste werkwijze
@@ -25,4 +29,4 @@ De gebruiker meldt dat de huidige functionaliteit werkt zoals beschreven en heef
 - Een actie Duplicaten zoeken voor auteurs toont vermoedelijk gelijke naamvarianten, zodat de gebruiker ze niet zelf hoeft te vermoeden of op te zoeken. Toon de oorspronkelijke namen en waarom ze overeenkomen. Begin voorzichtig met spaties/punten, omgekeerde naamvolgorde en initialen tegenover uitgeschreven voornamen bij een overeenkomende achternaam. Alleen dezelfde achternaam is onvoldoende; automatisch samenvoegen blijft uitgesloten.
 - Een vergelijkingsvenster zoals bij boekduplicaten toont vooraf per auteur de foto, volledige biografie, website en het aantal gekoppelde boeken naast elkaar. Per onderdeel is zichtbaar wat wordt behouden en hoe het resultaat eruitziet; geen keuze uitsluitend op basis van een naam in een keuzelijst.
 
-Voorgestelde uitvoering: eerst de visuele vergelijking op de bestaande veilige samenvoegroute, daarna de zoekactie met conservatieve overeenkomsten en expliciete gebruikersselectie. Dit is een vervolgvoorstel, geen reeds gebouwde uitbreiding van PR #55. Een nieuwe doelnaam en automatisch herkennen van pseudoniemen blijven afzonderlijke wensen.
+Uitgevoerd in Milestone 54: eerst de visuele vergelijking op de bestaande veilige samenvoegroute, daarna de zoekactie met conservatieve overeenkomsten en expliciete gebruikersselectie. Namenvergelijking herkent punten/spaties, komma-volgorde, diakritische tekens en passende initialen met dezelfde achternaam. Verschillende volledig uitgeschreven voornamen worden niet vanwege een gelijke eerste letter als dubbel beschouwd. Alleen een gedeelde achternaam is onvoldoende; voorstellen worden niet transitief samengevoegd. Per zoekopdracht maximaal 1000 voorstellen, met een duidelijke verfijningsmelding. Een nieuwe doelnaam, echte spelfouten in achternamen, afwijkende aantallen tussenvoornamen, pseudoniemherkenning en een blijvende negeerlijst blijven vervolgwensen.
