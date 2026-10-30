@@ -39,10 +39,12 @@ public sealed partial class AuthorManagementViewModel(
     [NotifyPropertyChangedFor(nameof(CanRename))]
     [NotifyPropertyChangedFor(nameof(CanMerge))]
     [NotifyPropertyChangedFor(nameof(CanChooseAuthors))]
+    [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     private bool isBusy;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(CanChooseAuthors))]
+    [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(CanMerge))]
     private bool isSearching;
 

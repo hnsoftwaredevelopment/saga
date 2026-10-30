@@ -13,9 +13,11 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public async Task AuthorMerge_viewmodel_protects_drafts_refreshes_survivor_and_preserves_committed_warnings(bool failRefresh)
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task AuthorMerge_viewmodel_protects_drafts_refreshes_survivor_and_preserves_committed_warnings(bool failRefresh, bool candidateFlow)
     {
         using var library = new TemporaryLibrary();
         var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
@@ -38,10 +40,23 @@ public sealed partial class LibraryDbContextTests
         vm.DiscardChanges();
         vm.CanMerge.Should().BeTrue();
         vm.CanEdit.Should().BeFalse();
-        var targetId = vm.Authors.Single(author => author.Name == "Target").Id;
-        var preview = (await vm.PreviewMergeAsync())!;
+        var target = vm.Authors.Single(author => author.Name == "Target");
+        var source = vm.Authors.Single(author => author.Name == "Source");
+        var targetId = target.Id;
+        AuthorMergePreview preview;
+        if (candidateFlow)
+        {
+            await vm.SearchAsync("Target");
+            vm.Authors.Should().ContainSingle();
+            vm.CanMerge.Should().BeFalse();
+            vm.CanFindDuplicates.Should().BeTrue();
+            preview = (await vm.PreviewCandidateAsync(new(source, target, AuthorDuplicateReason.MatchingInitials)))!;
+            (await vm.MergeCandidateAsync(preview with { Authors = preview.Authors.ToArray() }, new(targetId, null, null, null))).Should().BeFalse();
+        }
+        else preview = (await vm.PreviewMergeAsync())!;
         reloads.FailLoads = failRefresh;
-        (await vm.MergeAsync(preview, new(targetId, null, null, null))).Should().BeTrue();
+        var merged = candidateFlow ? await vm.MergeCandidateAsync(preview, new(targetId, null, null, null)) : await vm.MergeAsync(preview, new(targetId, null, null, null));
+        merged.Should().BeTrue();
         vm.ChangedBookIds.Should().Equal(book.Id);
         vm.SelectedAuthorId.Should().Be(targetId);
         vm.Name.Should().Be("Target");

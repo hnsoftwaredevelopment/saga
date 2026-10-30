@@ -47,9 +47,12 @@ public sealed partial class AuthorManagementViewModel
         finally { if (!disposed) IsBusy = false; }
     }
 
-    public async Task<bool> MergeAsync(AuthorMergePreview preview, AuthorMergeSelection selection)
+    public Task<bool> MergeAsync(AuthorMergePreview preview, AuthorMergeSelection selection) =>
+        CanMerge && mergeAuthorIds.SetEquals(preview.Authors.Select(author => author.Profile.Id))
+            ? MergeCoreAsync(preview, selection) : Task.FromResult(false);
+
+    private async Task<bool> MergeCoreAsync(AuthorMergePreview preview, AuthorMergeSelection selection)
     {
-        if (!CanMerge || !mergeAuthorIds.SetEquals(preview.Authors.Select(author => author.Profile.Id))) return false;
         merging = true;
         IsBusy = true;
         ++selectionVersion;
