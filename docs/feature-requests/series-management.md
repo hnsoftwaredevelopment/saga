@@ -1,8 +1,10 @@
 # Series beheren
 
+Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw getest zonder problemen en bevestigt dat PR #56 en PR #57 zijn gemerged. GitHub bevestigt beide merges; lokale main is bijgewerkt naar 373d45f. Milestones 54 en 55 zijn afgerond. Onderstaande uitvoeringsnotities en individuele checklistvakjes blijven als historie behouden. De UI-/icoonharmonisatie blijft een afzonderlijke wens voor later.
+
 ## Status
 
-Milestone 55 voegt **Duplicaten zoeken** toe aan Series beheren: mogelijke schrijfvarianten vergelijken en bewust samenbrengen onder één bestaande naam. Boeken, nummers en overige gegevens blijven behouden. **1131 tests en 28 echte WPF-scenario's slagen**; Debug-build **2026.10.31.6**, 31 oktober 2026 om **00:08:58 Europe/Amsterdam**, heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds. Eigen review en licht/donkercontrole uitgevoerd. De gebruiker heeft de gehele slice op 31 oktober 2026 [geaccepteerd](../manual-tests/milestone-55-checklist.md). PR #57 wacht op merge. De vervolgbranch is gebaseerd op de nog openstaande PR #56.
+Milestone 55 voegt **Duplicaten zoeken** toe aan Series beheren: mogelijke schrijfvarianten vergelijken en bewust samenbrengen onder één bestaande naam. Boeken, nummers en overige gegevens blijven behouden. **1131 tests en 28 echte WPF-scenario's slagen**; Debug-build **2026.10.31.6**, 31 oktober 2026 om **00:08:58 Europe/Amsterdam**, heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds. Eigen review en licht/donkercontrole uitgevoerd. De gebruiker heeft de gehele slice op 31 oktober 2026 [geaccepteerd](../manual-tests/milestone-55-checklist.md). PR #57 is gemerged. De vervolgbranch is gebaseerd op de nog openstaande PR #56.
 
 ## Historie — Milestone 50 geaccepteerd en gemerged
 

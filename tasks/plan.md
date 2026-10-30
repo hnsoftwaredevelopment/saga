@@ -1,5 +1,7 @@
 # Milestone 55: seriesvarianten vinden en samenvoegen
 
+Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw getest zonder problemen en bevestigt dat PR #56 en PR #57 zijn gemerged. GitHub bevestigt beide merges; lokale main is bijgewerkt naar 373d45f. Milestones 54 en 55 zijn afgerond. Onderstaande uitvoeringsnotities en individuele checklistvakjes blijven als historie behouden. De UI-/icoonharmonisatie blijft een afzonderlijke wens voor later.
+
 Goedgekeurde bouwopdracht; basis PR #56 head 56c4f49, branch codex/milestone-55-series-merge. Specificatie: docs/superpowers/specs/2026-10-30-saga-milestone-55-series-merge-design.md. Vorige PR staat bij aanvang open; zo nodig later herplaatsen op gemergede main. Geen agents, schema of dependencies.
 
 1. Gerichte modellen en EF-transactie; eerst falende tests voor behoud van nummers/metadata, bestaande doelboeken, meer dan 500 boeken, stale preview en rollback (3–5 bestanden per increment).
