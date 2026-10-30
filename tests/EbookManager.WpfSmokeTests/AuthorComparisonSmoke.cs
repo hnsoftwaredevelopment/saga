@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -32,6 +33,21 @@ internal static class AuthorComparisonSmoke
             Require(maximum <= 2, "Visible author source photos were loaded without the concurrency bound.");
             var cards = (ListBox)window.FindName("ComparisonCards");
             Require(cards.Items.Count == 2 && !vm.CanMerge, "Available source cards or required conflict choices are missing.");
+            var sourceButtons = Descendants<Button>(cards).Where(button => button.DataContext is AuthorComparisonCard).ToArray();
+            Require(sourceButtons.Length == 8, "Both comparison cards must expose four source actions.");
+            sourceButtons[0].Focus();
+            var visited = new HashSet<Button>();
+            for (var step = 0; step < 40; step++)
+            {
+                if (Keyboard.FocusedElement is Button focused && sourceButtons.Contains(focused)) visited.Add(focused);
+                if (ReferenceEquals(Keyboard.FocusedElement, window.FindName("TargetBox"))) break;
+                Require(Keyboard.FocusedElement is UIElement current && current.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next)),
+                    "Forward Tab navigation stopped inside the comparison cards.");
+                await IdleAsync();
+            }
+            Require(visited.Count == sourceButtons.Length, "Tab skipped source actions on a following author card.");
+            Require(ReferenceEquals(Keyboard.FocusedElement, window.FindName("TargetBox")), "Tab did not leave the source cards for the result choices.");
+            Console.WriteLine("PASS: Tab reaches every source action across both author cards and continues to the result choices.");
             async Task Choose(Guid id, string key)
             {
                 var button = Descendants<Button>(cards).Single(button => button.DataContext is AuthorComparisonCard card && card.Profile.Id == id &&

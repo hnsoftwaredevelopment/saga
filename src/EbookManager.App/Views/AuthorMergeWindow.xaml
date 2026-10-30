@@ -21,6 +21,7 @@
    <Grid.ColumnDefinitions><ColumnDefinition Width="*" MinWidth="300" /><ColumnDefinition Width="320" /></Grid.ColumnDefinitions>
    <ListBox x:Name="ComparisonCards" ItemsSource="{Binding ComparisonAuthors}" Background="Transparent" BorderThickness="0"
     ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+    KeyboardNavigation.TabNavigation="Continue"
     VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" AutomationProperties.Name="{loc:Loc AuthorComparisonSources}">
     <ListBox.ItemsPanel><ItemsPanelTemplate><VirtualizingStackPanel Orientation="Horizontal" /></ItemsPanelTemplate></ListBox.ItemsPanel>
     <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem"><Setter Property="Padding" Value="0" /><Setter Property="VerticalContentAlignment" Value="Stretch" /></Style></ListBox.ItemContainerStyle>

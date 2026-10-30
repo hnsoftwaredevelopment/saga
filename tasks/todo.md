@@ -9,6 +9,7 @@
 - [x] Gebruikersfeedback verwerkt: na geslaagde samenvoeging en sluiten van vergelijking/duplicatenvenster zoekveld wissen en ongefilterde index herladen. Profiel, melding en waarschuwingen behouden; annuleren bewaart zoektekst. Eerst falende echte WPF-hercontrole, inclusief meer dan 200 auteurs, hersteld.
 - [ ] Later: vergelijking visueel harmoniseren met boekduplicaten, inclusief dezelfde overname-/samenvoegiconen.
 - [x] Gebruiker accepteert de gehele slice inclusief zoekveldcorrectie; UI-/icoonverbetering wordt bewaard voor later.
+- [x] Reviewcorrectie 31 oktober 2026: CodeRabbit-opmerking 4428707720 is eerst falend gereproduceerd in de echte WPF-proef. ComparisonCards gebruikt nu doorlopende Tab-navigatie; alle acht bronknoppen op twee auteurskaarten zijn bereikbaar en Tab gaat daarna naar de resultaatkeuzes. 1099 tests en 26 WPF-proeven slagen. Schone tussentijdse PR #56-build 2026.10.31.3 van 31 oktober 00:06:12 Europe/Amsterdam, 0 waarschuwingen/fouten. De correctie wordt ook in vervolg-PR #57 meegenomen; de uiteindelijke gecombineerde testbuild wordt daar geregistreerd.
 - [ ] Alleen de gebruiker mergt PR #56.
 
 ## Historie: Milestone 53
