@@ -46,6 +46,7 @@
           <TextBlock Margin="0,6,0,0"><Run Text="{Binding TotalAuthors, Mode=OneWay}" /><Run Text=" · " /><Run Text="{loc:Loc AuthorCountLabel}" /></TextBlock>
           <TextBlock Text="{Binding MergeSelectionSummary}" TextWrapping="Wrap" Margin="0,6,0,0" />
           <Button x:Name="MergeAuthorsButton" Content="{loc:Loc AuthorMerge}" IsEnabled="{Binding CanMerge}" Click="MergeClicked" HorizontalAlignment="Left" Margin="0,6,0,0" AutomationProperties.Name="{loc:Loc AuthorMerge}" />
+          <Button x:Name="FindAuthorDuplicatesButton" Content="{loc:Loc AuthorDuplicatesFind}" IsEnabled="{Binding CanFindDuplicates}" Click="FindDuplicatesClicked" HorizontalAlignment="Left" Margin="0,6,0,0" AutomationProperties.Name="{loc:Loc AuthorDuplicatesFind}" />
         </StackPanel>
         <Button x:Name="MoreAuthorsButton" DockPanel.Dock="Bottom" Content="{loc:Loc AuthorLoadMore}" IsEnabled="{Binding HasMoreAuthors}" Click="MoreAuthorsClicked" Margin="0,8,0,0" />
         <Grid>

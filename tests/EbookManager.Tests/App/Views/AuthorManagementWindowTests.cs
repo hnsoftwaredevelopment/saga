@@ -59,6 +59,9 @@ public sealed class AuthorManagementWindowTests
         XNamespace p = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
         document.Descendants(p + "ComboBox").Should().HaveCount(4);
         document.Descendants(p + "CheckBox").Should().BeEmpty();
+        var cards = document.Descendants(p + "ListBox").Single();
+        cards.Attribute("VirtualizingPanel.VirtualizationMode")!.Value.Should().Be("Recycling");
+        document.Descendants(p + "TextBlock").Should().Contain(text => (string?)text.Attribute("Text") == "{Binding BiographyDisplay}");
         document.Descendants(p + "ScrollViewer").Should().Contain(view => (string?)view.Attribute("VerticalScrollBarVisibility") == "Auto");
         document.Descendants(p + "Button").Should().Contain(button => (string?)button.Attribute("IsEnabled") == "{Binding CanMerge}");
         foreach (var language in new[] { "", ".nl", ".de", ".fr", ".es", ".it" })
@@ -67,5 +70,17 @@ public sealed class AuthorManagementWindowTests
             foreach (var text in resources.Descendants("data").Where(row => ((string?)row.Attribute("name"))?.StartsWith("AuthorMerge", StringComparison.Ordinal) == true))
                 FluentActions.Invoking(() => string.Format(System.Globalization.CultureInfo.InvariantCulture, text.Element("value")!.Value, 205, 510)).Should().NotThrow();
         }
+    }
+
+    [Fact]
+    public void AuthorDuplicate_suggestions_are_readonly_virtualized_pairs_with_explicit_comparison()
+    {
+        var document = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "AuthorDuplicatesWindow.xaml"));
+        XNamespace p = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
+        var grid = document.Descendants(p + "DataGrid").Single();
+        grid.Attribute("IsReadOnly")!.Value.Should().Be("True");
+        grid.Attribute("EnableRowVirtualization")!.Value.Should().Be("True");
+        grid.Attribute("SelectionMode")!.Value.Should().Be("Single");
+        document.Descendants(p + "Button").Should().Contain(button => (string?)button.Attribute("IsEnabled") == "{Binding CanCompare}");
     }
 }

@@ -137,6 +137,18 @@ public partial class AuthorManagementWindow : Window
         if (MergeAuthorsButton.IsEnabled) MergeAuthorsButton.Focus(); else AuthorsList.Focus();
     }
 
+    private async void FindDuplicatesClicked(object sender, RoutedEventArgs e)
+    {
+        searchDelay?.Cancel();
+        if (!viewModel.CanFindDuplicates || !await ResolvePendingChangesAsync()) return;
+        var duplicates = new AuthorDuplicatesViewModel(viewModel.CreateDuplicateIndex(), Text);
+        var window = new AuthorDuplicatesWindow(duplicates, viewModel) { Owner = this };
+        window.ShowDialog();
+        if (window.HasMerged) ShowSelectedAuthorQuery();
+        RestoreAuthorSelection();
+        FindAuthorDuplicatesButton.Focus();
+    }
+
     private async Task<bool> ResolvePendingChangesAsync()
     {
         if (!viewModel.HasChanges) return true;
