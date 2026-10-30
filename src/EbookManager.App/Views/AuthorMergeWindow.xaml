@@ -23,7 +23,7 @@
         <TextBlock Text="{loc:Loc AuthorMergeProfileHelp}" TextWrapping="Wrap" Margin="0,14,0,8" Foreground="{DynamicResource TextSecondaryBrush}" />
         <Label Content="{loc:Loc AuthorBiography}" Target="{Binding ElementName=BiographyChoiceBox}" Padding="0,0,0,4" />
         <ComboBox x:Name="BiographyChoiceBox" ItemsSource="{Binding BiographyOptions}" SelectedItem="{Binding BiographyChoice}" DisplayMemberPath="Label" AutomationProperties.Name="{loc:Loc AuthorBiography}" />
-        <TextBlock Text="{Binding BiographyChoice.Value}" TextWrapping="Wrap" MaxHeight="100" Margin="0,4,0,10" />
+        <ScrollViewer MaxHeight="100" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,4,0,10"><TextBlock Text="{Binding BiographyChoice.Value}" TextWrapping="Wrap" /></ScrollViewer>
         <Label Content="{loc:Loc AuthorWebsite}" Target="{Binding ElementName=WebsiteChoiceBox}" Padding="0,0,0,4" />
         <ComboBox x:Name="WebsiteChoiceBox" ItemsSource="{Binding WebsiteOptions}" SelectedItem="{Binding WebsiteChoice}" DisplayMemberPath="Label" AutomationProperties.Name="{loc:Loc AuthorWebsite}" />
         <TextBlock Text="{Binding WebsiteChoice.Value}" TextWrapping="Wrap" Margin="0,4,0,10" />

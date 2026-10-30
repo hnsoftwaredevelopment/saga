@@ -12,6 +12,30 @@ namespace EbookManager.Tests.Infrastructure;
 
 public sealed partial class LibraryDbContextTests
 {
+    [Fact]
+    public async Task AuthorMerge_service_writes_current_authors_to_real_metadata_json()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var books = new EfBookRepository(factory, library.DirectoryPath);
+        var source = CreateBook("Source book", ["Source", "Coauthor"]);
+        var target = CreateBook("Target book", ["Target"]);
+        await books.AddAsync(source, CreateFile(source.Id, Hash(1)), default);
+        await books.AddAsync(target, CreateFile(target.Id, Hash(2)), default);
+        var repository = new EfAuthorProfileRepository(factory, library.DirectoryPath);
+        var selected = (await repository.SearchAsync("", 0, 200, default)).Authors.Where(author => author.Name != "Coauthor").ToArray();
+        var targetId = selected.Single(author => author.Name == "Target").Id;
+        var sidecars = new JsonMetadataSidecarStore();
+        var service = new AuthorMergeService(repository, repository, new ManagedAuthorPhotoStore(library.DirectoryPath),
+            new BookService(books, new ManagedLibraryFileStore(library.DirectoryPath), new MetadataAdapterResolver([new FallbackMetadataAdapter()]), sidecars));
+        var result = await service.MergeAsync((await service.PreviewAsync(selected.Select(author => author.Id).ToArray(), default))!,
+            new(targetId, null, null, null), default);
+        result.Change.Status.Should().Be(AuthorMergeStatus.Merged);
+        result.Warnings.Should().BeEmpty();
+        var path = Directory.GetFiles(library.DirectoryPath, "metadata.json", SearchOption.AllDirectories).Single();
+        (await sidecars.TryReadAsync(path, default))!.Authors.Should().Equal("Target", "Coauthor");
+    }
+
     [Theory]
     [InlineData(false, false, "none")]
     [InlineData(true, false, "none")]
