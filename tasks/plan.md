@@ -8,7 +8,7 @@ Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b;
 4. WPF en zes talen aansluiten; gerichte en volledige tests, echte UI-proeven en schone Debug-build.
 5. Eigen review, checklist/README/featurestatus, exacte spiegels en gewone PR. Gebruiker accepteert en mergt.
 
-Uitgevoerd: 1166 tests en 29 WPF-proeven groen. Schone enige Debug-build 2026.10.31.17 van 31 oktober 00:54:49 Europe/Amsterdam, 0 waarschuwingen/fouten. Eigen review, zes talen, beide thema’s en 600 geladen boeken afgedekt. Checklist 56 klaar; gebruiker test/accepteert en mergt.
+Uitgevoerd: 1166 tests en 29 WPF-proeven groen. Schone enige Debug-build 2026.10.31.17 van 31 oktober 00:54:49 Europe/Amsterdam, 0 waarschuwingen/fouten. Eigen review, zes talen, beide thema’s en 600 geladen boeken afgedekt. Checklist 56 klaar; gewone niet-draft PR #58 geopend naar main en aan de chat gekoppeld. Mergeable bij opening, GitGuardian groen en CodeQL bezig. Elf Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. Gebruiker test/accepteert en mergt.
 
 ## Historie: Milestone 55
 # Milestone 55: seriesvarianten vinden en samenvoegen
