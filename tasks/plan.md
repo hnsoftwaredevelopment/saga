@@ -10,7 +10,7 @@ Goedgekeurde bouwopdracht; basis PR #56 head 56c4f49, branch codex/milestone-55-
 
 Grootste risico's: cijfers uit namen weg-normaliseren (behouden), oude preview overschrijven (volledige snapshotcontrole), nummers stil wijzigen (alleen Series/UpdatedUtc schrijven), latere fouten als rollback melden (opgeslagen status/IDs/waarschuwingen behouden). Afhankelijkheden in deze volgorde, ieder increment verifiëren en committen.
 
-Uitgevoerd: opslag/detectie en WPF-workflow afzonderlijk gecommit; 1131 tests en 27 WPF-scenario's slagen. Definitieve Debug-build 2026.10.30.59 van 30 oktober 23:40:45 Europe/Amsterdam heeft 0 waarschuwingen/fouten; één Saga.exe. Eigen vijfassige review en beide thema's bij minimumgrootte afgerond. Checklist 55 is gereed voor de gebruiker. PR #56 is nog open; daarom een gewone vervolg-PR op die branch, daarna naar main na merge van de afhankelijkheid.
+Uitgevoerd: opslag/detectie en WPF-workflow afzonderlijk gecommit; 1131 tests en 27 WPF-scenario's slagen. Definitieve Debug-build 2026.10.30.59 van 30 oktober 23:40:45 Europe/Amsterdam heeft 0 waarschuwingen/fouten; één Saga.exe. Eigen vijfassige review en beide thema's bij minimumgrootte afgerond. Checklist 55 is gereed voor de gebruiker. Gewone niet-draft PR #57 is geopend en gekoppeld; mergeable bij opening. GitGuardian groen, CodeRabbit overgeslagen; CodeQL-resultaat op deze vervolgbranch nog niet beschikbaar. Na omrichten naar main opnieuw controleren. PR #56 is nog open; daarom een gewone vervolg-PR op die branch, daarna naar main na merge van de afhankelijkheid.
 
 ## Historie: Milestone 54
 # Milestone 54: auteursduplicaten vinden en vergelijken
