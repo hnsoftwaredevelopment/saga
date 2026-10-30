@@ -1,13 +1,15 @@
 # Milestone 55: seriesvarianten vinden en samenvoegen
 
 - [x] Gebruiker keurt slice goed; basis, branch en concrete specificatie vastgelegd.
-- [ ] Opslag en conservatieve detectie testgestuurd bouwen.
-- [ ] Bestaande bestandssynchronisatie na commit en waarschuwingen testen.
-- [ ] Zoek-/vergelijkingsmodellen met nummers, keuze, paginering en verversing bouwen/testen.
-- [ ] WPF-route en zes talen aansluiten; echte controles uitvoeren.
-- [ ] Volledige suite, schone build en eigen review afronden.
+- [x] Opslag en conservatieve detectie testgestuurd bouwen.
+- [x] Bestaande bestandssynchronisatie na commit en waarschuwingen testen.
+- [x] Zoek-/vergelijkingsmodellen met nummers, keuze, paginering en verversing bouwen/testen.
+- [x] WPF-route en zes talen aansluiten; echte controles uitvoeren.
+- [x] Volledige suite, schone build en eigen review afronden.
 - [ ] Checklist/status/README en exacte Obsidian-spiegels bijwerken; gewone PR openen.
 - [ ] Gebruiker test/accepteert en mergt.
+
+Verificatie: 1131 tests en 27 echte WPF-scenario's groen, 0 mislukt/overgeslagen. Debug 2026.10.30.59 van 30 oktober 23:40:45 Europe/Amsterdam, 0 waarschuwingen/fouten, één Saga.exe onder Builds. Eigen vijfassige review en licht/donker bij minimale grootte afgerond. PR #56 staat nog open; deze vervolgbranch heeft die afhankelijkheid.
 
 ## Historie: Milestone 54
 # Milestone 54: auteursduplicaten vinden en vergelijken

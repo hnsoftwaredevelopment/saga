@@ -8,7 +8,7 @@ Bij aanvang staat PR #56 nog open. Branch codex/milestone-55-series-merge begint
 
 ## Gebruikersroute en criteria
 
-1. Series beheren krijgt Duplicaten zoeken. Een apart venster toont mogelijke paren met beide seriemamen, boekaantallen en reden. Een geselecteerd paar kan worden vergeleken; er wordt niets automatisch samengevoegd.
+1. Series beheren krijgt Duplicaten zoeken. Een apart venster toont mogelijke paren met beide serienamen, boekaantallen en reden. Een geselecteerd paar kan worden vergeleken; er wordt niets automatisch samengevoegd.
 2. Detectie is conservatief: verschillen in spaties, leestekens of diakritische tekens bij dezelfde letter-/cijferreeks. Hoofdletter-/trimvarianten zijn al één groep volgens SeriesNames en worden niet opnieuw voorgesteld. Cijfers blijven behouden, dus Serie 1 en Serie 2 of 01 en 1 worden niet stil gelijkgesteld. Geen afkortings-, taal- of pseudoniemgissingen.
 3. Gebruik een lichte index van bestaande series, met filteren buiten de UI-thread, annulering, bescherming tegen late resultaten en maximaal 1000 zichtbare voorstellen met verfijningsmelding. Namen en aantallen, geen omslagen of ebookbestanden tijdens detectie.
 4. Het vergelijkingsvenster toont voor het gehele paar de huidige serie, nummer, boektitel en auteur(s), numeriek gesorteerd, ontbrekende nummers onderaan. Toon eerst maximaal 200 rijen met Meer laden; de preview/samenvoeging omvat ook niet-zichtbare boeken.
@@ -26,3 +26,15 @@ Gerichte immutable modellen onder Domain/Series en mergecontract onder Abstracti
 Uitvoering: eerst falende opslag-/naamtests, dan transactie en bestaande bestandssynchronisatie, testbare preview/zoeken, WPF-aansluiting, zes talen en integrale oplevering. Tests met tijdelijke SQLite-bibliotheken bewaken behoud van alle scalairen/nummers, gelijke en ontbrekende nummers, niet-betrokken boeken, meer dan 500 boeken, stale snapshots, rollback en annulering. Servicetests bewaken metadata.json en waarschuwingen na commit. WPF-proeven gebruiken fictieve gegevens en bewaken zoeken, expliciete keuze, annuleren, paginering, sluiten en directe verversing.
 
 Commando's: `dotnet test EbookManager.sln -c Debug --no-restore`; `dotnet run --project tests/EbookManager.WpfSmokeTests/EbookManager.WpfSmokeTests.csproj -c Debug --no-restore`; `dotnet build src/EbookManager.App/EbookManager.App.csproj -c Debug --no-restore`. Project-DoD geldt: eigen vijfassige review, schone enige Debug-build met versie/tijd, actuele checklist/documentatie, exacte Obsidian-spiegels en gewone PR. Gebruiker accepteert en mergt. Buiten scope: nummers aanpassen/afleiden, ontbrekende delen, leesvolgorde, nieuwe doelnaam, vrij gekozen willekeurige series samenvoegen, nieuwe metadataformaten of UI-/icoonharmonisatie.
+
+## Uitvoering en review
+
+Gebouwd in afzonderlijke commits voor specificatie, opslag/detectie en WPF-workflow op basis 56c4f49 van de nog openstaande PR #56. Geen schema, dependencies of boekmapwijzigingen. De gewone vervolg-PR richt zich op die basisbranch; eerst PR #56 mergen en daarna deze PR naar main richten. Alleen de gebruiker accepteert en mergt.
+
+Eerst falende opslagtests bewezen het ontbreken van de transactie; daarna zijn detectie, bestandssynchronisatie en vergelijking geverifieerd. De volledige suite slaagt: **1131 tests, 0 mislukt/overgeslagen**. **27 echte WPF-scenario's groen**, inclusief 205 boeken, annuleren, keuze, filtering/focus en directe actualisatie van voorstellen en beheer. Beide thema's zijn gerenderd en bekeken op minimale grootte. De nummerkolom is verbreed zodat de kop leesbaar blijft.
+
+Eigen review op vijf assen uitgevoerd: alleen Series/UpdatedUtc schrijven met volledige snapshotcontrole en rollback; kleine gerichte partials en bestaande BookService-route; geen nieuwe algemene beheerabstractie; geparametriseerde EF-queries en geen nieuwe externe bron of geheimen; lichte gecachete naamindex buiten UI-thread, begrensde voorstellen en gevirtualiseerde pagina's zonder omslagen. Cijfers blijven ook buiten de basis-Unicodeletters behouden. Een filter zonder passende namen veroorzaakt geen volledige kwadratische parenvergelijking.
+
+Extra grensproeven bewaken 511 boeken met rollback na de eerste updatebatch, gewijzigde/verwijderde boeken en gewijzigde auteurs sinds de preview, bestaande doelboeken zonder nieuwe schrijfactie, echte metadata.json, annulering na commit en behoud van waarschuwingen/boek-ID's bij een refreshfout. De foutmelding onderscheidt niet opgeslagen van wel opgeslagen maar niet vernieuwd.
+
+Definitieve Debug-build **2026.10.30.59**, bestandsdatum **30 oktober 2026 23:40:45 Europe/Amsterdam**, met **0 waarschuwingen/fouten** en precies één Saga.exe onder Builds. De [Milestone 55 checklist](../../manual-tests/milestone-55-checklist.md) is klaar; handmatige gebruikersacceptatie is nog niet uitgevoerd.
