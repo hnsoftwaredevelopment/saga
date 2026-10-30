@@ -13,10 +13,13 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Theory]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    [InlineData(false, true)]
-    public async Task AuthorMerge_service_copies_photo_to_target_and_finishes_files_after_commit(bool failFiles, bool reject)
+    [InlineData(false, false, "none")]
+    [InlineData(true, false, "none")]
+    [InlineData(false, true, "none")]
+    [InlineData(false, false, "read")]
+    [InlineData(false, false, "save")]
+    [InlineData(false, false, "cleanup")]
+    public async Task AuthorMerge_service_copies_photo_to_target_and_finishes_files_after_commit(bool failFiles, bool reject, string photoFault)
     {
         using var library = new TemporaryLibrary();
         var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
@@ -35,9 +38,17 @@ public sealed partial class LibraryDbContextTests
         await context.SaveChangesAsync();
         using var cancellation = new CancellationTokenSource();
         var sidecars = new TagSidecars(failFiles);
-        var service = new AuthorMergeService(new CancelAfterAuthorMerge(repository, cancellation), repository, photos,
+        var service = new AuthorMergeService(new CancelAfterAuthorMerge(repository, cancellation), repository, new AuthorMergePhotoFaults(photos, photoFault),
             new BookService(books, new ManagedLibraryFileStore(library.DirectoryPath), new MetadataAdapterResolver([new FallbackMetadataAdapter()]), sidecars));
         var preview = (await service.PreviewAsync([source.Id, target.Id], default))!;
+        if (photoFault is "read" or "save")
+        {
+            await FluentActions.Awaiting(() => service.MergeAsync(preview, new(target.Id, null, null, source.Id), cancellation.Token)).Should().ThrowAsync<IOException>();
+            (await books.GetAsync(book.Id, default))!.Metadata.Authors.Should().Equal("Source");
+            Directory.GetFiles(library.DirectoryPath, "*.jpg", SearchOption.AllDirectories).Should().HaveCount(2);
+            sidecars.Writes.Should().Be(0);
+            return;
+        }
         var result = await service.MergeAsync(preview, new(target.Id, null, null, source.Id), cancellation.Token);
         if (reject)
         {
@@ -49,12 +60,19 @@ public sealed partial class LibraryDbContextTests
         }
         result.Change.Status.Should().Be(AuthorMergeStatus.Merged);
         result.Warnings.Count.Should().Be(failFiles ? 1 : 0);
-        result.CleanupWarning.Should().BeFalse();
+        result.CleanupWarning.Should().Be(photoFault == "cleanup");
         cancellation.IsCancellationRequested.Should().BeTrue();
         sidecars.Writes.Should().Be(1);
         (await books.GetAsync(book.Id, default))!.Metadata.Authors.Should().Equal("Target");
         (await photos.ReadAsync(target.Id, result.Change.Profile!.PhotoRelativePath!, default)).Should().Equal([0xff, 0xd8, 1, 2]);
-        Directory.GetFiles(library.DirectoryPath, "*.jpg", SearchOption.AllDirectories).Should().HaveCount(1);
+        Directory.GetFiles(library.DirectoryPath, "*.jpg", SearchOption.AllDirectories).Should().HaveCount(photoFault == "cleanup" ? 3 : 1);
+    }
+
+    private sealed class AuthorMergePhotoFaults(IAuthorPhotoStore inner, string fault) : IAuthorPhotoStore
+    {
+        public Task<byte[]?> ReadAsync(Guid id, string path, CancellationToken token) => fault == "read" ? throw new IOException("Simulated photo read failure") : inner.ReadAsync(id, path, token);
+        public Task<string> SaveJpegAsync(Guid id, byte[] bytes, CancellationToken token) => fault == "save" ? throw new IOException("Simulated photo save failure") : inner.SaveJpegAsync(id, bytes, token);
+        public Task DeleteAsync(Guid id, string path, CancellationToken token) => fault == "cleanup" ? throw new IOException("Simulated photo cleanup failure") : inner.DeleteAsync(id, path, token);
     }
 
     private sealed class CancelAfterAuthorMerge(IAuthorMergeRepository inner, CancellationTokenSource cancellation) : IAuthorMergeRepository
