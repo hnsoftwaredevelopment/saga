@@ -887,5 +887,35 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Autore</value></data>
   <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Forse lo stesso autore</value></data>
   <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Somiglianza</value></data>
+  <data name="SeriesDuplicatesCompare" xml:space="preserve"><value>Confronta i libri</value></data>
+  <data name="SeriesDuplicatesCount" xml:space="preserve"><value>Suggerimenti: {0} · Serie: {1}</value></data>
+  <data name="SeriesDuplicatesFind" xml:space="preserve"><value>Cerca duplicati</value></data>
+  <data name="SeriesDuplicatesFirst" xml:space="preserve"><value>Serie</value></data>
+  <data name="SeriesDuplicatesFormatting" xml:space="preserve"><value>Stesse lettere e numeri, formato diverso</value></data>
+  <data name="SeriesDuplicatesHelp" xml:space="preserve"><value>Sono suggerimenti, non duplicati confermati. Seleziona una coppia e confronta i libri e i numeri prima di unire.</value></data>
+  <data name="SeriesDuplicatesLimit" xml:space="preserve"><value>Più di 1000 suggerimenti. Affina la ricerca per trovare altre coppie.</value></data>
+  <data name="SeriesDuplicatesLoadFailed" xml:space="preserve"><value>Impossibile caricare o confrontare le serie. Aggiorna e riprova.</value></data>
+  <data name="SeriesDuplicatesLoading" xml:space="preserve"><value>Confronto delle serie…</value></data>
+  <data name="SeriesDuplicatesNone" xml:space="preserve"><value>Nessuna possibile serie duplicata trovata per questa ricerca.</value></data>
+  <data name="SeriesDuplicatesReason" xml:space="preserve"><value>Somiglianza</value></data>
+  <data name="SeriesDuplicatesRefresh" xml:space="preserve"><value>Aggiorna</value></data>
+  <data name="SeriesDuplicatesSecond" xml:space="preserve"><value>Forse la stessa serie</value></data>
+  <data name="SeriesDuplicatesTitle" xml:space="preserve"><value>Possibili serie duplicate</value></data>
+  <data name="SeriesMergeConfirm" xml:space="preserve"><value>Conferma unione</value></data>
+  <data name="SeriesMergeConflict" xml:space="preserve"><value>Le serie o i libri sono cambiati dal confronto. Aggiorna e confronta di nuovo. Nessuna modifica alle serie salvata.</value></data>
+  <data name="SeriesMergeCurrent" xml:space="preserve"><value>Serie attuale</value></data>
+  <data name="SeriesMergeFailed" xml:space="preserve"><value>Impossibile unire le serie. Nessuna modifica alle serie salvata. Riprova.</value></data>
+  <data name="SeriesMergeHelp" xml:space="preserve"><value>Scegli un nome esistente per tutti i libri mostrati. Titoli, autori, numeri e altri dati restano invariati.</value></data>
+  <data name="SeriesMergeMissingNumber" xml:space="preserve"><value>Numero assente</value></data>
+  <data name="SeriesMergeNote" xml:space="preserve"><value>Informazioni sul numero</value></data>
+  <data name="SeriesMergeNumbersHelp" xml:space="preserve"><value>I numeri ripetuti o mancanti sono solo informativi. Saga mantiene tutti i numeri e non rinumera mai automaticamente i libri.</value></data>
+  <data name="SeriesMergeRefreshFailed" xml:space="preserve"><value>Le serie sono state unite, ma non è stato possibile aggiornare l’elenco. Riapri la gestione delle serie.</value></data>
+  <data name="SeriesMergeRepeatedNumber" xml:space="preserve"><value>Numero ripetuto</value></data>
+  <data name="SeriesMergeSaved" xml:space="preserve"><value>Serie unite; {0} libri aggiornati.</value></data>
+  <data name="SeriesMergeSavedWithWarnings" xml:space="preserve"><value>Serie unite; {0} libri aggiornati. Impossibile aggiornare i file di {1} libri.</value></data>
+  <data name="SeriesMergeSummary" xml:space="preserve"><value>Libri in questo confronto: {0}</value></data>
+  <data name="SeriesMergeTarget" xml:space="preserve"><value>Nome della serie da mantenere</value></data>
+  <data name="SeriesMergeTitle" xml:space="preserve"><value>Unisci serie</value></data>
+  <data name="SeriesMergeWorking" xml:space="preserve"><value>Unione delle serie e aggiornamento dei file…</value></data>
 </root>
 

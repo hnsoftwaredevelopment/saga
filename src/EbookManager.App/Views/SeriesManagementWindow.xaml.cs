@@ -103,6 +103,14 @@ public partial class SeriesManagementWindow : Window
         if (confirmed)
             await viewModel.RenameAsync(preview, dialog.NewName);
     }
+    private void FindDuplicatesClicked(object sender, RoutedEventArgs e)
+    {
+        if (!viewModel.CanFindDuplicates) return;
+        searchDelay?.Cancel();
+        using var duplicates = new SeriesDuplicatesViewModel(viewModel.CreateDuplicateIndex(), key => Localization.LocalizedStrings.Current[key]);
+        new SeriesDuplicatesWindow(duplicates, viewModel) { Owner = this }.ShowDialog();
+        RestoreFocus(sender as UIElement);
+    }
     private void RestoreFocus(UIElement? target)
     {
         if (IsLoaded && IsActive && target is { IsVisible: true, IsEnabled: true } && Window.GetWindow(target) == this)

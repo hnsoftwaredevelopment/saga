@@ -607,5 +607,35 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Auteur</value></data>
   <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Mogelijk dezelfde auteur</value></data>
   <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Overeenkomst</value></data>
+  <data name="SeriesDuplicatesCompare" xml:space="preserve"><value>Boeken vergelijken</value></data>
+  <data name="SeriesDuplicatesCount" xml:space="preserve"><value>Voorstellen: {0} · Series: {1}</value></data>
+  <data name="SeriesDuplicatesFind" xml:space="preserve"><value>Duplicaten zoeken</value></data>
+  <data name="SeriesDuplicatesFirst" xml:space="preserve"><value>Serie</value></data>
+  <data name="SeriesDuplicatesFormatting" xml:space="preserve"><value>Dezelfde letters en cijfers, andere schrijfwijze</value></data>
+  <data name="SeriesDuplicatesHelp" xml:space="preserve"><value>Dit zijn voorstellen, geen vastgestelde dubbelen. Selecteer een paar en vergelijk de boeken en volgnummers voordat je samenvoegt.</value></data>
+  <data name="SeriesDuplicatesLimit" xml:space="preserve"><value>Meer dan 1000 voorstellen. Verfijn de zoektekst om andere passende paren te vinden.</value></data>
+  <data name="SeriesDuplicatesLoadFailed" xml:space="preserve"><value>De series konden niet worden geladen of vergeleken. Vernieuw het overzicht en probeer opnieuw.</value></data>
+  <data name="SeriesDuplicatesLoading" xml:space="preserve"><value>Series vergelijken…</value></data>
+  <data name="SeriesDuplicatesNone" xml:space="preserve"><value>Geen mogelijke serieduplicaten gevonden voor deze zoektekst.</value></data>
+  <data name="SeriesDuplicatesReason" xml:space="preserve"><value>Overeenkomst</value></data>
+  <data name="SeriesDuplicatesRefresh" xml:space="preserve"><value>Vernieuwen</value></data>
+  <data name="SeriesDuplicatesSecond" xml:space="preserve"><value>Mogelijk dezelfde serie</value></data>
+  <data name="SeriesDuplicatesTitle" xml:space="preserve"><value>Mogelijke serieduplicaten</value></data>
+  <data name="SeriesMergeConfirm" xml:space="preserve"><value>Samenvoegen bevestigen</value></data>
+  <data name="SeriesMergeConflict" xml:space="preserve"><value>De series of boeken zijn sinds de vergelijking veranderd. Vernieuw de voorstellen en vergelijk opnieuw. Er zijn geen seriewijzigingen opgeslagen.</value></data>
+  <data name="SeriesMergeCurrent" xml:space="preserve"><value>Huidige serie</value></data>
+  <data name="SeriesMergeFailed" xml:space="preserve"><value>De series konden niet worden samengevoegd. Er zijn geen seriewijzigingen opgeslagen. Probeer opnieuw.</value></data>
+  <data name="SeriesMergeHelp" xml:space="preserve"><value>Kies één bestaande naam voor alle getoonde boeken. Titels, auteurs, volgnummers en overige boekgegevens blijven gelijk.</value></data>
+  <data name="SeriesMergeMissingNumber" xml:space="preserve"><value>Geen volgnummer</value></data>
+  <data name="SeriesMergeNote" xml:space="preserve"><value>Informatie volgnummer</value></data>
+  <data name="SeriesMergeNumbersHelp" xml:space="preserve"><value>Dubbele of ontbrekende nummers worden ter informatie getoond. Saga behoudt alle nummers zoals ze zijn en nummert boeken nooit automatisch opnieuw.</value></data>
+  <data name="SeriesMergeRefreshFailed" xml:space="preserve"><value>De series zijn samengevoegd, maar het overzicht kon niet worden vernieuwd. Open Series beheren opnieuw om het resultaat te zien.</value></data>
+  <data name="SeriesMergeRepeatedNumber" xml:space="preserve"><value>Nummer komt vaker voor</value></data>
+  <data name="SeriesMergeSaved" xml:space="preserve"><value>Series samengevoegd; {0} boeken bijgewerkt.</value></data>
+  <data name="SeriesMergeSavedWithWarnings" xml:space="preserve"><value>Series samengevoegd; {0} boeken bijgewerkt. De bestanden van {1} boeken konden niet worden bijgewerkt.</value></data>
+  <data name="SeriesMergeSummary" xml:space="preserve"><value>Boeken in deze vergelijking: {0}</value></data>
+  <data name="SeriesMergeTarget" xml:space="preserve"><value>Te behouden serienaam</value></data>
+  <data name="SeriesMergeTitle" xml:space="preserve"><value>Series samenvoegen</value></data>
+  <data name="SeriesMergeWorking" xml:space="preserve"><value>Series samenvoegen en boekbestanden bijwerken…</value></data>
 </root>
 

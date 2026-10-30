@@ -23,10 +23,10 @@ public sealed class SeriesManagementWindowTests
     [Fact]
     public void All_series_resource_references_exist_in_six_languages_and_placeholders_are_valid()
     {
-        var paths = new[] { "SeriesManagementWindow.xaml", "SeriesRenameWindow.xaml" };
+        var paths = new[] { "SeriesManagementWindow.xaml", "SeriesRenameWindow.xaml", "SeriesDuplicatesWindow.xaml", "SeriesMergeWindow.xaml" };
         var xaml = string.Join("\n", paths.Select(path => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TestAssets", path))));
         var keys = System.Text.RegularExpressions.Regex.Matches(xaml, @"\{loc:Loc (Series\w+)\}").Select(match => match.Groups[1].Value)
-            .Concat(new[] { "SeriesLoadFailed", "SeriesRenameWorking", "SeriesRenameSaved", "SeriesRenameSavedWithWarnings", "SeriesRenameNameExists", "SeriesRenameInvalid", "SeriesRenameUnchanged", "SeriesRenameConflict", "SeriesRenameFailed", "SeriesRenameRefreshFailed", "SeriesRenameExplanation" }).Distinct().ToArray();
+            .Concat(new[] { "SeriesLoadFailed", "SeriesRenameWorking", "SeriesRenameSaved", "SeriesRenameSavedWithWarnings", "SeriesRenameNameExists", "SeriesRenameInvalid", "SeriesRenameUnchanged", "SeriesRenameConflict", "SeriesRenameFailed", "SeriesRenameRefreshFailed", "SeriesRenameExplanation", "SeriesDuplicatesCount", "SeriesDuplicatesFormatting", "SeriesDuplicatesLimit", "SeriesDuplicatesLoading", "SeriesDuplicatesLoadFailed", "SeriesDuplicatesNone", "SeriesMergeSaved", "SeriesMergeSavedWithWarnings", "SeriesMergeWorking", "SeriesMergeFailed", "SeriesMergeConflict", "SeriesMergeRefreshFailed", "SeriesMergeSummary", "SeriesMergeRepeatedNumber", "SeriesMergeMissingNumber" }).Distinct().ToArray();
         foreach (var language in new[] { "", ".nl", ".de", ".fr", ".es", ".it" })
         {
             var resources = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "Strings", $"AppResources{language}.resx"))

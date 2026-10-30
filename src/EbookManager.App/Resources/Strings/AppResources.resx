@@ -607,5 +607,35 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Author</value></data>
   <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Possibly the same author</value></data>
   <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Similarity</value></data>
+  <data name="SeriesDuplicatesCompare" xml:space="preserve"><value>Compare books</value></data>
+  <data name="SeriesDuplicatesCount" xml:space="preserve"><value>Suggestions: {0} · Series: {1}</value></data>
+  <data name="SeriesDuplicatesFind" xml:space="preserve"><value>Find duplicates</value></data>
+  <data name="SeriesDuplicatesFirst" xml:space="preserve"><value>Series</value></data>
+  <data name="SeriesDuplicatesFormatting" xml:space="preserve"><value>Same letters and numbers, different formatting</value></data>
+  <data name="SeriesDuplicatesHelp" xml:space="preserve"><value>These are suggestions, not confirmed duplicates. Select a pair and compare the books and series numbers before merging.</value></data>
+  <data name="SeriesDuplicatesLimit" xml:space="preserve"><value>More than 1000 suggestions. Refine the search text to find other matching pairs.</value></data>
+  <data name="SeriesDuplicatesLoadFailed" xml:space="preserve"><value>Series could not be loaded or compared. Refresh and try again.</value></data>
+  <data name="SeriesDuplicatesLoading" xml:space="preserve"><value>Comparing series…</value></data>
+  <data name="SeriesDuplicatesNone" xml:space="preserve"><value>No possible duplicate series found for this search text.</value></data>
+  <data name="SeriesDuplicatesReason" xml:space="preserve"><value>Similarity</value></data>
+  <data name="SeriesDuplicatesRefresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="SeriesDuplicatesSecond" xml:space="preserve"><value>Possibly the same series</value></data>
+  <data name="SeriesDuplicatesTitle" xml:space="preserve"><value>Possible duplicate series</value></data>
+  <data name="SeriesMergeConfirm" xml:space="preserve"><value>Confirm merge</value></data>
+  <data name="SeriesMergeConflict" xml:space="preserve"><value>The series or books changed since the comparison. Refresh the suggestions and compare again. No series changes were saved.</value></data>
+  <data name="SeriesMergeCurrent" xml:space="preserve"><value>Current series</value></data>
+  <data name="SeriesMergeFailed" xml:space="preserve"><value>The series could not be merged. No series changes were saved. Try again.</value></data>
+  <data name="SeriesMergeHelp" xml:space="preserve"><value>Choose one existing name for all the books shown. Titles, authors, series numbers and other book data stay unchanged.</value></data>
+  <data name="SeriesMergeMissingNumber" xml:space="preserve"><value>No series number</value></data>
+  <data name="SeriesMergeNote" xml:space="preserve"><value>Number information</value></data>
+  <data name="SeriesMergeNumbersHelp" xml:space="preserve"><value>Repeated or missing numbers are shown for information. Saga keeps every number as it is and never renumbers books automatically.</value></data>
+  <data name="SeriesMergeRefreshFailed" xml:space="preserve"><value>The series were merged, but the overview could not be refreshed. Reopen Series management to see the result.</value></data>
+  <data name="SeriesMergeRepeatedNumber" xml:space="preserve"><value>Number occurs more than once</value></data>
+  <data name="SeriesMergeSaved" xml:space="preserve"><value>Series merged; {0} books updated.</value></data>
+  <data name="SeriesMergeSavedWithWarnings" xml:space="preserve"><value>Series merged; {0} books updated. Files for {1} books could not be updated.</value></data>
+  <data name="SeriesMergeSummary" xml:space="preserve"><value>Books in this comparison: {0}</value></data>
+  <data name="SeriesMergeTarget" xml:space="preserve"><value>Series name to keep</value></data>
+  <data name="SeriesMergeTitle" xml:space="preserve"><value>Merge series</value></data>
+  <data name="SeriesMergeWorking" xml:space="preserve"><value>Merging series and updating book files…</value></data>
 </root>
 

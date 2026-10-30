@@ -37,6 +37,8 @@
           Link="TestAssets\App.xaml"
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\SeriesManagementWindow.xaml" Link="TestAssets\SeriesManagementWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\SeriesDuplicatesWindow.xaml" Link="TestAssets\SeriesDuplicatesWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\EbookManager.App\Views\SeriesMergeWindow.xaml" Link="TestAssets\SeriesMergeWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\SeriesRenameWindow.xaml" Link="TestAssets\SeriesRenameWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\TagManagementWindow.xaml" Link="TestAssets\TagManagementWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\Views\TagRenameWindow.xaml" Link="TestAssets\TagRenameWindow.xaml" CopyToOutputDirectory="PreserveNewest" />

@@ -29,6 +29,7 @@
         <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8" IsEnabled="{Binding CanBrowse}">
           <Label Content="{loc:Loc SeriesSearch}" Target="{Binding ElementName=SearchBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
           <TextBox x:Name="SearchBox" Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" TextChanged="SearchChanged" AutomationProperties.Name="{loc:Loc SeriesSearch}" />
+          <Button x:Name="FindDuplicatesButton" Content="{loc:Loc SeriesDuplicatesFind}" IsEnabled="{Binding CanFindDuplicates}" Click="FindDuplicatesClicked" Margin="0,8,0,0" AutomationProperties.Name="{loc:Loc SeriesDuplicatesFind}" />
           <TextBlock Margin="0,6,0,0"><Run Text="{Binding TotalSeries, Mode=OneWay}" /><Run Text=" · " /><Run Text="{loc:Loc SeriesCountLabel}" /></TextBlock>
         </StackPanel>
         <Button DockPanel.Dock="Bottom" Content="{loc:Loc SeriesLoadMore}" IsEnabled="{Binding HasMoreSeries}" Click="MoreSeriesClicked" Margin="0,8,0,0" />

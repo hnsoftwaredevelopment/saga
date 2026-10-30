@@ -887,5 +887,35 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Auteur</value></data>
   <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Peut-être le même auteur</value></data>
   <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Ressemblance</value></data>
+  <data name="SeriesDuplicatesCompare" xml:space="preserve"><value>Comparer les livres</value></data>
+  <data name="SeriesDuplicatesCount" xml:space="preserve"><value>Suggestions : {0} · Séries : {1}</value></data>
+  <data name="SeriesDuplicatesFind" xml:space="preserve"><value>Rechercher les doublons</value></data>
+  <data name="SeriesDuplicatesFirst" xml:space="preserve"><value>Série</value></data>
+  <data name="SeriesDuplicatesFormatting" xml:space="preserve"><value>Mêmes lettres et chiffres, présentation différente</value></data>
+  <data name="SeriesDuplicatesHelp" xml:space="preserve"><value>Ce sont des suggestions, pas des doublons confirmés. Sélectionnez une paire et comparez les livres et les numéros avant de fusionner.</value></data>
+  <data name="SeriesDuplicatesLimit" xml:space="preserve"><value>Plus de 1000 suggestions. Affinez la recherche pour trouver d’autres paires.</value></data>
+  <data name="SeriesDuplicatesLoadFailed" xml:space="preserve"><value>Impossible de charger ou comparer les séries. Actualisez puis réessayez.</value></data>
+  <data name="SeriesDuplicatesLoading" xml:space="preserve"><value>Comparaison des séries…</value></data>
+  <data name="SeriesDuplicatesNone" xml:space="preserve"><value>Aucune série potentiellement en double pour cette recherche.</value></data>
+  <data name="SeriesDuplicatesReason" xml:space="preserve"><value>Ressemblance</value></data>
+  <data name="SeriesDuplicatesRefresh" xml:space="preserve"><value>Actualiser</value></data>
+  <data name="SeriesDuplicatesSecond" xml:space="preserve"><value>Peut-être la même série</value></data>
+  <data name="SeriesDuplicatesTitle" xml:space="preserve"><value>Séries potentiellement en double</value></data>
+  <data name="SeriesMergeConfirm" xml:space="preserve"><value>Confirmer la fusion</value></data>
+  <data name="SeriesMergeConflict" xml:space="preserve"><value>Les séries ou livres ont changé depuis la comparaison. Actualisez et comparez à nouveau. Aucune modification de série n’a été enregistrée.</value></data>
+  <data name="SeriesMergeCurrent" xml:space="preserve"><value>Série actuelle</value></data>
+  <data name="SeriesMergeFailed" xml:space="preserve"><value>Impossible de fusionner les séries. Aucune modification de série enregistrée. Réessayez.</value></data>
+  <data name="SeriesMergeHelp" xml:space="preserve"><value>Choisissez un nom existant pour tous les livres affichés. Les titres, auteurs, numéros et autres données restent inchangés.</value></data>
+  <data name="SeriesMergeMissingNumber" xml:space="preserve"><value>Aucun numéro</value></data>
+  <data name="SeriesMergeNote" xml:space="preserve"><value>Information sur le numéro</value></data>
+  <data name="SeriesMergeNumbersHelp" xml:space="preserve"><value>Les numéros répétés ou absents sont signalés à titre informatif. Saga les conserve et ne renumérote jamais automatiquement les livres.</value></data>
+  <data name="SeriesMergeRefreshFailed" xml:space="preserve"><value>Les séries ont été fusionnées, mais la liste n’a pas pu être actualisée. Rouvrez la gestion des séries.</value></data>
+  <data name="SeriesMergeRepeatedNumber" xml:space="preserve"><value>Numéro présent plusieurs fois</value></data>
+  <data name="SeriesMergeSaved" xml:space="preserve"><value>Séries fusionnées ; {0} livres mis à jour.</value></data>
+  <data name="SeriesMergeSavedWithWarnings" xml:space="preserve"><value>Séries fusionnées ; {0} livres mis à jour. Les fichiers de {1} livres n’ont pas pu être mis à jour.</value></data>
+  <data name="SeriesMergeSummary" xml:space="preserve"><value>Livres dans cette comparaison : {0}</value></data>
+  <data name="SeriesMergeTarget" xml:space="preserve"><value>Nom de série à conserver</value></data>
+  <data name="SeriesMergeTitle" xml:space="preserve"><value>Fusionner des séries</value></data>
+  <data name="SeriesMergeWorking" xml:space="preserve"><value>Fusion des séries et mise à jour des fichiers…</value></data>
 </root>
 

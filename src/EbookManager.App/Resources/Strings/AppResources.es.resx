@@ -887,5 +887,35 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="AuthorDuplicatesFirst" xml:space="preserve"><value>Autor</value></data>
   <data name="AuthorDuplicatesSecond" xml:space="preserve"><value>Posiblemente el mismo autor</value></data>
   <data name="AuthorDuplicatesReason" xml:space="preserve"><value>Coincidencia</value></data>
+  <data name="SeriesDuplicatesCompare" xml:space="preserve"><value>Comparar libros</value></data>
+  <data name="SeriesDuplicatesCount" xml:space="preserve"><value>Sugerencias: {0} · Series: {1}</value></data>
+  <data name="SeriesDuplicatesFind" xml:space="preserve"><value>Buscar duplicados</value></data>
+  <data name="SeriesDuplicatesFirst" xml:space="preserve"><value>Serie</value></data>
+  <data name="SeriesDuplicatesFormatting" xml:space="preserve"><value>Mismas letras y números, formato diferente</value></data>
+  <data name="SeriesDuplicatesHelp" xml:space="preserve"><value>Son sugerencias, no duplicados confirmados. Selecciona un par y compara los libros y sus números antes de fusionar.</value></data>
+  <data name="SeriesDuplicatesLimit" xml:space="preserve"><value>Más de 1000 sugerencias. Afina la búsqueda para encontrar otros pares.</value></data>
+  <data name="SeriesDuplicatesLoadFailed" xml:space="preserve"><value>No se pudieron cargar o comparar las series. Actualiza e inténtalo de nuevo.</value></data>
+  <data name="SeriesDuplicatesLoading" xml:space="preserve"><value>Comparando series…</value></data>
+  <data name="SeriesDuplicatesNone" xml:space="preserve"><value>No se encontraron posibles series duplicadas para esta búsqueda.</value></data>
+  <data name="SeriesDuplicatesReason" xml:space="preserve"><value>Similitud</value></data>
+  <data name="SeriesDuplicatesRefresh" xml:space="preserve"><value>Actualizar</value></data>
+  <data name="SeriesDuplicatesSecond" xml:space="preserve"><value>Posiblemente la misma serie</value></data>
+  <data name="SeriesDuplicatesTitle" xml:space="preserve"><value>Posibles series duplicadas</value></data>
+  <data name="SeriesMergeConfirm" xml:space="preserve"><value>Confirmar fusión</value></data>
+  <data name="SeriesMergeConflict" xml:space="preserve"><value>Las series o los libros cambiaron desde la comparación. Actualiza y compara de nuevo. No se guardaron cambios de series.</value></data>
+  <data name="SeriesMergeCurrent" xml:space="preserve"><value>Serie actual</value></data>
+  <data name="SeriesMergeFailed" xml:space="preserve"><value>No se pudieron fusionar las series. No se guardaron cambios de series. Inténtalo de nuevo.</value></data>
+  <data name="SeriesMergeHelp" xml:space="preserve"><value>Elige un nombre existente para todos los libros mostrados. Los títulos, autores, números y demás datos no cambian.</value></data>
+  <data name="SeriesMergeMissingNumber" xml:space="preserve"><value>Sin número</value></data>
+  <data name="SeriesMergeNote" xml:space="preserve"><value>Información del número</value></data>
+  <data name="SeriesMergeNumbersHelp" xml:space="preserve"><value>Los números repetidos o ausentes son informativos. Saga conserva los números y nunca renumera libros automáticamente.</value></data>
+  <data name="SeriesMergeRefreshFailed" xml:space="preserve"><value>Las series se fusionaron, pero no se pudo actualizar la lista. Abre de nuevo la gestión de series.</value></data>
+  <data name="SeriesMergeRepeatedNumber" xml:space="preserve"><value>Número repetido</value></data>
+  <data name="SeriesMergeSaved" xml:space="preserve"><value>Series fusionadas; {0} libros actualizados.</value></data>
+  <data name="SeriesMergeSavedWithWarnings" xml:space="preserve"><value>Series fusionadas; {0} libros actualizados. No se pudieron actualizar los archivos de {1} libros.</value></data>
+  <data name="SeriesMergeSummary" xml:space="preserve"><value>Libros en esta comparación: {0}</value></data>
+  <data name="SeriesMergeTarget" xml:space="preserve"><value>Nombre de serie que se conservará</value></data>
+  <data name="SeriesMergeTitle" xml:space="preserve"><value>Fusionar series</value></data>
+  <data name="SeriesMergeWorking" xml:space="preserve"><value>Fusionando series y actualizando archivos…</value></data>
 </root>
 

@@ -73,6 +73,8 @@ public sealed partial class LibraryDbContextTests
     [InlineData("name")]
     [InlineData("title")]
     [InlineData("added")]
+    [InlineData("removed")]
+    [InlineData("author")]
     public async Task SeriesMerge_rejects_changed_confirmation_data_without_overwriting_new_values(string mutation)
     {
         using var library = new TemporaryLibrary(); var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
@@ -86,6 +88,8 @@ public sealed partial class LibraryDbContextTests
         if (mutation == "name") first.Series = "Unrelated";
         if (mutation == "title") first.Title = "New title";
         if (mutation == "added") context.Books.Add(new() { Id = Guid.NewGuid(), Title = "Added", NormalizedTitle = "added", DuplicateKey = "added", Series = "Bob Evers" });
+        if (mutation == "removed") context.Books.Remove(second);
+        if (mutation == "author") context.BookAuthors.Add(new() { BookId = first.Id, Order = 0, Author = new() { Id = Guid.NewGuid(), Name = "New author", NormalizedName = "new author" } });
         await context.SaveChangesAsync();
         var expected = await context.Books.AsNoTracking().ToArrayAsync();
         (await repository.MergeAsync(preview, "Bob Evers", default)).Status.Should().Be(SeriesMergeStatus.Conflict);
