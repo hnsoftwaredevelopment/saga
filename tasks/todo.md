@@ -2,12 +2,12 @@
 
 - [x] Gebruiker keurt scope en bouw goed op 30 oktober; PR #54 gemerged en main 7d3ed6e bijgewerkt.
 - [x] Concrete specificatie en geordende taken vastgelegd; bestaande opslag, profielen en bestandsroute geïnventariseerd.
-- [ ] Gerichte contracten en transactionele samenvoeging testgestuurd bouwen; dubbele boeken, profiel/koppelconflicten, volgorde en rollback bewaken.
-- [ ] Foto-/veldkeuzes en bestaande bestandssynchronisatie na commit met waarschuwingen testen.
-- [ ] Dialoog met expliciete conflictoplossing en bestaande doelauteur bouwen/testen.
-- [ ] Native auteursselectie, pending edits, paging/focus en directe verversing aansluiten/testen.
-- [ ] Zes talen, volledige suite, WPF, schone enige Debug-build en eigen review uitvoeren.
-- [ ] README/featurestatus/checklist/spec/taken en exacte Obsidian-spiegels bijwerken; gewone PR openen.
+- [x] Gerichte contracten en transactionele samenvoeging testgestuurd bouwen; dubbele boeken, profiel/koppelconflicten, volgorde en rollback bewaken.
+- [x] Foto-/veldkeuzes en bestaande bestandssynchronisatie na commit met waarschuwingen testen.
+- [x] Dialoog met expliciete conflictoplossing en bestaande doelauteur bouwen/testen.
+- [x] Native auteursselectie, pending edits, paging/focus en directe verversing aansluiten/testen.
+- [x] Zes talen, volledige suite, WPF, schone enige Debug-build en eigen review uitvoeren.
+- [x] README/featurestatus/checklist/spec/taken en exacte Obsidian-spiegels bijwerken; gewone PR openen.
 - [ ] Gebruiker test/accepteert en mergt.
 
 ## Historie: Milestone 52 — geaccepteerd en gemerged in PR #54
@@ -26,7 +26,7 @@
 - [x] Aanvullend gebruikersverzoek: Tag overal hernoemen naar een bestaande tag voegt alle bronboeken veilig samen met de doeltag, zonder boekselectie. Eén transactie, bestaande doelpositie/identiteit behouden, lege bron verwijderen, doellijst/telling opnieuw laden. Eerst falende opslag-/viewmodeltests, bestandssynchronisatie en echte WPF-bevestiging/focus groen; gerichte hercontrole toegevoegd.
 - [x] Gebruiker accepteert op 29 oktober 2026 de volledige slice: “Ja nu werkt het zoals verwacht. Deze slice is akkoord”. Inclusief selectieacties en globaal samenvoegen; niet handmatig uitgelokte fouten blijven automatisch afgedekt.
 - [x] Twee aanvullende CodeRabbit-punten afgehandeld: checklistindex 49–52 compleet en bestandswaarschuwingen vóór herladen bewaren. Eerst falende regressietest bewijst behoud van waarschuwingen/gewijzigde boek-ID's bij een leesfout na commit; geen wijziging aan de geaccepteerde normale bediening.
-- [ ] Alleen de gebruiker mergt de gewone niet-draft PR #54.
+- [x] De gebruiker heeft PR #54 op 30 oktober 2026 gemerged; basis voor Milestone 53.
 ## Historie: Milestone 51 — geaccepteerd en gemerged
 # Milestone 51: meervoudige boekenkastselectie
 
