@@ -1,3 +1,16 @@
+# Milestone 53: auteurs bewust samenvoegen
+
+- [x] Gebruiker keurt scope en bouw goed op 30 oktober; PR #54 gemerged en main 7d3ed6e bijgewerkt.
+- [x] Concrete specificatie en geordende taken vastgelegd; bestaande opslag, profielen en bestandsroute geïnventariseerd.
+- [ ] Gerichte contracten en transactionele samenvoeging testgestuurd bouwen; dubbele boeken, profiel/koppelconflicten, volgorde en rollback bewaken.
+- [ ] Foto-/veldkeuzes en bestaande bestandssynchronisatie na commit met waarschuwingen testen.
+- [ ] Dialoog met expliciete conflictoplossing en bestaande doelauteur bouwen/testen.
+- [ ] Native auteursselectie, pending edits, paging/focus en directe verversing aansluiten/testen.
+- [ ] Zes talen, volledige suite, WPF, schone enige Debug-build en eigen review uitvoeren.
+- [ ] README/featurestatus/checklist/spec/taken en exacte Obsidian-spiegels bijwerken; gewone PR openen.
+- [ ] Gebruiker test/accepteert en mergt.
+
+## Historie: Milestone 52 — geaccepteerd en gemerged in PR #54
 # Milestone 52: tags beheren
 
 - [x] Scope door gebruiker bevestigd op 29 oktober; PR #53 gemerged en basis main e8e024c. Branch codex/milestone-52-tag-management.

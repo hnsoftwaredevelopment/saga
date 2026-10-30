@@ -1,3 +1,16 @@
+# Milestone 53: auteurs bewust samenvoegen
+
+Goedgekeurde bouwopdracht 30 oktober 2026. Specificatie: docs/superpowers/specs/2026-10-30-saga-milestone-53-author-merge-design.md. Basis main 7d3ed6e, branch codex/milestone-53-author-merge. Alleen handmatig gekozen auteurs; bestemming is één geselecteerde bestaande auteur. Geen schema, dependencies of agents.
+
+1. **Transactie en boekveiligheid.** Gerichte mergecontracten + EF-partial + eerst falende SQLite-tests (3–5 bestanden). Preview bevat profielen en volledige boeksets; valideer opnieuw, dedupliceer auteurkoppelingen met behoud van volgorde, herbereken DuplicateKey en weiger dubbelboeken. Verifieer rollback, stale preview, leeg/ongeldig en >500 boeken.
+2. **Profiel- en bestandsroute.** Service met expliciete veldbronnen, doel-eigen fotokopie, veilige opruiming en bestaande BookService na commit (2–4 bestanden). Verifieer waarschuwingen, foto-fouten en annulering. Checkpoint: gerichte opslag-/servicetests groen en commit.
+3. **Dialoogkeuzes.** Testbaar dialoogviewmodel en WPF-venster voor doel + website/biografie/foto per auteur, expliciete conflictoplossing en samenvatting (3–5 bestanden). Verifieer geen impliciete keuze bij verschillende waarden, annuleren en toetsenbord.
+4. **Auteursselectie en verversing.** Native Ctrl/Shift-selectie in Auteurs beheren, zichtbaar aantal en samenvoegactie, pending edits beschermen, doelauteur herladen en bestaande hoofdschermreconciliatie (3–5 bestanden). Eerst viewmodeltests; daarna WPF-selectie/focus/paginering. Checkpoint: volledige workflow groen.
+5. **Teksten en verificatie.** Zes talen in gerichte resource-increment, assettests/WPF-proef, volledige suite, schone enige Debug-build, eigen vijfassige review, checklist, README/featurestatus en exacte Obsidian-spiegels. Gewone PR, gebruiker accepteert en mergt.
+
+Risico's: onbedoeld same-person aannemen (alleen expliciete selectie), profielverlies (veldkeuzes en stale snapshot), dubbele boeken (gehele transactie weigeren), foto-eigenaarschap (kopie onder doel-ID vóór commit en controle vóór opruimen), focus/verborgen selectie (native selectie met ID-reconciliatie, reset bij nieuw zoeken). Afhankelijkheden: 1 vóór 2, 1–2 vóór 3–4, 5 na bewezen workflow. Bestaande goedgekeurde scope volstaat voor routinekeuzes; geen nieuwe akkoordronde.
+
+## Historie: Milestone 52 — geaccepteerd en gemerged in PR #54
 # Milestone 52: tags beheren
 
 Scope op 29 oktober 2026 door de gebruiker goedgekeurd. Specificatie: docs/superpowers/specs/2026-10-29-saga-milestone-52-tag-management-design.md. Basis geaccepteerde en gemergede PR #53 / main e8e024c, branch codex/milestone-52-tag-management. Geen schemawijziging, dependency, bibliotheekconversie of agents.
