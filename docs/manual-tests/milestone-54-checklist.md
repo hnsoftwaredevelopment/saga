@@ -1,6 +1,6 @@
 # Milestone 54 — auteursduplicaten vinden en vergelijken
 
-Testbuild: Builds\Debug\Saga.exe **2026.10.30.40**, gebouwd op **30 oktober 2026 om 22:27:02 Europe/Amsterdam**. **1099 tests en 24 WPF-scenario's slagen**; 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen vijfassige review uitgevoerd. Handmatige gebruikersacceptatie staat open. Gebruik voor samenvoegen bij voorkeur enkele kleine testauteurs of een voorstel waarvan je zeker weet dat het dezelfde auteur betreft. Zoeken en vergelijken wijzigen niets zonder bevestiging.
+Testbuild: Builds\Debug\Saga.exe **2026.10.30.45**, gebouwd op **30 oktober 2026 om 22:53:25 Europe/Amsterdam**. **1099 tests en 25 WPF-scenario's slagen**; 0 waarschuwingen/fouten en precies één Saga.exe onder Builds/Debug. Eigen vijfassige review uitgevoerd. Handmatige gebruikersacceptatie staat open. Gebruik voor samenvoegen bij voorkeur enkele kleine testauteurs of een voorstel waarvan je zeker weet dat het dezelfde auteur betreft. Zoeken en vergelijken wijzigen niets zonder bevestiging.
 
 ## Mogelijke dubbelen vinden
 
@@ -23,6 +23,13 @@ Testbuild: Builds\Debug\Saga.exe **2026.10.30.40**, gebouwd op **30 oktober 2026
 - [ ] Bevestig een correct voorstel. De bestaande veilige samenvoeging wordt uitgevoerd. De bronvermelding verdwijnt, de gekozen auteur blijft bestaan met de gekozen gegevens, boeken en overige mede-auteurs blijven behouden. Een dubbelboekconflict wordt nog steeds geweigerd.
 - [ ] Het voorstellenoverzicht wordt direct vernieuwd: het verwerkte paar is weg. De resultaatmelding blijft zichtbaar tijdens zoeken/vernieuwen. Sluit het overzicht: Auteurs beheren toont de doelauteur met actuele boeken en aantallen. Na sluiten van auteursbeheer kloppen hoofdscherm, filters, groepering en details ook.
 - [ ] Selecteer ook zelf twee auteurs in Auteurs beheren en kies Auteurs samenvoegen. Deze handmatige route gebruikt dezelfde nieuwe vergelijking en blijft werken zonder de zoekactie. Bij onopgeslagen profielwijzigingen blijft de bekende opslaan/verwerpen/annuleren-vraag bestaan.
+
+## Aanvullende hercontrole — zoekveld na samenvoegen
+
+- [ ] Voer in Auteurs beheren een zoektekst in, voeg via Duplicaten zoeken een correct paar samen en sluit het duplicatenvenster. Het zoekveld in Auteurs beheren is leeg en de ongefilterde lijst met auteurs is terug, met Meer laden indien nodig. De doelauteur en haar gegevens blijven rechts zichtbaar; resultaatmelding en eventuele bestandswaarschuwingen blijven behouden.
+- [ ] Herhaal via de handmatige Auteurs samenvoegen-knop. Na bevestigen wordt het zoekveld eveneens gewist en verschijnt de ongefilterde lijst. Annuleer ook een vergelijking: zonder geslaagde samenvoeging blijft de oorspronkelijke zoektekst behouden.
+
+De volledige echte WPF-route is uitgebreid met een niet-betrokken auteur en meer dan 200 auteurs. Zij bewaakt zowel de handmatige route als het sluiten van het duplicatenoverzicht; de lijst blijft correct gepagineerd.
 
 ## Automatische dekking
 

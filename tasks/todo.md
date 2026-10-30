@@ -6,6 +6,8 @@
 - [x] Voorstellenvenster en bestaande veilige samenvoegroute aansluiten/testen.
 - [x] Zes talen, volledige tests/WPF, build, eigen review en checklist afronden.
 - [x] Documentatie exact spiegelen en gewone vervolg-PR openen.
+- [x] Gebruikersfeedback verwerkt: na geslaagde samenvoeging en sluiten van vergelijking/duplicatenvenster zoekveld wissen en ongefilterde index herladen. Profiel, melding en waarschuwingen behouden; annuleren bewaart zoektekst. Eerst falende echte WPF-hercontrole, inclusief meer dan 200 auteurs, hersteld.
+- [ ] Later: vergelijking visueel harmoniseren met boekduplicaten, inclusief dezelfde overname-/samenvoegiconen.
 - [ ] Gebruiker test/accepteert en mergt.
 
 ## Historie: Milestone 53

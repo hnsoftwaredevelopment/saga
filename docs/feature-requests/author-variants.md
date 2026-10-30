@@ -2,7 +2,7 @@
 
 ## Status
 
-Milestone 54 is na de gebruikersfeedback goedgekeurd en gebouwd op de inmiddels gemergede PR #55 (main 3377d8e). Duplicaten zoeken toont mogelijke naamparen met aantallen en reden; de nieuwe vergelijking toont beschikbare foto's, volledige biografieën en websites naast het zichtbare resultaat. De gebruiker kiest zelf wat overblijft; opslag gebruikt de bestaande veilige samenvoeging. **1099 tests en 24 WPF-scenario's slagen**. [Handmatige acceptatie](../manual-tests/milestone-54-checklist.md) staat open.
+Milestone 54 is na de gebruikersfeedback goedgekeurd en gebouwd op de inmiddels gemergede PR #55 (main 3377d8e). Duplicaten zoeken toont mogelijke naamparen met aantallen en reden; de nieuwe vergelijking toont beschikbare foto's, volledige biografieën en websites naast het zichtbare resultaat. De gebruiker kiest zelf wat overblijft; opslag gebruikt de bestaande veilige samenvoeging. **1099 tests en 25 WPF-scenario's slagen**. [Handmatige acceptatie](../manual-tests/milestone-54-checklist.md) staat open.
 
 ### Historie: Milestone 53
 
@@ -30,3 +30,5 @@ De gebruiker meldt dat de huidige functionaliteit werkt zoals beschreven en heef
 - Een vergelijkingsvenster zoals bij boekduplicaten toont vooraf per auteur de foto, volledige biografie, website en het aantal gekoppelde boeken naast elkaar. Per onderdeel is zichtbaar wat wordt behouden en hoe het resultaat eruitziet; geen keuze uitsluitend op basis van een naam in een keuzelijst.
 
 Uitgevoerd in Milestone 54: eerst de visuele vergelijking op de bestaande veilige samenvoegroute, daarna de zoekactie met conservatieve overeenkomsten en expliciete gebruikersselectie. Namenvergelijking herkent punten/spaties, komma-volgorde, diakritische tekens en passende initialen met dezelfde achternaam. Verschillende volledig uitgeschreven voornamen worden niet vanwege een gelijke eerste letter als dubbel beschouwd. Alleen een gedeelde achternaam is onvoldoende; voorstellen worden niet transitief samengevoegd. Per zoekopdracht maximaal 1000 voorstellen, met een duidelijke verfijningsmelding. Een nieuwe doelnaam, echte spelfouten in achternamen, afwijkende aantallen tussenvoornamen, pseudoniemherkenning en een blijvende negeerlijst blijven vervolgwensen.
+
+Aanvullende gebruikersfeedback: het vergelijken is duidelijk, maar dezelfde veldindeling en overname-/samenvoegiconen als bij boekduplicaten zouden de bediening nog herkenbaarder maken. Deze harmonisatie is vastgelegd als vervolgverbetering. De concrete zoekveldcorrectie is wel in deze slice verwerkt: na een geslaagde samenvoeging en het sluiten van vergelijking/duplicatenoverzicht wordt het auteurszoekveld gewist en wordt de ongefilterde auteursindex opnieuw geladen. Profiel, resultaatmelding en waarschuwingen blijven behouden; annuleren verandert de bestaande zoektekst niet.
