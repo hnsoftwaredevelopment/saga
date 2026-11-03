@@ -2,7 +2,7 @@
 
 ## Milestone 57
 
-Gebouwd op de [goedgekeurde specificatie](../superpowers/specs/2026-11-03-saga-milestone-57-bulk-export-design.md), vanaf gemergede PR #58. Gebruikersacceptatie staat nog open; de actuele controlepunten staan in [checklist 57](../manual-tests/milestone-57-checklist.md).
+Gebouwd op de [goedgekeurde specificatie](../superpowers/specs/2026-11-03-saga-milestone-57-bulk-export-design.md), vanaf gemergede PR #58. De gebruiker heeft de checklist en aanvullende tests op 3 november 2026 zonder issues uitgevoerd en de slice geaccepteerd; de actuele controlepunten staan in [checklist 57](../manual-tests/milestone-57-checklist.md).
 
 Selecteer boeken in Boekenplank, Lijst of Gedetailleerd, met of zonder groepering. Open **Geselecteerde boeken exporteren** in de hoofdwerkbalk. Het venster gebruikt die selectie; je hoeft geen boeken opnieuw aan te vinken. Zonder selectie is de actie uitgeschakeld.
 
@@ -22,4 +22,4 @@ Voorbereiden en kopiëren lopen buiten de UI-thread. De resultaatlijst is gevirt
 
 Automatische apparaatherkenning, e-readerondersteuning, formaatconversie, exportsjablonen en een volledige bibliotheek-back-up vallen buiten deze slice. De bestaande export per formaat in boekdetails blijft beschikbaar.
 
-Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mislukt/overgeslagen. Debug-build **2026.11.3.18** van **3 november 2026 om 10:27:08 Europe/Amsterdam**, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen review op correctheid, leesbaarheid, architectuur, veiligheid en prestaties uitgevoerd. Licht/donker op minimale venstergrootte gerenderd en bekeken. Gebruikersacceptatie staat nog open.
+Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mislukt/overgeslagen. Debug-build **2026.11.3.18** van **3 november 2026 om 10:27:08 Europe/Amsterdam**, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen review op correctheid, leesbaarheid, architectuur, veiligheid en prestaties uitgevoerd. Licht/donker op minimale venstergrootte gerenderd en bekeken. De gebruiker heeft op 3 november 2026 de teststappen en aanvullende tests uitgevoerd zonder issues en de gehele slice geaccepteerd. PR #59 staat nog open.

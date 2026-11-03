@@ -8,9 +8,9 @@ Goedgekeurd vervolg vanaf main dbce6d1, PR #58 gemerged. Branch codex/milestone-
 4. Volledige tests, WPF, eigen review en schone enige Debug-build.
 5. Checklist/documentatie spiegelen, Excel gericht bijwerken, gewone PR; gebruiker test en mergt.
 
-Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mislukt/overgeslagen. Debug-build **2026.11.3.18** van **3 november 2026 om 10:27:08 Europe/Amsterdam**, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen review op correctheid, leesbaarheid, architectuur, veiligheid en prestaties uitgevoerd. Licht/donker op minimale venstergrootte gerenderd en bekeken. Gebruikersacceptatie staat nog open.
+Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mislukt/overgeslagen. Debug-build **2026.11.3.18** van **3 november 2026 om 10:27:08 Europe/Amsterdam**, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen review op correctheid, leesbaarheid, architectuur, veiligheid en prestaties uitgevoerd. Licht/donker op minimale venstergrootte gerenderd en bekeken. De gebruiker heeft op 3 november 2026 de teststappen en aanvullende tests uitgevoerd zonder issues en de gehele slice geaccepteerd. PR #59 staat nog open.
 
-Gewone niet-draft PR #59 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/59. Mergeable bij opening; GitGuardian groen en CodeQL nog bezig. Negen Markdown-bestanden zijn exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-bestand is gericht bijgewerkt en in Excel gecontroleerd. Alleen gebruikersacceptatie en merge staan nog open.
+Gewone niet-draft PR #59 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/59. Mergeable bij opening; GitGuardian groen en CodeQL nog bezig. Negen Markdown-bestanden zijn exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-bestand is gericht bijgewerkt en in Excel gecontroleerd. Gebruikersacceptatie is bevestigd; alleen de merge van PR #59 staat nog open.
 
 ## Historie: Milestone 56
 # Milestone 56: volgnummer wijzigen in Series beheren

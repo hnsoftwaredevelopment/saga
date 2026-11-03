@@ -9,4 +9,4 @@ Werk het bestaande bestand gericht bij aan het begin en einde van een slice en b
 - Verwachte toekomstige slices zijn schattingen van de bekende scope. Voeg nieuwe wensen toe met een passende basis/bron en markeer die niet als goedgekeurd zonder besluit van de gebruiker.
 - Percentages tellen slices, geen uren of inspanning. Ze zijn een voortgangsbeeld van de bekende scope, geen opleveringsdatum.
 
-Stand bij oplevering van Milestone 57, 3 november 2026: 59 Done en 43 Todo, samen 102 slices over 17 onderwerpen; afgerond 58% en 42%. Milestone 56 is geaccepteerd en PR #58 gemerged. Milestone 57 staat op Te testen en blijft Todo. De tabel/filter, validatie en grafiek zijn na de wijziging in Excel gecontroleerd zonder het bestand tijdens die controle op te slaan.
+Stand na gebruikersacceptatie van Milestone 57, 3 november 2026: 60 Done en 42 Todo, samen 102 slices over 17 onderwerpen; afgerond 59% en 41%. Milestone 56 is geaccepteerd en PR #58 gemerged. Milestone 57 staat op Done / Getest, PR open; PR #59 is nog niet gemerged. De tabel/filter, validatie en grafiek zijn na de wijziging in Excel gecontroleerd zonder het bestand tijdens die controle op te slaan.
