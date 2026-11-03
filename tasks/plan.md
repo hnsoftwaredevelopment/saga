@@ -1,4 +1,18 @@
-# Milestone 58: meerdere serievolgnummers toekennen
+# Milestone 59: geselecteerde series samenvoegen
+
+De gebruiker keurt de concrete afbakening op 3 november 2026 goed. Basis main 086e291 met afrondingsnotitie b911af5; branch codex/milestone-59-manual-series-merge. Specificatie: docs/superpowers/specs/2026-11-03-saga-milestone-59-manual-series-merge-design.md. Pipeline-item P23 is M59 geworden, zonder extra scope-rij.
+
+1. Nieuwe doelnaam en afwijzen van een niet-geselecteerde bestaande doelserie eerst falend testen; bestaande merge-transactie uitbreiden met expliciete capability.
+2. Meervoudige serielijstselectie, behoud bij Meer laden en wissen bij nieuwe zoekopdracht; één-serieacties veilig afschermen.
+3. Bestaande vergelijking hergebruiken met expliciete bestaande/nieuwe naamkeuze; typen/focus en behoud nummers/overige metadata testen.
+4. Volledige tests, WPF, zes talen, echte sidecars, minimumgrootte/licht/donker, eigen review en schone enige Debug-build.
+5. Checklist/status/Obsidian en bestaand Excel-overzicht gericht bijwerken; gewone PR. De gebruiker accepteert en mergt.
+
+Verificatie: **1236 geautomatiseerde tests en 32 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.48**, **3 november 2026 14:00:46 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. Nieuwe doelnaam en niet-geselecteerde bestaande doelnaam eerst falend getest; 503 boeken over drie series, behoud nummers/overige metadata, echte metadata.json, bestaande rollback/conflict/bestandsroute, paging/selectie/focus en oude duplicaatroute gecontroleerd. Gebruikersacceptatie staat nog open.
+
+## Historie: Milestone 58
+
+### Milestone 58: meerdere serievolgnummers toekennen
 
 Goedgekeurd door de gebruiker op 3 november 2026. Basis main 14ed4dd, met afrondingsnotitie f010815; branch codex/milestone-58-series-numbers. Specificatie: docs/superpowers/specs/2026-11-03-saga-milestone-58-series-numbers-design.md. Pipeline-item P22 is gericht omgezet naar M58; geen extra rij of nieuwe scope toegevoegd.
 
