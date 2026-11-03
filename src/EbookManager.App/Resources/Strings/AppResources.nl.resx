@@ -693,5 +693,10 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesNumbersWorking" xml:space="preserve"><value>Volgnummers opslaan…</value></data>
   <data name="SeriesNumbersFailed" xml:space="preserve"><value>De volgnummers konden niet worden opgeslagen. Er zijn geen boeken aangepast. Probeer het opnieuw.</value></data>
   <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>De volgnummers zijn opgeslagen, maar de boekenlijst kon niet worden vernieuwd. Open Series beheren opnieuw om de opgeslagen waarden te zien.</value></data>
+  <data name="SeriesManualMergeAction" xml:space="preserve"><value>Geselecteerde series samenvoegen</value></data>
+  <data name="SeriesManualMergeSelected" xml:space="preserve"><value>Geselecteerde series: {0}</value></data>
+  <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Vergelijk alle boeken uit de geselecteerde series. Kies één van hun namen of voer een nieuwe naam in. Volgnummers en overige gegevens blijven behouden. Een naam van een niet-geselecteerde serie wordt geweigerd.</value></data>
+  <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Of voer een nieuwe serienaam in</value></data>
+  <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Die naam hoort bij een niet-geselecteerde serie. Er is niets aangepast. Selecteer die serie ook, of kies een andere nieuwe naam.</value></data>
 </root>
 

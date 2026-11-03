@@ -7,7 +7,7 @@ public sealed partial class SeriesManagementViewModel
 {
     private SeriesNumbersPreview? numbersPreview;
     public IReadOnlyList<SeriesBook> SelectedNumberBooks { get; private set; } = [];
-    public bool CanAssignNumbers => CanBrowse && !IsSearching && numbersService is not null && SelectedNumberBooks.Count >= 2;
+    public bool CanAssignNumbers => CanBrowseBooks && !IsSearching && numbersService is not null && SelectedNumberBooks.Count >= 2;
     public void SetNumberSelection(IEnumerable<SeriesBook> selected)
     {
         var ids = selected.Select(book => book.Id).ToHashSet();

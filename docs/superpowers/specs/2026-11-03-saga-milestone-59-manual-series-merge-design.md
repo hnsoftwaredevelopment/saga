@@ -1,0 +1,19 @@
+# Milestone 59 — zelf gekozen series samenvoegen
+
+De gebruiker heeft de concrete afbakening goedgekeurd: in Series beheren twee of meer series selecteren en samenvoegen onder één bestaande of nieuwe naam, met een boekenoverzicht vooraf en behoud van alle volgnummers. Basis main 086e291 (PR #60 gemerged), met afrondingsnotitie b911af5. Branch codex/milestone-59-manual-series-merge. Pipeline-item P23 wordt M59; er komt geen extra scope-rij bij.
+
+## Gebruikersroute en veiligheid
+
+1. De serielijst ondersteunt Ctrl/Shift-meervoudige selectie. Meer laden bewaart de selectie; een nieuwe zoekopdracht wist haar. Eén geselecteerde serie behoudt de bestaande boek-/hernoem-/nummeracties. Bij meerdere series is het boekpaneel niet bewerkbaar en verschijnt één expliciete samenvoegactie met geselecteerde aantallen.
+2. Het bestaande vergelijkingsvenster toont alle boeken uit alle gekozen series, ook nog niet in de beheerboekenlijst geladen boeken. Huidige serienaam, titel, auteurs en nummer blijven zichtbaar. Start met 200 rijen en Meer laden. Dubbele/ontbrekende nummers zijn informatief en worden nooit hernummerd. Er hoeft niets opnieuw aangevinkt te worden.
+3. Kies één naam uit de geselecteerde series of typ expliciet een nieuwe, getrimde niet-lege naam. Geen automatisch gekozen bestemming. De vrije naam gebruikt een gewoon tekstveld, zonder bibliotheekbrede autocomplete. De bestaande duplicaatvoorstellen behouden hun bestaande route en expliciete doelkeuze.
+4. Een nieuwe naam die overeenkomt met een bestaande niet-geselecteerde serie wordt bij opslaan geweigerd met uitleg: neem die serie expliciet op in de selectie of kies een andere naam. Er mogen niet ongemerkt boeken buiten de vergelijking worden toegevoegd. Hoofdletters/omliggende spaties volgen de bestaande SeriesNames-regels.
+5. Annuleren/Escape verandert niets en bewaart zoektekst/selectie. Bevestigen hergebruikt de bestaande transactie en snapshotcontrole voor de volledige bevestigde boekset. Een gewijzigd, verdwenen of toegevoegd boek blokkeert de gehele opslag. Alleen Series en UpdatedUtc veranderen; nummers, andere metadata en niet-geselecteerde series blijven behouden.
+6. De bestaande bestandssynchronisatie volgt na commit en geeft afzonderlijke waarschuwingen. Een latere verversingsfout meldt dat de wijziging al opgeslagen is. Gewijzigde IDs blijven beschikbaar voor de hoofdweergave/details. Na succes verdwijnen de oude series uit de index, wordt het zoekveld leeg en blijft de gezamenlijke serie met haar boeken zichtbaar.
+7. Knoppen, toetsenbord, focus, minimumgrootte en zes talen blijven consistent met het bestaande beheer. Geen nieuwe database, schema, package of externe dienst. Geen samenvoeging van boekrecords of automatische nummering.
+
+## Implementatie en controles
+
+Breid de bestaande SeriesMergePreview uit met een expliciete vlag voor vrije naamkeuze (standaard uit voor bestaande routes), een aparte NameExists-uitkomst, verse doelnaamcontrole binnen de transactie en behoud van alle snapshots. Hergebruik de Application-bestandsroute en het vergelijkingsvenster. Selection-management blijft beperkt tot Series beheren; andere views veranderen niet.
+
+Eerst falende tests voor een nieuwe doelnaam en een niet-geselecteerde bestaande doelnaam. Vervolgens drie of meer series, >500 boeken, behoud van nummers/overige metadata, stale previews/rollback/annuleren en bestandssynchronisatie. Dialogtests voor expliciete bestaande/nieuwe keuze en typefocus; managementtests voor zoeken/paging/selectie, ongeldige bevestiging en directe actualisatie. Echte WPF-route voor annuleren en samenvoegen, toetsenbord/focus en minimumgrootte in licht/donker. Volledige tests, eigen vijfassige review, schone enige Debug-build, checklist, README/status, exacte Obsidian-spiegels en gewone PR. Gebruiker accepteert en mergt.
