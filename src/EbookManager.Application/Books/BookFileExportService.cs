@@ -8,11 +8,17 @@ public sealed class BookFileExportService(ILibraryFileStore fileStore)
     private static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
     private readonly ILibraryFileStore fileStore = fileStore;
 
-    public async Task<BookFileExportResult> ExportAsync(
+    public Task<BookFileExportResult> ExportAsync(
         Book book,
         BookFile file,
         string destinationDirectory,
         CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(book);
+        return ExportAsync(new BookExportSource(book.Id, book.Metadata.Title, book.Metadata.Authors, []), file, destinationDirectory, cancellationToken);
+    }
+
+    public async Task<BookFileExportResult> ExportAsync(BookExportSource book, BookFile file, string destinationDirectory, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(book);
         ArgumentNullException.ThrowIfNull(file);
@@ -35,17 +41,35 @@ public sealed class BookFileExportService(ILibraryFileStore fileStore)
         }
 
         Directory.CreateDirectory(destinationDirectory);
-        var destinationPath = CreateUniqueDestinationPath(book, file, destinationDirectory);
-        await using var source = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true);
-        await using var destination = new FileStream(destinationPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true);
-        await source.CopyToAsync(destination, cancellationToken);
-        return new BookFileExportResult(BookFileExportStatus.Exported, destinationPath, null);
+        var temporary = Path.Combine(destinationDirectory, $".saga-export-{Guid.NewGuid():N}.tmp");
+        var owned = false;
+        try
+        {
+            await using (var source = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read, 81920, useAsync: true))
+            await using (var destination = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, useAsync: true))
+            {
+                owned = true;
+                await source.CopyToAsync(destination, cancellationToken);
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var destinationPath = CreateUniqueDestinationPath(book.Title, book.Authors, file, destinationDirectory);
+                try { File.Move(temporary, destinationPath, overwrite: false); owned = false; return new(BookFileExportStatus.Exported, destinationPath, null); }
+                catch (IOException) when (File.Exists(destinationPath) || Directory.Exists(destinationPath)) { /* Another writer claimed the name: choose a fresh one. */ }
+            }
+        }
+        finally { if (owned) File.Delete(temporary); }
     }
 
     public string CreateUniqueDestinationPath(
         Book book,
         BookFile file,
         string destinationDirectory)
+        => CreateUniqueDestinationPath(book.Metadata.Title, book.Metadata.Authors, file, destinationDirectory);
+
+    private static string CreateUniqueDestinationPath(string title, IReadOnlyList<string> authors, BookFile file, string destinationDirectory)
     {
         var extension = Path.GetExtension(file.RelativePath);
         if (string.IsNullOrWhiteSpace(extension))
@@ -53,9 +77,9 @@ public sealed class BookFileExportService(ILibraryFileStore fileStore)
             extension = $".{file.Format.ToString().ToLowerInvariant()}";
         }
 
-        var baseName = CreateBaseFileName(book);
+        var baseName = CreateBaseFileName(title, authors);
         var candidate = Path.Combine(destinationDirectory, $"{baseName}{extension}");
-        for (var index = 1; File.Exists(candidate); index++)
+        for (var index = 1; File.Exists(candidate) || Directory.Exists(candidate); index++)
         {
             candidate = Path.Combine(destinationDirectory, $"{baseName} ({index}){extension}");
         }
@@ -63,12 +87,12 @@ public sealed class BookFileExportService(ILibraryFileStore fileStore)
         return candidate;
     }
 
-    private static string CreateBaseFileName(Book book)
+    private static string CreateBaseFileName(string title, IReadOnlyList<string> authors)
     {
-        var author = book.Metadata.Authors.FirstOrDefault();
+        var author = authors.FirstOrDefault();
         var parts = string.IsNullOrWhiteSpace(author)
-            ? [book.Metadata.Title]
-            : new[] { author, book.Metadata.Title };
+            ? [title]
+            : new[] { author, title };
         var value = string.Join(" - ", parts.Select(SanitizeFileNamePart).Where(part => part.Length > 0));
         return string.IsNullOrWhiteSpace(value) ? "book" : value;
     }

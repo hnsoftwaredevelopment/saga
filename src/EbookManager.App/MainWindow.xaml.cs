@@ -50,6 +50,18 @@ public partial class MainWindow : System.Windows.Window
 
     public LibraryViewModel ViewModel => viewModel;
 
+    private void OpenBulkExportClicked(object sender, System.Windows.RoutedEventArgs e)
+    {
+        var library = currentLibrary.Current;
+        if (library is null || !viewModel.CanMultiEditSelectedBooks) return;
+        var selected = viewModel.SelectedBooks.Select(row => new EbookManager.Domain.Books.BookExportSource(
+            row.Book.Id, row.Book.Metadata.Title, row.Book.Metadata.Authors.ToArray(), [])).ToArray();
+        var repository = new EfBookExportRepository(contextFactory, library.DirectoryPath);
+        var exporter = new BookFileExportService(new ManagedLibraryFileStore(library.DirectoryPath));
+        using var export = new BulkExportViewModel(selected, new BulkBookExportService(repository, exporter), localizationService.GetString);
+        new BulkExportWindow(export) { Owner = this }.ShowDialog();
+    }
+
     private async void OpenTagsClicked(object sender, System.Windows.RoutedEventArgs e)
     {
         var library = currentLibrary.Current;

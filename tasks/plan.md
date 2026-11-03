@@ -1,3 +1,20 @@
+# Milestone 57: meervoudige export
+
+Goedgekeurd vervolg vanaf main dbce6d1, PR #58 gemerged. Branch codex/milestone-57-bulk-export. Specificatie: docs/superpowers/specs/2026-11-03-saga-milestone-57-bulk-export-design.md.
+
+1. Readonly, begrensde exportsnapshots en veilige bestandskopie testgestuurd bouwen.
+2. Batchpreview/-resultaten, foutisolatie en annuleerbare uitvoering testen.
+3. Dialoogmodel en één selectieactie in de werkbalk; WPF-route en zes talen.
+4. Volledige tests, WPF, eigen review en schone enige Debug-build.
+5. Checklist/documentatie spiegelen, Excel gericht bijwerken, gewone PR; gebruiker test en mergt.
+
+Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mislukt/overgeslagen. Debug-build **2026.11.3.18** van **3 november 2026 om 10:27:08 Europe/Amsterdam**, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen review op correctheid, leesbaarheid, architectuur, veiligheid en prestaties uitgevoerd. Licht/donker op minimale venstergrootte gerenderd en bekeken. De gebruiker heeft op 3 november 2026 de teststappen en aanvullende tests uitgevoerd zonder issues en de gehele slice geaccepteerd. PR #59 staat nog open.
+
+Gewone niet-draft PR #59 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/59. Mergeable bij opening; GitGuardian groen en CodeQL nog bezig. Negen Markdown-bestanden zijn exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-bestand is gericht bijgewerkt en in Excel gecontroleerd. Gebruikersacceptatie is bevestigd; alleen de merge van PR #59 staat nog open.
+
+Reviewcorrectie PR #59, 3 november 2026: opmerkingen 4452983445 en 4452983461 zijn verwerkt. Telteksten gebruiken in alle zes talen neutrale labels met aantallen, zodat 0, 1 en meerdere boeken/bestanden grammaticaal correct blijven. De lokalisatietest controleert per sleutel alle verplichte placeholders en formatteert aantallen 0, 1 en 2. Geen wijziging aan de exportverwerking. Opnieuw 1189 tests en 30 WPF-proeven geslaagd; licht/donker op minimale grootte bekeken. Nieuwe enige Debug-build **2026.11.3.21** van **3 november 2026 11:28:50 Europe/Amsterdam**, 0 waarschuwingen/fouten. De gebruikersacceptatie van build 2026.11.3.18 blijft vastgelegd; alleen de teksten en testcontrole zijn aangescherpt.
+
+## Historie: Milestone 56
 # Milestone 56: volgnummer wijzigen in Series beheren
 
 Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b; branch codex/milestone-56-series-number. Specificatie: docs/superpowers/specs/2026-10-31-saga-milestone-56-series-number-design.md.
@@ -8,7 +25,7 @@ Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b;
 4. WPF en zes talen aansluiten; gerichte en volledige tests, echte UI-proeven en schone Debug-build.
 5. Eigen review, checklist/README/featurestatus, exacte spiegels en gewone PR. Gebruiker accepteert en mergt.
 
-Uitgevoerd: 1166 tests en 29 WPF-proeven groen. Schone enige Debug-build 2026.11.3.1 van 3 november 08:52:17 Europe/Amsterdam, 0 waarschuwingen/fouten. Eigen review, zes talen, beide thema’s en 600 geladen boeken afgedekt. Checklist 56 klaar; gewone niet-draft PR #58 geopend naar main en aan de chat gekoppeld. Mergeable bij opening, GitGuardian groen en CodeQL bezig. Elf Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. De gebruiker heeft op 3 november 2026 getest en geaccepteerd. Alleen de merge van PR #58 staat nog open.
+Uitgevoerd: 1166 tests en 29 WPF-proeven groen. Schone enige Debug-build 2026.11.3.1 van 3 november 08:52:17 Europe/Amsterdam, 0 waarschuwingen/fouten. Eigen review, zes talen, beide thema’s en 600 geladen boeken afgedekt. Checklist 56 klaar; gewone niet-draft PR #58 geopend naar main en aan de chat gekoppeld. Mergeable bij opening, GitGuardian groen en CodeQL bezig. Elf Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. De gebruiker heeft op 3 november 2026 getest en geaccepteerd. PR #58 is op 3 november 2026 door de gebruiker gemerged.
 
 ## Historie: Milestone 55
 # Milestone 55: seriesvarianten vinden en samenvoegen

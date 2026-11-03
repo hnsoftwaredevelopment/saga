@@ -1,3 +1,21 @@
+# Milestone 57: meervoudige export
+
+- [x] Gebruiker keurt export goed; PR #58 gemerged en basis/spec vastgelegd.
+- [x] Readonly preview en veilige kopie met naamconflicten/annulering testen en bouwen.
+- [x] Batchorkestratie en dialoogmodel met voortgang/resultaten testen.
+- [x] Werkbalk, WPF en zes talen aansluiten en controleren.
+- [x] Volledige suite, WPF, schone build en eigen review: 1189 tests en 30 WPF-proeven groen, Debug 2026.11.3.18, 0 waarschuwingen/fouten.
+- [x] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone niet-draft PR #59 geopend en gekoppeld.
+- [x] Gebruiker heeft de checklist en aanvullende tests zonder issues uitgevoerd en de slice op 3 november 2026 geaccepteerd.
+- [ ] Alleen de gebruiker mergt PR #59.
+
+Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mislukt/overgeslagen. Debug-build **2026.11.3.18** van **3 november 2026 om 10:27:08 Europe/Amsterdam**, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen review op correctheid, leesbaarheid, architectuur, veiligheid en prestaties uitgevoerd. Licht/donker op minimale venstergrootte gerenderd en bekeken. De gebruiker heeft op 3 november 2026 de teststappen en aanvullende tests uitgevoerd zonder issues en de gehele slice geaccepteerd. PR #59 staat nog open.
+
+Gewone niet-draft PR #59 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/59. Mergeable bij opening; GitGuardian groen en CodeQL nog bezig. Negen Markdown-bestanden zijn exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-bestand is gericht bijgewerkt en in Excel gecontroleerd. Gebruikersacceptatie is bevestigd; alleen de merge van PR #59 staat nog open.
+
+Reviewcorrectie PR #59, 3 november 2026: opmerkingen 4452983445 en 4452983461 zijn verwerkt. Telteksten gebruiken in alle zes talen neutrale labels met aantallen, zodat 0, 1 en meerdere boeken/bestanden grammaticaal correct blijven. De lokalisatietest controleert per sleutel alle verplichte placeholders en formatteert aantallen 0, 1 en 2. Geen wijziging aan de exportverwerking. Opnieuw 1189 tests en 30 WPF-proeven geslaagd; licht/donker op minimale grootte bekeken. Nieuwe enige Debug-build **2026.11.3.21** van **3 november 2026 11:28:50 Europe/Amsterdam**, 0 waarschuwingen/fouten. De gebruikersacceptatie van build 2026.11.3.18 blijft vastgelegd; alleen de teksten en testcontrole zijn aangescherpt.
+
+## Historie: Milestone 56
 # Milestone 56: volgnummer wijzigen in Series beheren
 
 Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b; branch codex/milestone-56-series-number. Specificatie: docs/superpowers/specs/2026-10-31-saga-milestone-56-series-number-design.md.
@@ -9,9 +27,9 @@ Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b;
 - [x] Volledige suite, schone build en eigen review.
 - [x] Checklist/status/documentatie exact gespiegeld (11 bestanden, SHA256 gelijk); gewone niet-draft PR #58 geopend en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/58. Mergeable bij opening; GitGuardian groen, CodeQL nog bezig.
 - [x] Gebruiker heeft de checklist uitgevoerd en de gehele slice op 3 november 2026 geaccepteerd: alles werkt zoals verwacht.
-- [ ] Alleen de gebruiker mergt PR #58.
+- [x] De gebruiker heeft PR #58 op 3 november 2026 gemerged; GitHub bevestigt merge dbce6d1.
 
-Verificatie: 1166 tests en 29 echte WPF-proeven groen, 0 mislukt/overgeslagen. Debug 2026.11.3.1 van 3 november 08:52:17 Europe/Amsterdam, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen vijfassige review, zes talen, 600 geladen boeken en licht/donker op minimumgrootte gecontroleerd. Gebruikersacceptatie is op 3 november 2026 bevestigd; PR #58 is nog open.
+Verificatie: 1166 tests en 29 echte WPF-proeven groen, 0 mislukt/overgeslagen. Debug 2026.11.3.1 van 3 november 08:52:17 Europe/Amsterdam, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen vijfassige review, zes talen, 600 geladen boeken en licht/donker op minimumgrootte gecontroleerd. Gebruikersacceptatie is op 3 november 2026 bevestigd; PR #58 is op 3 november 2026 gemerged.
 
 ## Historie: Milestone 55
 # Milestone 55: seriesvarianten vinden en samenvoegen
