@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\src\EbookManager.App\Views\BulkExportWindow.xaml" Link="TestAssets\BulkExportWindow.xaml" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\EbookManager.App\App.xaml"
           Link="TestAssets\App.xaml"
           CopyToOutputDirectory="PreserveNewest" />

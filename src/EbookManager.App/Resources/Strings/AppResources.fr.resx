@@ -930,5 +930,32 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesNumberSaved" xml:space="preserve"><value>Numéro mis à jour pour {0} : {1}.</value></data>
   <data name="SeriesNumberUnchanged" xml:space="preserve"><value>Le numéro n’a pas changé.</value></data>
   <data name="SeriesNumberWorking" xml:space="preserve"><value>Mise à jour du numéro et des fichiers…</value></data>
+  <data name="BulkExportTitle" xml:space="preserve"><value>Exporter les livres sélectionnés</value></data>
+  <data name="BulkExportHelp" xml:space="preserve"><value>Choisissez un format et un dossier. Tous les fichiers de ce format sont copiés. Les fichiers existants sont conservés ; les copies reçoivent un nom unique. Les copies terminées restent après annulation.</value></data>
+  <data name="BulkExportFormat" xml:space="preserve"><value>Format</value></data>
+  <data name="BulkExportStart" xml:space="preserve"><value>Exporter</value></data>
+  <data name="BulkExportOutcome" xml:space="preserve"><value>Résultat</value></data>
+  <data name="BulkExportDestination" xml:space="preserve"><value>Fichier exporté</value></data>
+  <data name="BulkExportPreparing" xml:space="preserve"><value>Vérification des fichiers disponibles…</value></data>
+  <data name="BulkExportAvailability" xml:space="preserve"><value>{0} livres sélectionnés · {1} fichiers disponibles · {2} livres seront ignorés.</value></data>
+  <data name="BulkExportFileCount" xml:space="preserve"><value>{0} fichiers disponibles</value></data>
+  <data name="BulkExportFormatMissing" xml:space="preserve"><value>Ignoré : format indisponible</value></data>
+  <data name="BulkExportBookMissing" xml:space="preserve"><value>Livre indisponible</value></data>
+  <data name="BulkExportExported" xml:space="preserve"><value>Exporté</value></data>
+  <data name="BulkExportChanged" xml:space="preserve"><value>Livre ou fichier modifié ; rouvrez l’export</value></data>
+  <data name="BulkExportSourceMissing" xml:space="preserve"><value>Fichier source introuvable</value></data>
+  <data name="BulkExportReadFailed" xml:space="preserve"><value>Lecture de la bibliothèque impossible ; réessayez</value></data>
+  <data name="BulkExportFailed" xml:space="preserve"><value>Copie impossible ; vérifiez les droits, le nom et l’espace libre</value></data>
+  <data name="BulkExportNotProcessed" xml:space="preserve"><value>Non traité : export annulé</value></data>
+  <data name="BulkExportProgress" xml:space="preserve"><value>{0} sur {1} traités · {2}</value></data>
+  <data name="BulkExportSummary" xml:space="preserve"><value>Exportés : {0} fichiers. Ignorés (format indisponible) : {1} livres. Échecs : {2}.</value></data>
+  <data name="BulkExportStopped" xml:space="preserve"><value>Annulé ; {0} non traités. Les copies terminées sont conservées.</value></data>
+  <data name="BulkExportCancelled" xml:space="preserve"><value>Export annulé ; aucun fichier copié.</value></data>
+  <data name="BulkExportCancelling" xml:space="preserve"><value>Annulation ; suppression du fichier incomplet…</value></data>
+  <data name="BulkExportLoadFailed" xml:space="preserve"><value>Impossible de charger les fichiers disponibles. Fermez cette fenêtre et réessayez.</value></data>
+  <data name="BulkExportUnexpected" xml:space="preserve"><value>Export interrompu. Les copies terminées restent ; vérifiez le dossier cible avant de réessayer.</value></data>
+  <data name="BulkExportFolderFailed" xml:space="preserve"><value>Impossible de sélectionner le dossier. Essayez un autre dossier.</value></data>
+  <data name="BulkExportSuccess" xml:space="preserve"><value>Exportés : {0} fichiers.</value></data>
+  <data name="BulkExportSkipped" xml:space="preserve"><value>Ignorés (format indisponible) : {0} livres.</value></data>
 </root>
 

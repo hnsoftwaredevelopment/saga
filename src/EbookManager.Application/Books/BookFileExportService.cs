@@ -57,7 +57,7 @@ public sealed class BookFileExportService(ILibraryFileStore fileStore)
                 cancellationToken.ThrowIfCancellationRequested();
                 var destinationPath = CreateUniqueDestinationPath(book.Title, book.Authors, file, destinationDirectory);
                 try { File.Move(temporary, destinationPath, overwrite: false); owned = false; return new(BookFileExportStatus.Exported, destinationPath, null); }
-                catch (IOException) when (File.Exists(destinationPath)) { /* Another writer claimed the name: choose a fresh one. */ }
+                catch (IOException) when (File.Exists(destinationPath) || Directory.Exists(destinationPath)) { /* Another writer claimed the name: choose a fresh one. */ }
             }
         }
         finally { if (owned) File.Delete(temporary); }
@@ -79,7 +79,7 @@ public sealed class BookFileExportService(ILibraryFileStore fileStore)
 
         var baseName = CreateBaseFileName(title, authors);
         var candidate = Path.Combine(destinationDirectory, $"{baseName}{extension}");
-        for (var index = 1; File.Exists(candidate); index++)
+        for (var index = 1; File.Exists(candidate) || Directory.Exists(candidate); index++)
         {
             candidate = Path.Combine(destinationDirectory, $"{baseName} ({index}){extension}");
         }

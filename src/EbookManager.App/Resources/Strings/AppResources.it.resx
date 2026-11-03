@@ -930,5 +930,32 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesNumberSaved" xml:space="preserve"><value>Numero aggiornato per {0}: {1}.</value></data>
   <data name="SeriesNumberUnchanged" xml:space="preserve"><value>Il numero non è cambiato.</value></data>
   <data name="SeriesNumberWorking" xml:space="preserve"><value>Aggiornamento del numero e dei file…</value></data>
+  <data name="BulkExportTitle" xml:space="preserve"><value>Esporta i libri selezionati</value></data>
+  <data name="BulkExportHelp" xml:space="preserve"><value>Scegli un formato e una cartella. Tutti i file di quel formato vengono copiati. I file esistenti vengono conservati e le copie ricevono nomi univoci. Le copie completate rimangono dopo l’annullamento.</value></data>
+  <data name="BulkExportFormat" xml:space="preserve"><value>Formato</value></data>
+  <data name="BulkExportStart" xml:space="preserve"><value>Esporta</value></data>
+  <data name="BulkExportOutcome" xml:space="preserve"><value>Risultato</value></data>
+  <data name="BulkExportDestination" xml:space="preserve"><value>File esportato</value></data>
+  <data name="BulkExportPreparing" xml:space="preserve"><value>Verifica dei file disponibili…</value></data>
+  <data name="BulkExportAvailability" xml:space="preserve"><value>{0} libri selezionati · {1} file disponibili · {2} libri verranno saltati.</value></data>
+  <data name="BulkExportFileCount" xml:space="preserve"><value>{0} file disponibili</value></data>
+  <data name="BulkExportFormatMissing" xml:space="preserve"><value>Saltato: formato non disponibile</value></data>
+  <data name="BulkExportBookMissing" xml:space="preserve"><value>Libro non più disponibile</value></data>
+  <data name="BulkExportExported" xml:space="preserve"><value>Esportato</value></data>
+  <data name="BulkExportChanged" xml:space="preserve"><value>Libro o file modificato; riapri l’esportazione</value></data>
+  <data name="BulkExportSourceMissing" xml:space="preserve"><value>File di origine non trovato</value></data>
+  <data name="BulkExportReadFailed" xml:space="preserve"><value>Impossibile leggere la biblioteca; riprova</value></data>
+  <data name="BulkExportFailed" xml:space="preserve"><value>Copia non riuscita; verifica accesso, nome e spazio libero</value></data>
+  <data name="BulkExportNotProcessed" xml:space="preserve"><value>Non elaborato: esportazione annullata</value></data>
+  <data name="BulkExportProgress" xml:space="preserve"><value>{0} di {1} elaborati · {2}</value></data>
+  <data name="BulkExportSummary" xml:space="preserve"><value>Esportati: {0} file. Saltati (formato non disponibile): {1} libri. Errori: {2}.</value></data>
+  <data name="BulkExportStopped" xml:space="preserve"><value>Annullato; {0} non elaborati. Le copie completate rimangono.</value></data>
+  <data name="BulkExportCancelled" xml:space="preserve"><value>Esportazione annullata; nessun file copiato.</value></data>
+  <data name="BulkExportCancelling" xml:space="preserve"><value>Annullamento; rimozione del file incompleto…</value></data>
+  <data name="BulkExportLoadFailed" xml:space="preserve"><value>Impossibile caricare i file disponibili. Chiudi questa finestra e riprova.</value></data>
+  <data name="BulkExportUnexpected" xml:space="preserve"><value>Esportazione interrotta. Le copie completate rimangono; controlla la cartella prima di riprovare.</value></data>
+  <data name="BulkExportFolderFailed" xml:space="preserve"><value>Impossibile selezionare la cartella. Prova un’altra cartella.</value></data>
+  <data name="BulkExportSuccess" xml:space="preserve"><value>Esportati: {0} file.</value></data>
+  <data name="BulkExportSkipped" xml:space="preserve"><value>Saltati (formato non disponibile): {0} libri.</value></data>
 </root>
 

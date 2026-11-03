@@ -930,5 +930,32 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesNumberSaved" xml:space="preserve"><value>Bandnummer für {0} aktualisiert: {1}.</value></data>
   <data name="SeriesNumberUnchanged" xml:space="preserve"><value>Die Bandnummer wurde nicht geändert.</value></data>
   <data name="SeriesNumberWorking" xml:space="preserve"><value>Bandnummer und Buchdateien aktualisieren…</value></data>
+  <data name="BulkExportTitle" xml:space="preserve"><value>Ausgewählte Bücher exportieren</value></data>
+  <data name="BulkExportHelp" xml:space="preserve"><value>Wählen Sie ein Format und einen Ordner. Alle Dateien dieses Formats werden kopiert. Vorhandene Dateien bleiben erhalten; Kopien erhalten eindeutige Namen. Bei Abbruch bleiben fertige Kopien erhalten.</value></data>
+  <data name="BulkExportFormat" xml:space="preserve"><value>Format</value></data>
+  <data name="BulkExportStart" xml:space="preserve"><value>Exportieren</value></data>
+  <data name="BulkExportOutcome" xml:space="preserve"><value>Ergebnis</value></data>
+  <data name="BulkExportDestination" xml:space="preserve"><value>Exportierte Datei</value></data>
+  <data name="BulkExportPreparing" xml:space="preserve"><value>Verfügbare Dateien werden geprüft…</value></data>
+  <data name="BulkExportAvailability" xml:space="preserve"><value>{0} Bücher ausgewählt · {1} Dateien verfügbar · {2} Bücher werden übersprungen.</value></data>
+  <data name="BulkExportFileCount" xml:space="preserve"><value>{0} Dateien verfügbar</value></data>
+  <data name="BulkExportFormatMissing" xml:space="preserve"><value>Übersprungen: Format nicht verfügbar</value></data>
+  <data name="BulkExportBookMissing" xml:space="preserve"><value>Buch nicht mehr verfügbar</value></data>
+  <data name="BulkExportExported" xml:space="preserve"><value>Exportiert</value></data>
+  <data name="BulkExportChanged" xml:space="preserve"><value>Buch oder Datei geändert; Export erneut öffnen</value></data>
+  <data name="BulkExportSourceMissing" xml:space="preserve"><value>Quelldatei nicht gefunden</value></data>
+  <data name="BulkExportReadFailed" xml:space="preserve"><value>Bibliothek konnte nicht gelesen werden; erneut versuchen</value></data>
+  <data name="BulkExportFailed" xml:space="preserve"><value>Kopieren fehlgeschlagen; Ordnerzugriff, Dateiname und freien Speicher prüfen</value></data>
+  <data name="BulkExportNotProcessed" xml:space="preserve"><value>Nicht verarbeitet: Export abgebrochen</value></data>
+  <data name="BulkExportProgress" xml:space="preserve"><value>{0} von {1} verarbeitet · {2}</value></data>
+  <data name="BulkExportSummary" xml:space="preserve"><value>Exportiert: {0} Dateien. Übersprungen (Format nicht verfügbar): {1} Bücher. Fehlgeschlagen: {2}.</value></data>
+  <data name="BulkExportStopped" xml:space="preserve"><value>Abgebrochen; {0} nicht verarbeitet. Fertige Kopien bleiben erhalten.</value></data>
+  <data name="BulkExportCancelled" xml:space="preserve"><value>Export abgebrochen; keine Dateien kopiert.</value></data>
+  <data name="BulkExportCancelling" xml:space="preserve"><value>Abbruch; unvollständige Datei wird entfernt…</value></data>
+  <data name="BulkExportLoadFailed" xml:space="preserve"><value>Verfügbare Dateien konnten nicht geladen werden. Schließen Sie das Fenster und versuchen Sie es erneut.</value></data>
+  <data name="BulkExportUnexpected" xml:space="preserve"><value>Export unerwartet gestoppt. Fertige Kopien bleiben erhalten; prüfen Sie den Zielordner vor einem neuen Versuch.</value></data>
+  <data name="BulkExportFolderFailed" xml:space="preserve"><value>Der Ordner konnte nicht ausgewählt werden. Versuchen Sie einen anderen Ordner.</value></data>
+  <data name="BulkExportSuccess" xml:space="preserve"><value>Exportiert: {0} Dateien.</value></data>
+  <data name="BulkExportSkipped" xml:space="preserve"><value>Übersprungen (Format nicht verfügbar): {0} Bücher.</value></data>
 </root>
 

@@ -8,6 +8,20 @@ namespace EbookManager.Tests.Books;
 public sealed class BookFileExportServiceTests : IDisposable
 {
     [Fact]
+    public async Task ExportAsync_preserves_a_directory_with_the_desired_filename()
+    {
+        CreateSourceFile("book.epub", "content");
+        var destination = Directory.CreateDirectory(Path.Combine(root, "Destination")).FullName;
+        var occupied = Directory.CreateDirectory(Path.Combine(destination, "Author - Title.epub")).FullName;
+        var book = CreateBook("Title", ["Author"]);
+        var result = await new BookFileExportService(new RootedFileStore(Path.Combine(root, "Library")))
+            .ExportAsync(book, CreateBookFile(book.Id, "book.epub", EbookFormat.Epub), destination);
+        result.Status.Should().Be(BookFileExportStatus.Exported);
+        Path.GetFileName(result.DestinationPath).Should().Be("Author - Title (1).epub");
+        Directory.Exists(occupied).Should().BeTrue();
+    }
+
+    [Fact]
     public async Task ExportAsync_cancelled_copy_does_not_leave_a_partial_destination_or_change_source()
     {
         var source = CreateSourceFile("books/book/original.epub", "unchanged content");
