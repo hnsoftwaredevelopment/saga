@@ -5,11 +5,13 @@
 - [x] Meervoudige serielijstselectie met paging/zoeken, veilige één-serieacties en expliciete bestaande/nieuwe doelkeuze gebouwd.
 - [x] Gerichte repository-, dialog-, management- en lokalisatietests; echte sidecars en WPF-route toegevoegd.
 - [x] Volledige suite, definitieve WPF/buildcontrole en eigen vijfassige review afgerond: 1236 tests, 32 WPF-proeven, Debug 2026.11.3.48, 0 waarschuwingen/fouten.
-- [ ] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone PR geopend.
+- [x] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone niet-draft PR #61 geopend en gekoppeld.
 - [ ] Gebruiker heeft de slice getest en geaccepteerd.
 - [ ] Alleen de gebruiker mergt de PR.
 
 Verificatie: **1236 geautomatiseerde tests en 32 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.48**, **3 november 2026 14:00:46 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. Nieuwe doelnaam en niet-geselecteerde bestaande doelnaam eerst falend getest; 503 boeken over drie series, behoud nummers/overige metadata, echte metadata.json, bestaande rollback/conflict/bestandsroute, paging/selectie/focus en oude duplicaatroute gecontroleerd. Gebruikersacceptatie staat nog open.
+
+Gewone niet-draft PR #61 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/61. Mergeable bij opening; GitGuardian groen, CodeQL en CodeRabbit lopen nog. Acht Markdown-bestanden exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-overzicht is native gecontroleerd: M58 Afgerond, M59 Todo/Te testen, 61 Done en 41 Todo. Alleen gebruikersacceptatie en merge staan nog open.
 
 ## Historie: Milestone 58
 
