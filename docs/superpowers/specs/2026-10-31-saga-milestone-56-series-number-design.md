@@ -35,3 +35,7 @@ Eigen review op vijf assen afgerond. Correctheid: uitsluitend SeriesNumber/Updat
 Definitieve Debug 2026.10.31.17 van 31 oktober 2026 00:54:49 Europe/Amsterdam, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. De checklist milestone-56-checklist.md is gereed voor gebruikersacceptatie; die staat nog open. Afrondingsdocumentatie van de reeds gemergede Milestones 54 en 55 is meegenomen. Geen schema, dependencies, boekmapverplaatsing, bulkbewerking of automatische nummering.
 
 Gewone niet-draft [PR #58](https://github.com/hnsoftwaredevelopment/saga/pull/58) naar main geopend en aan de chat gekoppeld. Mergeable bij opening; GitGuardian groen en CodeQL bezig. Alle elf Markdown-bestanden in de PR zijn exact naar Obsidian gespiegeld met gelijke SHA256. Gebruikersacceptatie en merge staan nog open.
+
+## Gebruikersacceptatie — 3 november 2026
+
+De gebruiker heeft de checklist uitgevoerd en bevestigt dat alles werkt zoals verwacht. De eigen vinkjes in de checklist zijn behouden. PR #58 is nog open; alleen de gebruiker mergt. Bij deze acceptatieregistratie zijn CodeQL en GitGuardian groen; CodeRabbit rapporteert een neutrale status. Geen codewijziging of nieuwe build voor deze documentatie-update.

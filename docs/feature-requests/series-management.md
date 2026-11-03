@@ -4,7 +4,7 @@ Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw
 
 ## Status
 
-Milestone 56 voegt **Volgnummer wijzigen** toe voor één geselecteerd boek. Gehele en decimale nummers aanpassen of wissen, met invoercontrole en informatieve doubluremelding. Alleen het nummer/tijdstip worden opgeslagen, waarna de bestaande bestandsroute en directe sortering volgen. **1166 tests en 29 WPF-proeven groen**. Debug **2026.10.31.17** van **31 oktober 00:54:49 Europe/Amsterdam**, 0 waarschuwingen/fouten en één Saga.exe onder Builds. Eigen review en beide thema's op minimale grootte uitgevoerd. [Handmatige acceptatie](../manual-tests/milestone-56-checklist.md) staat open.
+Milestone 56 voegt **Volgnummer wijzigen** toe voor één geselecteerd boek. Gehele en decimale nummers aanpassen of wissen, met invoercontrole en informatieve doubluremelding. Alleen het nummer/tijdstip worden opgeslagen, waarna de bestaande bestandsroute en directe sortering volgen. **1166 tests en 29 WPF-proeven groen**. Debug **2026.10.31.17** van **31 oktober 00:54:49 Europe/Amsterdam**, 0 waarschuwingen/fouten en één Saga.exe onder Builds. Eigen review en beide thema's op minimale grootte uitgevoerd. De gebruiker heeft de gehele slice op 3 november 2026 [getest en geaccepteerd](../manual-tests/milestone-56-checklist.md). PR #58 wacht nog op merge.
 
 ## Historie — Milestone 55 geaccepteerd en gemerged
 
