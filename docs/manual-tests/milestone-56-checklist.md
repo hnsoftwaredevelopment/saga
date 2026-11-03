@@ -1,6 +1,6 @@
 # Milestone 56 — volgnummer wijzigen in Series beheren
 
-Testbuild: `Builds\Debug\Saga.exe` **2026.10.31.17**, gebouwd op **31 oktober 2026 om 00:54:49 Europe/Amsterdam**. **1166 tests en 29 echte WPF-scenario's geslaagd**, 0 mislukt/overgeslagen. De Debug-build heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds. Eigen review uitgevoerd; het nieuwe venster is in licht/donker op minimale grootte gerenderd en bekeken. De gebruiker heeft de checklist uitgevoerd en de gehele slice op 3 november 2026 geaccepteerd: alles werkt zoals verwacht. De eigen afgevinkte controlepunten blijven behouden. PR #58 wacht nog op merge.
+Testbuild: `Builds\Debug\Saga.exe` **2026.11.3.1**, gebouwd op **3 november 2026 om 08:52:17 Europe/Amsterdam**. **1166 tests en 29 echte WPF-scenario's geslaagd**, 0 mislukt/overgeslagen. De Debug-build heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds. Eigen review uitgevoerd; het nieuwe venster is in licht/donker op minimale grootte gerenderd en bekeken. De gebruiker heeft de checklist uitgevoerd en de gehele slice op 3 november 2026 geaccepteerd: alles werkt zoals verwacht. De eigen afgevinkte controlepunten blijven behouden. PR #58 wacht nog op merge.
 
 Gebruik enkele boeken waarvan je het oorspronkelijke volgnummer weet. Deze wijziging raakt één geselecteerd boek. Het wijzigen of wissen van een nummer verandert de serienaam niet.
 
