@@ -677,5 +677,21 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="BulkExportFolderFailed" xml:space="preserve"><value>The folder could not be selected. Try another folder.</value></data>
   <data name="BulkExportSuccess" xml:space="preserve"><value>Files exported: {0}.</value></data>
   <data name="BulkExportSkipped" xml:space="preserve"><value>Books skipped (format unavailable): {0}.</value></data>
+  <data name="SeriesNumbersAssign" xml:space="preserve"><value>Assign series numbers</value></data>
+  <data name="SeriesNumbersHelp" xml:space="preserve"><value>Only selected books are included. Set the order with Up/Down (Ctrl+↑/↓ in the list) and choose a starting number. Numbers increase by one. Review the proposal before saving.</value></data>
+  <data name="SeriesNumbersStart" xml:space="preserve"><value>Starting number</value></data>
+  <data name="SeriesNumbersUp" xml:space="preserve"><value>Up</value></data>
+  <data name="SeriesNumbersDown" xml:space="preserve"><value>Down</value></data>
+  <data name="SeriesNumbersCurrent" xml:space="preserve"><value>Current number</value></data>
+  <data name="SeriesNumbersProposed" xml:space="preserve"><value>New number</value></data>
+  <data name="SeriesNumbersInvalid" xml:space="preserve"><value>Enter a valid starting number. The full sequence must fit within the supported number range.</value></data>
+  <data name="SeriesNumbersSaved" xml:space="preserve"><value>Books updated: {0}.</value></data>
+  <data name="SeriesNumbersOutside" xml:space="preserve"><value>Some selected books moved outside the loaded list. Use Load more to find them.</value></data>
+  <data name="SeriesNumbersWarnings" xml:space="preserve"><value>The numbers are saved in Saga. Books with file warnings: {0}.</value></data>
+  <data name="SeriesNumbersDuplicates" xml:space="preserve"><value>Unselected books with a proposed number: {0}. These books remain unchanged.</value></data>
+  <data name="SeriesNumbersConflict" xml:space="preserve"><value>Selected books changed or are no longer available. No series numbers were changed. Reopen the proposal.</value></data>
+  <data name="SeriesNumbersWorking" xml:space="preserve"><value>Saving series numbers…</value></data>
+  <data name="SeriesNumbersFailed" xml:space="preserve"><value>The series numbers could not be saved. No books were changed. Try again.</value></data>
+  <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>The series numbers are saved, but the book list could not be refreshed. Reopen Manage series to see the saved values.</value></data>
 </root>
 

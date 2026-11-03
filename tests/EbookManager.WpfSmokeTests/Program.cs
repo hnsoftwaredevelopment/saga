@@ -107,6 +107,7 @@ internal static class Program
                 await AuthorDuplicateDiscoverySmoke.RunAsync();
                 await SeriesMergeSmoke.RunAsync();
                 await SeriesNumberSmoke.RunAsync();
+                await SeriesNumbersSmoke.RunAsync();
                 await BulkExportSmoke.RunAsync();
                 exitCode = 0;
             }

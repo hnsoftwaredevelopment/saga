@@ -13,6 +13,7 @@ public partial class SeriesManagementWindow : Window
     private readonly CancellationTokenSource lifetime = new();
     private CancellationTokenSource? searchDelay;
     private bool changingSelection;
+    private bool changingBookSelection;
     private UIElement? focusToRestore;
     private int focusVersion;
 
@@ -38,6 +39,8 @@ public partial class SeriesManagementWindow : Window
 
     private void ViewModelChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName is nameof(viewModel.Books) or nameof(viewModel.SelectedNumberBooks))
+            Dispatcher.BeginInvoke(RestoreBookSelection);
         if (e.PropertyName == nameof(viewModel.IsBusy))
         {
             var version = ++focusVersion;
@@ -123,6 +126,35 @@ public partial class SeriesManagementWindow : Window
         await viewModel.ChangeNumberAsync(preview, dialog.Number);
         if (viewModel.SelectedBook is { } selected) BooksGrid.ScrollIntoView(selected);
         RestoreFocus(viewModel.CanEditNumber ? sender as UIElement : BooksGrid);
+    }
+    private void NumberBooksSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (!changingBookSelection && !viewModel.IsBusy) viewModel.SetNumberSelection(BooksGrid.SelectedItems.OfType<SeriesBook>());
+    }
+    private void RestoreBookSelection()
+    {
+        if (!IsLoaded || viewModel.IsBusy) return;
+        var ids = viewModel.SelectedNumberBooks.Select(book => book.Id).ToHashSet();
+        if (ids.Count == 0 && viewModel.SelectedBook is { } single) ids.Add(single.Id);
+        var rows = viewModel.Books.Where(book => ids.Contains(book.Id)).ToArray();
+        if (BooksGrid.SelectedItems.OfType<SeriesBook>().Select(book => book.Id).ToHashSet().SetEquals(rows.Select(book => book.Id))) return;
+        changingBookSelection = true;
+        try { BooksGrid.SelectedItems.Clear(); foreach (var row in rows) BooksGrid.SelectedItems.Add(row); }
+        finally { changingBookSelection = false; }
+        viewModel.SetNumberSelection(rows);
+    }
+    private async void NumbersClicked(object sender, RoutedEventArgs e)
+    {
+        searchDelay?.Cancel();
+        var preview = await viewModel.PreviewNumbersAsync();
+        if (preview is null) return;
+        var dialog = new SeriesNumbersDialogViewModel(preview, key => Localization.LocalizedStrings.Current[key]);
+        var confirmed = new SeriesNumbersWindow(dialog) { Owner = this }.ShowDialog() == true;
+        RestoreFocus(sender as UIElement);
+        if (!confirmed) return;
+        await viewModel.AssignNumbersAsync(preview, dialog.CreateAssignments());
+        RestoreBookSelection();
+        RestoreFocus(viewModel.CanAssignNumbers ? sender as UIElement : BooksGrid);
     }
     private void RestoreFocus(UIElement? target)
     {

@@ -957,5 +957,21 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="BulkExportFolderFailed" xml:space="preserve"><value>No se pudo seleccionar la carpeta. Pruebe otra carpeta.</value></data>
   <data name="BulkExportSuccess" xml:space="preserve"><value>Archivos exportados: {0}.</value></data>
   <data name="BulkExportSkipped" xml:space="preserve"><value>Libros omitidos (formato no disponible): {0}.</value></data>
+  <data name="SeriesNumbersAssign" xml:space="preserve"><value>Asignar números de serie</value></data>
+  <data name="SeriesNumbersHelp" xml:space="preserve"><value>Solo se modifican los libros seleccionados. Ordene con Subir/Bajar (Ctrl+↑/↓ en la lista) y elija el número inicial. Los números aumentan de uno en uno. Revise antes de guardar.</value></data>
+  <data name="SeriesNumbersStart" xml:space="preserve"><value>Número inicial</value></data>
+  <data name="SeriesNumbersUp" xml:space="preserve"><value>Subir</value></data>
+  <data name="SeriesNumbersDown" xml:space="preserve"><value>Bajar</value></data>
+  <data name="SeriesNumbersCurrent" xml:space="preserve"><value>Número actual</value></data>
+  <data name="SeriesNumbersProposed" xml:space="preserve"><value>Número nuevo</value></data>
+  <data name="SeriesNumbersInvalid" xml:space="preserve"><value>Introduzca un número inicial válido. La secuencia completa debe estar dentro del rango numérico admitido.</value></data>
+  <data name="SeriesNumbersSaved" xml:space="preserve"><value>Libros actualizados: {0}.</value></data>
+  <data name="SeriesNumbersOutside" xml:space="preserve"><value>Parte de la selección quedó fuera de la lista cargada tras cambiar los números. Use Cargar más.</value></data>
+  <data name="SeriesNumbersWarnings" xml:space="preserve"><value>Los números están guardados en Saga. Libros con advertencias de archivos: {0}.</value></data>
+  <data name="SeriesNumbersDuplicates" xml:space="preserve"><value>Libros no seleccionados con un número propuesto: {0}. Estos libros no se modifican.</value></data>
+  <data name="SeriesNumbersConflict" xml:space="preserve"><value>Los libros seleccionados cambiaron o ya no están disponibles. No se modificó ningún número. Vuelva a abrir la propuesta.</value></data>
+  <data name="SeriesNumbersWorking" xml:space="preserve"><value>Guardando números de serie…</value></data>
+  <data name="SeriesNumbersFailed" xml:space="preserve"><value>No se pudieron guardar los números. No se modificó ningún libro. Vuelva a intentarlo.</value></data>
+  <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>Los números están guardados, pero no se pudo actualizar la lista. Vuelva a abrir la gestión de series.</value></data>
 </root>
 

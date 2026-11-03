@@ -7,7 +7,8 @@ using System.Globalization;
 namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class SeriesManagementViewModel(ISeriesRepository repository, ISeriesRenameService renameService,
-    Func<string, string> localize, ISeriesMergeService? mergeService = null, ISeriesNumberService? numberService = null) : ObservableObject, IDisposable
+    Func<string, string> localize, ISeriesMergeService? mergeService = null, ISeriesNumberService? numberService = null,
+    ISeriesNumbersService? numbersService = null) : ObservableObject, IDisposable
 {
     private readonly CancellationTokenSource lifetime = new();
     private readonly HashSet<Guid> changedBookIds = [];
@@ -27,12 +28,14 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [NotifyPropertyChangedFor(nameof(CanRename))]
     [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(CanEditNumber))]
+    [NotifyPropertyChangedFor(nameof(CanAssignNumbers))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreBooks))]
     [NotifyPropertyChangedFor(nameof(HasMoreSeries))]
     private bool isBusy;
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanEditNumber))]
+    [NotifyPropertyChangedFor(nameof(CanAssignNumbers))]
     [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreSeries))]
@@ -73,6 +76,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
         IsBusy = true;
         Name = selected.Name;
         SelectedBook = null;
+        SetNumberSelection([]);
         Books = [];
         TotalBooks = 0;
         Warnings = [];
