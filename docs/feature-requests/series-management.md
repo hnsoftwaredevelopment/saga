@@ -4,6 +4,10 @@ Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw
 
 ## Status
 
+Milestone 58 voegt **Volgnummers toekennen** toe voor meerdere geselecteerde boeken binnen één serie. De gebruiker bepaalt de volgorde en een startnummer; het voorstel toont huidige/nieuwe nummers. De reeks loopt telkens met één op, ook vanaf een decimaal, nul of negatief nummer. Alleen geselecteerde boeken veranderen. Alle bevestigde gegevens worden vóór één transactie opnieuw gecontroleerd, met behoud van andere metadata. De bestaande bestandsverwerking volgt met afzonderlijke waarschuwingen. Numerieke sortering en zichtbare selectie worden hersteld. De bestaande losse nummerwijziging blijft behouden. Zie de [specificatie](../superpowers/specs/2026-11-03-saga-milestone-58-series-numbers-design.md) en [checklist 58](../manual-tests/milestone-58-checklist.md). Gebruikersacceptatie staat nog open. Verificatie: **1219 geautomatiseerde tests en 31 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.33**, **3 november 2026 11:57:01 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. SQL-batches boven 500 IDs, rollback, annulering, behoud overige metadata, echte metadata.json, bestandswaarschuwingen, paging/selectie/focus en bestaande één-boekroute gecontroleerd. Gebruikersacceptatie staat nog open.
+
+## Historie — Milestone 56 geaccepteerd en gemerged
+
 Milestone 56 voegt **Volgnummer wijzigen** toe voor één geselecteerd boek. Gehele en decimale nummers aanpassen of wissen, met invoercontrole en informatieve doubluremelding. Alleen het nummer/tijdstip worden opgeslagen, waarna de bestaande bestandsroute en directe sortering volgen. **1166 tests en 29 WPF-proeven groen**. Debug **2026.11.3.1** van **3 november 08:52:17 Europe/Amsterdam**, 0 waarschuwingen/fouten en één Saga.exe onder Builds. Eigen review en beide thema's op minimale grootte uitgevoerd. De gebruiker heeft de gehele slice op 3 november 2026 [getest en geaccepteerd](../manual-tests/milestone-56-checklist.md). PR #58 is op 3 november 2026 gemerged.
 
 ## Historie — Milestone 55 geaccepteerd en gemerged
@@ -36,7 +40,7 @@ De gehele preview wordt opnieuw gecontroleerd vóór één transactie die alleen
 
 ## Nog buiten scope
 
-Automatisch of in bulk serienummers toekennen, series splitsen, vrij gekozen willekeurige series samenvoegen, een vrije nieuwe doelnaam tijdens samenvoegen, lege series aanmaken, online seriegegevens, ontbrekende delen herkennen, leesvolgorde over meerdere series en nieuwe ebookmetadatawriters. Losse boekdetails en bulkbewerking behouden hun bestaande betekenis. Algemene UI-/icoonharmonisatie met boekvergelijking blijft een apart vervolgpunt.
+Automatisch serienummers toekennen, series splitsen, vrij gekozen willekeurige series samenvoegen, een vrije nieuwe doelnaam tijdens samenvoegen, lege series aanmaken, online seriegegevens, ontbrekende delen herkennen, leesvolgorde over meerdere series en nieuwe ebookmetadatawriters. Handmatig meerdere geselecteerde boeken nummeren is onderdeel van Milestone 58. Losse boekdetails en bulkbewerking behouden hun bestaande betekenis. Algemene UI-/icoonharmonisatie met boekvergelijking blijft een apart vervolgpunt.
 
 ## Volgnummer wijzigen — Milestone 56
 

@@ -4,6 +4,10 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
+Milestone 58 adds **Assign series numbers** in **Manage series**. Select multiple books, set their order and a starting number, and review current/proposed values before saving. Only those selected books are updated; existing numbers on other books are retained and overlaps are informational. Saving validates all selected snapshots and commits all changed numbers in one transaction, then follows existing file synchronization. The loaded book list is re-sorted with selection restored by ID; main library/details refresh when the manager closes. The [current checklist](docs/manual-tests/milestone-58-checklist.md) covers this workflow. User acceptance is pending. All **1219 automated tests and 31 interactive WPF scenarios pass**. Clean Debug build **2026.11.3.33**, 3 November **11:57:01 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. The proposal was rendered and inspected in light/dark at minimum size; own five-axis review is complete.
+
+### Milestone 57 — accepted and merged in PR #59
+
 Milestone 57 adds **Export selected books** to the main toolbar, using the existing selection in Bookshelf, List and Detailed views. Choose one existing format and a destination folder; the preview shows available files and skipped books. Export keeps source files and existing destination files, assigns unique names, supports cancellation with temporary-file cleanup and shows per-file results. No conversion or e-reader is required. **1189 automated tests pass**. The [current manual checklist](docs/manual-tests/milestone-57-checklist.md) and [feature description](docs/feature-requests/bulk-export.md) cover this workflow; the user completed the checklist and additional tests without issues and accepted this slice on 3 November 2026. PR #59 was merged on 3 November 2026; Milestone 57 is complete. Clean Debug build **2026.11.3.21**, 3 November **11:28:50 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds; all **30 interactive WPF scenarios pass**. The existing progress workbook has been updated in place: M56 is merged, M57 is **Done / Afgerond**; the overview now contains 60 Done and 42 Todo slices.
 
 Review follow-up: count messages now use neutral labels in all six languages, valid for zero, one and multiple items. Localization tests require every placeholder per key and format counts 0, 1 and 2. Export behavior is unchanged; all 1189 tests and 30 WPF scenarios pass again.
@@ -199,7 +203,7 @@ Native write-back into ebook files remains a later opt-in feature per format, st
 
 ## Manual Verification
 
-Use the [current Milestone 57 checklist](docs/manual-tests/milestone-57-checklist.md) for selected-book export. Earlier checklists retain their historical test results:
+Use the [current Milestone 58 checklist](docs/manual-tests/milestone-58-checklist.md) for assigning multiple series numbers. Earlier checklists retain their historical test results:
 
 - [docs/manual-tests/milestone-1-checklist.md](docs/manual-tests/milestone-1-checklist.md)
 - [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)
@@ -258,6 +262,7 @@ Use the [current Milestone 57 checklist](docs/manual-tests/milestone-57-checklis
 - [docs/manual-tests/milestone-55-checklist.md](docs/manual-tests/milestone-55-checklist.md)
 - [docs/manual-tests/milestone-56-checklist.md](docs/manual-tests/milestone-56-checklist.md)
 - [docs/manual-tests/milestone-57-checklist.md](docs/manual-tests/milestone-57-checklist.md)
+- [docs/manual-tests/milestone-58-checklist.md](docs/manual-tests/milestone-58-checklist.md)
 
 ## Later-Version Candidates
 

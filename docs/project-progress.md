@@ -10,3 +10,5 @@ Werk het bestaande bestand gericht bij aan het begin en einde van een slice en b
 - Percentages tellen slices, geen uren of inspanning. Ze zijn een voortgangsbeeld van de bekende scope, geen opleveringsdatum.
 
 Stand na gebruikersacceptatie van Milestone 57, 3 november 2026: 60 Done en 42 Todo, samen 102 slices over 17 onderwerpen; afgerond 59% en 41%. Milestone 56 is geaccepteerd en PR #58 gemerged. Milestone 57 staat op Done / Afgerond; PR #59 is op 3 november 2026 gemerged. De tabel/filter, validatie en grafiek zijn na de wijziging in Excel gecontroleerd zonder het bestand tijdens die controle op te slaan.
+
+Milestone 58: het bestaande pipeline-item P22 is op 3 november 2026 na goedkeuring omgezet naar M58 (Seriesbeheer, volgnummers van meerdere boeken). Status blijft Todo tot gebruikersacceptatie; bij oplevering wordt de fase Te testen. Aantal rijen en de Done/Todo-telling blijven gelijk.

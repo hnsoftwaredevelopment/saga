@@ -1,3 +1,17 @@
+# Milestone 58: meerdere serievolgnummers toekennen
+
+- [x] Gebruiker keurt slice goed; actuele basis/branch en specificatie vastgelegd.
+- [x] Readonly geselecteerde snapshots, SQL-batches en transactionele nummeropslag gebouwd; stale preview, rollback, annulering en behoud andere metadata getest.
+- [x] Preview/volgorde/startnummer met validatie, decimale invoer en doublure-informatie gebouwd.
+- [x] Meervoudige beheerselectie, Meer laden, gewijzigde IDs en bestandswaarschuwingen aangesloten; zes talen en WPF-route beschikbaar.
+- [x] Volledige suite, definitieve WPF/buildcontrole en eigen review afgerond: 1219 tests, 31 WPF-proeven, Debug 2026.11.3.33 en 0 waarschuwingen/fouten.
+- [ ] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone PR geopend.
+- [ ] Gebruiker heeft de slice getest en geaccepteerd.
+- [ ] Alleen de gebruiker mergt de PR.
+
+Verificatie: **1219 geautomatiseerde tests en 31 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.33**, **3 november 2026 11:57:01 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. SQL-batches boven 500 IDs, rollback, annulering, behoud overige metadata, echte metadata.json, bestandswaarschuwingen, paging/selectie/focus en bestaande één-boekroute gecontroleerd. Gebruikersacceptatie staat nog open.
+
+## Historie: Milestone 57
 # Milestone 57: meervoudige export
 
 - [x] Gebruiker keurt export goed; PR #58 gemerged en basis/spec vastgelegd.

@@ -1,3 +1,16 @@
+# Milestone 58: meerdere serievolgnummers toekennen
+
+Goedgekeurd door de gebruiker op 3 november 2026. Basis main 14ed4dd, met afrondingsnotitie f010815; branch codex/milestone-58-series-numbers. Specificatie: docs/superpowers/specs/2026-11-03-saga-milestone-58-series-numbers-design.md. Pipeline-item P22 is gericht omgezet naar M58; geen extra rij of nieuwe scope toegevoegd.
+
+1. Gerichte geselecteerde snapshots en transactionele nummeropslag testgestuurd bouwen; geen covers of overige metadata vervangen.
+2. Preview met zichtbare volgorde, cultuurgebonden startnummer, overloopcontrole en informatieve doublures.
+3. Meervoudige beheerselectie met behoud bij Meer laden, stabiele focus, veilige bevestiging en directe verversing.
+4. Zes talen, bestandssynchronisatie en waarschuwingen, volledige tests, WPF, eigen review en schone enige Debug-build.
+5. Checklist/status/Obsidian/Excel bijwerken; gewone PR. Gebruiker accepteert en mergt.
+
+Verificatie: **1219 geautomatiseerde tests en 31 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.33**, **3 november 2026 11:57:01 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. SQL-batches boven 500 IDs, rollback, annulering, behoud overige metadata, echte metadata.json, bestandswaarschuwingen, paging/selectie/focus en bestaande één-boekroute gecontroleerd. Gebruikersacceptatie staat nog open.
+
+## Historie: Milestone 57
 # Milestone 57: meervoudige export
 
 Goedgekeurd vervolg vanaf main dbce6d1, PR #58 gemerged. Branch codex/milestone-57-bulk-export. Specificatie: docs/superpowers/specs/2026-11-03-saga-milestone-57-bulk-export-design.md.
