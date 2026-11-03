@@ -973,5 +973,10 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesNumbersWorking" xml:space="preserve"><value>Salvataggio dei numeri di serie…</value></data>
   <data name="SeriesNumbersFailed" xml:space="preserve"><value>Impossibile salvare i numeri. Nessun libro è stato modificato. Riprova.</value></data>
   <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>I numeri sono salvati, ma non è stato possibile aggiornare l’elenco. Riapri la gestione delle serie.</value></data>
+  <data name="SeriesManualMergeAction" xml:space="preserve"><value>Unisci le serie selezionate</value></data>
+  <data name="SeriesManualMergeSelected" xml:space="preserve"><value>Serie selezionate: {0}</value></data>
+  <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Confronta tutti i libri delle serie selezionate. Scegli uno dei loro nomi o inseriscine uno nuovo. Numeri e altri dati rimangono invariati. Il nome di una serie non selezionata viene rifiutato.</value></data>
+  <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Oppure inserisci un nuovo nome di serie</value></data>
+  <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Quel nome appartiene a una serie non selezionata. Nulla è stato modificato. Seleziona anche quella serie o scegli un altro nome.</value></data>
 </root>
 

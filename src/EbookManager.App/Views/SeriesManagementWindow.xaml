@@ -30,19 +30,21 @@
           <Label Content="{loc:Loc SeriesSearch}" Target="{Binding ElementName=SearchBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
           <TextBox x:Name="SearchBox" Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" TextChanged="SearchChanged" AutomationProperties.Name="{loc:Loc SeriesSearch}" />
           <Button x:Name="FindDuplicatesButton" Content="{loc:Loc SeriesDuplicatesFind}" IsEnabled="{Binding CanFindDuplicates}" Click="FindDuplicatesClicked" Margin="0,8,0,0" AutomationProperties.Name="{loc:Loc SeriesDuplicatesFind}" />
+          <Button x:Name="MergeSeriesButton" Content="{loc:Loc SeriesManualMergeAction}" IsEnabled="{Binding CanMergeSelectedSeries}" Click="MergeSeriesClicked" Margin="0,8,0,0" AutomationProperties.Name="{loc:Loc SeriesManualMergeAction}" />
+          <TextBlock Text="{Binding MergeSeriesSummary}" TextWrapping="Wrap" Margin="0,6,0,0" />
           <TextBlock Margin="0,6,0,0"><Run Text="{Binding TotalSeries, Mode=OneWay}" /><Run Text=" · " /><Run Text="{loc:Loc SeriesCountLabel}" /></TextBlock>
         </StackPanel>
         <Button DockPanel.Dock="Bottom" Content="{loc:Loc SeriesLoadMore}" IsEnabled="{Binding HasMoreSeries}" Click="MoreSeriesClicked" Margin="0,8,0,0" />
         <Grid>
           <TextBlock Text="{loc:Loc SeriesNoneFound}" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center"><TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed" /><Style.Triggers><DataTrigger Binding="{Binding Series.Count}" Value="0"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
-          <ListBox x:Name="SeriesList" ItemsSource="{Binding Series}" SelectionChanged="SeriesSelected" Background="Transparent" Foreground="{DynamicResource TextPrimaryBrush}" IsEnabled="{Binding CanBrowse}"
+          <ListBox x:Name="SeriesList" ItemsSource="{Binding Series}" SelectionMode="Extended" SelectionChanged="SeriesSelected" Background="Transparent" Foreground="{DynamicResource TextPrimaryBrush}" IsEnabled="{Binding CanBrowse}"
                    ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" AutomationProperties.Name="{loc:Loc SeriesCountLabel}">
             <ListBox.ItemTemplate><DataTemplate><StackPanel Margin="4"><TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}" /><TextBlock Text="{Binding BookCount}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel></DataTemplate></ListBox.ItemTemplate>
           </ListBox>
         </Grid>
       </DockPanel>
       <GridSplitter Grid.Column="1" Style="{StaticResource VisibleVerticalGridSplitterStyle}" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" ShowsPreview="True" AutomationProperties.Name="{loc:Loc SeriesResizePanels}" />
-      <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+      <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" IsEnabled="{Binding CanBrowseBooks}">
         <StackPanel Margin="12,0,0,0">
           <TextBlock Text="{Binding Name}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" />
           <Button x:Name="RenameSeriesButton" Content="{loc:Loc SeriesRename}" Click="RenameClicked" IsEnabled="{Binding CanRename}" HorizontalAlignment="Left" Margin="0,10,0,12" AutomationProperties.Name="{loc:Loc SeriesRename}" />

@@ -31,7 +31,7 @@ public sealed partial class SeriesManagementViewModel
 
     public async Task<bool> MergeCandidateAsync(SeriesMergePreview preview, string targetName)
     {
-        if (!CanFindDuplicates || !ReferenceEquals(confirmedPreview, preview) || !preview.Groups.Any(group => group.Name == targetName)) return false;
+        if (!CanFindDuplicates || !ReferenceEquals(confirmedPreview, preview) || string.IsNullOrWhiteSpace(targetName) || (!preview.AllowNewName && !preview.Groups.Any(group => group.Name == targetName))) return false;
         confirmedPreview = null;
         IsBusy = true;
         ++searchVersion;
@@ -46,7 +46,9 @@ public sealed partial class SeriesManagementViewModel
             if (committed) changedBookIds.UnionWith(completion.Change.Books.Select(book => book.Id));
             if (disposed) return committed;
             Warnings = completion.Warnings;
-            if (!committed) { SetStatus("SeriesMergeConflict", true); return false; }
+            if (!committed) { SetStatus(completion.Change.Status == SeriesMergeStatus.NameExists ? "SeriesManualMergeNameExists" : "SeriesMergeConflict", true); return false; }
+            SetNumberSelection([]);
+            SelectedBook = null;
             Name = completion.Change.Name;
             Books = [];
             TotalBooks = preview.BookCount;
@@ -57,6 +59,7 @@ public sealed partial class SeriesManagementViewModel
             if (disposed) return true;
             Books = page.Books;
             TotalBooks = page.TotalCount;
+            SetMergeSeries(Series.Where(row => SeriesNames.Same(row.Name, Name)));
             StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "SeriesMergeSaved" : "SeriesMergeSavedWithWarnings"), completion.Change.Books.Count, Warnings.Count);
             IsError = Warnings.Count > 0;
             NotifySelection();

@@ -8,7 +8,7 @@ public sealed partial class SeriesManagementViewModel
 {
     private SeriesNumberPreview? numberPreview;
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanEditNumber))] private SeriesBook? selectedBook;
-    public bool CanEditNumber => CanBrowse && !IsSearching && SelectedNumberBooks.Count <= 1 && numberService is not null && SelectedBook is not null && Books.Contains(SelectedBook);
+    public bool CanEditNumber => CanBrowseBooks && !IsSearching && SelectedNumberBooks.Count <= 1 && numberService is not null && SelectedBook is not null && Books.Contains(SelectedBook);
     partial void OnSelectedBookChanged(SeriesBook? value) => numberPreview = null;
 
     public async Task<SeriesNumberPreview?> PreviewNumberAsync()

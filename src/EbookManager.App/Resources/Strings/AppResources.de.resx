@@ -973,5 +973,10 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesNumbersWorking" xml:space="preserve"><value>Seriennummern werden gespeichert…</value></data>
   <data name="SeriesNumbersFailed" xml:space="preserve"><value>Die Seriennummern konnten nicht gespeichert werden. Keine Bücher wurden geändert. Versuchen Sie es erneut.</value></data>
   <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>Die Seriennummern sind gespeichert, aber die Bücherliste konnte nicht aktualisiert werden. Öffnen Sie Serien verwalten erneut.</value></data>
+  <data name="SeriesManualMergeAction" xml:space="preserve"><value>Ausgewählte Serien zusammenführen</value></data>
+  <data name="SeriesManualMergeSelected" xml:space="preserve"><value>Ausgewählte Serien: {0}</value></data>
+  <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Vergleichen Sie alle Bücher der ausgewählten Serien. Wählen Sie einen ihrer Namen oder geben Sie einen neuen ein. Nummern und andere Daten bleiben erhalten. Der Name einer nicht ausgewählten Serie wird abgelehnt.</value></data>
+  <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Oder einen neuen Seriennamen eingeben</value></data>
+  <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Dieser Name gehört zu einer nicht ausgewählten Serie. Nichts wurde geändert. Wählen Sie auch diese Serie aus oder einen anderen neuen Namen.</value></data>
 </root>
 

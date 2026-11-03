@@ -3,13 +3,18 @@
  xmlns:loc="clr-namespace:EbookManager.App.Localization" Title="{loc:Loc SeriesMergeTitle}"
  Width="1120" Height="720" MinWidth="820" MinHeight="520" WindowStartupLocation="CenterOwner"
  Background="{DynamicResource AppBackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}">
+ <Window.Resources><BooleanToVisibilityConverter x:Key="BooleanVisibility" /></Window.Resources>
  <DockPanel Margin="18">
   <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
    <TextBlock Text="{loc:Loc SeriesMergeTitle}" FontSize="22" FontWeight="SemiBold" />
-   <TextBlock Text="{loc:Loc SeriesMergeHelp}" TextWrapping="Wrap" Margin="0,6,0,8" />
+   <TextBlock Text="{Binding Help}" TextWrapping="Wrap" Margin="0,6,0,8" />
    <TextBlock Text="{Binding Summary}" Margin="0,0,0,8" />
    <Label Content="{loc:Loc SeriesMergeTarget}" Target="{Binding ElementName=TargetBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
    <ComboBox x:Name="TargetBox" ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget}" DisplayMemberPath="Name" IsEditable="False" AutomationProperties.Name="{loc:Loc SeriesMergeTarget}" />
+   <StackPanel Visibility="{Binding CanUseNewName, Converter={StaticResource BooleanVisibility}}" Margin="0,8,0,0">
+    <Label Content="{loc:Loc SeriesManualMergeNewName}" Target="{Binding ElementName=NewNameBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
+    <TextBox x:Name="NewNameBox" Text="{Binding NewNameText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:Loc SeriesManualMergeNewName}" />
+   </StackPanel>
   </StackPanel>
   <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
    <TextBlock Text="{loc:Loc SeriesMergeNumbersHelp}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{DynamicResource TextSecondaryBrush}" />

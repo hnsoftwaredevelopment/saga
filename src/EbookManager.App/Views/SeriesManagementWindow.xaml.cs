@@ -62,14 +62,8 @@ public partial class SeriesManagementWindow : Window
             }
             return;
         }
-        if (e.PropertyName is not (nameof(viewModel.Series) or nameof(viewModel.Name))) return;
-        Dispatcher.BeginInvoke(() =>
-        {
-            if (!IsLoaded) return;
-            changingSelection = true;
-            SeriesList.SelectedItem = viewModel.Series.FirstOrDefault(series => SeriesNames.Same(series.Name, viewModel.Name));
-            changingSelection = false;
-        });
+        if (e.PropertyName is nameof(viewModel.Series) or nameof(viewModel.Name) or nameof(viewModel.MergeSeriesNames))
+            Dispatcher.BeginInvoke(RestoreSeriesSelection);
     }
 
     private async void SearchChanged(object sender, TextChangedEventArgs e)
@@ -90,8 +84,37 @@ public partial class SeriesManagementWindow : Window
 
     private async void SeriesSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (changingSelection || SeriesList.SelectedItem is not SeriesSummary series || !viewModel.CanBrowse) return;
-        await viewModel.SelectAsync(series);
+        if (changingSelection || !viewModel.CanBrowse || viewModel.IsSearching) return;
+        var selected = SeriesList.SelectedItems.OfType<SeriesSummary>().ToArray();
+        changingSelection = true;
+        try { viewModel.SetMergeSeries(selected); if (selected.Length == 1) await viewModel.SelectAsync(selected[0]); }
+        finally { changingSelection = false; }
+    }
+
+    private void RestoreSeriesSelection()
+    {
+        if (!IsLoaded) return;
+        var names = viewModel.MergeSeriesNames.ToHashSet(SeriesNames.Comparer);
+        if (names.SetEquals(SeriesList.SelectedItems.OfType<SeriesSummary>().Select(row => row.Name))) return;
+        var wasChanging = changingSelection; changingSelection = true;
+        try
+        {
+            SeriesList.SelectedItems.Clear();
+            foreach (var row in viewModel.Series.Where(row => names.Contains(row.Name))) SeriesList.SelectedItems.Add(row);
+        }
+        finally { changingSelection = wasChanging; }
+    }
+    private async void MergeSeriesClicked(object sender, RoutedEventArgs e)
+    {
+        searchDelay?.Cancel();
+        var preview = await viewModel.PreviewSelectedSeriesAsync();
+        if (preview is null) return;
+        var dialog = new SeriesMergeDialogViewModel(preview, key => Localization.LocalizedStrings.Current[key]);
+        var confirmed = new SeriesMergeWindow(dialog) { Owner = this }.ShowDialog() == true;
+        RestoreFocus(sender as UIElement);
+        if (confirmed) await viewModel.MergeCandidateAsync(preview, dialog.TargetName);
+        RestoreSeriesSelection();
+        RestoreFocus(viewModel.CanMergeSelectedSeries ? sender as UIElement : SeriesList);
     }
 
     private async void RenameClicked(object sender, RoutedEventArgs e)
