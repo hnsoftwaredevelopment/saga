@@ -6,12 +6,12 @@
 - [x] Meervoudige beheerselectie, Meer laden, gewijzigde IDs en bestandswaarschuwingen aangesloten; zes talen en WPF-route beschikbaar.
 - [x] Volledige suite, definitieve WPF/buildcontrole en eigen review afgerond: 1219 tests, 31 WPF-proeven, Debug 2026.11.3.33 en 0 waarschuwingen/fouten.
 - [x] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone niet-draft PR #60 geopend en gekoppeld.
-- [ ] Gebruiker heeft de slice getest en geaccepteerd.
+- [x] Gebruiker heeft de slice op 3 november 2026 geaccepteerd; twee handmatige controles (bestandswaarschuwing en conflict/rollback) niet uitgevoerd, geautomatiseerd afgedekt.
 - [ ] Alleen de gebruiker mergt de PR.
 
-Verificatie: **1219 geautomatiseerde tests en 31 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.33**, **3 november 2026 11:57:01 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. SQL-batches boven 500 IDs, rollback, annulering, behoud overige metadata, echte metadata.json, bestandswaarschuwingen, paging/selectie/focus en bestaande één-boekroute gecontroleerd. Gebruikersacceptatie staat nog open.
+Verificatie: **1219 geautomatiseerde tests en 31 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.33**, **3 november 2026 11:57:01 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. SQL-batches boven 500 IDs, rollback, annulering, behoud overige metadata, echte metadata.json, bestandswaarschuwingen, paging/selectie/focus en bestaande één-boekroute gecontroleerd. De gebruiker heeft Milestone 58 op 3 november 2026 geaccepteerd: de uitgevoerde handmatige tests werken goed. Twee handmatige controles zijn niet uitgevoerd: bestandswaarschuwingen en conflict/rollback. Deze scenario's zijn geautomatiseerd afgedekt; de twee checklistvakjes blijven bewust open. Alleen de merge van PR #60 staat nog open.
 
-Gewone niet-draft PR #60 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/60. Mergeable bij opening; CodeQL loopt nog. Negen Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. Bestaand Excel-overzicht gericht bijgewerkt en native gecontroleerd: M58 Todo/Te testen, 60 Done en 42 Todo. Alleen gebruikersacceptatie en merge staan nog open.
+Gewone niet-draft PR #60 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/60. Mergeable bij opening; CodeQL loopt nog. Negen Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. Bestaand Excel-overzicht gericht bijgewerkt en native gecontroleerd: M58 Done/Getest, PR open, 61 Done en 41 Todo. Gebruikersacceptatie met twee niet-uitgevoerde handmatige controles is bevestigd; alleen de merge van PR #60 staat nog open.
 
 ## Historie: Milestone 57
 # Milestone 57: meervoudige export
