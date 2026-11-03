@@ -1,3 +1,14 @@
+# Milestone 57: meervoudige export
+
+- [x] Gebruiker keurt export goed; PR #58 gemerged en basis/spec vastgelegd.
+- [ ] Readonly preview en veilige kopie met naamconflicten/annulering testen en bouwen.
+- [ ] Batchorkestratie en dialoogmodel met voortgang/resultaten testen.
+- [ ] Werkbalk, WPF en zes talen aansluiten en controleren.
+- [ ] Volledige suite, WPF, schone build en eigen review.
+- [ ] Checklist/documentatie/Obsidian en Excel bijwerken; gewone PR openen.
+- [ ] Gebruiker accepteert en mergt.
+
+## Historie: Milestone 56
 # Milestone 56: volgnummer wijzigen in Series beheren
 
 Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b; branch codex/milestone-56-series-number. Specificatie: docs/superpowers/specs/2026-10-31-saga-milestone-56-series-number-design.md.
