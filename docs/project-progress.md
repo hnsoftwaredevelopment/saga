@@ -1,0 +1,12 @@
+# Saga: voortgang bijhouden
+
+Het door de gebruiker geaccepteerde Excel-overzicht staat lokaal in `artifacts\outputs\saga-roadmap-20261103\Saga-voortgang.xlsx`. De gebruiker wil dit bestaande bestand blijven gebruiken voor het overzicht van onderwerpen, slices, Done/Todo en de grafiek. Het bestand is een lokaal werkdocument en staat niet in Git.
+
+Werk het bestaande bestand gericht bij aan het begin en einde van een slice en bij gebruikersacceptatie/merge. Behoud gebruikerswijzigingen, Excel-tabel, filters, formules, validaties en de grafiek. Bouw het overzicht niet opnieuw op vanuit een oude dataset. De tabbladen zijn **Voortgang** en **Slices**; zoek slices op ID in plaats van op een vast rijnummer.
+
+- **Status** blijft Done of Todo. Een gebouwde slice wacht op gebruikersacceptatie en blijft tot die acceptatie Todo.
+- **Fase** geeft bijvoorbeeld In uitvoering, Te testen of Afgerond aan. Een geaccepteerde slice kan Done zijn terwijl de PR nog open is; registreer de merge vervolgens afzonderlijk.
+- Verwachte toekomstige slices zijn schattingen van de bekende scope. Voeg nieuwe wensen toe met een passende basis/bron en markeer die niet als goedgekeurd zonder besluit van de gebruiker.
+- Percentages tellen slices, geen uren of inspanning. Ze zijn een voortgangsbeeld van de bekende scope, geen opleveringsdatum.
+
+Stand bij oplevering van Milestone 57, 3 november 2026: 59 Done en 43 Todo, samen 102 slices over 17 onderwerpen; afgerond 58% en 42%. Milestone 56 is geaccepteerd en PR #58 gemerged. Milestone 57 staat op Te testen en blijft Todo. De tabel/filter, validatie en grafiek zijn na de wijziging in Excel gecontroleerd zonder het bestand tijdens die controle op te slaan.

@@ -1,12 +1,14 @@
 # Milestone 57: meervoudige export
 
 - [x] Gebruiker keurt export goed; PR #58 gemerged en basis/spec vastgelegd.
-- [ ] Readonly preview en veilige kopie met naamconflicten/annulering testen en bouwen.
-- [ ] Batchorkestratie en dialoogmodel met voortgang/resultaten testen.
-- [ ] Werkbalk, WPF en zes talen aansluiten en controleren.
-- [ ] Volledige suite, WPF, schone build en eigen review.
+- [x] Readonly preview en veilige kopie met naamconflicten/annulering testen en bouwen.
+- [x] Batchorkestratie en dialoogmodel met voortgang/resultaten testen.
+- [x] Werkbalk, WPF en zes talen aansluiten en controleren.
+- [x] Volledige suite, WPF, schone build en eigen review: 1189 tests en 30 WPF-proeven groen, Debug 2026.11.3.18, 0 waarschuwingen/fouten.
 - [ ] Checklist/documentatie/Obsidian en Excel bijwerken; gewone PR openen.
 - [ ] Gebruiker accepteert en mergt.
+
+Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mislukt/overgeslagen. Debug-build **2026.11.3.18** van **3 november 2026 om 10:27:08 Europe/Amsterdam**, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen review op correctheid, leesbaarheid, architectuur, veiligheid en prestaties uitgevoerd. Licht/donker op minimale venstergrootte gerenderd en bekeken. Gebruikersacceptatie staat nog open.
 
 ## Historie: Milestone 56
 # Milestone 56: volgnummer wijzigen in Series beheren
@@ -20,9 +22,9 @@ Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b;
 - [x] Volledige suite, schone build en eigen review.
 - [x] Checklist/status/documentatie exact gespiegeld (11 bestanden, SHA256 gelijk); gewone niet-draft PR #58 geopend en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/58. Mergeable bij opening; GitGuardian groen, CodeQL nog bezig.
 - [x] Gebruiker heeft de checklist uitgevoerd en de gehele slice op 3 november 2026 geaccepteerd: alles werkt zoals verwacht.
-- [ ] Alleen de gebruiker mergt PR #58.
+- [x] De gebruiker heeft PR #58 op 3 november 2026 gemerged; GitHub bevestigt merge dbce6d1.
 
-Verificatie: 1166 tests en 29 echte WPF-proeven groen, 0 mislukt/overgeslagen. Debug 2026.11.3.1 van 3 november 08:52:17 Europe/Amsterdam, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen vijfassige review, zes talen, 600 geladen boeken en licht/donker op minimumgrootte gecontroleerd. Gebruikersacceptatie is op 3 november 2026 bevestigd; PR #58 is nog open.
+Verificatie: 1166 tests en 29 echte WPF-proeven groen, 0 mislukt/overgeslagen. Debug 2026.11.3.1 van 3 november 08:52:17 Europe/Amsterdam, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen vijfassige review, zes talen, 600 geladen boeken en licht/donker op minimumgrootte gecontroleerd. Gebruikersacceptatie is op 3 november 2026 bevestigd; PR #58 is op 3 november 2026 gemerged.
 
 ## Historie: Milestone 55
 # Milestone 55: seriesvarianten vinden en samenvoegen

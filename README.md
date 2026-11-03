@@ -4,7 +4,13 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 56 adds **Change series number** for one selected book in **Manage series**. Enter a local decimal or clear the number, with immediate input feedback and non-blocking information about repeated numbers. Only the selected book's number and update timestamp change; titles, authors, series names and other data remain intact. Existing file synchronization follows after commit. The loaded book list is re-sorted, selection is restored by ID when visible, and the main library/details reconcile when the manager closes. **1166 tests and 29 interactive WPF scenarios pass**. Clean Debug build **2026.11.3.1**, 3 November **08:52:17 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. The user tested and accepted Milestone 56 on 3 November 2026: everything works as expected. The [manual checklist](docs/manual-tests/milestone-56-checklist.md) records the completed checks. PR #58 awaits merge. The historical verification results below describe earlier slices; Milestones 54 and 55 are accepted and merged.
+Milestone 57 adds **Export selected books** to the main toolbar, using the existing selection in Bookshelf, List and Detailed views. Choose one existing format and a destination folder; the preview shows available files and skipped books. Export keeps source files and existing destination files, assigns unique names, supports cancellation with temporary-file cleanup and shows per-file results. No conversion or e-reader is required. **1189 automated tests pass**. The [current manual checklist](docs/manual-tests/milestone-57-checklist.md) and [feature description](docs/feature-requests/bulk-export.md) cover this workflow; user acceptance is pending. Clean Debug build **2026.11.3.18**, 3 November **10:27:08 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds; all **30 interactive WPF scenarios pass**. The existing progress workbook has been updated in place: M56 is merged, M57 is **Te testen** and remains Todo until user acceptance.
+
+The locally maintained Excel roadmap and its status conventions are described in [project progress](docs/project-progress.md). Keep the existing workbook updated alongside each slice.
+
+### Milestone 56 — accepted and merged in PR #58
+
+Milestone 56 adds **Change series number** for one selected book in **Manage series**. Enter a local decimal or clear the number, with immediate input feedback and non-blocking information about repeated numbers. Only the selected book's number and update timestamp change; titles, authors, series names and other data remain intact. Existing file synchronization follows after commit. The loaded book list is re-sorted, selection is restored by ID when visible, and the main library/details reconcile when the manager closes. **1166 tests and 29 interactive WPF scenarios pass**. Clean Debug build **2026.11.3.1**, 3 November **08:52:17 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. The user tested and accepted Milestone 56 on 3 November 2026: everything works as expected. The [manual checklist](docs/manual-tests/milestone-56-checklist.md) records the completed checks. PR #58 is merged. The historical verification results below describe earlier slices; Milestones 54 and 55 are accepted and merged.
 
 ### Milestone 55 — accepted and merged in PR #57
 
@@ -191,7 +197,7 @@ Native write-back into ebook files remains a later opt-in feature per format, st
 
 ## Manual Verification
 
-Use these manual test checklists:
+Use the [current Milestone 57 checklist](docs/manual-tests/milestone-57-checklist.md) for selected-book export. Earlier checklists retain their historical test results:
 
 - [docs/manual-tests/milestone-1-checklist.md](docs/manual-tests/milestone-1-checklist.md)
 - [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)
@@ -249,6 +255,7 @@ Use these manual test checklists:
 - [docs/manual-tests/milestone-54-checklist.md](docs/manual-tests/milestone-54-checklist.md)
 - [docs/manual-tests/milestone-55-checklist.md](docs/manual-tests/milestone-55-checklist.md)
 - [docs/manual-tests/milestone-56-checklist.md](docs/manual-tests/milestone-56-checklist.md)
+- [docs/manual-tests/milestone-57-checklist.md](docs/manual-tests/milestone-57-checklist.md)
 
 ## Later-Version Candidates
 

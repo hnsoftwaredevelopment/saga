@@ -8,6 +8,8 @@ Goedgekeurd vervolg vanaf main dbce6d1, PR #58 gemerged. Branch codex/milestone-
 4. Volledige tests, WPF, eigen review en schone enige Debug-build.
 5. Checklist/documentatie spiegelen, Excel gericht bijwerken, gewone PR; gebruiker test en mergt.
 
+Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mislukt/overgeslagen. Debug-build **2026.11.3.18** van **3 november 2026 om 10:27:08 Europe/Amsterdam**, 0 waarschuwingen/fouten en precies één Saga.exe onder Builds. Eigen review op correctheid, leesbaarheid, architectuur, veiligheid en prestaties uitgevoerd. Licht/donker op minimale venstergrootte gerenderd en bekeken. Gebruikersacceptatie staat nog open.
+
 ## Historie: Milestone 56
 # Milestone 56: volgnummer wijzigen in Series beheren
 
@@ -19,7 +21,7 @@ Goedgekeurd door de gebruiker. Basis main 373d45f met afrondingsnotitie a18571b;
 4. WPF en zes talen aansluiten; gerichte en volledige tests, echte UI-proeven en schone Debug-build.
 5. Eigen review, checklist/README/featurestatus, exacte spiegels en gewone PR. Gebruiker accepteert en mergt.
 
-Uitgevoerd: 1166 tests en 29 WPF-proeven groen. Schone enige Debug-build 2026.11.3.1 van 3 november 08:52:17 Europe/Amsterdam, 0 waarschuwingen/fouten. Eigen review, zes talen, beide thema’s en 600 geladen boeken afgedekt. Checklist 56 klaar; gewone niet-draft PR #58 geopend naar main en aan de chat gekoppeld. Mergeable bij opening, GitGuardian groen en CodeQL bezig. Elf Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. De gebruiker heeft op 3 november 2026 getest en geaccepteerd. Alleen de merge van PR #58 staat nog open.
+Uitgevoerd: 1166 tests en 29 WPF-proeven groen. Schone enige Debug-build 2026.11.3.1 van 3 november 08:52:17 Europe/Amsterdam, 0 waarschuwingen/fouten. Eigen review, zes talen, beide thema’s en 600 geladen boeken afgedekt. Checklist 56 klaar; gewone niet-draft PR #58 geopend naar main en aan de chat gekoppeld. Mergeable bij opening, GitGuardian groen en CodeQL bezig. Elf Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. De gebruiker heeft op 3 november 2026 getest en geaccepteerd. PR #58 is op 3 november 2026 door de gebruiker gemerged.
 
 ## Historie: Milestone 55
 # Milestone 55: seriesvarianten vinden en samenvoegen
