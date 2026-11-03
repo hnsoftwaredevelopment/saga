@@ -12,6 +12,8 @@ Verificatie: 1189 geautomatiseerde tests en 30 echte WPF-proeven geslaagd, 0 mis
 
 Gewone niet-draft PR #59 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/59. Mergeable bij opening; GitGuardian groen en CodeQL nog bezig. Negen Markdown-bestanden zijn exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-bestand is gericht bijgewerkt en in Excel gecontroleerd. Gebruikersacceptatie is bevestigd; alleen de merge van PR #59 staat nog open.
 
+Reviewcorrectie PR #59, 3 november 2026: opmerkingen 4452983445 en 4452983461 zijn verwerkt. Telteksten gebruiken in alle zes talen neutrale labels met aantallen, zodat 0, 1 en meerdere boeken/bestanden grammaticaal correct blijven. De lokalisatietest controleert per sleutel alle verplichte placeholders en formatteert aantallen 0, 1 en 2. Geen wijziging aan de exportverwerking. Opnieuw 1189 tests en 30 WPF-proeven geslaagd; licht/donker op minimale grootte bekeken. Nieuwe enige Debug-build **2026.11.3.21** van **3 november 2026 11:28:50 Europe/Amsterdam**, 0 waarschuwingen/fouten. De gebruikersacceptatie van build 2026.11.3.18 blijft vastgelegd; alleen de teksten en testcontrole zijn aangescherpt.
+
 ## Historie: Milestone 56
 # Milestone 56: volgnummer wijzigen in Series beheren
 

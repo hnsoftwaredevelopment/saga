@@ -657,8 +657,8 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="BulkExportOutcome" xml:space="preserve"><value>Resultaat</value></data>
   <data name="BulkExportDestination" xml:space="preserve"><value>Geëxporteerd bestand</value></data>
   <data name="BulkExportPreparing" xml:space="preserve"><value>Beschikbare bestanden controleren…</value></data>
-  <data name="BulkExportAvailability" xml:space="preserve"><value>{0} boeken geselecteerd · {1} bestanden beschikbaar · {2} boeken worden overgeslagen.</value></data>
-  <data name="BulkExportFileCount" xml:space="preserve"><value>{0} bestanden beschikbaar</value></data>
+  <data name="BulkExportAvailability" xml:space="preserve"><value>Boeken geselecteerd: {0} · Bestanden beschikbaar: {1} · Boeken over te slaan: {2}.</value></data>
+  <data name="BulkExportFileCount" xml:space="preserve"><value>Beschikbare bestanden: {0}</value></data>
   <data name="BulkExportFormatMissing" xml:space="preserve"><value>Overgeslagen: formaat niet beschikbaar</value></data>
   <data name="BulkExportBookMissing" xml:space="preserve"><value>Boek niet meer beschikbaar</value></data>
   <data name="BulkExportExported" xml:space="preserve"><value>Geëxporteerd</value></data>
@@ -667,15 +667,15 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="BulkExportReadFailed" xml:space="preserve"><value>Bibliotheek kon niet worden gelezen; probeer opnieuw</value></data>
   <data name="BulkExportFailed" xml:space="preserve"><value>Kopiëren mislukt; controleer maptoegang, bestandsnaam en vrije ruimte</value></data>
   <data name="BulkExportNotProcessed" xml:space="preserve"><value>Niet verwerkt: export geannuleerd</value></data>
-  <data name="BulkExportProgress" xml:space="preserve"><value>{0} van {1} verwerkt · {2}</value></data>
-  <data name="BulkExportSummary" xml:space="preserve"><value>Geëxporteerd: {0} bestanden. Overgeslagen (formaat niet beschikbaar): {1} boeken. Mislukt: {2}.</value></data>
-  <data name="BulkExportStopped" xml:space="preserve"><value>Geannuleerd; {0} niet verwerkt. Voltooide kopieën blijven behouden.</value></data>
+  <data name="BulkExportProgress" xml:space="preserve"><value>Verwerkt: {0} van {1} · {2}</value></data>
+  <data name="BulkExportSummary" xml:space="preserve"><value>Bestanden geëxporteerd: {0}. Boeken overgeslagen (formaat niet beschikbaar): {1}. Mislukt: {2}.</value></data>
+  <data name="BulkExportStopped" xml:space="preserve"><value>Geannuleerd. Niet verwerkt: {0}. Voltooide kopieën blijven behouden.</value></data>
   <data name="BulkExportCancelled" xml:space="preserve"><value>Export geannuleerd; geen bestanden gekopieerd.</value></data>
   <data name="BulkExportCancelling" xml:space="preserve"><value>Annuleren; gedeeltelijk bestand opruimen…</value></data>
   <data name="BulkExportLoadFailed" xml:space="preserve"><value>Beschikbare bestanden konden niet worden geladen. Sluit dit venster en probeer opnieuw.</value></data>
   <data name="BulkExportUnexpected" xml:space="preserve"><value>Export onverwacht gestopt. Voltooide kopieën blijven staan; controleer de doelmap voordat je opnieuw probeert.</value></data>
   <data name="BulkExportFolderFailed" xml:space="preserve"><value>De map kon niet worden geselecteerd. Probeer een andere map.</value></data>
-  <data name="BulkExportSuccess" xml:space="preserve"><value>Geëxporteerd: {0} bestanden.</value></data>
-  <data name="BulkExportSkipped" xml:space="preserve"><value>Overgeslagen (formaat niet beschikbaar): {0} boeken.</value></data>
+  <data name="BulkExportSuccess" xml:space="preserve"><value>Bestanden geëxporteerd: {0}.</value></data>
+  <data name="BulkExportSkipped" xml:space="preserve"><value>Boeken overgeslagen (formaat niet beschikbaar): {0}.</value></data>
 </root>
 

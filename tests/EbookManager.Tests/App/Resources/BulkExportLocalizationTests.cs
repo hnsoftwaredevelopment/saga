@@ -19,10 +19,23 @@ public sealed class BulkExportLocalizationTests
             "BulkExportPreparing", "BulkExportAvailability", "BulkExportFileCount", "BulkExportProgress", "BulkExportSummary", "BulkExportSuccess",
             "BulkExportStopped", "BulkExportSkipped", "BulkExportCancelled", "BulkExportCancelling", "BulkExportLoadFailed", "BulkExportUnexpected", "BulkExportFolderFailed"
         });
+        var required = new Dictionary<string, string[]>
+        {
+            ["BulkExportAvailability"] = ["{0}", "{1}", "{2}"],
+            ["BulkExportFileCount"] = ["{0}"],
+            ["BulkExportProgress"] = ["{0}", "{1}", "{2}"],
+            ["BulkExportSummary"] = ["{0}", "{1}", "{2}"],
+            ["BulkExportSuccess"] = ["{0}"],
+            ["BulkExportSkipped"] = ["{0}"],
+            ["BulkExportStopped"] = ["{0}"]
+        };
         foreach (var key in keys)
         {
             resource[key].Should().NotBeNullOrWhiteSpace().And.NotBe(key);
-            string.Format(CultureInfo.InvariantCulture, resource[key], 3, 2, "Title").Should().NotContain("{0}");
+            if (required.TryGetValue(key, out var placeholders)) resource[key].Should().ContainAll(placeholders);
+            foreach (var count in new[] { 0, 1, 2 })
+                string.Format(CultureInfo.InvariantCulture, resource[key], count, count, "Title")
+                    .Should().NotContainAny("{0}", "{1}", "{2}");
         }
     }
 }
