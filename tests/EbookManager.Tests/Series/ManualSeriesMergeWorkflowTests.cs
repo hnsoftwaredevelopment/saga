@@ -14,7 +14,10 @@ public sealed class ManualSeriesMergeWorkflowTests
         var store = new Store(205); using var vm = new SeriesManagementViewModel(store, store, key => key, store);
         await vm.SearchAsync(""); await vm.SelectAsync(vm.Series[0]); vm.CanRename.Should().BeTrue();
         vm.SetMergeSeries(vm.Series.Take(2)); vm.CanMergeSelectedSeries.Should().BeTrue(); vm.CanBrowseBooks.Should().BeFalse(); vm.CanRename.Should().BeFalse();
-        await vm.SearchAsync("", true); vm.Series.Should().HaveCount(205); vm.MergeSeriesCount.Should().Be(2);
+        store.HoldSearch = true;
+        var loading = vm.SearchAsync("", true); await store.SearchStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        vm.CanChooseSeries.Should().BeFalse(); store.SearchReleased.TrySetResult(); await loading; store.HoldSearch = false;
+        vm.CanChooseSeries.Should().BeTrue(); vm.Series.Should().HaveCount(205); vm.MergeSeriesCount.Should().Be(2);
         await vm.SearchAsync("Series"); vm.MergeSeriesCount.Should().Be(0); vm.CanMergeSelectedSeries.Should().BeFalse();
     }
     [Fact]
@@ -57,11 +60,15 @@ public sealed class ManualSeriesMergeWorkflowTests
     {
         private List<SeriesMergeBook> rows = Enumerable.Range(1,count).Select(i => new SeriesMergeBook(Guid.NewGuid(), $"Series {i:000}", $"Book {i:000}", "Author", i)).ToList();
         public SeriesMergeStatus Status = SeriesMergeStatus.Merged; public int Saves; public bool FailRefresh, Warning;
-        public Task<SeriesPage> SearchAsync(string query, int skip, int take, CancellationToken token)
+        public bool HoldSearch;
+        public TaskCompletionSource SearchStarted { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public TaskCompletionSource SearchReleased { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public async Task<SeriesPage> SearchAsync(string query, int skip, int take, CancellationToken token)
         {
             if (FailRefresh && Saves > 0) throw new IOException();
+            if (HoldSearch) { SearchStarted.TrySetResult(); await SearchReleased.Task; }
             var groups = rows.GroupBy(row => row.StoredName).Select(group => new SeriesSummary(group.Key, group.Count())).Where(row => row.Name.Contains(query)).OrderBy(row => row.Name).ToArray();
-            return Task.FromResult(new SeriesPage(groups.Skip(skip).Take(take).ToArray(), groups.Length));
+            return new SeriesPage(groups.Skip(skip).Take(take).ToArray(), groups.Length);
         }
         public Task<SeriesBookPage> ListBooksAsync(string name, int skip, int take, CancellationToken token)
         { var all = rows.Where(row => row.StoredName == name).OrderBy(row => row.Number).ToArray(); return Task.FromResult(new SeriesBookPage(all.Skip(skip).Take(take).Select(row => new SeriesBook(row.Id, row.Title, row.Authors, row.Number)).ToArray(), all.Length)); }

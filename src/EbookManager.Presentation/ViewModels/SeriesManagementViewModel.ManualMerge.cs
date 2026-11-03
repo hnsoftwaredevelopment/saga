@@ -10,6 +10,7 @@ public sealed partial class SeriesManagementViewModel
     public int MergeSeriesCount => mergeSeriesNames.Count;
     public string MergeSeriesSummary => string.Format(CultureInfo.CurrentCulture, localize("SeriesManualMergeSelected"), MergeSeriesCount);
     public bool CanMergeSelectedSeries => CanBrowse && !IsSearching && mergeService is not null && MergeSeriesCount >= 2;
+    public bool CanChooseSeries => CanBrowse && !IsSearching;
     public bool CanBrowseBooks => CanBrowse && MergeSeriesCount <= 1;
     public void SetMergeSeries(IEnumerable<SeriesSummary> selected)
     {
