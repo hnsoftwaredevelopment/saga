@@ -18,19 +18,23 @@ public sealed partial class LibraryDbContextTests
         using var library = new TemporaryLibrary(); var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
         var books = new EfBookRepository(factory, library.DirectoryPath);
         var first = CreateBook("First", ["Author"]); var second = CreateBook("Second", ["Author"]);
-        await books.AddAsync(first, CreateFile(first.Id, Hash(1)), default); await books.AddAsync(second, CreateFile(second.Id, Hash(2)), default);
+        var firstFile = CreateFile(first.Id, Hash(1)); var secondFile = CreateFile(second.Id, Hash(2));
+        await books.AddAsync(first, firstFile, default); await books.AddAsync(second, secondFile, default);
         await using (var context = factory.Create(library.DirectoryPath))
-            await context.Books.Where(book => book.Id == second.Id).ExecuteUpdateAsync(set => set.SetProperty(book => book.Series, "Other"));
+            await context.Books.Where(book => book.Id == second.Id).ExecuteUpdateAsync(set => set.SetProperty(book => book.Series, "Other").SetProperty(book => book.SeriesNumber, 7.25m));
         var repository = new EfSeriesRepository(factory, library.DirectoryPath); var sidecars = new JsonMetadataSidecarStore();
-        var service = new SeriesMergeService(repository, new BookService(books, new ManagedLibraryFileStore(library.DirectoryPath), new MetadataAdapterResolver([new FallbackMetadataAdapter()]), sidecars));
+        var fileStore = new ManagedLibraryFileStore(library.DirectoryPath);
+        var service = new SeriesMergeService(repository, new BookService(books, fileStore, new MetadataAdapterResolver([new FallbackMetadataAdapter()]), sidecars));
         var preview = (await service.PreviewAsync([first.Metadata.Series!, "Other"], default))! with { AllowNewName = true };
         var result = await service.MergeAsync(preview, "New series", default);
         result.Change.Status.Should().Be(SeriesMergeStatus.Merged); result.Warnings.Should().BeEmpty();
         var files = Directory.GetFiles(library.DirectoryPath, "metadata.json", SearchOption.AllDirectories); files.Should().HaveCount(2);
-        foreach (var file in files)
+        var expectedNumbers = new Dictionary<Guid, decimal?> { [first.Id] = first.Metadata.SeriesNumber, [second.Id] = 7.25m };
+        foreach (var (book, file) in new[] { (first, firstFile), (second, secondFile) })
         {
-            var stored = (await sidecars.TryReadAsync(file, default))!;
-            stored.Series.Should().Be("New series"); stored.SeriesNumber.Should().Be(first.Metadata.SeriesNumber);
+            var stored = (await sidecars.TryReadAsync(fileStore.GetAbsolutePath(file.RelativePath), default))!;
+            stored.Title.Should().Be(book.Metadata.Title);
+            stored.Series.Should().Be("New series"); stored.SeriesNumber.Should().Be(expectedNumbers[book.Id]);
         }
     }
     [Fact]

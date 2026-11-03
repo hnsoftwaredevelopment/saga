@@ -112,8 +112,10 @@ public partial class SeriesManagementWindow : Window
         var dialog = new SeriesMergeDialogViewModel(preview, key => Localization.LocalizedStrings.Current[key]);
         var confirmed = new SeriesMergeWindow(dialog) { Owner = this }.ShowDialog() == true;
         RestoreFocus(sender as UIElement);
-        if (confirmed) await viewModel.MergeCandidateAsync(preview, dialog.TargetName);
+        var merged = confirmed && await viewModel.MergeCandidateAsync(preview, dialog.TargetName);
         RestoreSeriesSelection();
+        if (merged && viewModel.Series.FirstOrDefault(row => SeriesNames.Same(row.Name, viewModel.Name)) is { } target)
+            SeriesList.ScrollIntoView(target);
         RestoreFocus(viewModel.CanMergeSelectedSeries ? sender as UIElement : SeriesList);
     }
 

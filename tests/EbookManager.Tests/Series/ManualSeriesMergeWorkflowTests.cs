@@ -9,6 +9,20 @@ namespace EbookManager.Tests.Series;
 public sealed class ManualSeriesMergeWorkflowTests
 {
     [Fact]
+    public async Task Destination_beyond_first_index_page_is_selected_and_loading_more_never_skips_or_duplicates_series()
+    {
+        var store = new Store(205); using var vm = new SeriesManagementViewModel(store, store, key => key, store);
+        await vm.SearchAsync(""); vm.SetMergeSeries(vm.Series.Take(2));
+        var preview = (await vm.PreviewSelectedSeriesAsync())!;
+        (await vm.MergeCandidateAsync(preview, "ZZZ destination")).Should().BeTrue();
+        vm.Series.Should().Contain(row => row.Name == "ZZZ destination" && row.BookCount == 2);
+        vm.MergeSeriesNames.Should().Equal("ZZZ destination"); vm.HasMoreSeries.Should().BeTrue();
+        await vm.SearchAsync("", true);
+        vm.Series.Should().HaveCount(204); vm.Series.Select(row => row.Name).Should().OnlyHaveUniqueItems();
+        vm.Series.Should().Contain(row => row.Name == "Series 203"); vm.HasMoreSeries.Should().BeFalse();
+        vm.MergeSeriesNames.Should().Equal("ZZZ destination");
+    }
+    [Fact]
     public async Task Manual_selection_survives_paging_blocks_book_edits_and_clears_on_a_new_search()
     {
         var store = new Store(205); using var vm = new SeriesManagementViewModel(store, store, key => key, store);

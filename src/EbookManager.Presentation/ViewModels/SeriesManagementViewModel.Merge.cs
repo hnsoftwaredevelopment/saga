@@ -59,6 +59,14 @@ public sealed partial class SeriesManagementViewModel
             if (disposed) return true;
             Books = page.Books;
             TotalBooks = page.TotalCount;
+            // The fresh target count is known even when its name sorts beyond the first index page.
+            // Pin that row without loading every preceding series; paging still uses repository offsets.
+            if (!Series.Any(row => SeriesNames.Same(row.Name, Name)))
+            {
+                Series = Series.Append(new SeriesSummary(Name, TotalBooks)).OrderBy(row => row.Name, StringComparer.CurrentCultureIgnoreCase)
+                    .ThenBy(row => row.Name, StringComparer.Ordinal).ToArray();
+                OnPropertyChanged(nameof(HasMoreSeries));
+            }
             SetMergeSeries(Series.Where(row => SeriesNames.Same(row.Name, Name)));
             StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "SeriesMergeSaved" : "SeriesMergeSavedWithWarnings"), completion.Change.Books.Count, Warnings.Count);
             IsError = Warnings.Count > 0;

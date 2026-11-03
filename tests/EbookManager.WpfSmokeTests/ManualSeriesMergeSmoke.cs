@@ -41,7 +41,13 @@ internal static class ManualSeriesMergeSmoke
                 {
                     Require(vm.Query == "" && vm.MergeSeriesCount == 1 && list.SelectedItems.Count == 1 && list.IsKeyboardFocusWithin && !merge.IsEnabled, "Successful manual merge must select/focus the target and clear the query.");
                     Require(vm.TotalBooks == (mode == "existing" ? 3 : 4) && !vm.IsError && vm.CanBrowseBooks, "Target books or edit availability did not refresh.");
-                    Require(vm.Name == (mode == "existing" ? "Series 002" : "Nieuwe reeks"), "The confirmed target name was not used.");
+                    Require(vm.Name == (mode == "existing" ? "Series 002" : "ZZZ Nieuwe reeks"), "The confirmed target name was not used.");
+                    if (mode == "new")
+                    {
+                        var target = vm.Series.Single(row => row.Name == vm.Name);
+                        Require(list.ItemContainerGenerator.ContainerFromItem(target) is ListBoxItem item && item.TranslatePoint(new Point(), list).Y >= 0
+                            && item.TranslatePoint(new Point(), list).Y + item.ActualHeight <= list.ActualHeight, "A target beyond the first index page must be selected and scrolled into view.");
+                    }
                 }
             }
             Require(store.Saves == 2 && vm.ChangedBookIds.Count == 4 && store.Rows.All(row => numbers[row.Id] == row.Number), "Merging changed numbers or lost changed book IDs.");
@@ -64,8 +70,8 @@ internal static class ManualSeriesMergeSmoke
             Require(vm.CanUseNewName && input.IsVisible && !confirm.IsEnabled && existing.IsKeyboardFocusWithin, "Manual comparison requires an explicit existing/new target.");
             Require(vm.Books.Count == (mode == "new" ? 4 : 3), "Comparison must contain every book from the selected series.");
             input.Focus();
-            foreach (var character in "Nieuwe reeks") { input.AppendText(character.ToString()); await IdleAsync(); Require(input.IsKeyboardFocusWithin, "Typing a new series name lost focus."); }
-            Require(confirm.IsEnabled && vm.TargetName == "Nieuwe reeks" && existing.SelectedItem is null, "Typing did not select the new name exclusively.");
+            foreach (var character in "ZZZ Nieuwe reeks") { input.AppendText(character.ToString()); await IdleAsync(); Require(input.IsKeyboardFocusWithin, "Typing a new series name lost focus."); }
+            Require(confirm.IsEnabled && vm.TargetName == "ZZZ Nieuwe reeks" && existing.SelectedItem is null, "Typing did not select the new name exclusively.");
             if (mode == "existing")
             {
                 existing.SelectedItem = vm.Targets.Single(row => row.Name == "Series 002"); await IdleAsync();

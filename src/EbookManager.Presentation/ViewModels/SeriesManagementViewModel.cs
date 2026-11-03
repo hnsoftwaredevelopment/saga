@@ -13,6 +13,8 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     private readonly CancellationTokenSource lifetime = new();
     private readonly HashSet<Guid> changedBookIds = [];
     private int searchVersion;
+    // Number of repository rows consumed, excluding a merged destination pinned into the visible index.
+    private int seriesPageOffset;
     private bool disposed;
     [ObservableProperty] private string query = "";
     [ObservableProperty] private string name = "";
@@ -61,11 +63,14 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
         var version = ++searchVersion;
         Query = text;
         IsSearching = true;
+        var skip = append ? seriesPageOffset : 0;
         try
         {
-            var page = await Task.Run(() => repository.SearchAsync(text, append ? Series.Count : 0, 200, lifetime.Token), lifetime.Token);
+            var page = await Task.Run(() => repository.SearchAsync(text, skip, 200, lifetime.Token), lifetime.Token);
             if (disposed || version != searchVersion) return false;
-            Series = append ? Series.Concat(page.Series).ToArray() : page.Series;
+            seriesPageOffset = skip + page.Series.Count;
+            Series = append ? page.Series.Concat(Series).DistinctBy(row => row.Name, SeriesNames.Comparer)
+                .OrderBy(row => row.Name, StringComparer.CurrentCultureIgnoreCase).ThenBy(row => row.Name, StringComparer.Ordinal).ToArray() : page.Series;
             TotalSeries = page.TotalCount;
             OnPropertyChanged(nameof(HasMoreSeries));
             return true;
