@@ -7,6 +7,32 @@ namespace EbookManager.Tests.Books;
 
 public sealed class BookFileExportServiceTests : IDisposable
 {
+    [Fact]
+    public async Task ExportAsync_cancelled_copy_does_not_leave_a_partial_destination_or_change_source()
+    {
+        var source = CreateSourceFile("books/book/original.epub", "unchanged content");
+        var destination = Directory.CreateDirectory(Path.Combine(root, "Destination")).FullName;
+        var book = CreateBook("Title", ["Author"]);
+        var file = CreateBookFile(book.Id, "books/book/original.epub", EbookFormat.Epub);
+        using var cancellation = new CancellationTokenSource();
+        var service = new BookFileExportService(new RootedFileStore(Path.Combine(root, "Library"), cancellation.Cancel));
+        await FluentActions.Awaiting(() => service.ExportAsync(book, file, destination, cancellation.Token)).Should().ThrowAsync<OperationCanceledException>();
+        Directory.GetFiles(destination).Should().BeEmpty();
+        File.ReadAllText(source).Should().Be("unchanged content");
+    }
+
+    [Fact]
+    public async Task ExportAsync_cleans_its_temporary_copy_when_final_filename_cannot_be_created()
+    {
+        CreateSourceFile("books/book/original.epub", "content");
+        var destination = Directory.CreateDirectory(Path.Combine(root, "Destination")).FullName;
+        var book = CreateBook(new string('x', 320), []);
+        var file = CreateBookFile(book.Id, "books/book/original.epub", EbookFormat.Epub);
+        var service = new BookFileExportService(new RootedFileStore(Path.Combine(root, "Library")));
+        await FluentActions.Awaiting(() => service.ExportAsync(book, file, destination)).Should().ThrowAsync<IOException>();
+        Directory.GetFiles(destination).Should().BeEmpty();
+    }
+
     private readonly string root = Path.Combine(Path.GetTempPath(), $"saga-export-tests-{Guid.NewGuid():N}");
 
     [Fact]
@@ -109,9 +135,9 @@ public sealed class BookFileExportServiceTests : IDisposable
             MetadataWriteBackStatus.Unsupported,
             null);
 
-    private sealed class RootedFileStore(string rootPath) : ILibraryFileStore
+    private sealed class RootedFileStore(string rootPath, Action? onResolve = null) : ILibraryFileStore
     {
-        public string GetAbsolutePath(string relativePath) => Path.Combine(rootPath, relativePath);
+        public string GetAbsolutePath(string relativePath) { onResolve?.Invoke(); return Path.Combine(rootPath, relativePath); }
 
         public Task<(string RelativeBookPath, string? RelativeCoverPath)> CopyIntoLibraryAsync(
             Guid bookId,
