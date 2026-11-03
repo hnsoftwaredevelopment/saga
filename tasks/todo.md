@@ -5,11 +5,13 @@
 - [x] Preview/volgorde/startnummer met validatie, decimale invoer en doublure-informatie gebouwd.
 - [x] Meervoudige beheerselectie, Meer laden, gewijzigde IDs en bestandswaarschuwingen aangesloten; zes talen en WPF-route beschikbaar.
 - [x] Volledige suite, definitieve WPF/buildcontrole en eigen review afgerond: 1219 tests, 31 WPF-proeven, Debug 2026.11.3.33 en 0 waarschuwingen/fouten.
-- [ ] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone PR geopend.
+- [x] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone niet-draft PR #60 geopend en gekoppeld.
 - [ ] Gebruiker heeft de slice getest en geaccepteerd.
 - [ ] Alleen de gebruiker mergt de PR.
 
 Verificatie: **1219 geautomatiseerde tests en 31 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.33**, **3 november 2026 11:57:01 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. SQL-batches boven 500 IDs, rollback, annulering, behoud overige metadata, echte metadata.json, bestandswaarschuwingen, paging/selectie/focus en bestaande één-boekroute gecontroleerd. Gebruikersacceptatie staat nog open.
+
+Gewone niet-draft PR #60 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/60. Mergeable bij opening; CodeQL loopt nog. Negen Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. Bestaand Excel-overzicht gericht bijgewerkt en native gecontroleerd: M58 Todo/Te testen, 60 Done en 42 Todo. Alleen gebruikersacceptatie en merge staan nog open.
 
 ## Historie: Milestone 57
 # Milestone 57: meervoudige export
