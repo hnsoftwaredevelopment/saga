@@ -957,5 +957,21 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="BulkExportFolderFailed" xml:space="preserve"><value>Impossible de sélectionner le dossier. Essayez un autre dossier.</value></data>
   <data name="BulkExportSuccess" xml:space="preserve"><value>Fichiers exportés : {0}.</value></data>
   <data name="BulkExportSkipped" xml:space="preserve"><value>Livres ignorés (format indisponible) : {0}.</value></data>
+  <data name="SeriesNumbersAssign" xml:space="preserve"><value>Attribuer les numéros de série</value></data>
+  <data name="SeriesNumbersHelp" xml:space="preserve"><value>Seuls les livres sélectionnés sont modifiés. Définissez l’ordre avec Monter/Descendre (Ctrl+↑/↓ dans la liste) et choisissez le numéro initial. Les numéros augmentent de un. Vérifiez avant d’enregistrer.</value></data>
+  <data name="SeriesNumbersStart" xml:space="preserve"><value>Numéro initial</value></data>
+  <data name="SeriesNumbersUp" xml:space="preserve"><value>Monter</value></data>
+  <data name="SeriesNumbersDown" xml:space="preserve"><value>Descendre</value></data>
+  <data name="SeriesNumbersCurrent" xml:space="preserve"><value>Numéro actuel</value></data>
+  <data name="SeriesNumbersProposed" xml:space="preserve"><value>Nouveau numéro</value></data>
+  <data name="SeriesNumbersInvalid" xml:space="preserve"><value>Saisissez un numéro initial valide. Toute la séquence doit rester dans la plage numérique prise en charge.</value></data>
+  <data name="SeriesNumbersSaved" xml:space="preserve"><value>Livres mis à jour : {0}.</value></data>
+  <data name="SeriesNumbersOutside" xml:space="preserve"><value>Une partie de la sélection est hors de la liste chargée après renumérotation. Utilisez Charger plus.</value></data>
+  <data name="SeriesNumbersWarnings" xml:space="preserve"><value>Les numéros sont enregistrés dans Saga. Livres avec avertissements de fichiers : {0}.</value></data>
+  <data name="SeriesNumbersDuplicates" xml:space="preserve"><value>Livres non sélectionnés portant un numéro proposé : {0}. Ces livres restent inchangés.</value></data>
+  <data name="SeriesNumbersConflict" xml:space="preserve"><value>Des livres sélectionnés ont changé ou ne sont plus disponibles. Aucun numéro n’a été modifié. Rouvrez la proposition.</value></data>
+  <data name="SeriesNumbersWorking" xml:space="preserve"><value>Enregistrement des numéros…</value></data>
+  <data name="SeriesNumbersFailed" xml:space="preserve"><value>Impossible d’enregistrer les numéros. Aucun livre n’a été modifié. Réessayez.</value></data>
+  <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>Les numéros sont enregistrés, mais la liste des livres n’a pas pu être actualisée. Rouvrez la gestion des séries.</value></data>
 </root>
 

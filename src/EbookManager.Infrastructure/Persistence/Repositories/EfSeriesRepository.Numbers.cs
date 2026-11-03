@@ -16,7 +16,8 @@ public sealed partial class EfSeriesRepository
     public async Task<SeriesNumbersResult> ChangeNumbersAsync(SeriesNumbersPreview preview, IReadOnlyList<SeriesNumberAssignment> assignments, CancellationToken token)
     {
         var ids = preview.Books.Select(row => row.Book.Id).ToArray();
-        if (assignments.Count != ids.Length || assignments.Select(row => row.Id).Distinct().Count() != ids.Length || assignments.Any(row => !ids.Contains(row.Id)))
+        var selectedIds = ids.ToHashSet();
+        if (assignments.Count != ids.Length || assignments.Select(row => row.Id).Distinct().Count() != ids.Length || assignments.Any(row => !selectedIds.Contains(row.Id)))
             return new(SeriesNumberStatus.Conflict, [], 0);
         await using var context = factory.Create(libraryPath);
         await using var transaction = await context.Database.BeginTransactionAsync(token);

@@ -957,5 +957,21 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="BulkExportFolderFailed" xml:space="preserve"><value>Der Ordner konnte nicht ausgewählt werden. Versuchen Sie einen anderen Ordner.</value></data>
   <data name="BulkExportSuccess" xml:space="preserve"><value>Exportierte Dateien: {0}.</value></data>
   <data name="BulkExportSkipped" xml:space="preserve"><value>Übersprungene Bücher (Format nicht verfügbar): {0}.</value></data>
+  <data name="SeriesNumbersAssign" xml:space="preserve"><value>Seriennummern zuweisen</value></data>
+  <data name="SeriesNumbersHelp" xml:space="preserve"><value>Nur ausgewählte Bücher werden geändert. Legen Sie die Reihenfolge mit Nach oben/unten (Strg+↑/↓ in der Liste) und die Startnummer fest. Die Nummern steigen jeweils um eins. Prüfen Sie den Vorschlag vor dem Speichern.</value></data>
+  <data name="SeriesNumbersStart" xml:space="preserve"><value>Startnummer</value></data>
+  <data name="SeriesNumbersUp" xml:space="preserve"><value>Nach oben</value></data>
+  <data name="SeriesNumbersDown" xml:space="preserve"><value>Nach unten</value></data>
+  <data name="SeriesNumbersCurrent" xml:space="preserve"><value>Aktuelle Nummer</value></data>
+  <data name="SeriesNumbersProposed" xml:space="preserve"><value>Neue Nummer</value></data>
+  <data name="SeriesNumbersInvalid" xml:space="preserve"><value>Geben Sie eine gültige Startnummer ein. Die gesamte Folge muss im unterstützten Zahlenbereich liegen.</value></data>
+  <data name="SeriesNumbersSaved" xml:space="preserve"><value>Aktualisierte Bücher: {0}.</value></data>
+  <data name="SeriesNumbersOutside" xml:space="preserve"><value>Einige ausgewählte Bücher liegen durch die neuen Nummern außerhalb der geladenen Liste. Verwenden Sie Mehr laden.</value></data>
+  <data name="SeriesNumbersWarnings" xml:space="preserve"><value>Die Nummern sind in Saga gespeichert. Bücher mit Dateiwarnungen: {0}.</value></data>
+  <data name="SeriesNumbersDuplicates" xml:space="preserve"><value>Nicht ausgewählte Bücher mit einer vorgeschlagenen Nummer: {0}. Diese Bücher bleiben unverändert.</value></data>
+  <data name="SeriesNumbersConflict" xml:space="preserve"><value>Ausgewählte Bücher wurden geändert oder sind nicht mehr verfügbar. Keine Seriennummern wurden geändert. Öffnen Sie den Vorschlag erneut.</value></data>
+  <data name="SeriesNumbersWorking" xml:space="preserve"><value>Seriennummern werden gespeichert…</value></data>
+  <data name="SeriesNumbersFailed" xml:space="preserve"><value>Die Seriennummern konnten nicht gespeichert werden. Keine Bücher wurden geändert. Versuchen Sie es erneut.</value></data>
+  <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>Die Seriennummern sind gespeichert, aber die Bücherliste konnte nicht aktualisiert werden. Öffnen Sie Serien verwalten erneut.</value></data>
 </root>
 

@@ -9,6 +9,27 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Fact]
+    public async Task SeriesNumbers_rejects_incomplete_selection_and_rolls_back_all_writes_on_failure_or_cancellation()
+    {
+        using var library = new TemporaryLibrary(); var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        await using var context = factory.Create(library.DirectoryPath);
+        var rows = Enumerable.Range(0, 2).Select(i => new BookEntity { Id = Guid.NewGuid(), Title = $"Book {i}", NormalizedTitle = $"book {i}", DuplicateKey = $"book {i}", Series = "Series", SeriesNumber = 9 }).ToArray();
+        context.Books.AddRange(rows); await context.SaveChangesAsync();
+        var repo = new EfSeriesRepository(factory, library.DirectoryPath); var ids = rows.Select(row => row.Id).ToArray();
+        (await repo.PreviewNumbersAsync("Other", ids, default)).Should().BeNull();
+        (await repo.PreviewNumbersAsync("Series", [ids[0], ids[0]], default)).Should().BeNull();
+        var preview = (await repo.PreviewNumbersAsync("Series", ids, default))!;
+        (await repo.ChangeNumbersAsync(preview, [new(ids[0], 1)], default)).Status.Should().Be(SeriesNumberStatus.Conflict);
+        (await repo.ChangeNumbersAsync(preview, [new(ids[0], 1), new(ids[0], 2)], default)).Status.Should().Be(SeriesNumberStatus.Conflict);
+        var assignments = new SeriesNumberAssignment[] { new(ids[0], 1), new(ids[1], 2) };
+        using var cancellation = new CancellationTokenSource(); cancellation.Cancel();
+        await FluentActions.Awaiting(() => repo.ChangeNumbersAsync(preview, assignments, cancellation.Token)).Should().ThrowAsync<OperationCanceledException>();
+        await context.Database.ExecuteSqlRawAsync("CREATE TRIGGER reject_numbers BEFORE UPDATE OF SeriesNumber ON Books WHEN NEW.SeriesNumber = '2.0' OR NEW.SeriesNumber = '2' BEGIN SELECT RAISE(ABORT, 'test failure'); END;");
+        await FluentActions.Awaiting(() => repo.ChangeNumbersAsync(preview, assignments, default)).Should().ThrowAsync<DbUpdateException>();
+        (await context.Books.AsNoTracking().ToArrayAsync()).Should().BeEquivalentTo(rows);
+    }
+
+    [Fact]
     public async Task SeriesNumbers_updates_only_selected_numbers_across_batches_preserves_new_metadata_and_reports_duplicates()
     {
         using var library = new TemporaryLibrary(); var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);

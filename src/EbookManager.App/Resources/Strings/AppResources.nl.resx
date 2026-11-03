@@ -677,5 +677,21 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="BulkExportFolderFailed" xml:space="preserve"><value>De map kon niet worden geselecteerd. Probeer een andere map.</value></data>
   <data name="BulkExportSuccess" xml:space="preserve"><value>Bestanden geëxporteerd: {0}.</value></data>
   <data name="BulkExportSkipped" xml:space="preserve"><value>Boeken overgeslagen (formaat niet beschikbaar): {0}.</value></data>
+  <data name="SeriesNumbersAssign" xml:space="preserve"><value>Volgnummers toekennen</value></data>
+  <data name="SeriesNumbersHelp" xml:space="preserve"><value>Alleen de geselecteerde boeken worden aangepast. Bepaal de volgorde met Omhoog/Omlaag (Ctrl+↑/↓ in de lijst) en kies een startnummer. Nummers lopen telkens met één op. Controleer het voorstel vóór opslaan.</value></data>
+  <data name="SeriesNumbersStart" xml:space="preserve"><value>Startnummer</value></data>
+  <data name="SeriesNumbersUp" xml:space="preserve"><value>Omhoog</value></data>
+  <data name="SeriesNumbersDown" xml:space="preserve"><value>Omlaag</value></data>
+  <data name="SeriesNumbersCurrent" xml:space="preserve"><value>Huidig nummer</value></data>
+  <data name="SeriesNumbersProposed" xml:space="preserve"><value>Nieuw nummer</value></data>
+  <data name="SeriesNumbersInvalid" xml:space="preserve"><value>Vul een geldig startnummer in. De volledige reeks moet binnen het ondersteunde getalbereik passen.</value></data>
+  <data name="SeriesNumbersSaved" xml:space="preserve"><value>Boeken bijgewerkt: {0}.</value></data>
+  <data name="SeriesNumbersOutside" xml:space="preserve"><value>Een deel van de selectie staat door de nieuwe nummers buiten de geladen lijst. Gebruik Meer laden om deze boeken te vinden.</value></data>
+  <data name="SeriesNumbersWarnings" xml:space="preserve"><value>De nummers zijn in Saga opgeslagen. Boeken met bestandswaarschuwingen: {0}.</value></data>
+  <data name="SeriesNumbersDuplicates" xml:space="preserve"><value>Niet-geselecteerde boeken met een voorgesteld nummer: {0}. Deze boeken blijven ongewijzigd.</value></data>
+  <data name="SeriesNumbersConflict" xml:space="preserve"><value>Geselecteerde boeken zijn gewijzigd of niet meer beschikbaar. Er zijn geen volgnummers aangepast. Open het voorstel opnieuw.</value></data>
+  <data name="SeriesNumbersWorking" xml:space="preserve"><value>Volgnummers opslaan…</value></data>
+  <data name="SeriesNumbersFailed" xml:space="preserve"><value>De volgnummers konden niet worden opgeslagen. Er zijn geen boeken aangepast. Probeer het opnieuw.</value></data>
+  <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>De volgnummers zijn opgeslagen, maar de boekenlijst kon niet worden vernieuwd. Open Series beheren opnieuw om de opgeslagen waarden te zien.</value></data>
 </root>
 
