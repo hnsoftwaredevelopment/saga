@@ -7,7 +7,7 @@ using System.Globalization;
 namespace EbookManager.Presentation.ViewModels;
 
 public sealed partial class SeriesManagementViewModel(ISeriesRepository repository, ISeriesRenameService renameService,
-    Func<string, string> localize, ISeriesMergeService? mergeService = null) : ObservableObject, IDisposable
+    Func<string, string> localize, ISeriesMergeService? mergeService = null, ISeriesNumberService? numberService = null) : ObservableObject, IDisposable
 {
     private readonly CancellationTokenSource lifetime = new();
     private readonly HashSet<Guid> changedBookIds = [];
@@ -16,7 +16,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [ObservableProperty] private string query = "";
     [ObservableProperty] private string name = "";
     [ObservableProperty] private IReadOnlyList<SeriesSummary> series = [];
-    [ObservableProperty] private IReadOnlyList<SeriesBook> books = [];
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanEditNumber))] private IReadOnlyList<SeriesBook> books = [];
     [ObservableProperty] private IReadOnlyList<SeriesSourceBook> warnings = [];
     [ObservableProperty] private int totalSeries;
     [ObservableProperty] private int totalBooks;
@@ -26,11 +26,13 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [NotifyPropertyChangedFor(nameof(CanBrowse))]
     [NotifyPropertyChangedFor(nameof(CanRename))]
     [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
+    [NotifyPropertyChangedFor(nameof(CanEditNumber))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreBooks))]
     [NotifyPropertyChangedFor(nameof(HasMoreSeries))]
     private bool isBusy;
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanEditNumber))]
     [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreSeries))]
@@ -70,6 +72,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
         if (!CanBrowse) return;
         IsBusy = true;
         Name = selected.Name;
+        SelectedBook = null;
         Books = [];
         TotalBooks = 0;
         Warnings = [];

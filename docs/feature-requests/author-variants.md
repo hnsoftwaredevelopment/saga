@@ -1,8 +1,10 @@
 # Auteursvarianten herkennen en samenvoegen
 
+Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw getest zonder problemen en bevestigt dat PR #56 en PR #57 zijn gemerged. GitHub bevestigt beide merges; lokale main is bijgewerkt naar 373d45f. Milestones 54 en 55 zijn afgerond. Onderstaande uitvoeringsnotities en individuele checklistvakjes blijven als historie behouden. De UI-/icoonharmonisatie blijft een afzonderlijke wens voor later.
+
 ## Status
 
-Milestone 54 is na de gebruikersfeedback goedgekeurd en gebouwd op de inmiddels gemergede PR #55 (main 3377d8e). Duplicaten zoeken toont mogelijke naamparen met aantallen en reden; de nieuwe vergelijking toont beschikbare foto's, volledige biografieën en websites naast het zichtbare resultaat. De gebruiker kiest zelf wat overblijft; opslag gebruikt de bestaande veilige samenvoeging. **1099 tests en 25 WPF-scenario's slagen**. De gebruiker heeft de gehele slice, inclusief de zoekveldcorrectie, [geaccepteerd](../manual-tests/milestone-54-checklist.md). De UI-/icoonharmonisatie is uitdrukkelijk voor later. PR #56 wacht op merge door de gebruiker.
+Milestone 54 is na de gebruikersfeedback goedgekeurd en gebouwd op de inmiddels gemergede PR #55 (main 3377d8e). Duplicaten zoeken toont mogelijke naamparen met aantallen en reden; de nieuwe vergelijking toont beschikbare foto's, volledige biografieën en websites naast het zichtbare resultaat. De gebruiker kiest zelf wat overblijft; opslag gebruikt de bestaande veilige samenvoeging. **1099 tests en 25 WPF-scenario's slagen**. De gebruiker heeft de gehele slice, inclusief de zoekveldcorrectie, [geaccepteerd](../manual-tests/milestone-54-checklist.md). De UI-/icoonharmonisatie is uitdrukkelijk voor later. PR #56 is gemerged.
 
 Reviewcorrectie 31 oktober 2026: CodeRabbit-opmerking 4428707720 is eerst falend gereproduceerd in de echte WPF-proef. ComparisonCards gebruikt nu doorlopende Tab-navigatie; alle acht bronknoppen op twee auteurskaarten zijn bereikbaar en Tab gaat daarna naar de resultaatkeuzes. 1099 tests en 26 WPF-proeven slagen. Schone tussentijdse PR #56-build 2026.10.31.3 van 31 oktober 00:06:12 Europe/Amsterdam, 0 waarschuwingen/fouten. De correctie wordt ook in vervolg-PR #57 meegenomen; de uiteindelijke gecombineerde testbuild wordt daar geregistreerd.
 

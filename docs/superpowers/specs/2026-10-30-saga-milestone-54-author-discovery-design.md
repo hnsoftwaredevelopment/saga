@@ -1,5 +1,7 @@
 # Milestone 54 — auteursduplicaten vinden en vergelijken
 
+Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw getest zonder problemen en bevestigt dat PR #56 en PR #57 zijn gemerged. GitHub bevestigt beide merges; lokale main is bijgewerkt naar 373d45f. Milestones 54 en 55 zijn afgerond. Onderstaande uitvoeringsnotities en individuele checklistvakjes blijven als historie behouden. De UI-/icoonharmonisatie blijft een afzonderlijke wens voor later.
+
 ## Opdracht en basis
 
 De gebruiker heeft de twee vervolgverbeteringen goedgekeurd: eerst beschikbare auteursgegevens naast elkaar vergelijken, daarna Duplicaten zoeken. De bestaande handmatige samenvoeging werkt volgens de gebruiker. PR #55 staat bij aanvang nog open; deze aparte branch codex/milestone-54-author-duplicate-discovery bouwt daarom voort op diens geteste head 877fb91. PR #55 is inmiddels gemerged en de vervolgbranch is zonder bronwijzigingen herplaatst op main 3377d8e; de gewone vervolg-PR richt zich op main. Alleen de gebruiker mergt.

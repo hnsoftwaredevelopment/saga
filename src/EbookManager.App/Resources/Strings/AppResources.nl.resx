@@ -637,5 +637,18 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesMergeTarget" xml:space="preserve"><value>Te behouden serienaam</value></data>
   <data name="SeriesMergeTitle" xml:space="preserve"><value>Series samenvoegen</value></data>
   <data name="SeriesMergeWorking" xml:space="preserve"><value>Series samenvoegen en boekbestanden bijwerken…</value></data>
+  <data name="SeriesNumberChange" xml:space="preserve"><value>Volgnummer wijzigen</value></data>
+  <data name="SeriesNumberCleared" xml:space="preserve"><value>Volgnummer gewist voor {0}.</value></data>
+  <data name="SeriesNumberConflict" xml:space="preserve"><value>Het boek of de serie is veranderd. Selecteer de serie opnieuw en open Volgnummer wijzigen nogmaals. Er is geen nummerwijziging opgeslagen.</value></data>
+  <data name="SeriesNumberDuplicate" xml:space="preserve"><value>Dit nummer komt ook voor bij {0} andere boeken in deze serie. Je kunt het behouden als dit de bedoeling is.</value></data>
+  <data name="SeriesNumberFailed" xml:space="preserve"><value>Het volgnummer kon niet worden bijgewerkt. Er is geen nummerwijziging opgeslagen. Probeer opnieuw.</value></data>
+  <data name="SeriesNumberFileWarning" xml:space="preserve"><value>Het nummer is opgeslagen in Saga, maar de boekbestanden konden niet worden bijgewerkt.</value></data>
+  <data name="SeriesNumberHelp" xml:space="preserve"><value>Vul een nummer in, bijvoorbeeld {0}, of laat het veld leeg om het volgnummer te wissen. De serienaam blijft gelijk.</value></data>
+  <data name="SeriesNumberInvalid" xml:space="preserve"><value>Vul een geldig getal in, bijvoorbeeld {0}, zonder scheidingstekens voor duizendtallen, of laat het veld leeg.</value></data>
+  <data name="SeriesNumberOutsidePage" xml:space="preserve"><value>Na het sorteren staat dit boek buiten de geladen lijst. Gebruik Meer laden om verder te bladeren.</value></data>
+  <data name="SeriesNumberRefreshFailed" xml:space="preserve"><value>Het volgnummer is opgeslagen, maar de lijst kon niet worden vernieuwd. Open Series beheren opnieuw om het resultaat te zien.</value></data>
+  <data name="SeriesNumberSaved" xml:space="preserve"><value>Volgnummer bijgewerkt voor {0}: {1}.</value></data>
+  <data name="SeriesNumberUnchanged" xml:space="preserve"><value>Het volgnummer is niet gewijzigd.</value></data>
+  <data name="SeriesNumberWorking" xml:space="preserve"><value>Volgnummer en boekbestanden bijwerken…</value></data>
 </root>
 

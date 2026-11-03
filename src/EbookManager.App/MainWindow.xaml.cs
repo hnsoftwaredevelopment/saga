@@ -72,7 +72,7 @@ public partial class MainWindow : System.Windows.Window
         if (library is null) return;
         var repository = new EfSeriesRepository(contextFactory, library.DirectoryPath);
         using var series = new SeriesManagementViewModel(repository, new SeriesRenameService(repository, bookService), localizationService.GetString,
-            new SeriesMergeService(repository, bookService));
+            new SeriesMergeService(repository, bookService), new SeriesNumberService(repository, bookService));
         new SeriesManagementWindow(series) { Owner = this }.ShowDialog();
         try { await viewModel.ReconcileExternalMetadataChangesAsync(series.ChangedBookIds); }
         catch (Exception)

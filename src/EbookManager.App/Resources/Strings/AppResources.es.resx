@@ -917,5 +917,18 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesMergeTarget" xml:space="preserve"><value>Nombre de serie que se conservará</value></data>
   <data name="SeriesMergeTitle" xml:space="preserve"><value>Fusionar series</value></data>
   <data name="SeriesMergeWorking" xml:space="preserve"><value>Fusionando series y actualizando archivos…</value></data>
+  <data name="SeriesNumberChange" xml:space="preserve"><value>Cambiar número de serie</value></data>
+  <data name="SeriesNumberCleared" xml:space="preserve"><value>Número eliminado para {0}.</value></data>
+  <data name="SeriesNumberConflict" xml:space="preserve"><value>El libro o su serie cambió. Selecciona la serie de nuevo y vuelve a abrir el editor del número. No se guardó ningún cambio de número.</value></data>
+  <data name="SeriesNumberDuplicate" xml:space="preserve"><value>Este número también aparece en otros {0} libros de la serie. Puedes conservarlo si es intencionado.</value></data>
+  <data name="SeriesNumberFailed" xml:space="preserve"><value>No se pudo actualizar el número. No se guardó ningún cambio de número. Inténtalo de nuevo.</value></data>
+  <data name="SeriesNumberFileWarning" xml:space="preserve"><value>El número está guardado en Saga, pero no se pudieron actualizar los archivos del libro.</value></data>
+  <data name="SeriesNumberHelp" xml:space="preserve"><value>Introduce un número, como {0}, o deja el campo vacío para quitarlo. El nombre de la serie no cambia.</value></data>
+  <data name="SeriesNumberInvalid" xml:space="preserve"><value>Introduce un número válido, como {0}, sin separadores de miles, o deja el campo vacío.</value></data>
+  <data name="SeriesNumberOutsidePage" xml:space="preserve"><value>Tras ordenar, este libro queda fuera de la lista cargada. Usa Cargar más para continuar.</value></data>
+  <data name="SeriesNumberRefreshFailed" xml:space="preserve"><value>El número está guardado, pero no se pudo actualizar la lista. Abre de nuevo la gestión de series para ver el resultado.</value></data>
+  <data name="SeriesNumberSaved" xml:space="preserve"><value>Número actualizado para {0}: {1}.</value></data>
+  <data name="SeriesNumberUnchanged" xml:space="preserve"><value>El número no ha cambiado.</value></data>
+  <data name="SeriesNumberWorking" xml:space="preserve"><value>Actualizando número y archivos…</value></data>
 </root>
 
