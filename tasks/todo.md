@@ -3,8 +3,8 @@
 - [x] Afbakening door de gebruiker goedgekeurd.
 - [x] Veilige selectie, opslagtransactie, voorstel en directe actualisatie gebouwd.
 - [x] Eigen code-review, 1.246 geautomatiseerde tests, 33 WPF-proeven en visuele controle in beide thema’s afgerond. Debug **2026.11.10.9** met 0 waarschuwingen en 0 fouten.
-- [x] Documentatie en Obsidian bijgewerkt. Excel toont M60 als Todo / Te testen.
-- [ ] Gebruiker voert de [checklist](../docs/manual-tests/milestone-60-checklist.md) uit en bevestigt de slice.
+- [x] Documentatie en Obsidian bijgewerkt. Excel toont M60 als Done / Getest, PR open.
+- [x] Gebruiker bevestigde op 10 november 2026 dat alle tests uit de [checklist](../docs/manual-tests/milestone-60-checklist.md) zijn geslaagd en dat de werkwijze duidelijk is.
 - [ ] Gebruiker mergt de PR.
 
 ## Historie — Milestone 59 geaccepteerd en gemerged
