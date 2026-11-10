@@ -9,6 +9,23 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Fact]
+    public async Task Tag_suggestions_search_all_prefix_matches_and_keep_spaces_significant()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        await using var context = factory.Create(library.DirectoryPath);
+        var expected = Enumerable.Range(1, 24).Select(index => $"Science {index:00}").ToArray();
+        context.Tags.AddRange(expected.Append("Sciencefiction").Append("Popular Science").Select(name =>
+            new TagEntity { Id = Guid.NewGuid(), Name = name, NormalizedName = TagNames.Normalize(name) }));
+        await context.SaveChangesAsync();
+        var repository = new EfTagRepository(factory, library.DirectoryPath);
+
+        (await repository.SearchNamesByPrefixAsync(" sCiEnCe ", default)).Should().Equal(expected);
+        (await repository.SearchNamesByPrefixAsync("Science 24", default)).Should().Equal("Science 24");
+        (await repository.SearchNamesByPrefixAsync(" ", default)).Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Tag_add_preserves_existing_links_and_returns_only_changed_books()
     {
         using var library = new TemporaryLibrary();

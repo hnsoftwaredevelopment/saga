@@ -130,6 +130,7 @@ internal static class TagManagementFocusSmoke
         private readonly TagBook existing = new(Guid.NewGuid(), "Existing book", "Author");
         private bool merged;
         public bool FailLoad { get; set; }
+        public Task<IReadOnlyList<string>> SearchNamesByPrefixAsync(string prefix, CancellationToken token) => throw new NotSupportedException();
         public Task<TagPage> SearchAsync(string query, int skip, int take, CancellationToken token)
         {
             var result = Tags.Where(tag => tag.Name.Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray();

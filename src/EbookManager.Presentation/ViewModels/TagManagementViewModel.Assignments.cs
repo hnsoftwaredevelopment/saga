@@ -10,8 +10,8 @@ public sealed partial class TagManagementViewModel
     public bool CanChangeSelectedBooks => CanBrowse && assignments is not null && TagId is not null && SelectedBookCount > 0;
     public string SelectedBookSummary => string.Format(System.Globalization.CultureInfo.CurrentCulture, localize("TagSelectedBooks"), SelectedBookCount);
 
-    public Task<TagPage> SearchAssignmentTagsAsync(string query, CancellationToken token) =>
-        Task.Run(() => repository.SearchAsync(query, 0, 8, token), token);
+    public Task<IReadOnlyList<string>> SearchAssignmentTagsAsync(string prefix, CancellationToken token) =>
+        Task.Run(() => repository.SearchNamesByPrefixAsync(prefix, token), token);
 
     public void SetSelectedBooks(IEnumerable<TagBook> selected)
     {

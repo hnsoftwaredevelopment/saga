@@ -709,7 +709,8 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="TagAddSelection" xml:space="preserve"><value>Tags toevoegen</value></data>
   <data name="TagAddExplanation" xml:space="preserve"><value>Voeg de tags in het voorstel toe aan de {1} geselecteerde boeken met ‘{0}’. Elk boek houdt zijn huidige tags.</value></data>
   <data name="TagAddName" xml:space="preserve"><value>Zoek of typ een tag</value></data>
-  <data name="TagAddToProposal" xml:space="preserve"><value>Zet in voorstel</value></data>
+  <data name="TagAddLinesHelp" xml:space="preserve"><value>Bevestig elke tag met Enter of plak één tag per regel. Kies een suggestie met de pijltjestoetsen.</value></data>
+  <data name="TagAddInvalidLines" xml:space="preserve"><value>Gebruik één geldige tag per regel. Laat puntkomma’s weg.</value></data>
   <data name="TagAddExisting" xml:space="preserve"><value>Kies een bestaande tag</value></data>
   <data name="TagAddProposal" xml:space="preserve"><value>Voorstel voor toevoeging</value></data>
   <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Uit voorstel halen</value></data>

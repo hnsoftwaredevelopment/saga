@@ -213,6 +213,7 @@ public sealed class TagManagementViewModelTests
         public Func<Guid, int, int, Task<TagBookPage>>? List { get; set; }
         public string PreviewName { get; set; } = "Old";
         public Task<TagPage> SearchAsync(string query, int skip, int take, CancellationToken token) => Search(query);
+        public Task<IReadOnlyList<string>> SearchNamesByPrefixAsync(string prefix, CancellationToken token) => throw new NotSupportedException();
         public Task<TagBookPage> ListBooksAsync(Guid tagId, int skip, int take, CancellationToken token) => List?.Invoke(tagId, skip, take) ?? Task.FromResult(new TagBookPage(
             source.Select((book, index) => new TagBook(book.Id, book.Title, "Author")).ToArray(), 2));
         public Task<TagRenamePreview> PreviewAsync(Guid tagId, CancellationToken token) => Task.FromResult(new TagRenamePreview(TagId, PreviewName, source));

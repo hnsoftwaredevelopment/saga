@@ -113,19 +113,28 @@ internal static class TagSelectionActionsSmoke
             await IdleAsync();
             var input = (TextBox)dialog.FindName("NewTagBox");
             var apply = (Button)dialog.FindName("ApplyButton");
-            var suggested = (ItemsControl)dialog.FindName("TagSuggestions");
-            var queued = (ItemsControl)dialog.FindName("QueuedTagsList");
+            var suggested = (ListBox)dialog.FindName("TagSuggestions");
+            var queued = (ListBox)dialog.FindName("QueuedTagsList");
             Require(input.IsKeyboardFocusWithin && !apply.IsEnabled, "Add dialog must focus the empty input and require a proposal.");
             input.Text = "Rom";
-            await WaitAsync(() => suggested.Items.OfType<TagSummary>().Any(tag => tag.Name == "Roman")); await IdleAsync();
-            var row = suggested.Items.OfType<TagSummary>().Single(tag => tag.Name == "Roman");
-            var container = suggested.ItemContainerGenerator.ContainerFromItem(row);
-            FindButton(container).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await IdleAsync();
+            await WaitAsync(() => suggested.Items.Contains("Roman")); await IdleAsync();
+            Require(suggested.SelectedIndex == -1, "Typing should not select a suggestion automatically.");
+            SendPreviewKey(input, Key.Down);
+            Require(suggested.SelectedItem is "Roman" && input.IsKeyboardFocusWithin, "Arrow navigation lost typing focus.");
+            SendPreviewKey(input, Key.Enter); await IdleAsync();
             Require(input.IsKeyboardFocusWithin && queued.Items.OfType<string>().SequenceEqual(new[] { "Roman" }), "Existing choice did not queue its canonical name.");
-            input.Text = " Avontuur ";
+            input.Text = " Historische roman ";
             Require(!apply.IsEnabled, "An unqueued draft must not be omitted silently.");
-            ((Button)dialog.FindName("QueueTagButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await IdleAsync();
-            Require(apply.IsEnabled && queued.Items.OfType<string>().SequenceEqual(new[] { "Roman", "Avontuur" }), "Typed tags must appear in the proposal.");
+            SendPreviewKey(input, Key.Enter); await IdleAsync();
+            Require(apply.IsEnabled && !apply.IsDefault && queued.Items.OfType<string>().SequenceEqual(new[] { "Roman", "Historische roman" }), "Enter must create a chip without saving and preserve interior spaces.");
+            var paste = new DataObject(DataFormats.UnicodeText, " roman \r\nAvontuur\r\nScience Fiction");
+            input.RaiseEvent(new DataObjectPastingEventArgs(paste, false, DataFormats.UnicodeText)); await IdleAsync();
+            Require(queued.Items.OfType<string>().SequenceEqual(new[] { "Roman", "Historische roman", "Avontuur", "Science Fiction" }), "Pasting should queue each unique line.");
+            var chip = (ListBoxItem)queued.ItemContainerGenerator.ContainerFromItem("Science Fiction");
+            var presenter = FindVisual<ContentPresenter>(chip);
+            var removeChip = (Button)presenter.ContentTemplate.FindName("RemoveChipButton", presenter);
+            removeChip.RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await IdleAsync();
+            Require(input.IsKeyboardFocusWithin && !queued.Items.Contains("Science Fiction"), "Removing a chip must restore input focus.");
             dialog.Width = dialog.MinWidth; dialog.Height = dialog.MinHeight; await IdleAsync();
             Require(apply.TranslatePoint(new Point(), dialog).Y + apply.ActualHeight < dialog.ActualHeight, "Confirm action must be visible at minimum size.");
             if (confirm && Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_TAG_ADD") is { Length: > 0 } directory)
@@ -149,11 +158,23 @@ internal static class TagSelectionActionsSmoke
         finally { if (dialog.IsVisible) dialog.Close(); }
     }
 
-    private static Button FindButton(DependencyObject container)
+    private static void SendPreviewKey(UIElement target, Key key)
     {
-        var presenter = (ContentPresenter)container;
-        presenter.ApplyTemplate();
-        return (Button)VisualTreeHelper.GetChild(presenter, 0);
+        var source = PresentationSource.FromVisual(target) ?? throw new InvalidOperationException("Tag dialog is not displayed.");
+        target.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, Environment.TickCount, key) { RoutedEvent = Keyboard.PreviewKeyDownEvent });
+    }
+
+    private static T FindVisual<T>(DependencyObject root) where T : DependencyObject =>
+        VisualDescendants(root).OfType<T>().First();
+
+    private static IEnumerable<DependencyObject> VisualDescendants(DependencyObject root)
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+        {
+            var child = VisualTreeHelper.GetChild(root, index);
+            yield return child;
+            foreach (var descendant in VisualDescendants(child)) yield return descendant;
+        }
     }
 
     private static async Task CompleteDialogAsync(bool confirm, string? target)
@@ -216,6 +237,8 @@ internal static class TagSelectionActionsSmoke
         }
         public void AddSourceBooks(int count) { for (var index = 0; index < count; index++) books.Add(Guid.NewGuid(), ($"Book {index:D3}", [sourceId])); }
         public TagSummary Summary(Guid id) => new(id, names[id], books.Count(book => book.Value.Tags.Contains(id)));
+        public Task<IReadOnlyList<string>> SearchNamesByPrefixAsync(string prefix, CancellationToken token) =>
+            Task.FromResult<IReadOnlyList<string>>(names.Values.Where(name => name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).Order().ToArray());
         public Task<TagPage> SearchAsync(string query, int skip, int take, CancellationToken token)
         {
             var rows = names.Keys.Select(Summary).Where(tag => tag.BookCount > 0 && tag.Name.Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray();

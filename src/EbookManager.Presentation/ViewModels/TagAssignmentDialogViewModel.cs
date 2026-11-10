@@ -32,11 +32,9 @@ public sealed partial class TagAssignmentDialogViewModel : ObservableObject
     public string Explanation { get; }
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanApply))]
-    [NotifyPropertyChangedFor(nameof(CanQueueTag))]
     private string newName;
 
     public IReadOnlyList<string> QueuedTags { get; private set; } = [];
-    public bool CanQueueTag => IsAdd && TagNames.IsValid(NewName) && !ContainsTag(NewName);
     public bool CanApply => bookCount > 0 && (Operation switch
     {
         TagAssignmentOperation.Add => QueuedTags.Count > 0 && string.IsNullOrWhiteSpace(NewName),
@@ -45,14 +43,18 @@ public sealed partial class TagAssignmentDialogViewModel : ObservableObject
         _ => false
     });
 
-    public bool ContainsTag(string name) => QueuedTags.Any(tag => TagNames.Normalize(tag) == TagNames.Normalize(name));
+    public bool QueueTag(string name) => QueueTags([name]);
 
-    public void QueueTag(string name)
+    public bool QueuePastedTags(string text) => QueueTags(text.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+        .Where(line => !string.IsNullOrWhiteSpace(line)).ToArray());
+
+    private bool QueueTags(string[] names)
     {
-        if (!IsAdd || !TagNames.IsValid(name) || ContainsTag(name)) return;
-        QueuedTags = [.. QueuedTags, name.Trim()];
+        if (!IsAdd || names.Length == 0 || !names.All(TagNames.IsValid)) return false;
+        QueuedTags = QueuedTags.Concat(names.Select(name => name.Trim())).DistinctBy(TagNames.Normalize).ToArray();
         NewName = "";
         NotifyQueuedTags();
+        return true;
     }
 
     public void UnqueueTag(string name)
@@ -64,7 +66,6 @@ public sealed partial class TagAssignmentDialogViewModel : ObservableObject
     private void NotifyQueuedTags()
     {
         OnPropertyChanged(nameof(QueuedTags));
-        OnPropertyChanged(nameof(CanQueueTag));
         OnPropertyChanged(nameof(CanApply));
     }
 

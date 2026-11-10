@@ -14,7 +14,6 @@ public sealed class TagAssignmentDialogViewModelTests
         vm.NewName.Should().BeEmpty();
         vm.CanApply.Should().BeFalse();
         vm.NewName = "  Roman  ";
-        vm.CanQueueTag.Should().BeTrue();
         vm.QueueTag(vm.NewName);
         vm.QueueTag(" roman ");
         vm.QueueTag("A;B");
@@ -27,6 +26,20 @@ public sealed class TagAssignmentDialogViewModelTests
         vm.CreateRequest().TargetNames.Should().Equal("Avontuur");
         vm.UnqueueTag("Avontuur");
         vm.CanApply.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Pasting_tag_lines_preserves_spaces_deduplicates_and_rejects_invalid_lines_atomically()
+    {
+        var vm = new TagAssignmentDialogViewModel(new(Guid.NewGuid(), "Source", [new(Guid.NewGuid(), "Book")]),
+            TagAssignmentOperation.Add, key => key);
+        vm.QueueTag("Historische roman");
+        vm.QueuePastedTags(" historische roman \r\n\r\n Science Fiction \nJeugd 12+").Should().BeTrue();
+        vm.CreateRequest().TargetNames.Should().Equal("Historische roman", "Science Fiction", "Jeugd 12+");
+        vm.NewName = "Draft";
+        vm.QueuePastedTags("New\nA;B").Should().BeFalse();
+        vm.NewName.Should().Be("Draft");
+        vm.CreateRequest().TargetNames.Should().Equal("Historische roman", "Science Fiction", "Jeugd 12+");
     }
 
     [Theory]

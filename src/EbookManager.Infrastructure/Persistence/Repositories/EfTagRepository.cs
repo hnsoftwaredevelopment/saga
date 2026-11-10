@@ -18,6 +18,15 @@ public sealed partial class EfTagRepository(LibraryDbContextFactory factory, str
         return new(rows, count);
     }
 
+    public async Task<IReadOnlyList<string>> SearchNamesByPrefixAsync(string prefix, CancellationToken token)
+    {
+        var normalized = prefix.TrimStart().ToLowerInvariant();
+        if (normalized.Length == 0) return [];
+        await using var context = factory.Create(libraryPath);
+        return await context.Tags.AsNoTracking().Where(tag => tag.NormalizedName.StartsWith(normalized))
+            .OrderBy(tag => tag.NormalizedName).Select(tag => tag.Name).ToArrayAsync(token);
+    }
+
     public async Task<TagBookPage> ListBooksAsync(Guid tagId, int skip, int take, CancellationToken token)
     {
         ValidatePage(skip, take);
