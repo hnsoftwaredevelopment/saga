@@ -11,7 +11,15 @@ public sealed record SeriesPage(IReadOnlyList<SeriesSummary> Series, int TotalCo
 public sealed record SeriesBook(Guid Id, string Title, string Authors, decimal? Number);
 public sealed record SeriesBookPage(IReadOnlyList<SeriesBook> Books, int TotalCount);
 
-public sealed record SeriesSourceBook(Guid Id, string StoredName, string Title);
-public sealed record SeriesRenamePreview(string Name, IReadOnlyList<SeriesSourceBook> Books);
+public sealed record SeriesSourceBook(Guid Id, string StoredName, string Title)
+{
+    public decimal? Number { get; init; }
+}
+
+public sealed record SeriesRenamePreview(string Name, IReadOnlyList<SeriesSourceBook> Books)
+{
+    // A null selection renames the entire series. A split must leave at least one book behind.
+    public IReadOnlyList<Guid>? SelectedBookIds { get; init; }
+}
 public enum SeriesRenameStatus { Renamed, Unchanged, InvalidName, NameExists, Conflict }
 public sealed record SeriesRenameResult(SeriesRenameStatus Status, string Name, IReadOnlyList<SeriesSourceBook> Books);

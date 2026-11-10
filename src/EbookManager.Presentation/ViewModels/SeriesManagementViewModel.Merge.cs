@@ -47,27 +47,8 @@ public sealed partial class SeriesManagementViewModel
             if (disposed) return committed;
             Warnings = completion.Warnings;
             if (!committed) { SetStatus(completion.Change.Status == SeriesMergeStatus.NameExists ? "SeriesManualMergeNameExists" : "SeriesMergeConflict", true); return false; }
-            SetNumberSelection([]);
-            SelectedBook = null;
-            Name = completion.Change.Name;
-            Books = [];
-            TotalBooks = preview.BookCount;
-            // Clear the manager filter after merging, while retaining the destination's details.
-            if (!await SearchCoreAsync("")) throw new InvalidOperationException("Series index refresh failed.");
+            await RefreshSeriesDestinationAsync(completion.Change.Name, preview.BookCount);
             if (disposed) return true;
-            var page = await Task.Run(() => repository.ListBooksAsync(Name, 0, 200, lifetime.Token), lifetime.Token);
-            if (disposed) return true;
-            Books = page.Books;
-            TotalBooks = page.TotalCount;
-            // The fresh target count is known even when its name sorts beyond the first index page.
-            // Pin that row without loading every preceding series; paging still uses repository offsets.
-            if (!Series.Any(row => SeriesNames.Same(row.Name, Name)))
-            {
-                Series = Series.Append(new SeriesSummary(Name, TotalBooks)).OrderBy(row => row.Name, StringComparer.CurrentCultureIgnoreCase)
-                    .ThenBy(row => row.Name, StringComparer.Ordinal).ToArray();
-                OnPropertyChanged(nameof(HasMoreSeries));
-            }
-            SetMergeSeries(Series.Where(row => SeriesNames.Same(row.Name, Name)));
             StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "SeriesMergeSaved" : "SeriesMergeSavedWithWarnings"), completion.Change.Books.Count, Warnings.Count);
             IsError = Warnings.Count > 0;
             NotifySelection();
@@ -76,5 +57,28 @@ public sealed partial class SeriesManagementViewModel
         catch (OperationCanceledException) { return committed; }
         catch (Exception) { if (!disposed) SetStatus(committed ? "SeriesMergeRefreshFailed" : "SeriesMergeFailed", true); return committed; }
         finally { if (!disposed) IsBusy = false; }
+    }
+
+    private async Task RefreshSeriesDestinationAsync(string name, int bookCount)
+    {
+        SetNumberSelection([]);
+        SelectedBook = null;
+        Name = name;
+        Books = [];
+        TotalBooks = bookCount;
+        if (!await SearchCoreAsync("")) throw new InvalidOperationException("Series index refresh failed.");
+        if (disposed) return;
+        var page = await Task.Run(() => repository.ListBooksAsync(name, 0, 200, lifetime.Token), lifetime.Token);
+        if (disposed) return;
+        Books = page.Books;
+        TotalBooks = page.TotalCount;
+        // Keep a late-sorting destination visible without consuming additional repository rows.
+        if (!Series.Any(row => SeriesNames.Same(row.Name, name)))
+        {
+            Series = Series.Append(new SeriesSummary(name, TotalBooks)).OrderBy(row => row.Name, StringComparer.CurrentCultureIgnoreCase)
+                .ThenBy(row => row.Name, StringComparer.Ordinal).ToArray();
+            OnPropertyChanged(nameof(HasMoreSeries));
+        }
+        SetMergeSeries(Series.Where(row => SeriesNames.Same(row.Name, name)));
     }
 }

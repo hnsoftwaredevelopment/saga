@@ -978,5 +978,13 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Comparez tous les livres des séries sélectionnées. Choisissez un de leurs noms ou saisissez un nouveau nom. Les numéros et autres données restent inchangés. Le nom d’une série non sélectionnée est refusé.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Ou saisissez un nouveau nom de série</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Ce nom appartient à une série non sélectionnée. Rien n’a été modifié. Sélectionnez aussi cette série ou choisissez un autre nom.</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Scinder la série</value></data>
+  <data name="SeriesSplitExplanation" xml:space="preserve"><value>Livres à déplacer : {0}. Livres restant dans la série d’origine : {1}. Les numéros de tome sont conservés.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Scission de la série et mise à jour des fichiers…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>Livres déplacés vers la nouvelle série : {0}.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Livres déplacés vers la nouvelle série : {0}. Fichiers non mis à jour pour {1} livres.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>La série ou les livres sélectionnés ont changé. Sélectionnez à nouveau les livres et vérifiez la scission.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>Impossible de scinder la série. Aucune modification de série n’a été enregistrée.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>La série a été scindée, mais l’affichage n’a pas pu être actualisé. Rouvrez la bibliothèque.</value></data>
 </root>
 

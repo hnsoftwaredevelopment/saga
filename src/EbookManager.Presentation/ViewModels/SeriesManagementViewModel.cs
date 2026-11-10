@@ -22,7 +22,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanEditNumber))] private IReadOnlyList<SeriesBook> books = [];
     [ObservableProperty] private IReadOnlyList<SeriesSourceBook> warnings = [];
     [ObservableProperty] private int totalSeries;
-    [ObservableProperty] private int totalBooks;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSplitSeries))] private int totalBooks;
     [ObservableProperty] private string statusMessage = "";
     [ObservableProperty] private bool isError;
     [ObservableProperty]
@@ -31,6 +31,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(CanEditNumber))]
     [NotifyPropertyChangedFor(nameof(CanAssignNumbers))]
+    [NotifyPropertyChangedFor(nameof(CanSplitSeries))]
     [NotifyPropertyChangedFor(nameof(CanMergeSelectedSeries))]
     [NotifyPropertyChangedFor(nameof(CanBrowseBooks))]
     [NotifyPropertyChangedFor(nameof(CanChooseSeries))]
@@ -41,6 +42,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanEditNumber))]
     [NotifyPropertyChangedFor(nameof(CanAssignNumbers))]
+    [NotifyPropertyChangedFor(nameof(CanSplitSeries))]
     [NotifyPropertyChangedFor(nameof(CanMergeSelectedSeries))]
     [NotifyPropertyChangedFor(nameof(CanChooseSeries))]
     [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
@@ -140,11 +142,15 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     public async Task<bool> RenameAsync(SeriesRenamePreview preview, string newName)
     {
         if (!CanRename || !SeriesNames.Same(preview.Name, Name)) return false;
+        var split = preview.SelectedBookIds is not null;
+        if (preview.SelectedBookIds is { } ids && (!CanSplitSeries || !ReferenceEquals(splitPreview, preview) ||
+            !SelectedNumberBooks.Select(book => book.Id).SequenceEqual(ids))) return false;
+        splitPreview = null;
         IsBusy = true;
         ++searchVersion;
         IsSearching = false;
         Warnings = [];
-        SetStatus("SeriesRenameWorking", false);
+        SetStatus(split ? "SeriesSplitWorking" : "SeriesRenameWorking", false);
         var committed = false;
         try
         {
@@ -159,25 +165,33 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
                     SeriesRenameStatus.NameExists => "SeriesRenameNameExists",
                     SeriesRenameStatus.InvalidName => "SeriesRenameInvalid",
                     SeriesRenameStatus.Unchanged => "SeriesRenameUnchanged",
-                    _ => "SeriesRenameConflict"
+                    _ => split ? "SeriesSplitConflict" : "SeriesRenameConflict"
                 }, result.Change.Status != SeriesRenameStatus.Unchanged);
                 return false;
             }
-            Name = result.Change.Name;
-            TotalBooks = result.Change.Books.Count;
-            // Only the name changed; keep the already sorted book pages and their scroll position.
             Warnings = result.Warnings;
-            StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "SeriesRenameSaved" : "SeriesRenameSavedWithWarnings"), TotalBooks, Warnings.Count);
+            if (split)
+                await RefreshSeriesDestinationAsync(result.Change.Name, result.Change.Books.Count);
+            else
+            {
+                Name = result.Change.Name;
+                TotalBooks = result.Change.Books.Count;
+                // Only the name changed; keep the already sorted book pages and their scroll position.
+                if (!await SearchCoreAsync(Name)) throw new InvalidOperationException("Series index refresh failed.");
+                SetMergeSeries(Series.Where(row => SeriesNames.Same(row.Name, Name)));
+            }
+            if (disposed) return true;
+            var savedKey = split ? "SeriesSplitSaved" : "SeriesRenameSaved";
+            StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? savedKey : savedKey + "WithWarnings"), result.Change.Books.Count, Warnings.Count);
             IsError = Warnings.Count > 0;
-            await SearchCoreAsync(Name);
-            SetMergeSeries(Series.Where(row => SeriesNames.Same(row.Name, Name)));
             NotifySelection();
             return true;
         }
-        catch (OperationCanceledException) { return false; }
+        catch (OperationCanceledException) { return committed; }
         catch (Exception)
         {
-            if (!disposed) SetStatus(committed ? "SeriesRenameRefreshFailed" : "SeriesRenameFailed", true);
+            var operation = split ? "SeriesSplit" : "SeriesRename";
+            if (!disposed) SetStatus(operation + (committed ? "RefreshFailed" : "Failed"), true);
             return committed;
         }
         finally { if (!disposed) IsBusy = false; }

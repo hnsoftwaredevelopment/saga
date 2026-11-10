@@ -51,6 +51,7 @@
           <TextBlock Margin="0,0,0,8"><Run Text="{Binding TotalBooks, Mode=OneWay}" /><Run Text=" · " /><Run Text="{loc:Loc SeriesBooks}" /></TextBlock>
           <Button x:Name="ChangeNumberButton" Content="{loc:Loc SeriesNumberChange}" Click="NumberClicked" IsEnabled="{Binding CanEditNumber}" HorizontalAlignment="Left" Margin="0,0,0,8" AutomationProperties.Name="{loc:Loc SeriesNumberChange}" />
           <Button x:Name="AssignNumbersButton" Content="{loc:Loc SeriesNumbersAssign}" Click="NumbersClicked" IsEnabled="{Binding CanAssignNumbers}" HorizontalAlignment="Left" Margin="0,0,0,8" AutomationProperties.Name="{loc:Loc SeriesNumbersAssign}" />
+          <Button x:Name="SplitSeriesButton" Content="{loc:Loc SeriesSplitAction}" Click="SplitSeriesClicked" IsEnabled="{Binding CanSplitSeries}" HorizontalAlignment="Left" Margin="0,0,0,8" AutomationProperties.Name="{loc:Loc SeriesSplitAction}" />
           <DataGrid x:Name="BooksGrid" Height="250" ItemsSource="{Binding Books}" SelectedItem="{Binding SelectedBook}" SelectionChanged="NumberBooksSelected" IsEnabled="{Binding CanBrowse}" SelectionMode="Extended" SelectionUnit="FullRow" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" EnableRowVirtualization="True" EnableColumnVirtualization="True" HeadersVisibility="Column" AutomationProperties.Name="{loc:Loc SeriesBooks}">
             <DataGrid.Columns>
               <DataGridTextColumn Header="{loc:Loc SeriesNumber}" Binding="{Binding Number}" Width="90" />

@@ -698,5 +698,13 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Vergelijk alle boeken uit de geselecteerde series. Kies één van hun namen of voer een nieuwe naam in. Volgnummers en overige gegevens blijven behouden. Een naam van een niet-geselecteerde serie wordt geweigerd.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Of voer een nieuwe serienaam in</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Die naam hoort bij een niet-geselecteerde serie. Er is niets aangepast. Selecteer die serie ook, of kies een andere nieuwe naam.</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Geselecteerde boeken afsplitsen</value></data>
+  <data name="SeriesSplitExplanation" xml:space="preserve"><value>Te verplaatsen boeken: {0}. Boeken die in de oorspronkelijke serie blijven: {1}. De volgnummers blijven behouden.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Serie afsplitsen en boekbestanden bijwerken…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>Verplaatst naar de nieuwe serie: {0} boeken.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Verplaatst naar de nieuwe serie: {0} boeken. Bij {1} boeken konden de bestanden niet worden bijgewerkt.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>De serie of de geselecteerde boeken zijn gewijzigd. Selecteer de boeken opnieuw en controleer de afsplitsing.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>De serie kon niet worden afgesplitst. Er zijn geen seriewijzigingen opgeslagen.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>De serie is afgesplitst, maar het overzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw om de wijzigingen te zien.</value></data>
 </root>
 

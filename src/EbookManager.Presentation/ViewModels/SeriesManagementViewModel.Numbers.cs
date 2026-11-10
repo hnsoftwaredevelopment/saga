@@ -14,7 +14,9 @@ public sealed partial class SeriesManagementViewModel
         var rows = Books.Where(book => ids.Contains(book.Id)).ToArray();
         if (SelectedNumberBooks.SequenceEqual(rows)) return;
         SelectedNumberBooks = rows; numbersPreview = null;
+        splitPreview = null;
         OnPropertyChanged(nameof(SelectedNumberBooks)); OnPropertyChanged(nameof(CanAssignNumbers)); OnPropertyChanged(nameof(CanEditNumber));
+        OnPropertyChanged(nameof(CanSplitSeries));
     }
     public async Task<SeriesNumbersPreview?> PreviewNumbersAsync()
     {

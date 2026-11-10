@@ -978,5 +978,13 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Vergleichen Sie alle Bücher der ausgewählten Serien. Wählen Sie einen ihrer Namen oder geben Sie einen neuen ein. Nummern und andere Daten bleiben erhalten. Der Name einer nicht ausgewählten Serie wird abgelehnt.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Oder einen neuen Seriennamen eingeben</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Dieser Name gehört zu einer nicht ausgewählten Serie. Nichts wurde geändert. Wählen Sie auch diese Serie aus oder einen anderen neuen Namen.</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Ausgewählte Bücher abspalten</value></data>
+  <data name="SeriesSplitExplanation" xml:space="preserve"><value>Zu verschiebende Bücher: {0}. Bücher in der ursprünglichen Reihe: {1}. Die Bandnummern bleiben erhalten.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Reihe aufteilen und Buchdateien aktualisieren…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>In die neue Reihe verschobene Bücher: {0}.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>In die neue Reihe verschobene Bücher: {0}. Buchdateien konnten bei {1} Büchern nicht aktualisiert werden.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>Die Reihe oder die ausgewählten Bücher wurden geändert. Wählen Sie die Bücher erneut aus und prüfen Sie die Aufteilung.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>Die Reihe konnte nicht aufgeteilt werden. Es wurden keine Änderungen an der Reihe gespeichert.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>Die Reihe wurde aufgeteilt, aber die Ansicht konnte nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut.</value></data>
 </root>
 

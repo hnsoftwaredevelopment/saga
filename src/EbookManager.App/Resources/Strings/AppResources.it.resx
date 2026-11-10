@@ -978,5 +978,13 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Confronta tutti i libri delle serie selezionate. Scegli uno dei loro nomi o inseriscine uno nuovo. Numeri e altri dati rimangono invariati. Il nome di una serie non selezionata viene rifiutato.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Oppure inserisci un nuovo nome di serie</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Quel nome appartiene a una serie non selezionata. Nulla è stato modificato. Seleziona anche quella serie o scegli un altro nome.</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Separa i libri selezionati</value></data>
+  <data name="SeriesSplitExplanation" xml:space="preserve"><value>Libri da spostare: {0}. Libri che restano nella serie originale: {1}. I numeri di serie restano invariati.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Separazione della serie e aggiornamento dei file…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>Libri spostati nella nuova serie: {0}.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Libri spostati nella nuova serie: {0}. Impossibile aggiornare i file di {1} libri.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>La serie o i libri selezionati sono cambiati. Seleziona di nuovo i libri e verifica la separazione.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>Impossibile separare la serie. Non è stata salvata alcuna modifica alla serie.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>La serie è stata divisa, ma la vista non è stata aggiornata. Riapri la biblioteca.</value></data>
 </root>
 

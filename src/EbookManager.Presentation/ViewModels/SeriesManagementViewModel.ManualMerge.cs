@@ -17,9 +17,9 @@ public sealed partial class SeriesManagementViewModel
         var loaded = Series.Select(row => row.Name.Trim()).ToHashSet(SeriesNames.Comparer);
         var names = selected.Select(row => row.Name.Trim()).Where(loaded.Contains).ToHashSet(SeriesNames.Comparer);
         if (mergeSeriesNames.SetEquals(names)) return;
-        mergeSeriesNames.Clear(); mergeSeriesNames.UnionWith(names); confirmedPreview = null;
+        mergeSeriesNames.Clear(); mergeSeriesNames.UnionWith(names); confirmedPreview = null; splitPreview = null;
         foreach (var property in new[] { nameof(MergeSeriesNames), nameof(MergeSeriesCount), nameof(MergeSeriesSummary), nameof(CanMergeSelectedSeries),
-            nameof(CanBrowseBooks), nameof(CanRename), nameof(CanEditNumber), nameof(CanAssignNumbers), nameof(HasMoreBooks) }) OnPropertyChanged(property);
+            nameof(CanBrowseBooks), nameof(CanRename), nameof(CanEditNumber), nameof(CanAssignNumbers), nameof(CanSplitSeries), nameof(HasMoreBooks) }) OnPropertyChanged(property);
     }
     public async Task<SeriesMergePreview?> PreviewSelectedSeriesAsync()
     {
