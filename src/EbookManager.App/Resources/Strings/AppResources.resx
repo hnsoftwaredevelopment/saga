@@ -532,7 +532,7 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesRenameUnchanged" xml:space="preserve"><value>The series name has not changed.</value></data>
   <data name="SeriesRenameConflict" xml:space="preserve"><value>The series has changed since confirmation. Select it again and confirm a new rename.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>The series could not be renamed. No series changes were saved.</value></data>
-  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>The series was renamed, but the library view could not be refreshed. Reopen the library to see the changes.</value></data>
+  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>The series changes were saved, but the library view could not be refreshed. Reopen the library to see the changes.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+click selects more books; Shift+click selects a range. Use the arrow keys and Ctrl+Space with the keyboard; Escape clears the selection.</value></data>
   <data name="TagManagementTitle" xml:space="preserve"><value>Manage tags</value></data>
   <data name="TagManagementDescription" xml:space="preserve"><value>Find tags and view their books. Change or remove a tag on selected books, or rename it everywhere.</value></data>
@@ -698,5 +698,13 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Review all books from the selected series. Choose one of their names or enter a new name. Series numbers and other metadata stay unchanged. A name belonging to an unselected series is refused.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Or enter a new series name</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>That name belongs to an unselected series. Nothing was changed. Select that series too, or choose a different new name.</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Split selected books</value></data>
+  <data name="SeriesSplitExplanation" xml:space="preserve"><value>Books to move: {0}. Books remaining in the original series: {1}. Series numbers stay the same.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Splitting the series and updating book files…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>Books moved to the new series: {0}.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Books moved to the new series: {0}. Book files that could not be updated: {1}.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>The series or selected books changed. Select the books again and review the split.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>The series could not be split. No series changes were saved.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>The series was split, but the view could not be refreshed. Reopen the library to see the changes.</value></data>
 </root>
 

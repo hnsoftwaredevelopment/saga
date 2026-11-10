@@ -47,8 +47,81 @@ internal static class SeriesNumbersSmoke
                 }
             }
             Console.WriteLine("PASS: selected series books survive paging, preview/cancel/reorder/decimal save, duplicate information and caller focus; single-number behavior remains available.");
+            await CheckSplitAsync(window, vm, store, grid);
         }
         finally { window.Close(); }
+    }
+
+    private static async Task CheckSplitAsync(SeriesManagementWindow window, SeriesManagementViewModel vm, Store store, DataGrid grid)
+    {
+        var split = (Button)window.FindName("SplitSeriesButton");
+        grid.SelectAll();
+        Require(!split.IsEnabled, "Selecting the complete series must disable splitting.");
+        grid.UnselectAll();
+        Require(!split.IsEnabled, "Splitting requires a book selection.");
+        grid.SelectedItems.Add(vm.Books.Single(row => row.Title == "Book 001"));
+        Require(split.IsEnabled, "A single selected book can be split from a larger series.");
+        grid.SelectedItems.Add(vm.Books.Single(row => row.Title == "Book 205"));
+        foreach (var save in new[] { false, true })
+        {
+            split.Focus();
+            var dialog = CompleteSplitDialogAsync(save);
+            split.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            await dialog;
+            await WaitAsync(() => !vm.IsBusy && (!save || vm.Name == "New series"));
+            await IdleAsync();
+            if (!save)
+                Require(store.Splits == 0 && grid.SelectedItems.Count == 2 && split.IsKeyboardFocusWithin, "Cancelling a split wrote data or lost selection or focus.");
+        }
+        var index = (ListBox)window.FindName("SeriesList");
+        Require(store.Splits == 1 && vm.ChangedBookIds.Count == 3 && index.IsKeyboardFocusWithin &&
+            vm.Books.Select(row => row.Number).SequenceEqual(new decimal?[] { 2.5m, 205m }) &&
+            vm.Series.Single(row => row.Name == "Series").BookCount == 203,
+            "A successful split must refresh both counts, report changed IDs, preserve numbers and focus the destination.");
+        Console.WriteLine("PASS: series split guards empty and complete selections, previews selected books, cancels and refreshes destination with unchanged numbers.");
+    }
+
+    private static async Task CompleteSplitDialogAsync(bool save)
+    {
+        await WaitAsync(() => System.Windows.Application.Current.Windows.OfType<SeriesRenameWindow>().Any(window => window.IsLoaded));
+        var window = System.Windows.Application.Current.Windows.OfType<SeriesRenameWindow>().Single();
+        try
+        {
+            await IdleAsync();
+            var vm = (SeriesRenameDialogViewModel)window.DataContext;
+            var input = (TextBox)window.FindName("NewNameBox");
+            var button = (Button)window.FindName("SaveRenameButton");
+            Require(input.IsKeyboardFocusWithin && input.Text.Length == 0 && !button.IsEnabled &&
+                vm.SplitBooks.Select(book => book.Title).SequenceEqual(new[] { "Book 001", "Book 205" }) &&
+                vm.Explanation.Contains("203"), "Split preview does not show exactly the selected titles and remaining count.");
+            input.Text = " series ";
+            Require(!button.IsEnabled, "The original series name must not be accepted.");
+            input.Text = "New series";
+            Require(button.IsEnabled && input.IsKeyboardFocusWithin, "Entering a new name must enable the default action and keep typing focus.");
+            window.Width = window.MinWidth; window.Height = window.MinHeight; window.UpdateLayout(); await IdleAsync();
+            Require(button.TranslatePoint(new Point(), window).Y + button.ActualHeight < window.ActualHeight, "Split action is outside the minimum window bounds.");
+            if (save && Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_SERIES_SPLIT") is { Length: > 0 } capture)
+            {
+                Directory.CreateDirectory(capture);
+                var dictionaries = System.Windows.Application.Current.Resources.MergedDictionaries;
+                var originalTheme = dictionaries[0];
+                try
+                {
+                    foreach (var theme in new[] { "Light", "Dark" })
+                    {
+                        dictionaries[0] = new ResourceDictionary { Source = new Uri($"pack://application:,,,/Saga;component/Resources/Styles/Themes/{theme}Theme.xaml") };
+                        window.UpdateLayout(); await IdleAsync();
+                        var bitmap = new RenderTargetBitmap((int)window.ActualWidth, (int)window.ActualHeight, 96, 96, PixelFormats.Pbgra32);
+                        bitmap.Render(window);
+                        var encoder = new PngBitmapEncoder(); encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                        using var stream = File.Create(Path.Combine(capture, $"series-split-{theme}.png")); encoder.Save(stream);
+                    }
+                }
+                finally { dictionaries[0] = originalTheme; }
+            }
+            if (save) button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        }
+        finally { if (window.IsVisible) window.Close(); }
     }
     private static async Task CompleteDialogAsync(bool save)
     {
@@ -95,9 +168,16 @@ internal static class SeriesNumbersSmoke
     private sealed class Store : ISeriesRepository, ISeriesRenameService, ISeriesNumbersService
     {
         private readonly List<SeriesBook> rows = Enumerable.Range(1,205).Select(i => new SeriesBook(Guid.NewGuid(), $"Book {i:000}", "Author", i == 3 ? 1.5m : i)).ToList();
+        private readonly List<SeriesBook> moved = [];
         public int Saves;
-        public Task<SeriesPage> SearchAsync(string query, int skip, int take, CancellationToken token) => Task.FromResult(new SeriesPage([new("Series", rows.Count)], 1));
-        public Task<SeriesBookPage> ListBooksAsync(string name, int skip, int take, CancellationToken token) => Task.FromResult(new SeriesBookPage(rows.OrderBy(row => row.Number).ThenBy(row => row.Title).Skip(skip).Take(take).ToArray(), rows.Count));
+        public int Splits;
+        public Task<SeriesPage> SearchAsync(string query, int skip, int take, CancellationToken token) => Task.FromResult(moved.Count == 0
+            ? new SeriesPage([new("Series", rows.Count)], 1) : new SeriesPage([new("New series", moved.Count), new("Series", rows.Count)], 2));
+        public Task<SeriesBookPage> ListBooksAsync(string name, int skip, int take, CancellationToken token)
+        {
+            var books = name == "New series" ? moved : rows;
+            return Task.FromResult(new SeriesBookPage(books.OrderBy(row => row.Number).ThenBy(row => row.Title).Skip(skip).Take(take).ToArray(), books.Count));
+        }
         public Task<SeriesNumbersPreview?> PreviewAsync(string name, IReadOnlyList<Guid> ids, CancellationToken token) => Task.FromResult<SeriesNumbersPreview?>(new(name, ids.Select(id => new SeriesNumberSource(name, rows.Single(row => row.Id == id))).ToArray(), rows.Where(row => !ids.Contains(row.Id)).Select(row => row.Number!.Value).ToArray()));
         public Task<SeriesNumbersCompletion> ChangeAsync(SeriesNumbersPreview preview, IReadOnlyList<SeriesNumberAssignment> assignments, CancellationToken token)
         {
@@ -105,9 +185,17 @@ internal static class SeriesNumbersSmoke
             foreach (var item in assignments) { var index = rows.FindIndex(row => row.Id == item.Id); rows[index] = rows[index] with { Number = item.Number }; }
             return Task.FromResult(new SeriesNumbersCompletion(new(SeriesNumberStatus.Changed, preview.Books.Select(row => new SeriesSourceBook(row.Book.Id, row.StoredName, row.Book.Title)).ToArray(), 1), []));
         }
-        public Task<SeriesRenamePreview> PreviewAsync(string name, CancellationToken token) => throw new NotSupportedException();
+        public Task<SeriesRenamePreview> PreviewAsync(string name, CancellationToken token) => Task.FromResult(new SeriesRenamePreview(name,
+            rows.Select(row => new SeriesSourceBook(row.Id, name, row.Title) { Number = row.Number }).ToArray()));
         public Task<SeriesRenamePreview> PreviewRenameAsync(string name, CancellationToken token) => throw new NotSupportedException();
         public Task<SeriesRenameResult> RenameAsync(SeriesRenamePreview preview, string name, CancellationToken token) => throw new NotSupportedException();
-        Task<SeriesRenameCompletion> ISeriesRenameService.RenameAsync(SeriesRenamePreview preview, string name, CancellationToken token) => throw new NotSupportedException();
+        Task<SeriesRenameCompletion> ISeriesRenameService.RenameAsync(SeriesRenamePreview preview, string name, CancellationToken token)
+        {
+            Splits++;
+            var ids = preview.SelectedBookIds!.ToHashSet();
+            moved.AddRange(rows.Where(book => ids.Contains(book.Id)));
+            rows.RemoveAll(book => ids.Contains(book.Id));
+            return Task.FromResult(new SeriesRenameCompletion(new(SeriesRenameStatus.Renamed, name, preview.Books.Where(book => ids.Contains(book.Id)).ToArray()), []));
+        }
     }
 }

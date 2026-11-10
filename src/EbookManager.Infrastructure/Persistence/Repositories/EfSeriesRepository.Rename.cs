@@ -25,7 +25,17 @@ public sealed partial class EfSeriesRepository
             !books.Select(book => (book.Id, book.StoredName)).SequenceEqual(
                 preview.Books.OrderBy(book => book.Id).Select(book => (book.Id, book.StoredName))))
             return Rejected(SeriesRenameStatus.Conflict);
-        if (!SeriesNames.Same(preview.Name, newName) && names.Any(row => SeriesNames.Same(row.Name, newName)))
+        if (preview.SelectedBookIds is { } selectedIds)
+        {
+            var ids = selectedIds.ToHashSet();
+            var selected = books.Where(book => ids.Contains(book.Id)).ToArray();
+            if (selected.Length == 0 || selected.Length == books.Length || selected.Length != selectedIds.Count ||
+                !selected.SequenceEqual(preview.Books.Where(book => ids.Contains(book.Id)).OrderBy(book => book.Id)))
+                return Rejected(SeriesRenameStatus.Conflict);
+            books = selected;
+        }
+        if ((preview.SelectedBookIds is not null || !SeriesNames.Same(preview.Name, newName)) &&
+            names.Any(row => SeriesNames.Same(row.Name, newName)))
             return Rejected(SeriesRenameStatus.NameExists);
         if (books.All(book => book.StoredName == newName)) return Rejected(SeriesRenameStatus.Unchanged);
         var updatedUtc = DateTimeOffset.UtcNow;
@@ -44,7 +54,7 @@ public sealed partial class EfSeriesRepository
         var books = new List<SeriesSourceBook>();
         foreach (var names in rawNames.Chunk(500))
             books.AddRange(await context.Books.AsNoTracking().Where(book => names.Contains(book.Series!))
-                .Select(book => new SeriesSourceBook(book.Id, book.Series!, book.Title)).ToListAsync(token));
+                .Select(book => new SeriesSourceBook(book.Id, book.Series!, book.Title) { Number = book.SeriesNumber }).ToListAsync(token));
         return books.OrderBy(book => book.Id).ToArray();
     }
 }

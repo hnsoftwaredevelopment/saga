@@ -1,4 +1,15 @@
-# Milestone 59: geselecteerde series samenvoegen
+# Milestone 60 — een serie afsplitsen
+
+- [x] Afbakening door de gebruiker goedgekeurd.
+- [x] Veilige selectie, opslagtransactie, voorstel en directe actualisatie gebouwd.
+- [x] Eigen code-review, 1.246 geautomatiseerde tests, 33 WPF-proeven en visuele controle in beide thema’s afgerond. Debug **2026.11.10.9** met 0 waarschuwingen en 0 fouten.
+- [x] Documentatie en Obsidian bijgewerkt. Excel toont M60 als Done / Getest, PR open.
+- [x] Gebruiker bevestigde op 10 november 2026 dat alle tests uit de [checklist](../docs/manual-tests/milestone-60-checklist.md) zijn geslaagd en dat de werkwijze duidelijk is.
+- [ ] Gebruiker mergt de PR.
+
+## Historie — Milestone 59 geaccepteerd en gemerged
+
+### Milestone 59 — geselecteerde series samenvoegen
 
 - [x] Concrete afbakening goedgekeurd; basis/branch en specificatie vastgelegd.
 - [x] Nieuwe naam en niet-geselecteerde doelnaam eerst falend getest; veilige bestaande merge-transactie uitgebreid.
@@ -7,11 +18,11 @@
 - [x] Volledige suite, definitieve WPF/buildcontrole en eigen vijfassige review afgerond: 1237 tests, 32 WPF-proeven, Debug 2026.11.3.53, 0 waarschuwingen/fouten.
 - [x] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone niet-draft PR #61 geopend en gekoppeld.
 - [x] Gebruiker heeft op 3 november 2026 alle checklisttests uitgevoerd en Milestone 59 geaccepteerd: alles werkt zoals beschreven.
-- [ ] Alleen de gebruiker mergt de PR.
+- [x] Gebruiker heeft PR #61 op 10 november 2026 gemerged.
 
-Verificatie: **1237 geautomatiseerde tests en 32 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.53**, **3 november 2026 16:41:41 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. Nieuwe doelnaam en niet-geselecteerde bestaande doelnaam eerst falend getest; 503 boeken over drie series, behoud nummers/overige metadata, echte metadata.json, bestaande rollback/conflict/bestandsroute, paging/selectie/focus en oude duplicaatroute gecontroleerd. De gebruiker heeft op 3 november 2026 alle tests uit checklist 59 uitgevoerd en bevestigd dat alles werkt zoals beschreven. Milestone 59 is geaccepteerd; PR #61 staat nog open.
+Verificatie: **1237 geautomatiseerde tests en 32 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.53**, **3 november 2026 16:41:41 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. Nieuwe doelnaam en niet-geselecteerde bestaande doelnaam eerst falend getest; 503 boeken over drie series, behoud nummers/overige metadata, echte metadata.json, bestaande rollback/conflict/bestandsroute, paging/selectie/focus en oude duplicaatroute gecontroleerd. De gebruiker heeft op 3 november 2026 alle tests uit checklist 59 uitgevoerd en bevestigd dat alles werkt zoals beschreven. Milestone 59 is afgerond. PR #61 is op 10 november 2026 gemerged.
 
-Gewone niet-draft PR #61 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/61. Mergeable bij opening; GitGuardian groen, CodeQL en CodeRabbit lopen nog. Acht Markdown-bestanden exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-overzicht is native gecontroleerd: M58 Afgerond, M59 Done/Getest, PR open, 62 Done en 40 Todo. Gebruikersacceptatie is bevestigd; alleen de merge van PR #61 staat nog open.
+Gewone niet-draft PR #61 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/61. Acht Markdown-bestanden exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-overzicht is native gecontroleerd: M58 Afgerond, M59 Done/Afgerond, 62 Done en 40 Todo.
 
 Reviewcorrectie PR #61, 3 november 2026: opmerkingen 4455095425 en 4455095443 zijn verwerkt. De bestemming wordt ook na de eerste 200 series in de index opgenomen, geselecteerd en bij handmatig samenvoegen in beeld gebracht. Meer laden gebruikt het aantal werkelijk gelezen repositoryrijen, zodat de extra doelrij geen series laat overslaan of verdubbelen. Eerst falende regressie met 205 series toegevoegd; de WPF-proef gebruikt nu een bestemming achter de eerste pagina. De sidecartest gebruikt verschillende nummers per boek en leest iedere sidecar via het betreffende boek-ID. Opnieuw 1237 tests en 32 WPF-proeven geslaagd; Debug 2026.11.3.53 van 3 november 2026 16:41:41 Europe/Amsterdam, 0 waarschuwingen/fouten. De gebruikersacceptatie betreft build 2026.11.3.48; deze reviewcorrecties zijn geautomatiseerd gecontroleerd in de nieuwe build.
 

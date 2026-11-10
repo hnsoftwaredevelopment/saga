@@ -10,6 +10,12 @@ public partial class SeriesRenameWindow : Window
     {
         this.viewModel = viewModel;
         InitializeComponent();
+        if (viewModel.IsSplit)
+        {
+            Height = 480;
+            MinHeight = 420;
+            Language = System.Windows.Markup.XmlLanguage.GetLanguage(System.Globalization.CultureInfo.CurrentCulture.IetfLanguageTag);
+        }
         DataContext = viewModel;
         Loaded += (_, _) => { NewNameBox.Focus(); NewNameBox.SelectAll(); };
     }

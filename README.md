@@ -4,7 +4,11 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 59 adds **Merge selected series** in **Manage series**. Explicitly select two or more series, compare all their books and choose a selected existing name or type a new one. Numbers and other metadata stay unchanged. A name belonging to an unselected series is refused; no books outside the comparison are silently included. Selection survives paging and clears on a new search. Existing single-series actions and duplicate suggestions retain their behavior. See the [manual checklist](docs/manual-tests/milestone-59-checklist.md). The user completed all Milestone 59 checklist tests and accepted the slice on 3 November 2026: everything works as described. PR #61 awaits merge. All **1237 automated tests and 32 interactive WPF scenarios pass**. Clean Debug build **2026.11.3.53**, 3 November **16:41:41 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. Both themes at minimum size and the own five-axis review are checked.
+Milestone 60 adds **Split selected books** in **Manage series**. Select a subset of a series, review the book titles and series numbers, then enter a unique new series name. The original series keeps its remaining books and all numbers are preserved. The user passed the [manual checklist](docs/manual-tests/milestone-60-checklist.md) and accepted the slice on 10 November 2026. PR #62 is open.
+
+### Milestone 59 — accepted and merged in PR #61
+
+Milestone 59 adds **Merge selected series** in **Manage series**. Explicitly select two or more series, compare all their books and choose a selected existing name or type a new one. Numbers and other metadata stay unchanged. A name belonging to an unselected series is refused; no books outside the comparison are silently included. Selection survives paging and clears on a new search. Existing single-series actions and duplicate suggestions retain their behavior. See the [manual checklist](docs/manual-tests/milestone-59-checklist.md). The user completed all Milestone 59 checklist tests and accepted the slice on 3 November 2026: everything works as described. PR #61 merged on 10 November 2026. All **1237 automated tests and 32 interactive WPF scenarios pass**. Clean Debug build **2026.11.3.53**, 3 November **16:41:41 Europe/Amsterdam**, has 0 warnings/errors and is the only Saga.exe under Builds. Both themes at minimum size and the own five-axis review are checked.
 
 Review follow-up: the merged destination remains selected even beyond the first 200 series; subsequent paging skips no rows and deduplicates the extra destination row. Sidecar tests verify different numbers by book ID. User acceptance was recorded for build 2026.11.3.48; the review corrections passed the automated and WPF checks in the current build.
 
@@ -209,7 +213,7 @@ Native write-back into ebook files remains a later opt-in feature per format, st
 
 ## Manual Verification
 
-Use the [current Milestone 59 checklist](docs/manual-tests/milestone-59-checklist.md) for merging selected series. Earlier checklists retain their historical test results:
+Use the [current Milestone 60 checklist](docs/manual-tests/milestone-60-checklist.md) for splitting a series. Earlier checklists retain their historical test results:
 
 - [docs/manual-tests/milestone-1-checklist.md](docs/manual-tests/milestone-1-checklist.md)
 - [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)

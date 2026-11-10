@@ -812,7 +812,7 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesRenameUnchanged" xml:space="preserve"><value>El nombre de la serie no ha cambiado.</value></data>
   <data name="SeriesRenameConflict" xml:space="preserve"><value>La serie ha cambiado desde la confirmación. Selecciónela de nuevo y confirme el cambio de nombre.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>No se pudo cambiar el nombre de la serie. No se guardaron cambios de serie.</value></data>
-  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>Se cambió el nombre de la serie, pero no se pudo actualizar la vista de la biblioteca. Vuelva a abrirla para ver los cambios.</value></data>
+  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>Se guardaron los cambios en las series, pero no se pudo actualizar la vista de la biblioteca. Vuelva a abrirla para ver los cambios.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+clic selecciona más libros; Mayús+clic selecciona un intervalo. Use las flechas y Ctrl+Espacio con el teclado; Escape borra la selección.</value></data>
   <data name="TagManagementTitle" xml:space="preserve"><value>Gestionar etiquetas</value></data>
   <data name="TagManagementDescription" xml:space="preserve"><value>Busque etiquetas y consulte sus libros. Cambie o quite una etiqueta de los libros seleccionados, o cámbiele el nombre en todos los libros.</value></data>
@@ -978,5 +978,13 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Compare todos los libros de las series seleccionadas. Elija uno de sus nombres o escriba uno nuevo. Los números y demás datos se conservan. Se rechaza el nombre de una serie no seleccionada.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>O escriba un nuevo nombre de serie</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Ese nombre pertenece a una serie no seleccionada. No se modificó nada. Seleccione también esa serie o elija otro nombre.</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Separar los libros seleccionados</value></data>
+  <data name="SeriesSplitExplanation" xml:space="preserve"><value>Libros que se moverán: {0}. Libros que permanecerán en la serie original: {1}. Los números se mantienen.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Separando la serie y actualizando los archivos…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>Libros movidos a la nueva serie: {0}.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Libros movidos a la nueva serie: {0}. No se pudieron actualizar los archivos de {1} libros.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>La serie o los libros seleccionados han cambiado. Vuelve a seleccionar los libros y revisa la separación.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>No se pudo dividir la serie. No se guardaron cambios en la serie.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>Se dividió la serie, pero no se pudo actualizar la vista. Vuelve a abrir la biblioteca.</value></data>
 </root>
 

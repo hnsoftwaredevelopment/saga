@@ -131,6 +131,20 @@ public partial class SeriesManagementWindow : Window
         if (confirmed)
             await viewModel.RenameAsync(preview, dialog.NewName);
     }
+
+    private async void SplitSeriesClicked(object sender, RoutedEventArgs e)
+    {
+        searchDelay?.Cancel();
+        var preview = await viewModel.PreviewSplitAsync();
+        if (preview is null) return;
+        var dialog = new SeriesRenameDialogViewModel(preview, key => Localization.LocalizedStrings.Current[key]);
+        var confirmed = new SeriesRenameWindow(dialog) { Owner = this }.ShowDialog() == true;
+        RestoreFocus(sender as UIElement);
+        if (!confirmed || !await viewModel.RenameAsync(preview, dialog.NewName)) return;
+        RestoreSeriesSelection();
+        if (SeriesList.SelectedItem is SeriesSummary target) SeriesList.ScrollIntoView(target);
+        RestoreFocus(SeriesList);
+    }
     private void FindDuplicatesClicked(object sender, RoutedEventArgs e)
     {
         if (!viewModel.CanFindDuplicates) return;
