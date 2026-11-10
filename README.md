@@ -4,6 +4,10 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
+Milestone 61 adds **Split tag** in **Manage tags**. Select books linked to a tag, enter two or more replacement tags on separate lines, and review the names and book titles before saving. Saga reuses existing tags and refreshes the affected counts. Use the [manual checklist](docs/manual-tests/milestone-61-checklist.md) to verify the workflow.
+
+### Milestone 60 — accepted and merged in PR #62
+
 Milestone 60 adds **Split selected books** in **Manage series**. Select a subset of a series, review the book titles and series numbers, then enter a unique new series name. The original series keeps its remaining books and all numbers are preserved. The user passed the [manual checklist](docs/manual-tests/milestone-60-checklist.md) and accepted the slice on 10 November 2026. PR #62 merged on 10 November 2026.
 
 ### Milestone 59 — accepted and merged in PR #61
@@ -213,7 +217,7 @@ Native write-back into ebook files remains a later opt-in feature per format, st
 
 ## Manual Verification
 
-Use the [current Milestone 60 checklist](docs/manual-tests/milestone-60-checklist.md) for splitting a series. Earlier checklists retain their historical test results:
+Use the [current Milestone 61 checklist](docs/manual-tests/milestone-61-checklist.md) for splitting a tag. Earlier checklists retain their historical test results:
 
 - [docs/manual-tests/milestone-1-checklist.md](docs/manual-tests/milestone-1-checklist.md)
 - [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)

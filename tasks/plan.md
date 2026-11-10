@@ -1,4 +1,14 @@
-# Milestone 60 — een serie afsplitsen
+# Milestone 61 — een tag splitsen
+
+De gebruiker heeft de scope op 10 november 2026 goedgekeurd. De basis is de gemergede PR #62 en de afsluitcommit voor M60. Zie de [specificatie](../docs/superpowers/specs/2026-11-10-saga-milestone-61-tag-split-design.md).
+
+1. Breid de transactie voor geselecteerde boek-tagkoppelingen uit met meerdere vervangers. Valideer de namen en het voorstel vóór schrijven.
+2. Gebruik het bestaande venster voor tagwijzigingen. Toon de ingevoerde namen en geselecteerde titels vóór bevestiging.
+3. Verifieer SQLite, sidecars, lokalisatie, het WPF-venster en beide thema’s. Lever de Debug-build en de handmatige checklist op.
+
+## Historie — Milestone 60 geaccepteerd en gemerged
+
+### Milestone 60 — een serie afsplitsen
 
 De gebruiker keurde de scope op 10 november 2026 goed. Basis is de gemergede PR #61 en de lokale afsluitcommit voor M59. Zie de [specificatie](../docs/superpowers/specs/2026-11-10-saga-milestone-60-series-split-design.md).
 

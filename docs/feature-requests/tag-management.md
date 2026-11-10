@@ -2,6 +2,10 @@
 
 ## Status
 
+Milestone 61 voegt **Tag splitsen** toe voor geselecteerde boeken. Geef twee of meer vervangende tags op, één per regel. Controleer het voorstel met de namen en boektitels. Bestaande tags en koppelingen worden hergebruikt. Na opslaan zijn de bronlijst en doeltellingen bijgewerkt. Zie de [specificatie](../superpowers/specs/2026-11-10-saga-milestone-61-tag-split-design.md) en [checklist 61](../manual-tests/milestone-61-checklist.md).
+
+## Historie — Milestone 52
+
 Milestone 52 is gebouwd na het scopeakkoord van 29 oktober 2026, vanaf geaccepteerde en gemergede PR #53 / main e8e024c. Beschikbaar via het tagicoon naast Auteurs en Series in de hoofdwerkbalk. De oorspronkelijke globale hernoemactie heet nu Tag overal hernoemen. Na de gebruikerstest zijn Tag wijzigen en Tag verwijderen voor geselecteerde boeken toegevoegd. Deze acties verversen direct de bronboeklijst en bron-/doelaantallen. Bestandssynchronisatie gebruikt de bestaande BookService-route. Geen schemawijziging of bibliotheekconversie.
 
 1054 tests en twintig interactieve WPF-scenario's slagen. Debug-build 2026.10.29.51 van 29 oktober 16:05:02 (Europe/Amsterdam) heeft 0 waarschuwingen/fouten en is de enige Saga.exe onder Builds. Eigen vijfassige review uitgevoerd; de gebruiker heeft de volledige slice op 29 oktober 2026 geaccepteerd, inclusief de selectieacties en globaal samenvoegen. Zie de [checklist](../manual-tests/milestone-52-checklist.md). PR #54 is op 30 oktober 2026 gemerged.
@@ -18,6 +22,6 @@ Milestone 52 is gebouwd na het scopeakkoord van 29 oktober 2026, vanaf geaccepte
 - Bestaande opslag/bestandssynchronisatie en begrijpelijke waarschuwingen hergebruiken.
 - Zoek-/lijstfocus, paginering en geladen omslagen behouden.
 
-Splitsen, zelfstandig globale tagrecords verwijderen en online metadata blijven afzonderlijke vervolgstappen. Samenvoegen door expliciet overal naar een bestaande tag te hernoemen is na aanvullende gebruikersfeedback onderdeel van deze slice. Het wijzigen/verwijderen van boek-tagkoppelingen voor een expliciete selectie is eveneens onderdeel van deze slice.
+Tag splitsen hoort bij Milestone 61. Zelfstandig globale tagrecords verwijderen en online metadata zijn afzonderlijke vervolgstappen. Samenvoegen door expliciet overal naar een bestaande tag te hernoemen is na aanvullende gebruikersfeedback onderdeel van Milestone 52. Het wijzigen en verwijderen van boek-tagkoppelingen voor een expliciete selectie hoort daar ook bij.
 
 Concrete acceptatie, opslagkeuzes en tests: [Milestone 52-specificatie](../superpowers/specs/2026-10-29-saga-milestone-52-tag-management-design.md). De afzonderlijke gebruikerswens voor [auteursvarianten samenvoegen](author-variants.md) is voor later vastgelegd en verandert deze slice niet.

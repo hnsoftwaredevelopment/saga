@@ -1,4 +1,14 @@
-# Milestone 60 — een serie afsplitsen
+# Milestone 61 — een tag splitsen
+
+- [x] Afbakening door de gebruiker goedgekeurd.
+- [x] Expliciete selectie, invoer en voorstel, opslag en actualisatie gebouwd.
+- [x] Eigen code-review, 1.258 tests, 34 WPF-proeven en visuele controle in beide thema’s uitgevoerd. Debug **2026.11.10.18** heeft 0 waarschuwingen en 0 fouten.
+- [ ] Gebruiker voert de [checklist](../docs/manual-tests/milestone-61-checklist.md) uit en bevestigt de slice.
+- [ ] Gebruiker mergt de PR.
+
+## Historie — Milestone 60 geaccepteerd en gemerged
+
+### Milestone 60 — een serie afsplitsen
 
 - [x] Afbakening door de gebruiker goedgekeurd.
 - [x] Veilige selectie, opslagtransactie, voorstel en directe actualisatie gebouwd.
