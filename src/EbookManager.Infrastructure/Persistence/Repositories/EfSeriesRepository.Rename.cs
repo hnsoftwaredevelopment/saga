@@ -29,12 +29,24 @@ public sealed partial class EfSeriesRepository
         {
             var ids = selectedIds.ToHashSet();
             var selected = books.Where(book => ids.Contains(book.Id)).ToArray();
-            if (selected.Length == 0 || selected.Length == books.Length || selected.Length != selectedIds.Count ||
+            if (selected.Length == 0 || selected.Length != selectedIds.Count ||
+                (preview.Destination is null && selected.Length == books.Length) ||
                 !selected.SequenceEqual(preview.Books.Where(book => ids.Contains(book.Id)).OrderBy(book => book.Id)))
                 return Rejected(SeriesRenameStatus.Conflict);
             books = selected;
         }
-        if ((preview.SelectedBookIds is not null || !SeriesNames.Same(preview.Name, newName)) &&
+        if (preview.Destination is { } destination)
+        {
+            if (preview.SelectedBookIds is null || newName != destination.Name || SeriesNames.Same(preview.Name, newName))
+                return Rejected(SeriesRenameStatus.Conflict);
+            var rawTargets = MatchingNames(names, newName);
+            if (rawTargets.Length == 0 || rawTargets.Select(name => name.Trim()).Order(StringComparer.Ordinal).First() != destination.Name)
+                return Rejected(SeriesRenameStatus.Conflict);
+            var target = await SourceAsync(context, rawTargets, token);
+            var current = SeriesMoveDestination.FromBooks(destination.Name, books, target);
+            if (!current.OverlappingNumbers.SequenceEqual(destination.OverlappingNumbers)) return Rejected(SeriesRenameStatus.Conflict);
+        }
+        else if ((preview.SelectedBookIds is not null || !SeriesNames.Same(preview.Name, newName)) &&
             names.Any(row => SeriesNames.Same(row.Name, newName)))
             return Rejected(SeriesRenameStatus.NameExists);
         if (books.All(book => book.StoredName == newName)) return Rejected(SeriesRenameStatus.Unchanged);

@@ -139,12 +139,13 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
         finally { if (!disposed) IsBusy = false; }
     }
 
-    public async Task<bool> RenameAsync(SeriesRenamePreview preview, string newName)
+    public async Task<bool> RenameAsync(SeriesRenamePreview preview, string newName, SeriesMoveDestination? destination = null)
     {
         if (!CanRename || !SeriesNames.Same(preview.Name, Name)) return false;
         var split = preview.SelectedBookIds is not null;
         if (preview.SelectedBookIds is { } ids && (!CanSplitSeries || !ReferenceEquals(splitPreview, preview) ||
             !SelectedNumberBooks.Select(book => book.Id).SequenceEqual(ids))) return false;
+        if (destination is not null) preview = preview with { Destination = destination };
         splitPreview = null;
         IsBusy = true;
         ++searchVersion;
@@ -162,7 +163,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
             {
                 SetStatus(result.Change.Status switch
                 {
-                    SeriesRenameStatus.NameExists => "SeriesRenameNameExists",
+                    SeriesRenameStatus.NameExists => split ? "SeriesMoveNameExists" : "SeriesRenameNameExists",
                     SeriesRenameStatus.InvalidName => "SeriesRenameInvalid",
                     SeriesRenameStatus.Unchanged => "SeriesRenameUnchanged",
                     _ => split ? "SeriesSplitConflict" : "SeriesRenameConflict"

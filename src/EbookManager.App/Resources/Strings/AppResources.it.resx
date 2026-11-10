@@ -978,14 +978,14 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Confronta tutti i libri delle serie selezionate. Scegli uno dei loro nomi o inseriscine uno nuovo. Numeri e altri dati rimangono invariati. Il nome di una serie non selezionata viene rifiutato.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Oppure inserisci un nuovo nome di serie</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Quel nome appartiene a una serie non selezionata. Nulla è stato modificato. Seleziona anche quella serie o scegli un altro nome.</value></data>
-  <data name="SeriesSplitAction" xml:space="preserve"><value>Separa i libri selezionati</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Cambia serie</value></data>
   <data name="SeriesSplitExplanation" xml:space="preserve"><value>Libri da spostare: {0}. Libri che restano nella serie originale: {1}. I numeri di serie restano invariati.</value></data>
-  <data name="SeriesSplitWorking" xml:space="preserve"><value>Separazione della serie e aggiornamento dei file…</value></data>
-  <data name="SeriesSplitSaved" xml:space="preserve"><value>Libri spostati nella nuova serie: {0}.</value></data>
-  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Libri spostati nella nuova serie: {0}. Impossibile aggiornare i file di {1} libri.</value></data>
-  <data name="SeriesSplitConflict" xml:space="preserve"><value>La serie o i libri selezionati sono cambiati. Seleziona di nuovo i libri e verifica la separazione.</value></data>
-  <data name="SeriesSplitFailed" xml:space="preserve"><value>Impossibile separare la serie. Non è stata salvata alcuna modifica alla serie.</value></data>
-  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>La serie è stata divisa, ma la vista non è stata aggiornata. Riapri la biblioteca.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Spostamento dei libri e aggiornamento dei file…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>Libri spostati nella serie di destinazione: {0}.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Libri spostati nella serie di destinazione: {0}. Impossibile aggiornare i file di {1} libri.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>La serie, i libri selezionati o i numeri duplicati sono cambiati. Riapri l’anteprima.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>Impossibile spostare i libri. Non è stata salvata alcuna modifica alla serie.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>I libri sono stati spostati, ma la vista non è stata aggiornata. Riapri la biblioteca.</value></data>
   <data name="TagAddSelection" xml:space="preserve"><value>Aggiungi etichette</value></data>
   <data name="TagAddExplanation" xml:space="preserve"><value>Aggiungi le etichette dell’anteprima ai {1} libri selezionati con «{0}». Ogni libro conserva le etichette attuali.</value></data>
   <data name="TagAddName" xml:space="preserve"><value>Cerca o inserisci un’etichetta</value></data>
@@ -995,5 +995,11 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="TagAddProposal" xml:space="preserve"><value>Etichette da aggiungere</value></data>
   <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Rimuovi dall’anteprima</value></data>
   <data name="TagAddUnchanged" xml:space="preserve"><value>Tutti i libri selezionati hanno già queste etichette.</value></data>
+  <data name="SeriesMoveExisting" xml:space="preserve"><value>Serie esistente</value></data>
+  <data name="SeriesMoveNew" xml:space="preserve"><value>Nuova serie</value></data>
+  <data name="SeriesMoveChecking" xml:space="preserve"><value>Verifica dei numeri di serie…</value></data>
+  <data name="SeriesMoveOverlap" xml:space="preserve"><value>Questi numeri sono già presenti nella serie di destinazione: {0}. I numeri restano invariati.</value></data>
+  <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Usa «Rinomina serie» per assegnare un nuovo nome di serie a tutti i libri.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Questa serie esiste già. Selezionala in «Serie esistente» oppure inserisci un altro nome.</value></data>
 </root>
 

@@ -7,7 +7,13 @@ public sealed partial class SeriesManagementViewModel
     private SeriesRenamePreview? splitPreview;
 
     public bool CanSplitSeries => CanBrowse && !IsSearching && MergeSeriesCount == 1 &&
-        SelectedNumberBooks.Count > 0 && SelectedNumberBooks.Count < TotalBooks;
+        SelectedNumberBooks.Count > 0;
+
+    public Task<SeriesPage> SearchMoveDestinationsAsync(string query, int offset, CancellationToken token) =>
+        Task.Run(() => repository.SearchAsync(query, offset, 100, token), token);
+
+    public Task<SeriesRenamePreview> PreviewMoveDestinationAsync(string name, CancellationToken token) =>
+        Task.Run(() => renameService.PreviewAsync(name, token), token);
 
     public async Task<SeriesRenamePreview?> PreviewSplitAsync()
     {
@@ -20,7 +26,7 @@ public sealed partial class SeriesManagementViewModel
             var preview = await Task.Run(() => renameService.PreviewAsync(Name, lifetime.Token), lifetime.Token);
             if (disposed) return null;
             var sourceIds = preview.Books.Select(book => book.Id).ToHashSet();
-            if (!SeriesNames.Same(preview.Name, Name) || ids.Length >= preview.Books.Count || !sourceIds.IsSupersetOf(ids))
+            if (!SeriesNames.Same(preview.Name, Name) || !sourceIds.IsSupersetOf(ids))
             {
                 SetStatus("SeriesSplitConflict", true);
                 return null;

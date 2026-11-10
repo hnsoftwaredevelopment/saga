@@ -18,8 +18,19 @@ public sealed record SeriesSourceBook(Guid Id, string StoredName, string Title)
 
 public sealed record SeriesRenamePreview(string Name, IReadOnlyList<SeriesSourceBook> Books)
 {
-    // A null selection renames the entire series. A split must leave at least one book behind.
+    // A null selection renames the entire series. A move to a new name leaves at least one book behind.
     public IReadOnlyList<Guid>? SelectedBookIds { get; init; }
+    public SeriesMoveDestination? Destination { get; init; }
+}
+
+public sealed record SeriesMoveDestination(string Name, IReadOnlyList<decimal> OverlappingNumbers)
+{
+    public static SeriesMoveDestination FromBooks(string name, IEnumerable<SeriesSourceBook> moving, IEnumerable<SeriesSourceBook> target)
+    {
+        var numbers = moving.Select(book => book.Number).OfType<decimal>();
+        var otherNumbers = target.Select(book => book.Number).OfType<decimal>();
+        return new(name, numbers.Intersect(otherNumbers).Order().ToArray());
+    }
 }
 public enum SeriesRenameStatus { Renamed, Unchanged, InvalidName, NameExists, Conflict }
 public sealed record SeriesRenameResult(SeriesRenameStatus Status, string Name, IReadOnlyList<SeriesSourceBook> Books);

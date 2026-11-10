@@ -698,14 +698,14 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Review all books from the selected series. Choose one of their names or enter a new name. Series numbers and other metadata stay unchanged. A name belonging to an unselected series is refused.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Or enter a new series name</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>That name belongs to an unselected series. Nothing was changed. Select that series too, or choose a different new name.</value></data>
-  <data name="SeriesSplitAction" xml:space="preserve"><value>Split selected books</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Change series</value></data>
   <data name="SeriesSplitExplanation" xml:space="preserve"><value>Books to move: {0}. Books remaining in the original series: {1}. Series numbers stay the same.</value></data>
-  <data name="SeriesSplitWorking" xml:space="preserve"><value>Splitting the series and updating book files…</value></data>
-  <data name="SeriesSplitSaved" xml:space="preserve"><value>Books moved to the new series: {0}.</value></data>
-  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Books moved to the new series: {0}. Book files that could not be updated: {1}.</value></data>
-  <data name="SeriesSplitConflict" xml:space="preserve"><value>The series or selected books changed. Select the books again and review the split.</value></data>
-  <data name="SeriesSplitFailed" xml:space="preserve"><value>The series could not be split. No series changes were saved.</value></data>
-  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>The series was split, but the view could not be refreshed. Reopen the library to see the changes.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Moving books and updating book files…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>Books moved to the destination series: {0}.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Books moved to the destination series: {0}. Book files that could not be updated: {1}.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>The series, selected books or overlapping numbers have changed. Open the proposal again.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>The books could not be moved. No series changes were saved.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>The books were moved, but the view could not be refreshed. Reopen the library.</value></data>
   <data name="TagAddSelection" xml:space="preserve"><value>Add tags</value></data>
   <data name="TagAddExplanation" xml:space="preserve"><value>Add the tags in the preview to the {1} selected books tagged “{0}”. Each book keeps its current tags.</value></data>
   <data name="TagAddName" xml:space="preserve"><value>Search or enter a tag</value></data>
@@ -715,5 +715,11 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="TagAddProposal" xml:space="preserve"><value>Tags to add</value></data>
   <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Remove from preview</value></data>
   <data name="TagAddUnchanged" xml:space="preserve"><value>All selected books already have these tags.</value></data>
+  <data name="SeriesMoveExisting" xml:space="preserve"><value>Existing series</value></data>
+  <data name="SeriesMoveNew" xml:space="preserve"><value>New series</value></data>
+  <data name="SeriesMoveChecking" xml:space="preserve"><value>Checking series numbers…</value></data>
+  <data name="SeriesMoveOverlap" xml:space="preserve"><value>These numbers already occur in the destination: {0}. The numbers will be kept.</value></data>
+  <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Use Rename series to give all books a new series name.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>This series already exists. Choose it under Existing series or enter another name.</value></data>
 </root>
 
