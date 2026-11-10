@@ -986,5 +986,14 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesSplitConflict" xml:space="preserve"><value>La serie o los libros seleccionados han cambiado. Vuelve a seleccionar los libros y revisa la separación.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>No se pudo dividir la serie. No se guardaron cambios en la serie.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>Se dividió la serie, pero no se pudo actualizar la vista. Vuelve a abrir la biblioteca.</value></data>
+  <data name="TagAddSelection" xml:space="preserve"><value>Añadir etiquetas</value></data>
+  <data name="TagAddExplanation" xml:space="preserve"><value>Añade las etiquetas de la vista previa a los {1} libros seleccionados con «{0}». Cada libro conserva sus etiquetas actuales.</value></data>
+  <data name="TagAddName" xml:space="preserve"><value>Buscar o escribir una etiqueta</value></data>
+  <data name="TagAddLinesHelp" xml:space="preserve"><value>Confirma cada etiqueta con Intro o pega una etiqueta por línea. Elige una sugerencia con las flechas.</value></data>
+  <data name="TagAddInvalidLines" xml:space="preserve"><value>Usa una etiqueta válida por línea. Omite los puntos y coma.</value></data>
+  <data name="TagAddExisting" xml:space="preserve"><value>Elegir una etiqueta existente</value></data>
+  <data name="TagAddProposal" xml:space="preserve"><value>Etiquetas que se añadirán</value></data>
+  <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Quitar de la vista previa</value></data>
+  <data name="TagAddUnchanged" xml:space="preserve"><value>Todos los libros seleccionados ya tienen estas etiquetas.</value></data>
 </root>
 

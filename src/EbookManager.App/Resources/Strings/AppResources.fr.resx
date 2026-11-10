@@ -986,5 +986,14 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesSplitConflict" xml:space="preserve"><value>La série ou les livres sélectionnés ont changé. Sélectionnez à nouveau les livres et vérifiez la scission.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>Impossible de scinder la série. Aucune modification de série n’a été enregistrée.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>La série a été scindée, mais l’affichage n’a pas pu être actualisé. Rouvrez la bibliothèque.</value></data>
+  <data name="TagAddSelection" xml:space="preserve"><value>Ajouter des étiquettes</value></data>
+  <data name="TagAddExplanation" xml:space="preserve"><value>Ajoutez les étiquettes de l’aperçu aux {1} livres sélectionnés portant « {0} ». Chaque livre conserve ses étiquettes actuelles.</value></data>
+  <data name="TagAddName" xml:space="preserve"><value>Rechercher ou saisir une étiquette</value></data>
+  <data name="TagAddLinesHelp" xml:space="preserve"><value>Validez chaque étiquette avec Entrée ou collez une étiquette par ligne. Choisissez une suggestion avec les touches fléchées.</value></data>
+  <data name="TagAddInvalidLines" xml:space="preserve"><value>Utilisez une étiquette valide par ligne. Omettez les points-virgules.</value></data>
+  <data name="TagAddExisting" xml:space="preserve"><value>Choisir une étiquette existante</value></data>
+  <data name="TagAddProposal" xml:space="preserve"><value>Étiquettes à ajouter</value></data>
+  <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Retirer de l’aperçu</value></data>
+  <data name="TagAddUnchanged" xml:space="preserve"><value>Tous les livres sélectionnés ont déjà ces étiquettes.</value></data>
 </root>
 

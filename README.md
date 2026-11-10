@@ -4,7 +4,11 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 60 adds **Split selected books** in **Manage series**. Select a subset of a series, review the book titles and series numbers, then enter a unique new series name. The original series keeps its remaining books and all numbers are preserved. The user passed the [manual checklist](docs/manual-tests/milestone-60-checklist.md) and accepted the slice on 10 November 2026. PR #62 is open.
+Milestone 62 adds **Add tags** in **Manage tags**. Select books, choose an existing tag by prefix or enter a new name, and confirm each line with Enter. You can paste one tag per line. Review the removable chips and the number of books before saving. Existing book tags are preserved and duplicate links are skipped. See the [manual checklist](docs/manual-tests/milestone-62-checklist.md).
+
+### Milestone 60 — accepted and merged in PR #62
+
+Milestone 60 adds **Split selected books** in **Manage series**. Select a subset of a series, review the book titles and series numbers, then enter a unique new series name. The original series keeps its remaining books and all numbers are preserved. The user passed the [manual checklist](docs/manual-tests/milestone-60-checklist.md) and accepted the slice on 10 November 2026. PR #62 merged on 10 November 2026.
 
 ### Milestone 59 — accepted and merged in PR #61
 
@@ -213,7 +217,7 @@ Native write-back into ebook files remains a later opt-in feature per format, st
 
 ## Manual Verification
 
-Use the [current Milestone 60 checklist](docs/manual-tests/milestone-60-checklist.md) for splitting a series. Earlier checklists retain their historical test results:
+Use the [current Milestone 62 checklist](docs/manual-tests/milestone-62-checklist.md) for adding tags to selected books. Earlier checklists retain their historical test results:
 
 - [docs/manual-tests/milestone-1-checklist.md](docs/manual-tests/milestone-1-checklist.md)
 - [docs/manual-tests/milestone-2-checklist.md](docs/manual-tests/milestone-2-checklist.md)

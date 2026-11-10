@@ -10,6 +10,9 @@ public sealed partial class TagManagementViewModel
     public bool CanChangeSelectedBooks => CanBrowse && assignments is not null && TagId is not null && SelectedBookCount > 0;
     public string SelectedBookSummary => string.Format(System.Globalization.CultureInfo.CurrentCulture, localize("TagSelectedBooks"), SelectedBookCount);
 
+    public Task<IReadOnlyList<string>> SearchAssignmentTagsAsync(string prefix, CancellationToken token) =>
+        Task.Run(() => repository.SearchNamesByPrefixAsync(prefix, token), token);
+
     public void SetSelectedBooks(IEnumerable<TagBook> selected)
     {
         var loaded = Books.Select(book => book.Id).ToHashSet();
@@ -63,7 +66,7 @@ public sealed partial class TagManagementViewModel
             {
                 SetStatus(result.Change.Status switch
                 {
-                    TagAssignmentStatus.Unchanged => "TagAssignmentUnchanged",
+                    TagAssignmentStatus.Unchanged => request.Operation == TagAssignmentOperation.Add ? "TagAddUnchanged" : "TagAssignmentUnchanged",
                     TagAssignmentStatus.InvalidName => "TagRenameInvalid",
                     _ => "TagAssignmentConflict"
                 }, result.Change.Status != TagAssignmentStatus.Unchanged);

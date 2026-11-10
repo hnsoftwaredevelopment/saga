@@ -88,6 +88,7 @@ public sealed partial class LibraryDbContextTests
     private sealed class CancelAfterTagCommit(ITagRepository inner, CancellationTokenSource cancellation) : ITagRepository
     {
         public Task<TagPage> SearchAsync(string query, int skip, int take, CancellationToken token) => inner.SearchAsync(query, skip, take, token);
+        public Task<IReadOnlyList<string>> SearchNamesByPrefixAsync(string prefix, CancellationToken token) => inner.SearchNamesByPrefixAsync(prefix, token);
         public Task<TagBookPage> ListBooksAsync(Guid tagId, int skip, int take, CancellationToken token) => inner.ListBooksAsync(tagId, skip, take, token);
         public Task<TagRenamePreview> PreviewRenameAsync(Guid tagId, CancellationToken token) => inner.PreviewRenameAsync(tagId, token);
         public async Task<TagRenameResult> RenameAsync(TagRenamePreview preview, string name, CancellationToken token)

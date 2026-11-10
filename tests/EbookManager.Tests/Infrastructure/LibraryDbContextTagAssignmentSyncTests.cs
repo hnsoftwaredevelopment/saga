@@ -16,6 +16,8 @@ public sealed partial class LibraryDbContextTests
     [InlineData(TagAssignmentOperation.Replace, true)]
     [InlineData(TagAssignmentOperation.Remove, false)]
     [InlineData(TagAssignmentOperation.Remove, true)]
+    [InlineData(TagAssignmentOperation.Add, false)]
+    [InlineData(TagAssignmentOperation.Add, true)]
     public async Task Tag_assignment_sync_reports_warnings_after_storing_only_selected_metadata(TagAssignmentOperation operation, bool fail)
     {
         using var library = new TemporaryLibrary();
@@ -28,11 +30,18 @@ public sealed partial class LibraryDbContextTests
         var sidecars = new TagSidecars(fail);
         var service = new TagAssignmentService(repository, new BookService(books, new ManagedLibraryFileStore(library.DirectoryPath),
             new MetadataAdapterResolver([new FallbackMetadataAdapter()]), sidecars));
-        var result = await service.ApplyAsync(await service.PreviewAsync(id, [book.Id], default), new(operation, "New"), default);
+        var request = new TagAssignmentRequest(operation, "New") { TargetNames = ["New", "Another"] };
+        var result = await service.ApplyAsync(await service.PreviewAsync(id, [book.Id], default), request, default);
         result.Change.Status.Should().Be(TagAssignmentStatus.Applied);
         result.Warnings.Count.Should().Be(fail ? 1 : 0);
         sidecars.Writes.Should().Be(1);
-        sidecars.Tags.Should().Equal(operation == TagAssignmentOperation.Remove ? ["Keep"] : ["New", "Keep"]);
+        string[] expected = operation switch
+        {
+            TagAssignmentOperation.Remove => ["Keep"],
+            TagAssignmentOperation.Add => ["Source", "Keep", "New", "Another"],
+            _ => ["New", "Keep"]
+        };
+        sidecars.Tags.Should().Equal(expected);
         (await books.GetAsync(book.Id, default))!.Metadata.Tags.Should().Equal(sidecars.Tags!);
     }
 

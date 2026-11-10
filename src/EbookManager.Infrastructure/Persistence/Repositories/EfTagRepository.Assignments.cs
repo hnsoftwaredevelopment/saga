@@ -23,6 +23,9 @@ public sealed partial class EfTagRepository
         TagAssignmentResult Rejected(TagAssignmentStatus status) => new(status, preview.TagId, null, null, []);
         if (!Enum.IsDefined(request.Operation) || request.Operation == TagAssignmentOperation.Replace && !TagNames.IsValid(request.TargetName))
             return Rejected(TagAssignmentStatus.InvalidName);
+        var additions = request.Operation == TagAssignmentOperation.Add ? request.TargetNames.ToArray() : [];
+        if (request.Operation == TagAssignmentOperation.Add && (additions.Length == 0 || !additions.All(TagNames.IsValid)))
+            return Rejected(TagAssignmentStatus.InvalidName);
         var ids = preview.Books.Select(book => book.Id).Order().ToArray();
         if (ids.Length == 0 || ids.Distinct().Count() != ids.Length) return Rejected(TagAssignmentStatus.Conflict);
         await using var context = factory.Create(libraryPath);
@@ -31,6 +34,15 @@ public sealed partial class EfTagRepository
         if (source is null || source.Name != preview.Name) return Rejected(TagAssignmentStatus.Conflict);
         var links = await AssignmentSourcesAsync(context, source.Id, ids, token);
         if (!ids.SequenceEqual(links.Select(link => link.BookId))) return Rejected(TagAssignmentStatus.Conflict);
+
+        if (request.Operation == TagAssignmentOperation.Add)
+        {
+            var changed = await AddAssignmentsAsync(context, additions, links, token);
+            if (changed is null) return Rejected(TagAssignmentStatus.Conflict);
+            if (changed.Count == 0) return Rejected(TagAssignmentStatus.Unchanged);
+            await transaction.CommitAsync(token);
+            return new(TagAssignmentStatus.Applied, source.Id, null, null, changed);
+        }
 
         TagEntity? target = null;
         if (request.Operation == TagAssignmentOperation.Replace)

@@ -706,5 +706,14 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesSplitConflict" xml:space="preserve"><value>The series or selected books changed. Select the books again and review the split.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>The series could not be split. No series changes were saved.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>The series was split, but the view could not be refreshed. Reopen the library to see the changes.</value></data>
+  <data name="TagAddSelection" xml:space="preserve"><value>Add tags</value></data>
+  <data name="TagAddExplanation" xml:space="preserve"><value>Add the tags in the preview to the {1} selected books tagged “{0}”. Each book keeps its current tags.</value></data>
+  <data name="TagAddName" xml:space="preserve"><value>Search or enter a tag</value></data>
+  <data name="TagAddLinesHelp" xml:space="preserve"><value>Confirm each tag with Enter or paste one tag per line. Use the arrow keys to choose a suggestion.</value></data>
+  <data name="TagAddInvalidLines" xml:space="preserve"><value>Use one valid tag per line. Leave out semicolons.</value></data>
+  <data name="TagAddExisting" xml:space="preserve"><value>Choose an existing tag</value></data>
+  <data name="TagAddProposal" xml:space="preserve"><value>Tags to add</value></data>
+  <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Remove from preview</value></data>
+  <data name="TagAddUnchanged" xml:space="preserve"><value>All selected books already have these tags.</value></data>
 </root>
 

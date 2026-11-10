@@ -106,6 +106,7 @@ public sealed class TagAssignmentManagementViewModelTests
             Memberships.Add(Guid.NewGuid(), [target]);
         }
         public TagManagementViewModel CreateViewModel() => new(this, this, key => key, this);
+        public Task<IReadOnlyList<string>> SearchNamesByPrefixAsync(string prefix, CancellationToken token) => throw new NotSupportedException();
         public Task<TagPage> SearchAsync(string query, int skip, int take, CancellationToken token)
         {
             if (FailRefresh && Applications > 0) throw new IOException("Sensitive path");
