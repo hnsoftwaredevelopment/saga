@@ -15,4 +15,4 @@ Bij een geslaagde afsplitsing met een bestandswaarschuwing blijven de opgeslagen
 
 Geautomatiseerd gecontroleerd met tijdelijke bibliotheken. **1.246 tests en 33 WPF-proeven geslaagd**. De Debug-build heeft 0 waarschuwingen en 0 fouten. Het voorstel is in beide thema’s op de minimale venstergrootte gerenderd en bekeken.
 
-Op 10 november 2026 bevestigde de gebruiker dat alle handmatige tests zijn geslaagd en dat de werkwijze duidelijk is. De slice is geaccepteerd. PR #62 staat open.
+Op 10 november 2026 bevestigde de gebruiker dat alle handmatige tests zijn geslaagd en dat de werkwijze duidelijk is. De gebruiker heeft PR #62 dezelfde dag gemerged. Milestone 60 is afgerond.

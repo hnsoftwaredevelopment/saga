@@ -15,4 +15,4 @@ Milestone 58: het bestaande pipeline-item P22 is op 3 november 2026 na goedkeuri
 
 Milestone 59: pipeline-item P23 is na expliciete goedkeuring op 3 november 2026 omgezet naar M59 (zelf gekozen series samenvoegen). De gebruiker heeft op 3 november 2026 alle checklisttests uitgevoerd en de slice geaccepteerd: alles werkt zoals beschreven. M59 staat op Done / Afgerond. PR #61 is op 10 november 2026 gemerged. De actuele telling is 62 Done / 40 Todo van 102 slices, afgerond 61% / 39%. PR #60 is gemerged en M58 staat op Afgerond.
 
-Milestone 60: pipeline-item P24 is op 10 november 2026 omgezet naar M60 (een serie afsplitsen). Op dezelfde dag zijn alle handmatige tests geslaagd en heeft de gebruiker de slice geaccepteerd. M60 staat op Done / Getest, PR open. De telling is 63 Done en 39 Todo van 102 slices, afgerond 62% en 38%.
+Milestone 60: pipeline-item P24 is op 10 november 2026 omgezet naar M60 (een serie afsplitsen). Op dezelfde dag zijn alle handmatige tests geslaagd, heeft de gebruiker de slice geaccepteerd en is PR #62 gemerged. M60 staat op Done / Afgerond. De telling is 63 Done en 39 Todo van 102 slices, afgerond 62% en 38%.

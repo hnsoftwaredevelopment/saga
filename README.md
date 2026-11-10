@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 60 adds **Split selected books** in **Manage series**. Select a subset of a series, review the book titles and series numbers, then enter a unique new series name. The original series keeps its remaining books and all numbers are preserved. The user passed the [manual checklist](docs/manual-tests/milestone-60-checklist.md) and accepted the slice on 10 November 2026. PR #62 is open.
+Milestone 60 adds **Split selected books** in **Manage series**. Select a subset of a series, review the book titles and series numbers, then enter a unique new series name. The original series keeps its remaining books and all numbers are preserved. The user passed the [manual checklist](docs/manual-tests/milestone-60-checklist.md) and accepted the slice on 10 November 2026. PR #62 merged on 10 November 2026.
 
 ### Milestone 59 — accepted and merged in PR #61
 
