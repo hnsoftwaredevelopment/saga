@@ -4,10 +4,10 @@
 - [x] Selectie, zoeken, voorstel en opslag gebouwd.
 - [x] Invoer per regel, verwijderen van chips, zoeken op beginletters en meerregelig plakken gebouwd en geverifieerd.
 - [x] Eigen code-review, 1.254 geautomatiseerde tests, 34 WPF-proeven en controle van beide thema’s. Debug **2026.11.10.28** met 0 waarschuwingen en 0 fouten.
-- [x] Checklist en documentatie gespiegeld naar Obsidian. Excel toont M62 als Te testen.
+- [x] Checklist en documentatie gespiegeld naar Obsidian. Excel toont M62 als Done / Afgerond.
 - [x] Gebruiker heeft de oorspronkelijke [checklist](../docs/manual-tests/milestone-62-checklist.md) met build 2026.11.10.24 uitgevoerd. Alle tests zijn geslaagd.
-- [ ] Gebruiker controleert de herziene invoer met build 2026.11.10.28.
-- [ ] Gebruiker mergt de PR.
+- [x] Gebruiker heeft de herziene invoer op 10 november 2026 geaccepteerd.
+- [x] Gebruiker heeft PR #64 op 10 november 2026 gemerged.
 
 ## Historie — Milestone 60 geaccepteerd en gemerged
 

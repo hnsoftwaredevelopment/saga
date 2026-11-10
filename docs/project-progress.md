@@ -19,4 +19,4 @@ Milestone 60: pipeline-item P24 is op 10 november 2026 omgezet naar M60 (een ser
 
 Milestone 61: de proef **Tag splitsen** is op 10 november 2026 ingetrokken en PR #63 is gesloten. In het voortgangsoverzicht is de rij teruggezet naar P26 met het voorstel **Tags toevoegen aan geselecteerde boeken**. De bestaande tags van elk boek blijven bij die voorgestelde actie behouden. P26 staat op Todo / Later. De telling blijft 63 Done en 39 Todo.
 
-Milestone 62: de gebruiker heeft **Tags toevoegen aan geselecteerde boeken** goedgekeurd. Pipeline-item P26 wordt M62. De functie is gebouwd en de handmatige acceptatie staat open. De telling blijft 63 Done en 39 Todo van 102 slices.
+Milestone 62: pipeline-item P26 is uitgevoerd als **Tags toevoegen aan geselecteerde boeken**. De gebruiker heeft de herziene invoer op 10 november 2026 geaccepteerd en PR #64 dezelfde dag gemerged. M62 staat op Done / Afgerond. De telling is 64 Done en 38 Todo van 102 slices, afgerond 63% en 37%.
