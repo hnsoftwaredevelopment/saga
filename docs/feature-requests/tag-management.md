@@ -18,6 +18,10 @@ Milestone 52 is gebouwd na het scopeakkoord van 29 oktober 2026, vanaf geaccepte
 - Bestaande opslag/bestandssynchronisatie en begrijpelijke waarschuwingen hergebruiken.
 - Zoek-/lijstfocus, paginering en geladen omslagen behouden.
 
-Splitsen, zelfstandig globale tagrecords verwijderen en online metadata blijven afzonderlijke vervolgstappen. Samenvoegen door expliciet overal naar een bestaande tag te hernoemen is na aanvullende gebruikersfeedback onderdeel van deze slice. Het wijzigen/verwijderen van boek-tagkoppelingen voor een expliciete selectie is eveneens onderdeel van deze slice.
+Samenvoegen door expliciet overal naar een bestaande tag te hernoemen is na aanvullende gebruikersfeedback onderdeel van deze slice. Het wijzigen en verwijderen van boek-tagkoppelingen voor een expliciete selectie hoort daar ook bij. Zelfstandig globale tagrecords verwijderen en online metadata blijven afzonderlijke vervolgstappen.
+
+## Voorstel voor vervolg
+
+De proef **Tag splitsen** is ingetrokken. Het voorstel voor P26 is **Tags toevoegen aan geselecteerde boeken**. De actie voegt een of meer nieuwe of bestaande tags toe en behoudt de tags van elk boek. Een tag die al aan een boek gekoppeld is, verschijnt daar één keer. Voor het vervangen van een bestaande tag blijft **Tag wijzigen** beschikbaar.
 
 Concrete acceptatie, opslagkeuzes en tests: [Milestone 52-specificatie](../superpowers/specs/2026-10-29-saga-milestone-52-tag-management-design.md). De afzonderlijke gebruikerswens voor [auteursvarianten samenvoegen](author-variants.md) is voor later vastgelegd en verandert deze slice niet.
