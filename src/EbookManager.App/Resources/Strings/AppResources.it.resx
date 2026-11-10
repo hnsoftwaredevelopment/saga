@@ -986,5 +986,13 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesSplitConflict" xml:space="preserve"><value>La serie o i libri selezionati sono cambiati. Seleziona di nuovo i libri e verifica la separazione.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>Impossibile separare la serie. Non è stata salvata alcuna modifica alla serie.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>La serie è stata divisa, ma la vista non è stata aggiornata. Riapri la biblioteca.</value></data>
+  <data name="TagAddSelection" xml:space="preserve"><value>Aggiungi tag</value></data>
+  <data name="TagAddExplanation" xml:space="preserve"><value>Aggiungi i tag dell’anteprima ai {1} libri selezionati con «{0}». Ogni libro conserva i tag attuali.</value></data>
+  <data name="TagAddName" xml:space="preserve"><value>Cerca o inserisci un tag</value></data>
+  <data name="TagAddToProposal" xml:space="preserve"><value>Aggiungi all’anteprima</value></data>
+  <data name="TagAddExisting" xml:space="preserve"><value>Scegli un tag esistente</value></data>
+  <data name="TagAddProposal" xml:space="preserve"><value>Tag da aggiungere</value></data>
+  <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Rimuovi dall’anteprima</value></data>
+  <data name="TagAddUnchanged" xml:space="preserve"><value>Tutti i libri selezionati hanno già questi tag.</value></data>
 </root>
 

@@ -21,7 +21,8 @@ internal static class TagSelectionActionsSmoke
         try
         {
             window.Show(); window.Activate(); await IdleAsync();
-            await vm.SearchAsync(""); await vm.SelectAsync(state.Source); await IdleAsync();
+            await WaitAsync(() => !vm.IsWorking && vm.Tags.Count == 2);
+            await vm.SelectAsync(state.Source); await IdleAsync();
             var grid = (DataGrid)window.FindName("TagBooksGrid");
             var change = (Button)window.FindName("ChangeSelectedTagButton");
             var remove = (Button)window.FindName("RemoveSelectedTagButton");
@@ -74,6 +75,26 @@ internal static class TagSelectionActionsSmoke
             grid.SelectAll(); await IdleAsync();
             Require(vm.SelectedBookCount == 205, "Native Select All did not select exactly the loaded book rows.");
             Console.WriteLine("PASS: native tag book selection survives paging and Select All uses the loaded rows.");
+
+            var add = (Button)window.FindName("AddSelectedTagsButton");
+            grid.UnselectAll(); await IdleAsync();
+            Require(!add.IsEnabled, "Adding tags requires a book selection.");
+            grid.SelectedItems.Add(vm.Books.First());
+            grid.SelectedItems.Add(vm.Books.Last()); await IdleAsync();
+            foreach (var confirm in new[] { false, true })
+            {
+                add.Focus();
+                var complete = CompleteAddAsync(confirm);
+                add.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                await complete;
+                await WaitAsync(() => !vm.IsBusy && (!confirm || vm.Tags.Any(tag => tag.Name == "Avontuur"))); await IdleAsync();
+                if (!confirm)
+                    Require(state.Applications == 2 && vm.SelectedBookCount == 2 && add.IsKeyboardFocusWithin, "Cancelling did not preserve selection and focus.");
+            }
+            Require(state.Applications == 3 && vm.TotalBooks == 205 && vm.Books.Count == 205 &&
+                vm.Tags.Single(tag => tag.Id == state.TargetId).BookCount == 4 && vm.Tags.Single(tag => tag.Name == "Avontuur").BookCount == 2,
+                "Adding tags must keep the source books and update both target counts.");
+            Console.WriteLine("PASS: tag addition searches existing tags, previews typed and chosen names, preserves cancel and retains the source memberships.");
         }
         finally
         {
@@ -81,6 +102,58 @@ internal static class TagSelectionActionsSmoke
             System.Windows.Application.Current.Resources.MergedDictionaries[0] = new ResourceDictionary
                 { Source = new Uri("pack://application:,,,/Saga;component/Resources/Styles/Themes/LightTheme.xaml") };
         }
+    }
+
+    private static async Task CompleteAddAsync(bool confirm)
+    {
+        await WaitAsync(() => System.Windows.Application.Current.Windows.OfType<TagAssignmentWindow>().Any(window => window.IsLoaded));
+        var dialog = System.Windows.Application.Current.Windows.OfType<TagAssignmentWindow>().Single();
+        try
+        {
+            await IdleAsync();
+            var input = (TextBox)dialog.FindName("NewTagBox");
+            var apply = (Button)dialog.FindName("ApplyButton");
+            var suggested = (ItemsControl)dialog.FindName("TagSuggestions");
+            var queued = (ItemsControl)dialog.FindName("QueuedTagsList");
+            Require(input.IsKeyboardFocusWithin && !apply.IsEnabled, "Add dialog must focus the empty input and require a proposal.");
+            input.Text = "Rom";
+            await WaitAsync(() => suggested.Items.OfType<TagSummary>().Any(tag => tag.Name == "Roman")); await IdleAsync();
+            var row = suggested.Items.OfType<TagSummary>().Single(tag => tag.Name == "Roman");
+            var container = suggested.ItemContainerGenerator.ContainerFromItem(row);
+            FindButton(container).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await IdleAsync();
+            Require(input.IsKeyboardFocusWithin && queued.Items.OfType<string>().SequenceEqual(new[] { "Roman" }), "Existing choice did not queue its canonical name.");
+            input.Text = " Avontuur ";
+            Require(!apply.IsEnabled, "An unqueued draft must not be omitted silently.");
+            ((Button)dialog.FindName("QueueTagButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent)); await IdleAsync();
+            Require(apply.IsEnabled && queued.Items.OfType<string>().SequenceEqual(new[] { "Roman", "Avontuur" }), "Typed tags must appear in the proposal.");
+            dialog.Width = dialog.MinWidth; dialog.Height = dialog.MinHeight; await IdleAsync();
+            Require(apply.TranslatePoint(new Point(), dialog).Y + apply.ActualHeight < dialog.ActualHeight, "Confirm action must be visible at minimum size.");
+            if (confirm && Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_TAG_ADD") is { Length: > 0 } directory)
+            {
+                System.IO.Directory.CreateDirectory(directory);
+                var dictionaries = System.Windows.Application.Current.Resources.MergedDictionaries;
+                var original = dictionaries[0];
+                try
+                {
+                    foreach (var theme in new[] { "Light", "Dark" })
+                    {
+                        dictionaries[0] = new ResourceDictionary { Source = new Uri($"pack://application:,,,/Saga;component/Resources/Styles/Themes/{theme}Theme.xaml") };
+                        await IdleAsync(); Capture(dialog, System.IO.Path.Combine(directory, $"tag-add-{theme}.png"));
+                    }
+                }
+                finally { dictionaries[0] = original; }
+            }
+            if (confirm) apply.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            else dialog.DialogResult = false;
+        }
+        finally { if (dialog.IsVisible) dialog.Close(); }
+    }
+
+    private static Button FindButton(DependencyObject container)
+    {
+        var presenter = (ContentPresenter)container;
+        presenter.ApplyTemplate();
+        return (Button)VisualTreeHelper.GetChild(presenter, 0);
     }
 
     private static async Task CompleteDialogAsync(bool confirm, string? target)
@@ -162,6 +235,16 @@ internal static class TagSelectionActionsSmoke
         public Task<TagAssignmentCompletion> ApplyAsync(TagAssignmentPreview preview, TagAssignmentRequest request, CancellationToken token)
         {
             Applications++;
+            if (request.Operation == TagAssignmentOperation.Add)
+            {
+                foreach (var name in request.TargetNames)
+                {
+                    var id = names.FirstOrDefault(item => TagNames.Normalize(item.Value) == TagNames.Normalize(name)).Key;
+                    if (id == Guid.Empty) { id = Guid.NewGuid(); names.Add(id, name); }
+                    foreach (var book in preview.Books) books[book.Id].Tags.Add(id);
+                }
+                return Task.FromResult(new TagAssignmentCompletion(new(TagAssignmentStatus.Applied, preview.TagId, null, null, preview.Books), []));
+            }
             foreach (var book in preview.Books)
             {
                 books[book.Id].Tags.Remove(preview.TagId);

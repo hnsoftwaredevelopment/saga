@@ -986,5 +986,13 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesSplitConflict" xml:space="preserve"><value>Die Reihe oder die ausgewählten Bücher wurden geändert. Wählen Sie die Bücher erneut aus und prüfen Sie die Aufteilung.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>Die Reihe konnte nicht aufgeteilt werden. Es wurden keine Änderungen an der Reihe gespeichert.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>Die Reihe wurde aufgeteilt, aber die Ansicht konnte nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut.</value></data>
+  <data name="TagAddSelection" xml:space="preserve"><value>Tags hinzufügen</value></data>
+  <data name="TagAddExplanation" xml:space="preserve"><value>Fügen Sie die Tags aus der Vorschau zu den {1} ausgewählten Büchern mit „{0}“ hinzu. Jedes Buch behält seine bisherigen Tags.</value></data>
+  <data name="TagAddName" xml:space="preserve"><value>Tag suchen oder eingeben</value></data>
+  <data name="TagAddToProposal" xml:space="preserve"><value>In die Vorschau aufnehmen</value></data>
+  <data name="TagAddExisting" xml:space="preserve"><value>Vorhandenes Tag auswählen</value></data>
+  <data name="TagAddProposal" xml:space="preserve"><value>Hinzuzufügende Tags</value></data>
+  <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Aus Vorschau entfernen</value></data>
+  <data name="TagAddUnchanged" xml:space="preserve"><value>Alle ausgewählten Bücher haben diese Tags bereits.</value></data>
 </root>
 

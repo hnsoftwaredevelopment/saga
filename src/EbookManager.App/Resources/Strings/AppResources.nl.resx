@@ -706,5 +706,13 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesSplitConflict" xml:space="preserve"><value>De serie of de geselecteerde boeken zijn gewijzigd. Selecteer de boeken opnieuw en controleer de afsplitsing.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>De serie kon niet worden afgesplitst. Er zijn geen seriewijzigingen opgeslagen.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>De serie is afgesplitst, maar het overzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw om de wijzigingen te zien.</value></data>
+  <data name="TagAddSelection" xml:space="preserve"><value>Tags toevoegen</value></data>
+  <data name="TagAddExplanation" xml:space="preserve"><value>Voeg de tags in het voorstel toe aan de {1} geselecteerde boeken met ‘{0}’. Elk boek houdt zijn huidige tags.</value></data>
+  <data name="TagAddName" xml:space="preserve"><value>Zoek of typ een tag</value></data>
+  <data name="TagAddToProposal" xml:space="preserve"><value>Zet in voorstel</value></data>
+  <data name="TagAddExisting" xml:space="preserve"><value>Kies een bestaande tag</value></data>
+  <data name="TagAddProposal" xml:space="preserve"><value>Voorstel voor toevoeging</value></data>
+  <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Uit voorstel halen</value></data>
+  <data name="TagAddUnchanged" xml:space="preserve"><value>Alle geselecteerde boeken hebben deze tags al.</value></data>
 </root>
 

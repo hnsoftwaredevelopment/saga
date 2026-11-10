@@ -6,6 +6,29 @@ namespace EbookManager.Tests.App.ViewModels;
 
 public sealed class TagAssignmentDialogViewModelTests
 {
+    [Fact]
+    public void Add_requires_an_explicit_proposal_and_deduplicates_queued_tags()
+    {
+        var vm = new TagAssignmentDialogViewModel(new(Guid.NewGuid(), "Source", [new(Guid.NewGuid(), "Book")]),
+            TagAssignmentOperation.Add, key => key);
+        vm.NewName.Should().BeEmpty();
+        vm.CanApply.Should().BeFalse();
+        vm.NewName = "  Roman  ";
+        vm.CanQueueTag.Should().BeTrue();
+        vm.QueueTag(vm.NewName);
+        vm.QueueTag(" roman ");
+        vm.QueueTag("A;B");
+        vm.CanApply.Should().BeTrue();
+        vm.NewName = "Avontuur";
+        vm.CanApply.Should().BeFalse();
+        vm.QueueTag(vm.NewName);
+        vm.CreateRequest().TargetNames.Should().Equal("Roman", "Avontuur");
+        vm.UnqueueTag("Roman");
+        vm.CreateRequest().TargetNames.Should().Equal("Avontuur");
+        vm.UnqueueTag("Avontuur");
+        vm.CanApply.Should().BeFalse();
+    }
+
     [Theory]
     [InlineData("Source", false)]
     [InlineData(" source ", false)]

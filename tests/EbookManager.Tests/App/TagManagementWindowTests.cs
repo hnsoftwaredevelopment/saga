@@ -26,7 +26,7 @@ public sealed class TagManagementWindowTests
         var paths = new[] { "TagManagementWindow.xaml", "TagRenameWindow.xaml", "TagAssignmentWindow.xaml" };
         var xaml = string.Join("\n", paths.Select(path => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "TestAssets", path))));
         var keys = System.Text.RegularExpressions.Regex.Matches(xaml, @"\{loc:Loc (Tag\w+)\}").Select(match => match.Groups[1].Value)
-            .Concat(new[] { "TagLoadFailed", "TagRenameWorking", "TagRenameSaved", "TagRenameSavedWithWarnings", "TagRenameNameExists", "TagRenameInvalid", "TagRenameUnchanged", "TagRenameConflict", "TagRenameFailed", "TagRenameRefreshFailed", "TagRenameExplanation", "TagSelectedBooks", "TagChangeSelectionTitle", "TagChangeExplanation", "TagRemoveSelectionTitle", "TagRemoveExplanation", "TagAssignmentWorking", "TagAssignmentSaved", "TagAssignmentSavedWithWarnings", "TagAssignmentConflict", "TagAssignmentUnchanged", "TagAssignmentFailed", "TagAssignmentRefreshFailed" }).Distinct().ToArray();
+            .Concat(new[] { "TagLoadFailed", "TagRenameWorking", "TagRenameSaved", "TagRenameSavedWithWarnings", "TagRenameNameExists", "TagRenameInvalid", "TagRenameUnchanged", "TagRenameConflict", "TagRenameFailed", "TagRenameRefreshFailed", "TagRenameExplanation", "TagSelectedBooks", "TagChangeSelectionTitle", "TagChangeExplanation", "TagRemoveSelectionTitle", "TagRemoveExplanation", "TagAssignmentWorking", "TagAssignmentSaved", "TagAssignmentSavedWithWarnings", "TagAssignmentConflict", "TagAssignmentUnchanged", "TagAssignmentFailed", "TagAssignmentRefreshFailed", "TagAddExplanation", "TagAddUnchanged" }).Distinct().ToArray();
         foreach (var language in new[] { "", ".nl", ".de", ".fr", ".es", ".it" })
         {
             var resources = XDocument.Load(Path.Combine(AppContext.BaseDirectory, "TestAssets", "Strings", $"AppResources{language}.resx"))
@@ -37,6 +37,7 @@ public sealed class TagManagementWindowTests
                 resources[key].Should().NotBeNullOrWhiteSpace().And.NotBe(key);
                 FluentActions.Invoking(() => string.Format(CultureInfo.InvariantCulture, resources[key], 318, 2)).Should().NotThrow();
             }
+            resources["TagAddExplanation"].Should().Contain("{0}").And.Contain("{1}");
         }
     }
 }

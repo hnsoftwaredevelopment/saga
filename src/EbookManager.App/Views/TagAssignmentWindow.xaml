@@ -21,6 +21,37 @@
           <TextBox x:Name="NewNameBox" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:Loc TagChangeTarget}" />
           <TextBlock Text="{loc:Loc TagRenameInvalid}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0" />
         </StackPanel>
+        <StackPanel Visibility="{Binding IsAdd, Converter={StaticResource BooleanVisibility}}">
+          <Label Content="{loc:Loc TagAddName}" Target="{Binding ElementName=NewTagBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
+          <DockPanel>
+            <Button x:Name="QueueTagButton" DockPanel.Dock="Right" Content="{loc:Loc TagAddToProposal}" Margin="8,0,0,0" IsEnabled="{Binding CanQueueTag}" Click="QueueTagClicked" />
+            <TextBox x:Name="NewTagBox" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" TextChanged="TagSearchChanged" PreviewKeyDown="TagInputKeyDown" />
+          </DockPanel>
+          <TextBlock Text="{loc:Loc TagRenameInvalid}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,10" />
+          <TextBlock Text="{loc:Loc TagAddExisting}" FontWeight="SemiBold" />
+          <ScrollViewer MaxHeight="90" VerticalScrollBarVisibility="Auto" Margin="0,4,0,8">
+            <ItemsControl x:Name="TagSuggestions">
+              <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate><DataTemplate>
+                <Button Margin="0,0,6,6" MaxWidth="300" ToolTip="{Binding Name}" AutomationProperties.Name="{Binding Name}" Click="QueueSuggestionClicked">
+                  <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                </Button>
+              </DataTemplate></ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+          <TextBlock x:Name="TagSearchError" Text="{loc:Loc TagLoadFailed}" Visibility="Collapsed" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" />
+          <TextBlock Text="{loc:Loc TagAddProposal}" FontWeight="SemiBold" />
+          <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto" Margin="0,4,0,0">
+            <ItemsControl x:Name="QueuedTagsList" ItemsSource="{Binding QueuedTags}">
+              <ItemsControl.ItemTemplate><DataTemplate>
+                <DockPanel Margin="0,0,0,4">
+                  <Button DockPanel.Dock="Right" Content="{loc:Loc TagAddRemoveFromProposal}" Click="UnqueueTagClicked" ToolTip="{Binding}" Margin="8,0,0,0" />
+                  <TextBlock Text="{Binding}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                </DockPanel>
+              </DataTemplate></ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </StackPanel>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>
