@@ -812,7 +812,7 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesRenameUnchanged" xml:space="preserve"><value>Der Serienname wurde nicht geändert.</value></data>
   <data name="SeriesRenameConflict" xml:space="preserve"><value>Die Serie wurde seit der Bestätigung geändert. Wählen Sie sie erneut aus und bestätigen Sie das Umbenennen erneut.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>Die Serie konnte nicht umbenannt werden. Es wurden keine Serienänderungen gespeichert.</value></data>
-  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>Die Serie wurde umbenannt, aber die Bibliotheksansicht konnte nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut, um die Änderungen zu sehen.</value></data>
+  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>Die Änderungen an den Reihen wurden gespeichert, aber die Bibliotheksansicht konnte nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut, um die Änderungen zu sehen.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Strg+Klick wählt weitere Bücher; Umschalt+Klick wählt einen Bereich. Verwenden Sie die Pfeiltasten und Strg+Leertaste; Escape hebt die Auswahl auf.</value></data>
   <data name="TagManagementTitle" xml:space="preserve"><value>Schlagwörter verwalten</value></data>
   <data name="TagManagementDescription" xml:space="preserve"><value>Suchen Sie Schlagwörter und sehen Sie ihre Bücher. Ändern oder entfernen Sie ein Schlagwort bei ausgewählten Büchern oder benennen Sie es überall um.</value></data>

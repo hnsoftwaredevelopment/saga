@@ -812,7 +812,7 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesRenameUnchanged" xml:space="preserve"><value>Le nom de la série n’a pas changé.</value></data>
   <data name="SeriesRenameConflict" xml:space="preserve"><value>La série a changé depuis la confirmation. Sélectionnez-la à nouveau et confirmez le renommage.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>Impossible de renommer la série. Aucune modification de série n’a été enregistrée.</value></data>
-  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>La série a été renommée, mais la bibliothèque n’a pas pu être actualisée. Rouvrez la bibliothèque pour voir les modifications.</value></data>
+  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>Les modifications des séries ont été enregistrées, mais la bibliothèque n’a pas pu être actualisée. Rouvrez la bibliothèque pour voir les modifications.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+clic sélectionne plusieurs livres ; Maj+clic sélectionne une plage. Utilisez les flèches et Ctrl+Espace au clavier ; Échap efface la sélection.</value></data>
   <data name="TagManagementTitle" xml:space="preserve"><value>Gérer les étiquettes</value></data>
   <data name="TagManagementDescription" xml:space="preserve"><value>Recherchez des étiquettes et consultez leurs livres. Modifiez ou retirez une étiquette des livres sélectionnés, ou renommez-la partout.</value></data>

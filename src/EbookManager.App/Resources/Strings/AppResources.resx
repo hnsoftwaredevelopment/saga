@@ -532,7 +532,7 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesRenameUnchanged" xml:space="preserve"><value>The series name has not changed.</value></data>
   <data name="SeriesRenameConflict" xml:space="preserve"><value>The series has changed since confirmation. Select it again and confirm a new rename.</value></data>
   <data name="SeriesRenameFailed" xml:space="preserve"><value>The series could not be renamed. No series changes were saved.</value></data>
-  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>The series was renamed, but the library view could not be refreshed. Reopen the library to see the changes.</value></data>
+  <data name="SeriesRenameRefreshFailed" xml:space="preserve"><value>The series changes were saved, but the library view could not be refreshed. Reopen the library to see the changes.</value></data>
   <data name="BookshelfSelectionHelp" xml:space="preserve"><value>Ctrl+click selects more books; Shift+click selects a range. Use the arrow keys and Ctrl+Space with the keyboard; Escape clears the selection.</value></data>
   <data name="TagManagementTitle" xml:space="preserve"><value>Manage tags</value></data>
   <data name="TagManagementDescription" xml:space="preserve"><value>Find tags and view their books. Change or remove a tag on selected books, or rename it everywhere.</value></data>
