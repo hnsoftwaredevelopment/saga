@@ -2,9 +2,11 @@
 
 - [x] Afbakening goedgekeurd. P26 wordt M62.
 - [x] Selectie, zoeken, voorstel en opslag gebouwd.
-- [x] Eigen code-review, 1.252 geautomatiseerde tests, 34 WPF-proeven en controle van beide thema’s. Debug **2026.11.10.24** met 0 waarschuwingen en 0 fouten.
+- [x] Invoer per regel, verwijderen van chips, zoeken op beginletters en meerregelig plakken gebouwd en geverifieerd.
+- [x] Eigen code-review, 1.254 geautomatiseerde tests, 34 WPF-proeven en controle van beide thema’s. Debug **2026.11.10.28** met 0 waarschuwingen en 0 fouten.
 - [x] Checklist en documentatie gespiegeld naar Obsidian. Excel toont M62 als Te testen.
-- [ ] Gebruiker voert de [checklist](../docs/manual-tests/milestone-62-checklist.md) uit en bevestigt de slice.
+- [x] Gebruiker heeft de oorspronkelijke [checklist](../docs/manual-tests/milestone-62-checklist.md) met build 2026.11.10.24 uitgevoerd. Alle tests zijn geslaagd.
+- [ ] Gebruiker controleert de herziene invoer met build 2026.11.10.28.
 - [ ] Gebruiker mergt de PR.
 
 ## Historie — Milestone 60 geaccepteerd en gemerged

@@ -22,6 +22,6 @@ Samenvoegen door expliciet overal naar een bestaande tag te hernoemen is na aanv
 
 ## Milestone 62 — tags toevoegen
 
-**Tags toevoegen** voegt een of meer nieuwe of bestaande tags toe aan geselecteerde boeken en behoudt de tags van elk boek. Het venster toont de gekozen namen en het aantal boeken vóór het opslaan. Een tag die al aan een boek gekoppeld is, verschijnt daar één keer. Voor het vervangen van een bestaande tag blijft **Tag wijzigen** beschikbaar. Zie de [specificatie](../superpowers/specs/2026-11-10-saga-milestone-62-add-tags-design.md) en [checklist 62](../manual-tests/milestone-62-checklist.md).
+**Tags toevoegen** voegt een of meer nieuwe of bestaande tags toe aan geselecteerde boeken en behoudt de tags van elk boek. Bevestig een getypte naam of een gekozen suggestie met Enter, of plak één tag per regel. Spaties horen bij de naam. Het venster toont de verwijderbare chips en het aantal boeken vóór het opslaan. Een tag die al aan een boek gekoppeld is, verschijnt daar één keer. Voor het vervangen van een bestaande tag blijft **Tag wijzigen** beschikbaar. Zie de [specificatie](../superpowers/specs/2026-11-10-saga-milestone-62-add-tags-design.md) en [checklist 62](../manual-tests/milestone-62-checklist.md).
 
 Concrete acceptatie, opslagkeuzes en tests: [Milestone 52-specificatie](../superpowers/specs/2026-10-29-saga-milestone-52-tag-management-design.md). De afzonderlijke gebruikerswens voor [auteursvarianten samenvoegen](author-variants.md) is voor later vastgelegd en verandert deze slice niet.

@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 62 adds **Add tags** in **Manage tags**. Select books, choose existing tags or enter new ones, then review the proposal and the number of books. Existing book tags are preserved and duplicate links are skipped. See the [manual checklist](docs/manual-tests/milestone-62-checklist.md).
+Milestone 62 adds **Add tags** in **Manage tags**. Select books, choose an existing tag by prefix or enter a new name, and confirm each line with Enter. You can paste one tag per line. Review the removable chips and the number of books before saving. Existing book tags are preserved and duplicate links are skipped. See the [manual checklist](docs/manual-tests/milestone-62-checklist.md).
 
 ### Milestone 60 — accepted and merged in PR #62
 
