@@ -11,9 +11,15 @@ public partial class TagAssignmentWindow : Window
         this.viewModel = viewModel;
         InitializeComponent();
         DataContext = viewModel;
+        if (viewModel.IsSplit)
+        {
+            Height = 550;
+            MinHeight = 470;
+        }
         Loaded += (_, _) =>
         {
-            if (viewModel.HasTargetName) { NewNameBox.Focus(); NewNameBox.SelectAll(); }
+            if (viewModel.IsSplit) SplitNamesBox.Focus();
+            else if (viewModel.HasTargetName) { NewNameBox.Focus(); NewNameBox.SelectAll(); }
             else ApplyButton.Focus();
         };
     }

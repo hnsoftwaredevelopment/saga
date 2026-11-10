@@ -126,6 +126,7 @@ public partial class TagManagementWindow : Window
     }
     private async void ChangeSelectedClicked(object sender, RoutedEventArgs e) => await ChangeSelectionAsync(sender, TagAssignmentOperation.Replace);
     private async void RemoveSelectedClicked(object sender, RoutedEventArgs e) => await ChangeSelectionAsync(sender, TagAssignmentOperation.Remove);
+    private async void SplitSelectedClicked(object sender, RoutedEventArgs e) => await ChangeSelectionAsync(sender, TagAssignmentOperation.Split);
     private async Task ChangeSelectionAsync(object sender, TagAssignmentOperation operation)
     {
         searchDelay?.Cancel();
@@ -134,7 +135,7 @@ public partial class TagManagementWindow : Window
         var dialog = new TagAssignmentDialogViewModel(preview, operation, key => Localization.LocalizedStrings.Current[key]);
         var confirmed = new TagAssignmentWindow(dialog) { Owner = this }.ShowDialog() == true;
         RestoreFocus(sender as UIElement);
-        if (confirmed) await viewModel.ApplyAssignmentAsync(preview, new(operation, dialog.NewName));
+        if (confirmed) await viewModel.ApplyAssignmentAsync(preview, dialog.CreateRequest());
     }
     private void RestoreFocus(UIElement? target)
     {

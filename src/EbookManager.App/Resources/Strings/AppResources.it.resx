@@ -986,5 +986,12 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesSplitConflict" xml:space="preserve"><value>La serie o i libri selezionati sono cambiati. Seleziona di nuovo i libri e verifica la separazione.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>Impossibile separare la serie. Non è stata salvata alcuna modifica alla serie.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>La serie è stata divisa, ma la vista non è stata aggiornata. Riapri la biblioteca.</value></data>
+  <data name="TagSplitSelection" xml:space="preserve"><value>Dividi tag</value></data>
+  <data name="TagSplitSelectionTitle" xml:space="preserve"><value>Dividi il tag dei libri selezionati</value></data>
+  <data name="TagSplitExplanation" xml:space="preserve"><value>Sostituisci «{0}» nei {1} libri selezionati con i tag qui sotto.</value></data>
+  <data name="TagSplitTargets" xml:space="preserve"><value>Tag sostitutivi</value></data>
+  <data name="TagSplitRules" xml:space="preserve"><value>Inserisci almeno due tag diversi, uno per riga. Ometti il tag originale. I tag esistenti vengono riutilizzati.</value></data>
+  <data name="TagSplitPreview" xml:space="preserve"><value>Anteprima della sostituzione</value></data>
+  <data name="TagSelectedBookTitles" xml:space="preserve"><value>Libri selezionati</value></data>
 </root>
 

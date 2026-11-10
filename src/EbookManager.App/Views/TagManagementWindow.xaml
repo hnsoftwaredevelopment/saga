@@ -46,6 +46,7 @@
           <TextBlock Text="{Binding Name}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" />
           <WrapPanel Margin="0,10,0,6">
             <Button x:Name="ChangeSelectedTagButton" Content="{loc:Loc TagChangeSelection}" Click="ChangeSelectedClicked" IsEnabled="{Binding CanChangeSelectedBooks}" Margin="0,0,8,6" AutomationProperties.Name="{loc:Loc TagChangeSelectionTitle}" />
+            <Button x:Name="SplitSelectedTagButton" Content="{loc:Loc TagSplitSelection}" Click="SplitSelectedClicked" IsEnabled="{Binding CanChangeSelectedBooks}" Margin="0,0,8,6" AutomationProperties.Name="{loc:Loc TagSplitSelectionTitle}" />
             <Button x:Name="RemoveSelectedTagButton" Content="{loc:Loc TagRemoveSelection}" Click="RemoveSelectedClicked" IsEnabled="{Binding CanChangeSelectedBooks}" Margin="0,0,8,6" AutomationProperties.Name="{loc:Loc TagRemoveSelectionTitle}" />
             <Button x:Name="RenameTagButton" Content="{loc:Loc TagRename}" Click="RenameClicked" IsEnabled="{Binding CanRename}" Margin="0,0,0,6" AutomationProperties.Name="{loc:Loc TagRename}" />
           </WrapPanel>

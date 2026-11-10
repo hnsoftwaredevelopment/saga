@@ -9,6 +9,58 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Fact]
+    public async Task Tag_split_reuses_existing_tags_and_changes_only_the_confirmed_books()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var books = new EfBookRepository(factory, library.DirectoryPath);
+        var first = CreateBook("First", ["Author"], ["Before", "Source", "After"]);
+        var second = CreateBook("Second", ["Author"], ["Before", "Source", "Existing", "After"]);
+        var untouched = CreateBook("Untouched", ["Author"], ["Source"]);
+        var all = new[] { first, second, untouched };
+        for (var index = 0; index < all.Length; index++) await books.AddAsync(all[index], CreateFile(all[index].Id, Hash(index + 1)), default);
+        var repository = new EfTagRepository(factory, library.DirectoryPath);
+        var source = (await repository.SearchAsync("Source", 0, 200, default)).Tags.Single();
+        var target = (await repository.SearchAsync("Existing", 0, 200, default)).Tags.Single();
+        var preview = await repository.PreviewAssignmentsAsync(source.Id, [first.Id, second.Id], default);
+
+        var result = await repository.ApplyAssignmentsAsync(preview,
+            new(TagAssignmentOperation.Split) { TargetNames = [" existing ", " New "] }, default);
+
+        result.Status.Should().Be(TagAssignmentStatus.Applied);
+        (await books.GetAsync(first.Id, default))!.Metadata.Tags.Should().Equal("Before", "Existing", "After", "New");
+        (await books.GetAsync(second.Id, default))!.Metadata.Tags.Should().Equal("Before", "New", "Existing", "After");
+        (await books.GetAsync(untouched.Id, default))!.Metadata.Tags.Should().Equal("Source");
+        (await repository.ListBooksAsync(target.Id, 0, 200, default)).TotalCount.Should().Be(2);
+        (await repository.SearchAsync("New", 0, 200, default)).Tags.Single().BookCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task Tag_split_validates_all_names_before_writing_and_rolls_back_created_targets()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        var id = await SeedTagBooksAsync(factory, library.DirectoryPath, 2);
+        var repository = new EfTagRepository(factory, library.DirectoryPath);
+        var ids = (await repository.ListBooksAsync(id, 0, 200, default)).Books.Select(book => book.Id).ToArray();
+        var preview = await repository.PreviewAssignmentsAsync(id, ids, default);
+        string[][] invalid = [["New"], ["New", " new "], ["New", preview.Name.ToUpperInvariant()], ["New", "A;B"]];
+        foreach (var names in invalid)
+            (await repository.ApplyAssignmentsAsync(preview, new(TagAssignmentOperation.Split) { TargetNames = names }, default))
+                .Status.Should().Be(TagAssignmentStatus.InvalidName);
+        var request = new TagAssignmentRequest(TagAssignmentOperation.Split) { TargetNames = ["New", "Another"] };
+        await using var context = factory.Create(library.DirectoryPath);
+        await context.Books.Where(book => book.Id == ids[0]).ExecuteUpdateAsync(setters => setters.SetProperty(book => book.Title, "Renamed"));
+        (await repository.ApplyAssignmentsAsync(preview, request, default)).Status.Should().Be(TagAssignmentStatus.Conflict);
+        preview = await repository.PreviewAssignmentsAsync(id, ids, default);
+        await context.Database.ExecuteSqlRawAsync("CREATE TRIGGER reject_split BEFORE UPDATE OF UpdatedUtc ON Books BEGIN SELECT RAISE(ABORT, 'test failure'); END;");
+        await FluentActions.Awaiting(() => repository.ApplyAssignmentsAsync(preview, request, default))
+            .Should().ThrowAsync<Microsoft.Data.Sqlite.SqliteException>();
+        (await context.Tags.CountAsync()).Should().Be(1);
+        (await context.BookTags.CountAsync(link => link.TagId == id)).Should().Be(2);
+    }
+
+    [Fact]
     public async Task Tag_assignment_moves_only_selected_books_and_deduplicates_an_existing_target()
     {
         using var library = new TemporaryLibrary();
@@ -61,6 +113,7 @@ public sealed partial class LibraryDbContextTests
     [Theory]
     [InlineData(TagAssignmentOperation.Replace)]
     [InlineData(TagAssignmentOperation.Remove)]
+    [InlineData(TagAssignmentOperation.Split)]
     public async Task Tag_assignment_changes_selected_books_across_chunks_and_keeps_the_remainder(TagAssignmentOperation operation)
     {
         using var library = new TemporaryLibrary();
@@ -69,11 +122,18 @@ public sealed partial class LibraryDbContextTests
         var repository = new EfTagRepository(factory, library.DirectoryPath);
         var all = await repository.PreviewRenameAsync(id, default);
         var selected = all.Books.Take(505).Select(book => book.Id).ToArray();
-        var result = await repository.ApplyAssignmentsAsync(await repository.PreviewAssignmentsAsync(id, selected, default), new(operation, "New"), default);
+        var request = new TagAssignmentRequest(operation, "New") { TargetNames = ["New", "Another"] };
+        var result = await repository.ApplyAssignmentsAsync(await repository.PreviewAssignmentsAsync(id, selected, default), request, default);
         result.Books.Should().HaveCount(505);
         (await repository.ListBooksAsync(id, 0, 200, default)).TotalCount.Should().Be(5);
         if (operation == TagAssignmentOperation.Replace)
             (await repository.ListBooksAsync(result.TargetTagId!.Value, 0, 200, default)).TotalCount.Should().Be(505);
+        if (operation == TagAssignmentOperation.Split)
+        {
+            var tags = (await repository.SearchAsync("", 0, 200, default)).Tags;
+            tags.Single(tag => tag.Name == "New").BookCount.Should().Be(505);
+            tags.Single(tag => tag.Name == "Another").BookCount.Should().Be(505);
+        }
         await using var verify = factory.Create(library.DirectoryPath);
         (await verify.Books.CountAsync()).Should().Be(510);
     }

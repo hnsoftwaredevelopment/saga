@@ -986,5 +986,12 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesSplitConflict" xml:space="preserve"><value>Die Reihe oder die ausgewählten Bücher wurden geändert. Wählen Sie die Bücher erneut aus und prüfen Sie die Aufteilung.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>Die Reihe konnte nicht aufgeteilt werden. Es wurden keine Änderungen an der Reihe gespeichert.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>Die Reihe wurde aufgeteilt, aber die Ansicht konnte nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut.</value></data>
+  <data name="TagSplitSelection" xml:space="preserve"><value>Tag aufteilen</value></data>
+  <data name="TagSplitSelectionTitle" xml:space="preserve"><value>Tag der ausgewählten Bücher aufteilen</value></data>
+  <data name="TagSplitExplanation" xml:space="preserve"><value>Ersetzen Sie „{0}“ bei den {1} ausgewählten Büchern durch die folgenden Tags.</value></data>
+  <data name="TagSplitTargets" xml:space="preserve"><value>Ersatz-Tags</value></data>
+  <data name="TagSplitRules" xml:space="preserve"><value>Geben Sie mindestens zwei verschiedene Tags ein, einen pro Zeile. Lassen Sie den ursprünglichen Tag weg. Vorhandene Tags werden wiederverwendet.</value></data>
+  <data name="TagSplitPreview" xml:space="preserve"><value>Vorschau der Ersetzung</value></data>
+  <data name="TagSelectedBookTitles" xml:space="preserve"><value>Ausgewählte Bücher</value></data>
 </root>
 

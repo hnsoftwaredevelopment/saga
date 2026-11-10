@@ -706,5 +706,12 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesSplitConflict" xml:space="preserve"><value>De serie of de geselecteerde boeken zijn gewijzigd. Selecteer de boeken opnieuw en controleer de afsplitsing.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>De serie kon niet worden afgesplitst. Er zijn geen seriewijzigingen opgeslagen.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>De serie is afgesplitst, maar het overzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw om de wijzigingen te zien.</value></data>
+  <data name="TagSplitSelection" xml:space="preserve"><value>Tag splitsen</value></data>
+  <data name="TagSplitSelectionTitle" xml:space="preserve"><value>Tag van geselecteerde boeken splitsen</value></data>
+  <data name="TagSplitExplanation" xml:space="preserve"><value>Vervang ‘{0}’ bij de {1} geselecteerde boeken door de onderstaande tags.</value></data>
+  <data name="TagSplitTargets" xml:space="preserve"><value>Vervangende tags</value></data>
+  <data name="TagSplitRules" xml:space="preserve"><value>Typ minimaal twee verschillende tags, één per regel. Laat de oorspronkelijke tag weg. Saga hergebruikt bestaande tags.</value></data>
+  <data name="TagSplitPreview" xml:space="preserve"><value>Voorstel voor vervanging</value></data>
+  <data name="TagSelectedBookTitles" xml:space="preserve"><value>Geselecteerde boeken</value></data>
 </root>
 

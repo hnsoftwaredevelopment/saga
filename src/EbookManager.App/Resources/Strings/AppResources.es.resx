@@ -986,5 +986,12 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesSplitConflict" xml:space="preserve"><value>La serie o los libros seleccionados han cambiado. Vuelve a seleccionar los libros y revisa la separación.</value></data>
   <data name="SeriesSplitFailed" xml:space="preserve"><value>No se pudo dividir la serie. No se guardaron cambios en la serie.</value></data>
   <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>Se dividió la serie, pero no se pudo actualizar la vista. Vuelve a abrir la biblioteca.</value></data>
+  <data name="TagSplitSelection" xml:space="preserve"><value>Dividir etiqueta</value></data>
+  <data name="TagSplitSelectionTitle" xml:space="preserve"><value>Dividir la etiqueta de los libros seleccionados</value></data>
+  <data name="TagSplitExplanation" xml:space="preserve"><value>Sustituye «{0}» en los {1} libros seleccionados por las etiquetas indicadas abajo.</value></data>
+  <data name="TagSplitTargets" xml:space="preserve"><value>Etiquetas de sustitución</value></data>
+  <data name="TagSplitRules" xml:space="preserve"><value>Escribe al menos dos etiquetas distintas, una por línea. Omite la etiqueta original. Se reutilizan las etiquetas existentes.</value></data>
+  <data name="TagSplitPreview" xml:space="preserve"><value>Vista previa de la sustitución</value></data>
+  <data name="TagSelectedBookTitles" xml:space="preserve"><value>Libros seleccionados</value></data>
 </root>
 

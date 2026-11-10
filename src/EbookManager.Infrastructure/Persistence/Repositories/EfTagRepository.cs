@@ -58,7 +58,7 @@ public sealed partial class EfTagRepository(LibraryDbContextFactory factory, str
         if (target is not null)
         {
             var links = await AssignmentSourcesAsync(context, tag.Id, books.Select(book => book.Id).ToArray(), token);
-            if (links.Length != books.Length || !await ReplaceAssignmentsAsync(context, tag.Id, target.Id, links, token))
+            if (links.Length != books.Length || !await ReplaceAssignmentsAsync(context, tag.Id, [target.Id], links, token))
                 return Rejected(TagRenameStatus.Conflict);
             context.Tags.Remove(tag);
             await context.SaveChangesAsync(token);

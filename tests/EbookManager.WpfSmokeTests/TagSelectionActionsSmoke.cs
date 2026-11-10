@@ -21,7 +21,8 @@ internal static class TagSelectionActionsSmoke
         try
         {
             window.Show(); window.Activate(); await IdleAsync();
-            await vm.SearchAsync(""); await vm.SelectAsync(state.Source); await IdleAsync();
+            await WaitAsync(() => !vm.IsWorking && vm.Tags.Count == 2);
+            await vm.SelectAsync(state.Source); await IdleAsync();
             var grid = (DataGrid)window.FindName("TagBooksGrid");
             var change = (Button)window.FindName("ChangeSelectedTagButton");
             var remove = (Button)window.FindName("RemoveSelectedTagButton");
@@ -74,6 +75,26 @@ internal static class TagSelectionActionsSmoke
             grid.SelectAll(); await IdleAsync();
             Require(vm.SelectedBookCount == 205, "Native Select All did not select exactly the loaded book rows.");
             Console.WriteLine("PASS: native tag book selection survives paging and Select All uses the loaded rows.");
+
+            var split = (Button)window.FindName("SplitSelectedTagButton");
+            grid.UnselectAll(); await IdleAsync();
+            Require(!split.IsEnabled, "Splitting must require selected books.");
+            grid.SelectedItems.Add(vm.Books.First());
+            grid.SelectedItems.Add(vm.Books.Last()); await IdleAsync();
+            foreach (var confirm in new[] { false, true })
+            {
+                split.Focus();
+                var complete = CompleteSplitAsync(confirm);
+                split.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                await complete;
+                await WaitAsync(() => !vm.IsBusy && (!confirm || vm.TotalBooks == 203)); await IdleAsync();
+                if (!confirm)
+                    Require(state.Applications == 2 && vm.SelectedBookCount == 2 && split.IsKeyboardFocusWithin, "Cancelling split wrote data or lost selection/focus.");
+            }
+            Require(state.Applications == 3 && vm.SelectedBookCount == 0 && vm.Tags.Single(tag => tag.Id == state.TargetId).BookCount == 4 &&
+                vm.Tags.Single(tag => tag.Name == "Avontuur").BookCount == 2 && vm.Books.Count == 203,
+                "Split did not update both destination counts and the source list.");
+            Console.WriteLine("PASS: tag split previews selected books and distinct names, preserves cancellation and refreshes all affected tag counts.");
         }
         finally
         {
@@ -81,6 +102,48 @@ internal static class TagSelectionActionsSmoke
             System.Windows.Application.Current.Resources.MergedDictionaries[0] = new ResourceDictionary
                 { Source = new Uri("pack://application:,,,/Saga;component/Resources/Styles/Themes/LightTheme.xaml") };
         }
+    }
+
+    private static async Task CompleteSplitAsync(bool confirm)
+    {
+        await WaitAsync(() => System.Windows.Application.Current.Windows.OfType<TagAssignmentWindow>().Any(window => window.IsLoaded));
+        var dialog = System.Windows.Application.Current.Windows.OfType<TagAssignmentWindow>().Single();
+        try
+        {
+            await IdleAsync();
+            var input = (TextBox)dialog.FindName("SplitNamesBox");
+            var apply = (Button)dialog.FindName("ApplyButton");
+            var books = (ListBox)dialog.FindName("SplitBooksList");
+            var proposal = (TextBlock)dialog.FindName("SplitPreviewText");
+            Require(input.IsKeyboardFocusWithin && input.AcceptsReturn && input.Text.Length == 0 && !apply.IsEnabled &&
+                books.Items.OfType<TagSourceBook>().Select(book => book.Title).SequenceEqual(new[] { "Book 000", "Book 204" }),
+                "Split dialog must focus the multiline input and show exactly the selected books.");
+            input.Text = "Roman\r\n roman ";
+            Require(!apply.IsEnabled, "Duplicate target tags must block confirmation.");
+            input.Text = " roman \r\nAvontuur";
+            Require(apply.IsEnabled && input.IsKeyboardFocusWithin && proposal.Text == "roman" + Environment.NewLine + "Avontuur",
+                "A valid proposal must show the cleaned input and keep keyboard focus.");
+            dialog.Width = dialog.MinWidth; dialog.Height = dialog.MinHeight; await IdleAsync();
+            Require(apply.TranslatePoint(new Point(), dialog).Y + apply.ActualHeight < dialog.ActualHeight, "Split confirmation must remain visible at minimum size.");
+            if (confirm && Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_TAG_SPLIT") is { Length: > 0 } directory)
+            {
+                System.IO.Directory.CreateDirectory(directory);
+                var dictionaries = System.Windows.Application.Current.Resources.MergedDictionaries;
+                var original = dictionaries[0];
+                try
+                {
+                    foreach (var theme in new[] { "Light", "Dark" })
+                    {
+                        dictionaries[0] = new ResourceDictionary { Source = new Uri($"pack://application:,,,/Saga;component/Resources/Styles/Themes/{theme}Theme.xaml") };
+                        await IdleAsync(); Capture(dialog, System.IO.Path.Combine(directory, $"tag-split-{theme}.png"));
+                    }
+                }
+                finally { dictionaries[0] = original; }
+            }
+            if (confirm) apply.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            else dialog.DialogResult = false;
+        }
+        finally { if (dialog.IsVisible) dialog.Close(); }
     }
 
     private static async Task CompleteDialogAsync(bool confirm, string? target)
@@ -162,13 +225,23 @@ internal static class TagSelectionActionsSmoke
         public Task<TagAssignmentCompletion> ApplyAsync(TagAssignmentPreview preview, TagAssignmentRequest request, CancellationToken token)
         {
             Applications++;
+            var targets = request.Operation == TagAssignmentOperation.Split ? request.TargetNames.Select(ResolveTag).ToArray() : [];
             foreach (var book in preview.Books)
             {
                 books[book.Id].Tags.Remove(preview.TagId);
                 if (request.Operation == TagAssignmentOperation.Replace) books[book.Id].Tags.Add(TargetId);
+                books[book.Id].Tags.UnionWith(targets);
             }
             return Task.FromResult(new TagAssignmentCompletion(new(TagAssignmentStatus.Applied, preview.TagId,
                 request.Operation == TagAssignmentOperation.Replace ? TargetId : null, request.TargetName, preview.Books), []));
+        }
+        private Guid ResolveTag(string name)
+        {
+            var match = names.FirstOrDefault(row => TagNames.Normalize(row.Value) == TagNames.Normalize(name));
+            if (match.Key != Guid.Empty) return match.Key;
+            var id = Guid.NewGuid();
+            names.Add(id, name);
+            return id;
         }
         public Task<TagRenamePreview> PreviewRenameAsync(Guid id, CancellationToken token) => throw new NotSupportedException();
         public Task<TagRenamePreview> PreviewAsync(Guid id, CancellationToken token) => throw new NotSupportedException();

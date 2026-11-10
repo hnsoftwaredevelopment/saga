@@ -4,6 +4,13 @@ public static class TagNames
 {
     public static string Normalize(string name) => name.Trim().ToLowerInvariant();
     public static bool IsValid(string? name) => !string.IsNullOrWhiteSpace(name) && !name.Contains(';') && !name.Any(char.IsControl);
+
+    public static bool AreValidSplitTargets(string source, IReadOnlyList<string> targets)
+    {
+        if (targets.Count < 2) return false;
+        var names = new HashSet<string>(StringComparer.Ordinal) { Normalize(source) };
+        return targets.All(name => IsValid(name) && names.Add(Normalize(name)));
+    }
 }
 
 public sealed record TagSummary(Guid Id, string Name, int BookCount);

@@ -21,6 +21,20 @@
           <TextBox x:Name="NewNameBox" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:Loc TagChangeTarget}" />
           <TextBlock Text="{loc:Loc TagRenameInvalid}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0" />
         </StackPanel>
+        <StackPanel Visibility="{Binding IsSplit, Converter={StaticResource BooleanVisibility}}">
+          <Label Content="{loc:Loc TagSplitTargets}" Target="{Binding ElementName=SplitNamesBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
+          <TextBox x:Name="SplitNamesBox" Text="{Binding SplitText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True"
+                   TextWrapping="Wrap" MinHeight="64" MaxHeight="110" VerticalScrollBarVisibility="Auto" AutomationProperties.Name="{loc:Loc TagSplitTargets}" />
+          <TextBlock Text="{loc:Loc TagSplitRules}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,10" />
+          <TextBlock Text="{loc:Loc TagSplitPreview}" FontWeight="SemiBold" />
+          <ScrollViewer MaxHeight="74" VerticalScrollBarVisibility="Auto" Margin="0,2,0,10">
+            <TextBlock x:Name="SplitPreviewText" Text="{Binding SplitPreview}" TextWrapping="Wrap" />
+          </ScrollViewer>
+          <TextBlock Text="{loc:Loc TagSelectedBookTitles}" FontWeight="SemiBold" />
+          <ListBox x:Name="SplitBooksList" ItemsSource="{Binding SplitBooks}" DisplayMemberPath="Title" MaxHeight="112" Margin="0,4,0,0"
+                   Background="{DynamicResource PanelBackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}" ScrollViewer.CanContentScroll="True"
+                   VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" AutomationProperties.Name="{loc:Loc TagSelectedBookTitles}" />
+        </StackPanel>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>
