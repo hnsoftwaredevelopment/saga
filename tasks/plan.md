@@ -1,4 +1,14 @@
-# Milestone 59: geselecteerde series samenvoegen
+# Milestone 60 — een serie afsplitsen
+
+De gebruiker keurde de scope op 10 november 2026 goed. Basis is de gemergede PR #61 en de lokale afsluitcommit voor M59. Zie de [specificatie](../docs/superpowers/specs/2026-11-10-saga-milestone-60-series-split-design.md).
+
+1. Breid de bestaande opslagtransactie uit met een expliciete deelverzameling. Controleer de bron, de bestemming en de getoonde titels en nummers voordat er boeken worden gewijzigd.
+2. Gebruik de boekselectie en het bestaande hernoemvenster voor het voorstel. Toon de geselecteerde titels, nummers en het aantal boeken dat achterblijft.
+3. Controleer de werkelijke SQLite-opslag, sidecars, lokalisatie, de WPF-route en beide thema’s. Leg de testbuild en gebruikerschecklist vast.
+
+## Historie — Milestone 59 geaccepteerd en gemerged
+
+### Milestone 59 — geselecteerde series samenvoegen
 
 De gebruiker keurt de concrete afbakening op 3 november 2026 goed. Basis main 086e291 met afrondingsnotitie b911af5; branch codex/milestone-59-manual-series-merge. Specificatie: docs/superpowers/specs/2026-11-03-saga-milestone-59-manual-series-merge-design.md. Pipeline-item P23 is M59 geworden, zonder extra scope-rij.
 

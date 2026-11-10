@@ -4,6 +4,10 @@ Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw
 
 ## Status
 
+Milestone 60 voegt **Geselecteerde boeken afsplitsen** toe. Selecteer een deel van de boeken in één serie, controleer de titels, volgnummers en het aantal achterblijvers, en sla op onder een unieke nieuwe serienaam. Saga toont de nieuwe serie na het opslaan. Voor alle boeken samen blijft **Serie hernoemen** beschikbaar. Zie de [specificatie](../superpowers/specs/2026-11-10-saga-milestone-60-series-split-design.md) en [checklist 60](../manual-tests/milestone-60-checklist.md).
+
+## Historie — Milestone 59 geaccepteerd en gemerged
+
 Milestone 59 voegt **Geselecteerde series samenvoegen** toe. Kies zelf twee of meer series, vergelijk al hun boeken en kies één van hun namen of typ een nieuwe naam. Boeken, volgnummers en overige metadata blijven behouden. Een bestaande niet-geselecteerde doelserie wordt geweigerd; neem die expliciet in de selectie op of kies een andere naam. Meer laden bewaart de serie-selectie, een nieuwe zoekopdracht wist haar. Bij meerdere geselecteerde series is het boekpaneel niet bewerkbaar. Na succes zijn index, doelboeken en hoofdweergave bijgewerkt en is het zoekveld leeg. De bestaande duplicaatvoorstellen behouden hun eigen expliciete doelkeuze. Zie de [specificatie](../superpowers/specs/2026-11-03-saga-milestone-59-manual-series-merge-design.md) en [checklist 59](../manual-tests/milestone-59-checklist.md). Verificatie: **1237 geautomatiseerde tests en 32 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.53**, **3 november 2026 16:41:41 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. Nieuwe doelnaam en niet-geselecteerde bestaande doelnaam eerst falend getest; 503 boeken over drie series, behoud nummers/overige metadata, echte metadata.json, bestaande rollback/conflict/bestandsroute, paging/selectie/focus en oude duplicaatroute gecontroleerd. De gebruiker heeft op 3 november 2026 alle tests uit checklist 59 uitgevoerd en bevestigd dat alles werkt zoals beschreven. Milestone 59 is afgerond. PR #61 is op 10 november 2026 gemerged.
 
 ## Historie — Milestone 58 geaccepteerd en gemerged
@@ -44,7 +48,7 @@ De gehele preview wordt opnieuw gecontroleerd vóór één transactie die alleen
 
 ## Nog buiten scope
 
-Automatisch serienummers toekennen, series splitsen, lege series aanmaken, online seriegegevens, ontbrekende delen herkennen, leesvolgorde over meerdere series en nieuwe ebookmetadatawriters. Handmatig meerdere geselecteerde boeken nummeren is onderdeel van Milestone 58; vrij gekozen series samenvoegen met een bestaande/nieuwe naam is Milestone 59. Losse boekdetails en bulkbewerking behouden hun bestaande betekenis. Algemene UI-/icoonharmonisatie met boekvergelijking blijft een apart vervolgpunt.
+Automatisch serienummers toekennen, lege series aanmaken, online seriegegevens, ontbrekende delen herkennen, leesvolgorde over meerdere series en nieuwe ebookmetadatawriters. Handmatig meerdere geselecteerde boeken nummeren hoort bij Milestone 58, vrij gekozen series samenvoegen bij Milestone 59 en een selectie afsplitsen bij Milestone 60. Algemene UI- en icoonharmonisatie met boekvergelijking blijft een apart vervolgpunt.
 
 ## Volgnummer wijzigen — Milestone 56
 
