@@ -990,7 +990,7 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="TagSplitSelectionTitle" xml:space="preserve"><value>Dividir la etiqueta de los libros seleccionados</value></data>
   <data name="TagSplitExplanation" xml:space="preserve"><value>Sustituye «{0}» en los {1} libros seleccionados por las etiquetas indicadas abajo.</value></data>
   <data name="TagSplitTargets" xml:space="preserve"><value>Etiquetas de sustitución</value></data>
-  <data name="TagSplitRules" xml:space="preserve"><value>Escribe al menos dos etiquetas distintas, una por línea. Omite la etiqueta original. Se reutilizan las etiquetas existentes.</value></data>
+  <data name="TagSplitRules" xml:space="preserve"><value>Escribe al menos dos etiquetas distintas, una por línea. Omite la etiqueta original y los puntos y coma. Se reutilizan las etiquetas existentes.</value></data>
   <data name="TagSplitPreview" xml:space="preserve"><value>Vista previa de la sustitución</value></data>
   <data name="TagSelectedBookTitles" xml:space="preserve"><value>Libros seleccionados</value></data>
 </root>

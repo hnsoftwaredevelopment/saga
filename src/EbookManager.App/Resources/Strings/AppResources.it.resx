@@ -990,7 +990,7 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="TagSplitSelectionTitle" xml:space="preserve"><value>Dividi il tag dei libri selezionati</value></data>
   <data name="TagSplitExplanation" xml:space="preserve"><value>Sostituisci «{0}» nei {1} libri selezionati con i tag qui sotto.</value></data>
   <data name="TagSplitTargets" xml:space="preserve"><value>Tag sostitutivi</value></data>
-  <data name="TagSplitRules" xml:space="preserve"><value>Inserisci almeno due tag diversi, uno per riga. Ometti il tag originale. I tag esistenti vengono riutilizzati.</value></data>
+  <data name="TagSplitRules" xml:space="preserve"><value>Inserisci almeno due tag diversi, uno per riga. Ometti il tag originale e i punti e virgola. I tag esistenti vengono riutilizzati.</value></data>
   <data name="TagSplitPreview" xml:space="preserve"><value>Anteprima della sostituzione</value></data>
   <data name="TagSelectedBookTitles" xml:space="preserve"><value>Libri selezionati</value></data>
 </root>

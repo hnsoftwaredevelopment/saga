@@ -64,7 +64,7 @@ public sealed partial class TagManagementViewModel
                 SetStatus(result.Change.Status switch
                 {
                     TagAssignmentStatus.Unchanged => "TagAssignmentUnchanged",
-                    TagAssignmentStatus.InvalidName => "TagRenameInvalid",
+                    TagAssignmentStatus.InvalidName => request.Operation == TagAssignmentOperation.Split ? "TagSplitRules" : "TagRenameInvalid",
                     _ => "TagAssignmentConflict"
                 }, result.Change.Status != TagAssignmentStatus.Unchanged);
                 return false;

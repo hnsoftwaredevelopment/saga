@@ -710,7 +710,7 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="TagSplitSelectionTitle" xml:space="preserve"><value>Split the tag for selected books</value></data>
   <data name="TagSplitExplanation" xml:space="preserve"><value>Replace “{0}” on the {1} selected books with the tags below.</value></data>
   <data name="TagSplitTargets" xml:space="preserve"><value>Replacement tags</value></data>
-  <data name="TagSplitRules" xml:space="preserve"><value>Enter at least two different tags, one per line. Leave out the original tag. Existing tags are reused.</value></data>
+  <data name="TagSplitRules" xml:space="preserve"><value>Enter at least two different tags, one per line. Leave out the original tag and semicolons. Existing tags are reused.</value></data>
   <data name="TagSplitPreview" xml:space="preserve"><value>Replacement preview</value></data>
   <data name="TagSelectedBookTitles" xml:space="preserve"><value>Selected books</value></data>
 </root>
