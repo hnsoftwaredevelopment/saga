@@ -1,4 +1,15 @@
-# Milestone 62 — tags toevoegen aan geselecteerde boeken
+# Milestone 63 — serie wijzigen
+
+- [x] Afbakening goedgekeurd. Bestaande en nieuwe bestemming, met behoud van nummers.
+- [x] Voorstel, overlapcontrole, opslag en directe actualisatie gebouwd.
+- [x] Eigen review, 1.255 tests en 34 WPF-proeven geslaagd. Debug **2026.11.10.32** heeft 0 waarschuwingen en 0 fouten.
+- [x] Checklist en documentatie gespiegeld naar Obsidian. M63 staat in Excel op Te testen.
+- [ ] Gebruiker voert de [checklist](../docs/manual-tests/milestone-63-checklist.md) uit en bevestigt de slice.
+- [ ] Gebruiker mergt de PR.
+
+## Historie — Milestone 62 geaccepteerd en gemerged
+
+### Milestone 62 — tags toevoegen aan geselecteerde boeken
 
 - [x] Afbakening goedgekeurd. P26 wordt M62.
 - [x] Selectie, zoeken, voorstel en opslag gebouwd.

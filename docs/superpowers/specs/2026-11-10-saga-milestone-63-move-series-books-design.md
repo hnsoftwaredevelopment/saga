@@ -1,0 +1,5 @@
+# Milestone 63 — serie van geselecteerde boeken wijzigen
+
+Open **Series beheren**, selecteer één serie en kies de boeken die moeten verhuizen. **Serie wijzigen** toont de gekozen boeken en hun volgnummers. Kies een bestaande serie uit de zoekresultaten of typ een nieuwe naam op het tabblad **Nieuwe serie**. Voor een bestaande bestemming kan ook het laatste boek uit de bronserie worden verplaatst. Gebruik **Serie hernoemen** om alle boeken onder een nieuwe naam te brengen.
+
+Saga toont de volgnummers die al in de gekozen doelserie voorkomen. De gebruiker kan de verhuizing met behoud van die nummers bevestigen. De opslagtransactie controleert de bronselectie, de gekozen doelserie en de getoonde overlap opnieuw. Als het voorstel intussen verouderd is, vraagt Saga om het opnieuw te openen. Alleen de serie van de gekozen boeken verandert. De bestaande bestandsverwerking en actualisatie volgen na het opslaan.
