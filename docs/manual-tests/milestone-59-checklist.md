@@ -1,0 +1,36 @@
+# Milestone 59 — geselecteerde series samenvoegen
+
+Testbuild: `Builds\Debug\Saga.exe`. Verificatie: **1237 geautomatiseerde tests en 32 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.53**, **3 november 2026 16:41:41 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. Nieuwe doelnaam en niet-geselecteerde bestaande doelnaam eerst falend getest; 503 boeken over drie series, behoud nummers/overige metadata, echte metadata.json, bestaande rollback/conflict/bestandsroute, paging/selectie/focus en oude duplicaatroute gecontroleerd. De gebruiker heeft op 3 november 2026 alle tests uit checklist 59 uitgevoerd en bevestigd dat alles werkt zoals beschreven. Milestone 59 is geaccepteerd; PR #61 staat nog open. Kies twee of drie series die je bewust wilt samenvoegen en noteer hun boekaantallen en volgnummers. Deze actie combineert serietoewijzingen, geen boekrecords.
+
+## Selecteren en vergelijken
+
+- [x] Open Series beheren. Zonder selectie of bij één geselecteerde serie is Geselecteerde series samenvoegen uitgeschakeld. Eén geselecteerde serie behoudt de bestaande boek-, hernoem- en nummeracties.
+- [x] Selecteer twee of meer series met Ctrl of Shift. Het geselecteerde aantal is zichtbaar en de samenvoegactie wordt beschikbaar. Het boekpaneel is niet bewerkbaar zolang meerdere series geselecteerd zijn.
+- [x] Indien er meer dan 200 series zijn: klik Meer laden en controleer dat de serie-selectie behouden blijft. Een nieuwe zoekopdracht wist de selectie; verborgen series worden niet meegenomen.
+- [x] Open Geselecteerde series samenvoegen. Alle boeken uit de gekozen series zijn aanwezig, ook boeken die niet in de beheerboekenlijst geladen waren. Huidige serie, titel, auteurs en volgnummer zijn zichtbaar. Bij een grote vergelijking gebruik je Meer laden.
+- [x] Gelijke nummers en ontbrekende nummers worden informatief getoond. Er wordt geen nummer toegekend, gewist of gewijzigd. Je hoeft de gekozen series of boeken niet opnieuw aan te vinken.
+
+## Naam kiezen, annuleren en opslaan
+
+- [x] Aanvankelijk is geen bestemming gekozen en kun je niet bevestigen. Kies één van de geselecteerde serienamen in de keuzelijst: bevestigen wordt beschikbaar.
+- [x] Typ in het aparte veld een nieuwe serienaam. De bestaande naamkeuze wordt leeg; typen blijft vlot en behoudt focus. Lege invoer of alleen spaties zonder bestaande naamkeuze blokkeert bevestigen. Kies daarna een bestaande naam: het nieuwe-naamveld wordt leeggemaakt.
+- [x] Wijzig een naamkeuze en annuleer met Annuleren of Escape. Niets verandert; de serie-selectie en zoektekst blijven behouden en de actieknop krijgt focus terug.
+- [x] Voeg twee of meer series samen onder één gekozen bestaande naam. De gezamenlijke serie bevat alle verwachte boeken. Nummers, titels, auteurs, omslagen en overige metadata zijn gelijk gebleven; niet-geselecteerde series veranderen niet.
+- [x] Herhaal zo mogelijk met een volledig nieuwe naam. Alleen de gekozen series verdwijnen als afzonderlijke vermeldingen; hun boeken staan samen onder de nieuwe naam. Omringende spaties worden verwijderd.
+- [x] Probeer als nieuwe naam de naam van een niet-geselecteerde bestaande serie. Saga weigert dit met uitleg; niets verandert en de selectie blijft behouden. Selecteer die serie vervolgens ook, of kies een andere nieuwe naam.
+- [x] Na succesvol samenvoegen is het zoekveld leeg en staat de gezamenlijke serie geselecteerd met haar juiste aantal boeken. Je kunt haar boeken direct bekijken en de bestaande één-serieacties weer gebruiken.
+- [x] Sluit Series beheren en controleer in het hoofdscherm de seriegegevens, groepering/filter en details van enkele boeken. De nieuwe naam is verwerkt, zonder verlies of hernummering van boeken.
+
+## Bediening en uitzonderingen
+
+- [x] Bedien selectie en vergelijking met toetsenbord, Tab, Enter en Escape. Het nieuwe naamveld behoudt focus bij iedere letter. Na annuleren keert focus terug naar de actie; na succes naar de gezamenlijke serie.
+- [x] Verklein het venster en controleer licht/donker. De bestemming, boeken en knoppen blijven bereikbaar. Wissel indien gewenst de taal voor de nieuwe teksten.
+- [x] Controleer als regressie dat Duplicaten zoeken voor series en het bestaande vergelijkingsvenster blijven werken. De bestaande voorstelroute vraagt nog steeds een naam uit het getoonde paar.
+- [x] Bestandswaarschuwingen hoeven niet met echte boeken geforceerd te worden. Als ze verschijnen, is duidelijk dat de samenvoeging wel opgeslagen is en welke bestanden niet konden worden bijgewerkt. Geautomatiseerde tests dekken de bestaande bestandsroute.
+- [x] Veranderde/verdwenen/toegevoegde boeken en technische opslagfouten zijn geautomatiseerd afgedekt: de hele transactie wordt geblokkeerd of teruggedraaid. Hiervoor hoef je geen echte bibliotheekbestanden te beschadigen.
+
+## Notities
+
+De gebruiker heeft op 3 november 2026 alle tests uit checklist 59 uitgevoerd en bevestigd dat alles werkt zoals beschreven. Milestone 59 is geaccepteerd; PR #61 staat nog open.
+
+Reviewcorrectie PR #61, 3 november 2026: opmerkingen 4455095425 en 4455095443 zijn verwerkt. De bestemming wordt ook na de eerste 200 series in de index opgenomen, geselecteerd en bij handmatig samenvoegen in beeld gebracht. Meer laden gebruikt het aantal werkelijk gelezen repositoryrijen, zodat de extra doelrij geen series laat overslaan of verdubbelen. Eerst falende regressie met 205 series toegevoegd; de WPF-proef gebruikt nu een bestemming achter de eerste pagina. De sidecartest gebruikt verschillende nummers per boek en leest iedere sidecar via het betreffende boek-ID. Opnieuw 1237 tests en 32 WPF-proeven geslaagd; Debug 2026.11.3.53 van 3 november 2026 16:41:41 Europe/Amsterdam, 0 waarschuwingen/fouten. De gebruikersacceptatie betreft build 2026.11.3.48; deze reviewcorrecties zijn geautomatiseerd gecontroleerd in de nieuwe build.

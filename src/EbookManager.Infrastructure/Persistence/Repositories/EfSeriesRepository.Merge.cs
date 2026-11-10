@@ -17,14 +17,19 @@ public sealed partial class EfSeriesRepository
     public async Task<SeriesMergeResult> MergeAsync(SeriesMergePreview preview, string targetName, CancellationToken token)
     {
         SeriesMergeResult Reject(SeriesMergeStatus status) => new(status, targetName, []);
+        if (string.IsNullOrWhiteSpace(targetName)) return Reject(SeriesMergeStatus.InvalidSelection);
+        targetName = targetName.Trim();
         var selected = preview.Groups.Select(group => group.Name).ToArray();
         if (selected.Length < 2 || selected.Distinct(SeriesNames.Comparer).Count() != selected.Length ||
-            selected.Any(string.IsNullOrWhiteSpace) || !selected.Contains(targetName, StringComparer.Ordinal)) return Reject(SeriesMergeStatus.InvalidSelection);
+            selected.Any(string.IsNullOrWhiteSpace) || (!preview.AllowNewName && !selected.Contains(targetName, StringComparer.Ordinal))) return Reject(SeriesMergeStatus.InvalidSelection);
         await using var context = factory.Create(libraryPath);
         await using var transaction = await context.Database.BeginTransactionAsync(token);
         var current = await MergeSnapshotAsync(context, selected, token);
         if (current is null || current.Groups.Any(group => !preview.Groups.Any(old => SeriesNames.Same(old.Name, group.Name) &&
             old.Books.OrderBy(book => book.Id).SequenceEqual(group.Books)))) return Reject(SeriesMergeStatus.Conflict);
+        // A free name must not silently absorb a series that was absent from the confirmed comparison.
+        if (!selected.Any(name => SeriesNames.Same(name, targetName)) && (await NamesAsync(context, token)).Any(row => SeriesNames.Same(row.Name, targetName)))
+            return Reject(SeriesMergeStatus.NameExists);
         var changedBooks = current.Groups.SelectMany(group => group.Books).Where(book => book.StoredName != targetName).ToArray();
         var updated = DateTimeOffset.UtcNow;
         foreach (var ids in changedBooks.Select(book => book.Id).Chunk(500))

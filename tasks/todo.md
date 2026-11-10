@@ -1,4 +1,23 @@
-# Milestone 58: meerdere serievolgnummers toekennen
+# Milestone 59: geselecteerde series samenvoegen
+
+- [x] Concrete afbakening goedgekeurd; basis/branch en specificatie vastgelegd.
+- [x] Nieuwe naam en niet-geselecteerde doelnaam eerst falend getest; veilige bestaande merge-transactie uitgebreid.
+- [x] Meervoudige serielijstselectie met paging/zoeken, veilige één-serieacties en expliciete bestaande/nieuwe doelkeuze gebouwd.
+- [x] Gerichte repository-, dialog-, management- en lokalisatietests; echte sidecars en WPF-route toegevoegd.
+- [x] Volledige suite, definitieve WPF/buildcontrole en eigen vijfassige review afgerond: 1237 tests, 32 WPF-proeven, Debug 2026.11.3.53, 0 waarschuwingen/fouten.
+- [x] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone niet-draft PR #61 geopend en gekoppeld.
+- [x] Gebruiker heeft op 3 november 2026 alle checklisttests uitgevoerd en Milestone 59 geaccepteerd: alles werkt zoals beschreven.
+- [ ] Alleen de gebruiker mergt de PR.
+
+Verificatie: **1237 geautomatiseerde tests en 32 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.53**, **3 november 2026 16:41:41 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. Nieuwe doelnaam en niet-geselecteerde bestaande doelnaam eerst falend getest; 503 boeken over drie series, behoud nummers/overige metadata, echte metadata.json, bestaande rollback/conflict/bestandsroute, paging/selectie/focus en oude duplicaatroute gecontroleerd. De gebruiker heeft op 3 november 2026 alle tests uit checklist 59 uitgevoerd en bevestigd dat alles werkt zoals beschreven. Milestone 59 is geaccepteerd; PR #61 staat nog open.
+
+Gewone niet-draft PR #61 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/61. Mergeable bij opening; GitGuardian groen, CodeQL en CodeRabbit lopen nog. Acht Markdown-bestanden exact naar Obsidian gespiegeld en met SHA256 gecontroleerd. Het bestaande Excel-overzicht is native gecontroleerd: M58 Afgerond, M59 Done/Getest, PR open, 62 Done en 40 Todo. Gebruikersacceptatie is bevestigd; alleen de merge van PR #61 staat nog open.
+
+Reviewcorrectie PR #61, 3 november 2026: opmerkingen 4455095425 en 4455095443 zijn verwerkt. De bestemming wordt ook na de eerste 200 series in de index opgenomen, geselecteerd en bij handmatig samenvoegen in beeld gebracht. Meer laden gebruikt het aantal werkelijk gelezen repositoryrijen, zodat de extra doelrij geen series laat overslaan of verdubbelen. Eerst falende regressie met 205 series toegevoegd; de WPF-proef gebruikt nu een bestemming achter de eerste pagina. De sidecartest gebruikt verschillende nummers per boek en leest iedere sidecar via het betreffende boek-ID. Opnieuw 1237 tests en 32 WPF-proeven geslaagd; Debug 2026.11.3.53 van 3 november 2026 16:41:41 Europe/Amsterdam, 0 waarschuwingen/fouten. De gebruikersacceptatie betreft build 2026.11.3.48; deze reviewcorrecties zijn geautomatiseerd gecontroleerd in de nieuwe build.
+
+## Historie: Milestone 58
+
+### Milestone 58: meerdere serievolgnummers toekennen
 
 - [x] Gebruiker keurt slice goed; actuele basis/branch en specificatie vastgelegd.
 - [x] Readonly geselecteerde snapshots, SQL-batches en transactionele nummeropslag gebouwd; stale preview, rollback, annulering en behoud andere metadata getest.
@@ -7,11 +26,11 @@
 - [x] Volledige suite, definitieve WPF/buildcontrole en eigen review afgerond: 1219 tests, 31 WPF-proeven, Debug 2026.11.3.33 en 0 waarschuwingen/fouten.
 - [x] Checklist/documentatie/Obsidian en Excel bijgewerkt; gewone niet-draft PR #60 geopend en gekoppeld.
 - [x] Gebruiker heeft de slice op 3 november 2026 geaccepteerd; twee handmatige controles (bestandswaarschuwing en conflict/rollback) niet uitgevoerd, geautomatiseerd afgedekt.
-- [ ] Alleen de gebruiker mergt de PR.
+- [x] De gebruiker heeft PR #60 op 3 november 2026 gemerged; GitHub bevestigt merge 086e291.
 
-Verificatie: **1219 geautomatiseerde tests en 31 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.33**, **3 november 2026 11:57:01 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. SQL-batches boven 500 IDs, rollback, annulering, behoud overige metadata, echte metadata.json, bestandswaarschuwingen, paging/selectie/focus en bestaande één-boekroute gecontroleerd. De gebruiker heeft Milestone 58 op 3 november 2026 geaccepteerd: de uitgevoerde handmatige tests werken goed. Twee handmatige controles zijn niet uitgevoerd: bestandswaarschuwingen en conflict/rollback. Deze scenario's zijn geautomatiseerd afgedekt; de twee checklistvakjes blijven bewust open. Alleen de merge van PR #60 staat nog open.
+Verificatie: **1219 geautomatiseerde tests en 31 echte WPF-proeven geslaagd**, 0 mislukt/overgeslagen. Schone enige Debug-build **2026.11.3.33**, **3 november 2026 11:57:01 Europe/Amsterdam**, 0 waarschuwingen/fouten. Eigen vijfassige review uitgevoerd; licht/donker op minimale venstergrootte gerenderd en bekeken. SQL-batches boven 500 IDs, rollback, annulering, behoud overige metadata, echte metadata.json, bestandswaarschuwingen, paging/selectie/focus en bestaande één-boekroute gecontroleerd. De gebruiker heeft Milestone 58 op 3 november 2026 geaccepteerd: de uitgevoerde handmatige tests werken goed. Twee handmatige controles zijn niet uitgevoerd: bestandswaarschuwingen en conflict/rollback. Deze scenario's zijn geautomatiseerd afgedekt; de twee checklistvakjes blijven bewust open. PR #60 is op 3 november 2026 gemerged; Milestone 58 is afgerond.
 
-Gewone niet-draft PR #60 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/60. Mergeable bij opening; CodeQL loopt nog. Negen Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. Bestaand Excel-overzicht gericht bijgewerkt en native gecontroleerd: M58 Done/Getest, PR open, 61 Done en 41 Todo. Gebruikersacceptatie met twee niet-uitgevoerde handmatige controles is bevestigd; alleen de merge van PR #60 staat nog open.
+Gewone niet-draft PR #60 is geopend naar main en aan deze chat gekoppeld: https://github.com/hnsoftwaredevelopment/saga/pull/60. Mergeable bij opening; CodeQL loopt nog. Negen Markdown-bestanden exact gespiegeld en met SHA256 gecontroleerd. Bestaand Excel-overzicht gericht bijgewerkt en native gecontroleerd: M58 Done/Afgerond, 61 Done en 41 Todo. Gebruikersacceptatie met twee niet-uitgevoerde handmatige controles is bevestigd; PR #60 is op 3 november 2026 gemerged en Milestone 58 is afgerond.
 
 ## Historie: Milestone 57
 

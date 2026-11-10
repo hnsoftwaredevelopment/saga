@@ -13,6 +13,8 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     private readonly CancellationTokenSource lifetime = new();
     private readonly HashSet<Guid> changedBookIds = [];
     private int searchVersion;
+    // Number of repository rows consumed, excluding a merged destination pinned into the visible index.
+    private int seriesPageOffset;
     private bool disposed;
     [ObservableProperty] private string query = "";
     [ObservableProperty] private string name = "";
@@ -29,6 +31,9 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(CanEditNumber))]
     [NotifyPropertyChangedFor(nameof(CanAssignNumbers))]
+    [NotifyPropertyChangedFor(nameof(CanMergeSelectedSeries))]
+    [NotifyPropertyChangedFor(nameof(CanBrowseBooks))]
+    [NotifyPropertyChangedFor(nameof(CanChooseSeries))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreBooks))]
     [NotifyPropertyChangedFor(nameof(HasMoreSeries))]
@@ -36,6 +41,8 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanEditNumber))]
     [NotifyPropertyChangedFor(nameof(CanAssignNumbers))]
+    [NotifyPropertyChangedFor(nameof(CanMergeSelectedSeries))]
+    [NotifyPropertyChangedFor(nameof(CanChooseSeries))]
     [NotifyPropertyChangedFor(nameof(CanFindDuplicates))]
     [NotifyPropertyChangedFor(nameof(IsWorking))]
     [NotifyPropertyChangedFor(nameof(HasMoreSeries))]
@@ -43,23 +50,27 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
 
     public IReadOnlyCollection<Guid> ChangedBookIds => changedBookIds.ToArray();
     public bool CanBrowse => !disposed && !IsBusy;
-    public bool CanRename => CanBrowse && !string.IsNullOrEmpty(Name) && TotalBooks > 0;
+    public bool CanRename => CanBrowseBooks && !string.IsNullOrEmpty(Name) && TotalBooks > 0;
     public bool IsWorking => IsBusy || IsSearching;
     public bool HasMoreSeries => CanBrowse && !IsSearching && Series.Count < TotalSeries;
-    public bool HasMoreBooks => CanBrowse && Books.Count < TotalBooks;
+    public bool HasMoreBooks => CanBrowseBooks && Books.Count < TotalBooks;
 
     public Task SearchAsync(string text, bool append = false) => CanBrowse ? SearchCoreAsync(text, append) : Task.CompletedTask;
 
     private async Task<bool> SearchCoreAsync(string text, bool append = false)
     {
+        if (!append) SetMergeSeries([]);
         var version = ++searchVersion;
         Query = text;
         IsSearching = true;
+        var skip = append ? seriesPageOffset : 0;
         try
         {
-            var page = await Task.Run(() => repository.SearchAsync(text, append ? Series.Count : 0, 200, lifetime.Token), lifetime.Token);
+            var page = await Task.Run(() => repository.SearchAsync(text, skip, 200, lifetime.Token), lifetime.Token);
             if (disposed || version != searchVersion) return false;
-            Series = append ? Series.Concat(page.Series).ToArray() : page.Series;
+            seriesPageOffset = skip + page.Series.Count;
+            Series = append ? page.Series.Concat(Series).DistinctBy(row => row.Name, SeriesNames.Comparer)
+                .OrderBy(row => row.Name, StringComparer.CurrentCultureIgnoreCase).ThenBy(row => row.Name, StringComparer.Ordinal).ToArray() : page.Series;
             TotalSeries = page.TotalCount;
             OnPropertyChanged(nameof(HasMoreSeries));
             return true;
@@ -74,6 +85,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
     {
         if (!CanBrowse) return;
         IsBusy = true;
+        SetMergeSeries([selected]);
         Name = selected.Name;
         SelectedBook = null;
         SetNumberSelection([]);
@@ -158,6 +170,7 @@ public sealed partial class SeriesManagementViewModel(ISeriesRepository reposito
             StatusMessage = string.Format(CultureInfo.CurrentCulture, localize(Warnings.Count == 0 ? "SeriesRenameSaved" : "SeriesRenameSavedWithWarnings"), TotalBooks, Warnings.Count);
             IsError = Warnings.Count > 0;
             await SearchCoreAsync(Name);
+            SetMergeSeries(Series.Where(row => SeriesNames.Same(row.Name, Name)));
             NotifySelection();
             return true;
         }

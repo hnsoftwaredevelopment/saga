@@ -40,8 +40,8 @@ internal static class Program
             {
                 window.Show();
                 window.Activate();
-                await IdleAsync();
-                await vm.SearchAsync("");
+                // Wait for the window's own Loaded search; a second startup search races its selection reset.
+                await WaitAsync(() => !vm.IsWorking && vm.Series.Count == 2);
                 await IdleAsync();
                 var list = (ListBox)window.FindName("SeriesList");
                 list.Focus();
@@ -108,10 +108,11 @@ internal static class Program
                 await SeriesMergeSmoke.RunAsync();
                 await SeriesNumberSmoke.RunAsync();
                 await SeriesNumbersSmoke.RunAsync();
+                await ManualSeriesMergeSmoke.RunAsync();
                 await BulkExportSmoke.RunAsync();
                 exitCode = 0;
             }
-            catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception.Message); }
+            catch (Exception exception) { Console.Error.WriteLine("FAIL: " + exception); }
             finally { window.Close(); application.Shutdown(); }
         });
         application.Run();

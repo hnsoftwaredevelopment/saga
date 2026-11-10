@@ -973,5 +973,10 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesNumbersWorking" xml:space="preserve"><value>Guardando números de serie…</value></data>
   <data name="SeriesNumbersFailed" xml:space="preserve"><value>No se pudieron guardar los números. No se modificó ningún libro. Vuelva a intentarlo.</value></data>
   <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>Los números están guardados, pero no se pudo actualizar la lista. Vuelva a abrir la gestión de series.</value></data>
+  <data name="SeriesManualMergeAction" xml:space="preserve"><value>Fusionar las series seleccionadas</value></data>
+  <data name="SeriesManualMergeSelected" xml:space="preserve"><value>Series seleccionadas: {0}</value></data>
+  <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Compare todos los libros de las series seleccionadas. Elija uno de sus nombres o escriba uno nuevo. Los números y demás datos se conservan. Se rechaza el nombre de una serie no seleccionada.</value></data>
+  <data name="SeriesManualMergeNewName" xml:space="preserve"><value>O escriba un nuevo nombre de serie</value></data>
+  <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Ese nombre pertenece a una serie no seleccionada. No se modificó nada. Seleccione también esa serie o elija otro nombre.</value></data>
 </root>
 

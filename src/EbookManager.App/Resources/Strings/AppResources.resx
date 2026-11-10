@@ -693,5 +693,10 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesNumbersWorking" xml:space="preserve"><value>Saving series numbers…</value></data>
   <data name="SeriesNumbersFailed" xml:space="preserve"><value>The series numbers could not be saved. No books were changed. Try again.</value></data>
   <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>The series numbers are saved, but the book list could not be refreshed. Reopen Manage series to see the saved values.</value></data>
+  <data name="SeriesManualMergeAction" xml:space="preserve"><value>Merge selected series</value></data>
+  <data name="SeriesManualMergeSelected" xml:space="preserve"><value>Selected series: {0}</value></data>
+  <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Review all books from the selected series. Choose one of their names or enter a new name. Series numbers and other metadata stay unchanged. A name belonging to an unselected series is refused.</value></data>
+  <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Or enter a new series name</value></data>
+  <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>That name belongs to an unselected series. Nothing was changed. Select that series too, or choose a different new name.</value></data>
 </root>
 

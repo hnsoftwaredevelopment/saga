@@ -973,5 +973,10 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesNumbersWorking" xml:space="preserve"><value>Enregistrement des numéros…</value></data>
   <data name="SeriesNumbersFailed" xml:space="preserve"><value>Impossible d’enregistrer les numéros. Aucun livre n’a été modifié. Réessayez.</value></data>
   <data name="SeriesNumbersRefreshFailed" xml:space="preserve"><value>Les numéros sont enregistrés, mais la liste des livres n’a pas pu être actualisée. Rouvrez la gestion des séries.</value></data>
+  <data name="SeriesManualMergeAction" xml:space="preserve"><value>Fusionner les séries sélectionnées</value></data>
+  <data name="SeriesManualMergeSelected" xml:space="preserve"><value>Séries sélectionnées : {0}</value></data>
+  <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Comparez tous les livres des séries sélectionnées. Choisissez un de leurs noms ou saisissez un nouveau nom. Les numéros et autres données restent inchangés. Le nom d’une série non sélectionnée est refusé.</value></data>
+  <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Ou saisissez un nouveau nom de série</value></data>
+  <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Ce nom appartient à une série non sélectionnée. Rien n’a été modifié. Sélectionnez aussi cette série ou choisissez un autre nom.</value></data>
 </root>
 
