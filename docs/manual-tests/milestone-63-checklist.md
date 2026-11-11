@@ -2,11 +2,14 @@
 
 ## Hertest met één invoerveld
 
+De gebruiker heeft de versie met één invoerveld op 11 november 2026 geaccepteerd. De afvinkingen van de vorige build staan hieronder bij de oorspronkelijke hertest.
+
 Open `Builds\Debug\Saga.exe`, versie **2026.11.11.3** van **11 november 2026 om 15:53:37** (Europe/Amsterdam). **1.255 geautomatiseerde tests en 34 WPF-proeven zijn geslaagd.** De build heeft 0 waarschuwingen en 0 fouten. De invoer is in beide thema’s bij minimale venstergrootte gecontroleerd.
 
 - [ ] Open **Serie wijzigen** en typ een deel van een bestaande serienaam in **Doelserie**. Kies de suggestie met de muis en herhaal met de pijltjestoetsen en Enter. Controleer de ingevulde naam en eventuele overlap.
 - [ ] Typ de volledige naam van een bestaande serie. Saga herkent haar als bestaande doelserie en toont eventuele dubbele nummers. Verander de invoer en controleer dat de waarschuwing van de vorige bestemming verdwijnt.
 - [ ] Typ een nieuwe naam. Bij een lege lijst kun je direct bevestigen. Bij vergelijkbare namen kun je de getypte naam expliciet als nieuwe serie kiezen. Annuleren behoudt de oorspronkelijke selectie en gegevens.
+- [ ] Verplaats een deel van een testserie naar een nieuwe naam en bevestig. Controleer na opslaan de verplaatste boeken in de doelserie en de achterblijvende boeken in de bronserie. Vergelijk hun volgnummers met de nummers vóór het verplaatsen.
 - [ ] Selecteer alle boeken van een bronserie. Controleer dat je ze naar een bestaande serie kunt verplaatsen. Voor een nieuwe naam verwijst Saga naar **Serie hernoemen**.
 
 ## Uitgevoerd met de vorige invoer

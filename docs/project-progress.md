@@ -21,4 +21,4 @@ Milestone 61: de proef **Tag splitsen** is op 10 november 2026 ingetrokken en PR
 
 Milestone 62: pipeline-item P26 is uitgevoerd als **Tags toevoegen aan geselecteerde boeken**. De gebruiker heeft de herziene invoer op 10 november 2026 geaccepteerd en PR #64 dezelfde dag gemerged. M62 staat op Done / Afgerond. De telling is 64 Done en 38 Todo van 102 slices, afgerond 63% en 37%.
 
-Milestone 63: **Serie wijzigen** is toegevoegd als afzonderlijke uitbreiding van Milestone 60. M63 staat op Todo / Te testen. Het overzicht telt 64 Done en 39 Todo van 103 slices, afgerond 62% en 38%.
+Milestone 63 is op 11 november 2026 geaccepteerd met één invoerveld voor de doelserie. M63 staat op Done / Getest, PR open. Het overzicht telt 65 Done en 38 Todo van 103 slices, afgerond 63% en 37%.

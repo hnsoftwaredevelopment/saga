@@ -4,7 +4,7 @@ Native Windows desktop ebook library manager built with .NET 10, WPF, SQLite, Co
 
 ## Current Status
 
-Milestone 63 adds **Change series** in **Manage series**. Use the destination field to search for an existing series or enter a new name. Review the selected titles and numbers before saving. Saga flags numbers already used in the destination and preserves the numbers when moving. See the [manual checklist](docs/manual-tests/milestone-63-checklist.md).
+Milestone 63 adds **Change series** in **Manage series**. Use the destination field to search for an existing series or enter a new name. Review the selected titles and numbers before saving. Saga flags numbers already used in the destination and preserves the numbers when moving. The user accepted the single-field workflow on 11 November 2026. See the [manual checklist](docs/manual-tests/milestone-63-checklist.md).
 
 ### Milestone 62 — accepted and merged in PR #64
 
