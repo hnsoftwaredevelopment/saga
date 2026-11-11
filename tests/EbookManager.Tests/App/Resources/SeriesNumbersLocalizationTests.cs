@@ -20,6 +20,9 @@ public sealed class SeriesNumbersLocalizationTests
             if (suffix is "Explanation" or "SavedWithWarnings") resource[key].Should().Contain("{1}");
             string.Format(CultureInfo.InvariantCulture, resource[key], 1, 2).Should().NotContain("{0}").And.NotContain("{1}");
         }
+        foreach (var suffix in new[] { "Target", "Existing", "New", "UseNew", "Checking", "Overlap", "WholeRename", "NameExists" })
+            resource["SeriesMove" + suffix].Should().NotBeNullOrWhiteSpace();
+        resource["SeriesMoveOverlap"].Should().Contain("{0}");
     }
 
     [Theory]

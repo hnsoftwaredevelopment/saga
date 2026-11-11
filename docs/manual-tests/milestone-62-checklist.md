@@ -2,6 +2,8 @@
 
 ## Nieuwe invoer testen
 
+Op 10 november 2026 bevestigde de gebruiker dat de herziene invoer er goed uitziet en werkt zoals verwacht. PR #64 is dezelfde dag gemerged. De bevestiging geldt voor de herziene invoer als geheel.
+
 Open `Builds\Debug\Saga.exe`, versie **2026.11.10.28** van **10 november 2026 om 15:44:38** (Europe/Amsterdam). **1.254 geautomatiseerde tests en 34 WPF-proeven zijn geslaagd.** De Debug-build heeft 0 waarschuwingen en 0 fouten. Het voorstel is in beide thema’s bij minimale venstergrootte gecontroleerd.
 
 Gebruik een brontag met minstens drie testboeken. Selecteer precies één boek dat de bestaande doeltag al heeft en één boek zonder die tag. Laat het derde boek buiten de selectie.

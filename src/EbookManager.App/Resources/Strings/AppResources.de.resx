@@ -978,14 +978,14 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Vergleichen Sie alle Bücher der ausgewählten Serien. Wählen Sie einen ihrer Namen oder geben Sie einen neuen ein. Nummern und andere Daten bleiben erhalten. Der Name einer nicht ausgewählten Serie wird abgelehnt.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Oder einen neuen Seriennamen eingeben</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Dieser Name gehört zu einer nicht ausgewählten Serie. Nichts wurde geändert. Wählen Sie auch diese Serie aus oder einen anderen neuen Namen.</value></data>
-  <data name="SeriesSplitAction" xml:space="preserve"><value>Ausgewählte Bücher abspalten</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Reihe ändern</value></data>
   <data name="SeriesSplitExplanation" xml:space="preserve"><value>Zu verschiebende Bücher: {0}. Bücher in der ursprünglichen Reihe: {1}. Die Bandnummern bleiben erhalten.</value></data>
-  <data name="SeriesSplitWorking" xml:space="preserve"><value>Reihe aufteilen und Buchdateien aktualisieren…</value></data>
-  <data name="SeriesSplitSaved" xml:space="preserve"><value>In die neue Reihe verschobene Bücher: {0}.</value></data>
-  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>In die neue Reihe verschobene Bücher: {0}. Buchdateien konnten bei {1} Büchern nicht aktualisiert werden.</value></data>
-  <data name="SeriesSplitConflict" xml:space="preserve"><value>Die Reihe oder die ausgewählten Bücher wurden geändert. Wählen Sie die Bücher erneut aus und prüfen Sie die Aufteilung.</value></data>
-  <data name="SeriesSplitFailed" xml:space="preserve"><value>Die Reihe konnte nicht aufgeteilt werden. Es wurden keine Änderungen an der Reihe gespeichert.</value></data>
-  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>Die Reihe wurde aufgeteilt, aber die Ansicht konnte nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Bücher verschieben und Buchdateien aktualisieren…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>In die Zielreihe verschobene Bücher: {0}.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>In die Zielreihe verschobene Bücher: {0}. Buchdateien konnten bei {1} Büchern nicht aktualisiert werden.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>Die Reihe, die ausgewählten Bücher oder die doppelten Bandnummern haben sich geändert. Öffnen Sie die Vorschau erneut.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>Die Bücher konnten nicht verschoben werden. Es wurden keine Reihenänderungen gespeichert.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>Die Bücher wurden verschoben, aber die Ansicht konnte nicht aktualisiert werden. Öffnen Sie die Bibliothek erneut.</value></data>
   <data name="TagAddSelection" xml:space="preserve"><value>Schlagwörter hinzufügen</value></data>
   <data name="TagAddExplanation" xml:space="preserve"><value>Fügen Sie die Schlagwörter aus der Vorschau zu den {1} ausgewählten Büchern mit „{0}“ hinzu. Jedes Buch behält seine bisherigen Schlagwörter.</value></data>
   <data name="TagAddName" xml:space="preserve"><value>Schlagwort suchen oder eingeben</value></data>
@@ -995,5 +995,13 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="TagAddProposal" xml:space="preserve"><value>Hinzuzufügende Schlagwörter</value></data>
   <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Aus Vorschau entfernen</value></data>
   <data name="TagAddUnchanged" xml:space="preserve"><value>Alle ausgewählten Bücher haben diese Schlagwörter bereits.</value></data>
+  <data name="SeriesMoveExisting" xml:space="preserve"><value>Vorhandene Reihe</value></data>
+  <data name="SeriesMoveNew" xml:space="preserve"><value>Neue Reihe</value></data>
+  <data name="SeriesMoveChecking" xml:space="preserve"><value>Bandnummern werden geprüft…</value></data>
+  <data name="SeriesMoveOverlap" xml:space="preserve"><value>Diese Nummern kommen in der Zielreihe bereits vor: {0}. Die Nummern bleiben erhalten.</value></data>
+  <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Verwenden Sie „Reihe umbenennen“, um allen Büchern einen neuen Reihennamen zu geben.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Diese Reihe existiert bereits. Öffnen Sie die Vorschau erneut, um sie auszuwählen.</value></data>
+  <data name="SeriesMoveTarget" xml:space="preserve"><value>Zielreihe</value></data>
+  <data name="SeriesMoveUseNew" xml:space="preserve"><value>Diesen Namen für eine neue Reihe verwenden</value></data>
 </root>
 

@@ -1,13 +1,25 @@
-# Milestone 62 — tags toevoegen aan geselecteerde boeken
+# Milestone 63 — serie wijzigen
+
+- [x] Afbakening goedgekeurd. Bestaande en nieuwe bestemming, met behoud van nummers.
+- [x] Voorstel, overlapcontrole, opslag en directe actualisatie gebouwd.
+- [x] Eigen review, 1.255 tests en 34 WPF-proeven geslaagd. Debug **2026.11.11.3** heeft 0 waarschuwingen en 0 fouten.
+- [x] Checklist en documentatie gespiegeld naar Obsidian. M63 staat in Excel op Done / Getest, PR open.
+- [x] Gebruiker heeft het verplaatsen getest en één invoerveld gevraagd voor bestaande en nieuwe series.
+- [x] Gebruiker heeft op 11 november 2026 de versie met één invoerveld geaccepteerd. Zie de [checklist](../docs/manual-tests/milestone-63-checklist.md).
+- [ ] Gebruiker mergt de PR.
+
+## Historie — Milestone 62 geaccepteerd en gemerged
+
+### Milestone 62 — tags toevoegen aan geselecteerde boeken
 
 - [x] Afbakening goedgekeurd. P26 wordt M62.
 - [x] Selectie, zoeken, voorstel en opslag gebouwd.
 - [x] Invoer per regel, verwijderen van chips, zoeken op beginletters en meerregelig plakken gebouwd en geverifieerd.
 - [x] Eigen code-review, 1.254 geautomatiseerde tests, 34 WPF-proeven en controle van beide thema’s. Debug **2026.11.10.28** met 0 waarschuwingen en 0 fouten.
-- [x] Checklist en documentatie gespiegeld naar Obsidian. Excel toont M62 als Te testen.
+- [x] Checklist en documentatie gespiegeld naar Obsidian. Excel toont M62 als Done / Afgerond.
 - [x] Gebruiker heeft de oorspronkelijke [checklist](../docs/manual-tests/milestone-62-checklist.md) met build 2026.11.10.24 uitgevoerd. Alle tests zijn geslaagd.
-- [ ] Gebruiker controleert de herziene invoer met build 2026.11.10.28.
-- [ ] Gebruiker mergt de PR.
+- [x] Gebruiker heeft de herziene invoer op 10 november 2026 geaccepteerd.
+- [x] Gebruiker heeft PR #64 op 10 november 2026 gemerged.
 
 ## Historie — Milestone 60 geaccepteerd en gemerged
 

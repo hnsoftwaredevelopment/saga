@@ -13,6 +13,36 @@ namespace EbookManager.Tests.Infrastructure;
 public sealed partial class LibraryDbContextTests
 {
     [Fact]
+    public async Task Series_move_into_an_existing_series_preserves_numbers_and_rechecks_overlap()
+    {
+        using var library = new TemporaryLibrary();
+        var factory = await CreateMigratedFactoryAsync(library.DirectoryPath);
+        await using var context = factory.Create(library.DirectoryPath);
+        var moved = NewSplitBook("Moved", "Original", 2.5m);
+        var other = NewSplitBook("Other", " Target ", 1m);
+        context.Books.AddRange(moved, other);
+        await context.SaveChangesAsync();
+        var repo = new EfSeriesRepository(factory, library.DirectoryPath);
+        var source = await repo.PreviewRenameAsync("Original", default);
+        var preview = source with { SelectedBookIds = [moved.Id], Destination = new("Target", []) };
+        await context.Books.Where(book => book.Id == other.Id).ExecuteUpdateAsync(set => set.SetProperty(book => book.SeriesNumber, 2.5m));
+
+        (await repo.RenameAsync(preview, "Target", default)).Status.Should().Be(SeriesRenameStatus.Conflict);
+        (await context.Books.AsNoTracking().SingleAsync(book => book.Id == moved.Id)).Series.Should().Be("Original");
+        var confirmed = preview with { Destination = new("Target", [2.5m]) };
+        var result = await repo.RenameAsync(confirmed, "Target", default);
+
+        result.Status.Should().Be(SeriesRenameStatus.Renamed);
+        result.Books.Select(book => book.Id).Should().Equal(moved.Id);
+        var saved = await context.Books.AsNoTracking().ToDictionaryAsync(book => book.Id);
+        saved[moved.Id].Series.Should().Be("Target");
+        saved[moved.Id].SeriesNumber.Should().Be(2.5m);
+        saved[other.Id].Series.Should().Be(" Target ");
+        saved[other.Id].SeriesNumber.Should().Be(2.5m);
+        saved[other.Id].UpdatedUtc.Should().Be(other.UpdatedUtc);
+    }
+
+    [Fact]
     public async Task Series_split_moves_only_selected_books_without_changing_their_numbers()
     {
         using var library = new TemporaryLibrary();

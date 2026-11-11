@@ -698,14 +698,14 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesManualMergeHelp" xml:space="preserve"><value>Vergelijk alle boeken uit de geselecteerde series. Kies één van hun namen of voer een nieuwe naam in. Volgnummers en overige gegevens blijven behouden. Een naam van een niet-geselecteerde serie wordt geweigerd.</value></data>
   <data name="SeriesManualMergeNewName" xml:space="preserve"><value>Of voer een nieuwe serienaam in</value></data>
   <data name="SeriesManualMergeNameExists" xml:space="preserve"><value>Die naam hoort bij een niet-geselecteerde serie. Er is niets aangepast. Selecteer die serie ook, of kies een andere nieuwe naam.</value></data>
-  <data name="SeriesSplitAction" xml:space="preserve"><value>Geselecteerde boeken afsplitsen</value></data>
+  <data name="SeriesSplitAction" xml:space="preserve"><value>Serie wijzigen</value></data>
   <data name="SeriesSplitExplanation" xml:space="preserve"><value>Te verplaatsen boeken: {0}. Boeken die in de oorspronkelijke serie blijven: {1}. De volgnummers blijven behouden.</value></data>
-  <data name="SeriesSplitWorking" xml:space="preserve"><value>Serie afsplitsen en boekbestanden bijwerken…</value></data>
-  <data name="SeriesSplitSaved" xml:space="preserve"><value>Verplaatst naar de nieuwe serie: {0} boeken.</value></data>
-  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Verplaatst naar de nieuwe serie: {0} boeken. Bij {1} boeken konden de bestanden niet worden bijgewerkt.</value></data>
-  <data name="SeriesSplitConflict" xml:space="preserve"><value>De serie of de geselecteerde boeken zijn gewijzigd. Selecteer de boeken opnieuw en controleer de afsplitsing.</value></data>
-  <data name="SeriesSplitFailed" xml:space="preserve"><value>De serie kon niet worden afgesplitst. Er zijn geen seriewijzigingen opgeslagen.</value></data>
-  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>De serie is afgesplitst, maar het overzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw om de wijzigingen te zien.</value></data>
+  <data name="SeriesSplitWorking" xml:space="preserve"><value>Boeken verplaatsen en boekbestanden bijwerken…</value></data>
+  <data name="SeriesSplitSaved" xml:space="preserve"><value>Verplaatst naar de doelserie: {0} boeken.</value></data>
+  <data name="SeriesSplitSavedWithWarnings" xml:space="preserve"><value>Verplaatst naar de doelserie: {0} boeken. Bij {1} boeken konden de bestanden niet worden bijgewerkt.</value></data>
+  <data name="SeriesSplitConflict" xml:space="preserve"><value>De serie, geselecteerde boeken of dubbele volgnummers zijn gewijzigd. Open het voorstel opnieuw.</value></data>
+  <data name="SeriesSplitFailed" xml:space="preserve"><value>De boeken konden niet worden verplaatst. Er zijn geen seriewijzigingen opgeslagen.</value></data>
+  <data name="SeriesSplitRefreshFailed" xml:space="preserve"><value>De boeken zijn verplaatst, maar het overzicht kon niet worden vernieuwd. Open de bibliotheek opnieuw.</value></data>
   <data name="TagAddSelection" xml:space="preserve"><value>Tags toevoegen</value></data>
   <data name="TagAddExplanation" xml:space="preserve"><value>Voeg de tags in het voorstel toe aan de {1} geselecteerde boeken met ‘{0}’. Elk boek houdt zijn huidige tags.</value></data>
   <data name="TagAddName" xml:space="preserve"><value>Zoek of typ een tag</value></data>
@@ -715,5 +715,13 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="TagAddProposal" xml:space="preserve"><value>Voorstel voor toevoeging</value></data>
   <data name="TagAddRemoveFromProposal" xml:space="preserve"><value>Uit voorstel halen</value></data>
   <data name="TagAddUnchanged" xml:space="preserve"><value>Alle geselecteerde boeken hebben deze tags al.</value></data>
+  <data name="SeriesMoveExisting" xml:space="preserve"><value>Bestaande serie</value></data>
+  <data name="SeriesMoveNew" xml:space="preserve"><value>Nieuwe serie</value></data>
+  <data name="SeriesMoveChecking" xml:space="preserve"><value>Volgnummers controleren…</value></data>
+  <data name="SeriesMoveOverlap" xml:space="preserve"><value>Deze volgnummers komen al voor in de doelserie: {0}. De volgnummers blijven behouden.</value></data>
+  <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Gebruik ‘Serie hernoemen’ om alle boeken een nieuwe serienaam te geven.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Deze serie bestaat al. Open het voorstel opnieuw om haar te kiezen.</value></data>
+  <data name="SeriesMoveTarget" xml:space="preserve"><value>Doelserie</value></data>
+  <data name="SeriesMoveUseNew" xml:space="preserve"><value>Gebruik deze naam voor een nieuwe serie</value></data>
 </root>
 

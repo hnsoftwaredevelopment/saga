@@ -4,7 +4,7 @@ Afronding 31 oktober 2026: de gebruiker heeft het samenvoegen van series opnieuw
 
 ## Status
 
-Bij de test van het tagbeheer stelde de gebruiker **Serie wijzigen** voor als mogelijke naam voor het verplaatsen van geselecteerde boeken. De huidige actie **Geselecteerde boeken afsplitsen** maakt een nieuwe serie aan. Een bestaande serie als bestemming kiezen is een mogelijke uitbreiding.
+Milestone 63 voegt **Serie wijzigen** toe voor geselecteerde boeken. Zoek een bestaande serie of typ een nieuwe naam in hetzelfde veld. Het voorstel toont de titels, volgnummers en nummers die al in de gekozen doelserie voorkomen. De nummers blijven behouden. Zie de [specificatie](../superpowers/specs/2026-11-10-saga-milestone-63-move-series-books-design.md) en [checklist 63](../manual-tests/milestone-63-checklist.md).
 
 Milestone 60 voegt **Geselecteerde boeken afsplitsen** toe. Selecteer een deel van de boeken in één serie, controleer de titels, volgnummers en het aantal achterblijvers, en sla op onder een unieke nieuwe serienaam. Saga toont de nieuwe serie na het opslaan. Voor alle boeken samen blijft **Serie hernoemen** beschikbaar. Zie de [specificatie](../superpowers/specs/2026-11-10-saga-milestone-60-series-split-design.md) en [checklist 60](../manual-tests/milestone-60-checklist.md).
 

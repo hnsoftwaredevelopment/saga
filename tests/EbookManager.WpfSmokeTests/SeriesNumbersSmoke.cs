@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -55,8 +56,9 @@ internal static class SeriesNumbersSmoke
     private static async Task CheckSplitAsync(SeriesManagementWindow window, SeriesManagementViewModel vm, Store store, DataGrid grid)
     {
         var split = (Button)window.FindName("SplitSeriesButton");
+        store.AddDestination();
         grid.SelectAll();
-        Require(!split.IsEnabled, "Selecting the complete series must disable splitting.");
+        Require(split.IsEnabled, "Selecting the complete series can move it into an existing destination.");
         grid.UnselectAll();
         Require(!split.IsEnabled, "Splitting requires a book selection.");
         grid.SelectedItems.Add(vm.Books.Single(row => row.Title == "Book 001"));
@@ -65,23 +67,32 @@ internal static class SeriesNumbersSmoke
         foreach (var save in new[] { false, true })
         {
             split.Focus();
-            var dialog = CompleteSplitDialogAsync(save);
+            var dialog = CompleteSplitDialogAsync(save, wholeSeries: false);
             split.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             await dialog;
-            await WaitAsync(() => !vm.IsBusy && (!save || vm.Name == "New series"));
+            await WaitAsync(() => !vm.IsBusy && (!save || vm.Name == "Existing series"));
             await IdleAsync();
             if (!save)
                 Require(store.Splits == 0 && grid.SelectedItems.Count == 2 && split.IsKeyboardFocusWithin, "Cancelling a split wrote data or lost selection or focus.");
         }
         var index = (ListBox)window.FindName("SeriesList");
         Require(store.Splits == 1 && vm.ChangedBookIds.Count == 3 && index.IsKeyboardFocusWithin &&
-            vm.Books.Select(row => row.Number).SequenceEqual(new decimal?[] { 2.5m, 205m }) &&
+            vm.Books.Select(row => row.Number).SequenceEqual(new decimal?[] { 2.5m, 2.5m, 205m }) &&
             vm.Series.Single(row => row.Name == "Series").BookCount == 203,
             "A successful split must refresh both counts, report changed IDs, preserve numbers and focus the destination.");
-        Console.WriteLine("PASS: series split guards empty and complete selections, previews selected books, cancels and refreshes destination with unchanged numbers.");
+        await vm.SelectAsync(vm.Series.Single(row => row.Name == "Series"));
+        await vm.LoadMoreBooksAsync(); await IdleAsync();
+        grid.SelectAll(); await IdleAsync();
+        var whole = CompleteSplitDialogAsync(save: true, wholeSeries: true);
+        split.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        await whole;
+        await WaitAsync(() => !vm.IsBusy && vm.Name == "Existing series");
+        Require(store.Splits == 2 && vm.TotalBooks == 206 && vm.Series.All(row => row.Name != "Series"),
+            "Moving the complete selection must remove the empty source series from the index.");
+        Console.WriteLine("PASS: series move previews selected books, searches an existing destination, warns about overlap, cancels and refreshes with unchanged numbers.");
     }
 
-    private static async Task CompleteSplitDialogAsync(bool save)
+    private static async Task CompleteSplitDialogAsync(bool save, bool wholeSeries)
     {
         await WaitAsync(() => System.Windows.Application.Current.Windows.OfType<SeriesRenameWindow>().Any(window => window.IsLoaded));
         var window = System.Windows.Application.Current.Windows.OfType<SeriesRenameWindow>().Single();
@@ -90,17 +101,50 @@ internal static class SeriesNumbersSmoke
             await IdleAsync();
             var vm = (SeriesRenameDialogViewModel)window.DataContext;
             var input = (TextBox)window.FindName("NewNameBox");
+            var destinations = (ListBox)window.FindName("MoveDestinations");
             var button = (Button)window.FindName("SaveRenameButton");
-            Require(input.IsKeyboardFocusWithin && input.Text.Length == 0 && !button.IsEnabled &&
-                vm.SplitBooks.Select(book => book.Title).SequenceEqual(new[] { "Book 001", "Book 205" }) &&
-                vm.Explanation.Contains("203"), "Split preview does not show exactly the selected titles and remaining count.");
+            Require(input.IsKeyboardFocusWithin && !button.IsEnabled, "The destination field must start focused with confirmation disabled.");
+            if (wholeSeries)
+                Require(vm.SplitBooks.Count == 203 && !vm.CanCreateSeries, "The complete series must require an existing destination.");
+            else
+                Require(vm.SplitBooks.Select(book => book.Title).SequenceEqual(new[] { "Book 001", "Book 205" }) &&
+                    vm.Explanation.Contains("203"), "Split preview does not show exactly the selected titles and remaining count.");
             input.Text = " series ";
             Require(!button.IsEnabled, "The original series name must not be accepted.");
             input.Text = "New series";
-            Require(button.IsEnabled && input.IsKeyboardFocusWithin, "Entering a new name must enable the default action and keep typing focus.");
+            if (wholeSeries)
+            {
+                var status = (TextBlock)window.FindName("DestinationStatus");
+                await WaitAsync(() => status.Text == Text("SeriesMoveWholeRename"));
+                Require(!button.IsEnabled, "Renaming the whole source must keep confirmation disabled here.");
+            }
+            else
+            {
+                await WaitAsync(() => button.IsEnabled);
+                Require(input.IsKeyboardFocusWithin, "Entering a new name must keep typing focus.");
+                input.Text = "Exist";
+                var create = (Button)window.FindName("UseNewSeriesButton");
+                await WaitAsync(() => create.IsVisible);
+                Require(!button.IsEnabled, "A similar existing name requires an explicit choice.");
+                SendPreviewKey(input, Key.Enter);
+                Require(button.IsEnabled && vm.Destination is null && vm.SaveName == "Exist", "Enter must allow a deliberate new name alongside similar series.");
+                input.Text = "existing series";
+                await WaitAsync(() => button.IsEnabled && vm.Destination is not null);
+                Require(vm.SaveName == "Existing series" && vm.OverlapMessage.Length > 0, "An exact typed name must show existing series overlap.");
+            }
+            input.Text = "Exist";
+            await WaitAsync(() => destinations.Items.Count == 1 && ((SeriesSummary)destinations.Items[0]).Name == "Existing series");
+            Require(!button.IsEnabled, "A partial search with existing matches must wait for a destination choice.");
+            SendPreviewKey(input, Key.Down);
+            SendPreviewKey(input, Key.Enter);
+            await WaitAsync(() => button.IsEnabled && vm.Destination is not null);
+            decimal[] expectedOverlap = wholeSeries ? [] : [2.5m];
+            Require(input.Text == "Existing series" && input.IsKeyboardFocusWithin && !button.IsDefault &&
+                vm.Destination!.OverlappingNumbers.SequenceEqual(expectedOverlap) && (vm.OverlapMessage.Length > 0) == !wholeSeries,
+                "The existing destination must show the overlapping number and still allow confirmation.");
             window.Width = window.MinWidth; window.Height = window.MinHeight; window.UpdateLayout(); await IdleAsync();
             Require(button.TranslatePoint(new Point(), window).Y + button.ActualHeight < window.ActualHeight, "Split action is outside the minimum window bounds.");
-            if (save && Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_SERIES_SPLIT") is { Length: > 0 } capture)
+            if (save && !wholeSeries && Environment.GetEnvironmentVariable("SAGA_WPF_CAPTURE_SERIES_SPLIT") is { Length: > 0 } capture)
             {
                 Directory.CreateDirectory(capture);
                 var dictionaries = System.Windows.Application.Current.Resources.MergedDictionaries;
@@ -122,6 +166,12 @@ internal static class SeriesNumbersSmoke
             if (save) button.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         }
         finally { if (window.IsVisible) window.Close(); }
+    }
+
+    private static void SendPreviewKey(UIElement target, Key key)
+    {
+        var source = PresentationSource.FromVisual(target) ?? throw new InvalidOperationException("Series dialog is not displayed.");
+        target.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, Environment.TickCount, key) { RoutedEvent = Keyboard.PreviewKeyDownEvent });
     }
     private static async Task CompleteDialogAsync(bool save)
     {
@@ -169,13 +219,18 @@ internal static class SeriesNumbersSmoke
     {
         private readonly List<SeriesBook> rows = Enumerable.Range(1,205).Select(i => new SeriesBook(Guid.NewGuid(), $"Book {i:000}", "Author", i == 3 ? 1.5m : i)).ToList();
         private readonly List<SeriesBook> moved = [];
+        public void AddDestination() => moved.Add(new(Guid.NewGuid(), "Existing", "Author", 2.5m));
         public int Saves;
         public int Splits;
-        public Task<SeriesPage> SearchAsync(string query, int skip, int take, CancellationToken token) => Task.FromResult(moved.Count == 0
-            ? new SeriesPage([new("Series", rows.Count)], 1) : new SeriesPage([new("New series", moved.Count), new("Series", rows.Count)], 2));
+        public Task<SeriesPage> SearchAsync(string query, int skip, int take, CancellationToken token)
+        {
+            SeriesSummary[] summaries = [new("Existing series", moved.Count), new("Series", rows.Count)];
+            var matching = summaries.Where(row => row.BookCount > 0 && row.Name.Contains(query, StringComparison.OrdinalIgnoreCase)).ToArray();
+            return Task.FromResult(new SeriesPage(matching.Skip(skip).Take(take).ToArray(), matching.Length));
+        }
         public Task<SeriesBookPage> ListBooksAsync(string name, int skip, int take, CancellationToken token)
         {
-            var books = name == "New series" ? moved : rows;
+            var books = name == "Existing series" ? moved : rows;
             return Task.FromResult(new SeriesBookPage(books.OrderBy(row => row.Number).ThenBy(row => row.Title).Skip(skip).Take(take).ToArray(), books.Count));
         }
         public Task<SeriesNumbersPreview?> PreviewAsync(string name, IReadOnlyList<Guid> ids, CancellationToken token) => Task.FromResult<SeriesNumbersPreview?>(new(name, ids.Select(id => new SeriesNumberSource(name, rows.Single(row => row.Id == id))).ToArray(), rows.Where(row => !ids.Contains(row.Id)).Select(row => row.Number!.Value).ToArray()));
@@ -186,13 +241,17 @@ internal static class SeriesNumbersSmoke
             return Task.FromResult(new SeriesNumbersCompletion(new(SeriesNumberStatus.Changed, preview.Books.Select(row => new SeriesSourceBook(row.Book.Id, row.StoredName, row.Book.Title)).ToArray(), 1), []));
         }
         public Task<SeriesRenamePreview> PreviewAsync(string name, CancellationToken token) => Task.FromResult(new SeriesRenamePreview(name,
-            rows.Select(row => new SeriesSourceBook(row.Id, name, row.Title) { Number = row.Number }).ToArray()));
+            (name == "Existing series" ? moved : rows).Select(row => new SeriesSourceBook(row.Id, name, row.Title) { Number = row.Number }).ToArray()));
         public Task<SeriesRenamePreview> PreviewRenameAsync(string name, CancellationToken token) => throw new NotSupportedException();
         public Task<SeriesRenameResult> RenameAsync(SeriesRenamePreview preview, string name, CancellationToken token) => throw new NotSupportedException();
         Task<SeriesRenameCompletion> ISeriesRenameService.RenameAsync(SeriesRenamePreview preview, string name, CancellationToken token)
         {
             Splits++;
+            Require(preview.Destination is { Name: "Existing series" }, "The confirmed existing target was not passed to the service.");
             var ids = preview.SelectedBookIds!.ToHashSet();
+            var expected = SeriesMoveDestination.FromBooks(name, preview.Books.Where(book => ids.Contains(book.Id)),
+                moved.Select(book => new SeriesSourceBook(book.Id, name, book.Title) { Number = book.Number }));
+            Require(preview.Destination!.OverlappingNumbers.SequenceEqual(expected.OverlappingNumbers), "The confirmed overlap was not passed to the service.");
             moved.AddRange(rows.Where(book => ids.Contains(book.Id)));
             rows.RemoveAll(book => ids.Contains(book.Id));
             return Task.FromResult(new SeriesRenameCompletion(new(SeriesRenameStatus.Renamed, name, preview.Books.Where(book => ids.Contains(book.Id)).ToArray()), []));

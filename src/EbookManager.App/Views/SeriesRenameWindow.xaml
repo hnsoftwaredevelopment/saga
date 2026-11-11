@@ -16,8 +16,22 @@
       <TextBlock Text="{loc:Loc SeriesRenameOriginal}" Foreground="{DynamicResource TextSecondaryBrush}" />
       <ScrollViewer MaxHeight="70" VerticalScrollBarVisibility="Auto" Margin="0,4,0,12"><TextBlock Text="{Binding OriginalName}" TextWrapping="Wrap" FontWeight="SemiBold" /></ScrollViewer>
       <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" Margin="0,0,0,16" />
-      <Label Content="{loc:Loc SeriesRenameNew}" Target="{Binding ElementName=NewNameBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
-      <TextBox x:Name="NewNameBox" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{loc:Loc SeriesRenameNew}" />
+      <Label Content="{Binding NameLabel}" Target="{Binding ElementName=NewNameBox}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="0,0,0,4" />
+      <TextBox x:Name="NewNameBox" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" TextChanged="MoveSearchChanged"
+               PreviewKeyDown="DestinationKeyDown" AutomationProperties.Name="{Binding NameLabel}" />
+      <StackPanel Visibility="{Binding IsSplit, Converter={StaticResource ShowSplitBooks}}">
+        <ListBox x:Name="MoveDestinations" MaxHeight="102" Margin="0,4,0,0" DisplayMemberPath="Name"
+                 PreviewKeyDown="DestinationKeyDown" PreviewMouseLeftButtonUp="DestinationClicked"
+                 Visibility="{Binding HasItems, RelativeSource={RelativeSource Self}, Converter={StaticResource ShowSplitBooks}}"
+                 Background="{DynamicResource PanelBackgroundBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                 ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True" AutomationProperties.Name="{loc:Loc SeriesMoveExisting}" />
+        <Button x:Name="MoreDestinationsButton" Content="{loc:Loc SeriesLoadMore}" Click="MoreDestinationsClicked" Visibility="Collapsed" HorizontalAlignment="Left" Margin="0,4,0,0" />
+        <Button x:Name="UseNewSeriesButton" Content="{loc:Loc SeriesMoveUseNew}" Click="UseNewSeriesClicked" Visibility="Collapsed" HorizontalAlignment="Left" Margin="0,4,0,0" />
+        <TextBlock x:Name="DestinationStatus" TextWrapping="Wrap" Margin="0,4,0,0" AutomationProperties.LiveSetting="Polite" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <ScrollViewer MaxHeight="72" VerticalScrollBarVisibility="Auto">
+          <TextBlock x:Name="OverlapText" Text="{Binding OverlapMessage}" TextWrapping="Wrap" Foreground="{DynamicResource TextPrimaryBrush}" AutomationProperties.LiveSetting="Polite" />
+        </ScrollViewer>
+      </StackPanel>
       <DataGrid x:Name="SplitBooksGrid" Visibility="{Binding IsSplit, Converter={StaticResource ShowSplitBooks}}" ItemsSource="{Binding SplitBooks}"
                 MaxHeight="200" Margin="0,12,0,0" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserSortColumns="False"
                 EnableRowVirtualization="True" HeadersVisibility="Column" GridLinesVisibility="None"
