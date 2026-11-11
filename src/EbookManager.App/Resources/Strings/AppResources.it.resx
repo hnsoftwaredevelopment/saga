@@ -1000,6 +1000,8 @@ Nessun dato in conflitto è stato sovrascritto. Risolvi il problema segnalato re
   <data name="SeriesMoveChecking" xml:space="preserve"><value>Verifica dei numeri di serie…</value></data>
   <data name="SeriesMoveOverlap" xml:space="preserve"><value>Questi numeri sono già presenti nella serie di destinazione: {0}. I numeri restano invariati.</value></data>
   <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Usa «Rinomina serie» per assegnare un nuovo nome di serie a tutti i libri.</value></data>
-  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Questa serie esiste già. Selezionala in «Serie esistente» oppure inserisci un altro nome.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Questa serie esiste già. Riapri l’anteprima per sceglierla.</value></data>
+  <data name="SeriesMoveTarget" xml:space="preserve"><value>Serie di destinazione</value></data>
+  <data name="SeriesMoveUseNew" xml:space="preserve"><value>Usa questo nome per una nuova serie</value></data>
 </root>
 

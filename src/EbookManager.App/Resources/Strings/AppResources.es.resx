@@ -1000,6 +1000,8 @@ No se sobrescribieron datos en conflicto. Resuelva el problema indicado del arch
   <data name="SeriesMoveChecking" xml:space="preserve"><value>Comprobando los números de serie…</value></data>
   <data name="SeriesMoveOverlap" xml:space="preserve"><value>Estos números ya aparecen en la serie de destino: {0}. Se conservarán los números.</value></data>
   <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Usa «Cambiar el nombre de la serie» para dar un nombre nuevo a todos los libros.</value></data>
-  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Esta serie ya existe. Elígela en «Serie existente» o escribe otro nombre.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Esta serie ya existe. Vuelve a abrir la vista previa para elegirla.</value></data>
+  <data name="SeriesMoveTarget" xml:space="preserve"><value>Serie de destino</value></data>
+  <data name="SeriesMoveUseNew" xml:space="preserve"><value>Usar este nombre para una serie nueva</value></data>
 </root>
 

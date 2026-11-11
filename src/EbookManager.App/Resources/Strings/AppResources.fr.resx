@@ -1000,6 +1000,8 @@ Aucune donnée en conflit n’a été remplacée. Corrigez le problème de fichi
   <data name="SeriesMoveChecking" xml:space="preserve"><value>Vérification des numéros de tome…</value></data>
   <data name="SeriesMoveOverlap" xml:space="preserve"><value>Ces numéros existent déjà dans la série de destination : {0}. Les numéros sont conservés.</value></data>
   <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Utilisez « Renommer la série » pour donner un nouveau nom de série à tous les livres.</value></data>
-  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Cette série existe déjà. Choisissez-la sous « Série existante » ou saisissez un autre nom.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Cette série existe déjà. Rouvrez l’aperçu pour la choisir.</value></data>
+  <data name="SeriesMoveTarget" xml:space="preserve"><value>Série de destination</value></data>
+  <data name="SeriesMoveUseNew" xml:space="preserve"><value>Utiliser ce nom pour une nouvelle série</value></data>
 </root>
 

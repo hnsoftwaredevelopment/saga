@@ -720,6 +720,8 @@ Er zijn geen conflicterende gegevens overschreven. Los het gemelde bestands- of 
   <data name="SeriesMoveChecking" xml:space="preserve"><value>Volgnummers controleren…</value></data>
   <data name="SeriesMoveOverlap" xml:space="preserve"><value>Deze volgnummers komen al voor in de doelserie: {0}. De volgnummers blijven behouden.</value></data>
   <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Gebruik ‘Serie hernoemen’ om alle boeken een nieuwe serienaam te geven.</value></data>
-  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Deze serie bestaat al. Kies haar onder ‘Bestaande serie’ of typ een andere naam.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Deze serie bestaat al. Open het voorstel opnieuw om haar te kiezen.</value></data>
+  <data name="SeriesMoveTarget" xml:space="preserve"><value>Doelserie</value></data>
+  <data name="SeriesMoveUseNew" xml:space="preserve"><value>Gebruik deze naam voor een nieuwe serie</value></data>
 </root>
 

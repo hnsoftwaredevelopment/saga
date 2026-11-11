@@ -720,6 +720,8 @@ No conflicting data was overwritten. Resolve the reported file or OneDrive probl
   <data name="SeriesMoveChecking" xml:space="preserve"><value>Checking series numbers…</value></data>
   <data name="SeriesMoveOverlap" xml:space="preserve"><value>These numbers already occur in the destination: {0}. The numbers will be kept.</value></data>
   <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Use Rename series to give all books a new series name.</value></data>
-  <data name="SeriesMoveNameExists" xml:space="preserve"><value>This series already exists. Choose it under Existing series or enter another name.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>This series already exists. Reopen the proposal to choose it.</value></data>
+  <data name="SeriesMoveTarget" xml:space="preserve"><value>Destination series</value></data>
+  <data name="SeriesMoveUseNew" xml:space="preserve"><value>Use this name for a new series</value></data>
 </root>
 

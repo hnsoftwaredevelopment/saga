@@ -40,7 +40,7 @@ public sealed partial class SeriesRenameDialogViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
-    private int destinationTab;
+    private bool canUseNewName;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSave))]
@@ -52,9 +52,15 @@ public sealed partial class SeriesRenameDialogViewModel : ObservableObject
             string.Join(" · ", target.OverlappingNumbers.Select(number => number.ToString(CultureInfo.CurrentCulture))))
         : "";
 
-    public SeriesMoveDestination? ConfirmedDestination => IsSplit && DestinationTab == 0 ? Destination : null;
-    public string SaveName => ConfirmedDestination?.Name ?? NewName;
-    public bool CanSave => IsSplit && DestinationTab == 0 ? Destination is not null :
-        !string.IsNullOrWhiteSpace(NewName) && (IsSplit ? CanCreateSeries && !SeriesNames.Same(NewName, OriginalName) :
-            hasNonCanonicalNames || NewName.Trim() != OriginalName);
+    public string NameLabel => localize(IsSplit ? "SeriesMoveTarget" : "SeriesRenameNew");
+    public string SaveName => Destination?.Name ?? NewName;
+    public bool CanSave => !string.IsNullOrWhiteSpace(NewName) && (IsSplit
+        ? !SeriesNames.Same(NewName, OriginalName) && (Destination is not null && SeriesNames.Same(Destination.Name, NewName) || CanCreateSeries && CanUseNewName)
+        : hasNonCanonicalNames || NewName.Trim() != OriginalName);
+
+    partial void OnNewNameChanged(string value)
+    {
+        CanUseNewName = false;
+        Destination = null;
+    }
 }

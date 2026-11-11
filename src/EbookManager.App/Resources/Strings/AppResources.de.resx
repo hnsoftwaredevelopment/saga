@@ -1000,6 +1000,8 @@ Es wurden keine in Konflikt stehenden Daten überschrieben. Beheben Sie das geme
   <data name="SeriesMoveChecking" xml:space="preserve"><value>Bandnummern werden geprüft…</value></data>
   <data name="SeriesMoveOverlap" xml:space="preserve"><value>Diese Nummern kommen in der Zielreihe bereits vor: {0}. Die Nummern bleiben erhalten.</value></data>
   <data name="SeriesMoveWholeRename" xml:space="preserve"><value>Verwenden Sie „Reihe umbenennen“, um allen Büchern einen neuen Reihennamen zu geben.</value></data>
-  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Diese Reihe existiert bereits. Wählen Sie sie unter „Vorhandene Reihe“ oder geben Sie einen anderen Namen ein.</value></data>
+  <data name="SeriesMoveNameExists" xml:space="preserve"><value>Diese Reihe existiert bereits. Öffnen Sie die Vorschau erneut, um sie auszuwählen.</value></data>
+  <data name="SeriesMoveTarget" xml:space="preserve"><value>Zielreihe</value></data>
+  <data name="SeriesMoveUseNew" xml:space="preserve"><value>Diesen Namen für eine neue Reihe verwenden</value></data>
 </root>
 

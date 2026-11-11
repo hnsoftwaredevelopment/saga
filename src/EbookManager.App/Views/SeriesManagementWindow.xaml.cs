@@ -141,7 +141,7 @@ public partial class SeriesManagementWindow : Window
         var confirmed = new SeriesRenameWindow(dialog, viewModel.SearchMoveDestinationsAsync, viewModel.PreviewMoveDestinationAsync)
             { Owner = this }.ShowDialog() == true;
         RestoreFocus(sender as UIElement);
-        if (!confirmed || !await viewModel.RenameAsync(preview, dialog.SaveName, dialog.ConfirmedDestination)) return;
+        if (!confirmed || !await viewModel.RenameAsync(preview, dialog.SaveName, dialog.Destination)) return;
         RestoreSeriesSelection();
         if (SeriesList.SelectedItem is SeriesSummary target) SeriesList.ScrollIntoView(target);
         RestoreFocus(SeriesList);
