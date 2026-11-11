@@ -2,9 +2,10 @@
 
 - [x] Afbakening goedgekeurd. Bestaande en nieuwe bestemming, met behoud van nummers.
 - [x] Voorstel, overlapcontrole, opslag en directe actualisatie gebouwd.
-- [x] Eigen review, 1.255 tests en 34 WPF-proeven geslaagd. Debug **2026.11.10.32** heeft 0 waarschuwingen en 0 fouten.
+- [x] Eigen review, 1.255 tests en 34 WPF-proeven geslaagd. Debug **2026.11.11.3** heeft 0 waarschuwingen en 0 fouten.
 - [x] Checklist en documentatie gespiegeld naar Obsidian. M63 staat in Excel op Te testen.
-- [ ] Gebruiker voert de [checklist](../docs/manual-tests/milestone-63-checklist.md) uit en bevestigt de slice.
+- [x] Gebruiker heeft het verplaatsen getest en één invoerveld gevraagd voor bestaande en nieuwe series.
+- [ ] Gebruiker controleert het nieuwe invoerveld met de [hertest](../docs/manual-tests/milestone-63-checklist.md).
 - [ ] Gebruiker mergt de PR.
 
 ## Historie — Milestone 62 geaccepteerd en gemerged
